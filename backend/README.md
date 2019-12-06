@@ -13,7 +13,7 @@
 - `[your_name]_crud_api`
 
 #### Import project into IDE
-- Project root is in backend folder
+- Project root is in `backend` folder
 
 #### Build and run your app
 - `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`

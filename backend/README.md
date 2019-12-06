@@ -18,6 +18,9 @@
 #### Build and run your app
 - `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
 
+#### Test that your app is running
+- `curl -X GET   http://localhost:8080/api/welcome`
+
 #### After finishing the goals listed below create a PR
 
 ### Goals

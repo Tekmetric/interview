@@ -1,4 +1,4 @@
-# Java Spring Boot API Coding Activity
+# Java Spring Boot API Coding Exercise
 
 ## Steps to get started:
 

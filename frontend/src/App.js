@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
+import { Footer, Nav } from './components';
 //import logo from './logo.svg';
  
 
 class App extends Component {
   render() {
     return (
+      <>
+      <Nav/>
       <div className="App">
         <header className="App-header">
-          <h2>Welcome to the interview app!</h2>
+          <h1 className="text-3xl font-bold underline">SpaceX Launch Locator</h1>
+
           <p>
             Edit <code>src/App.js</code> and save to reload.
           </p>
@@ -20,6 +24,9 @@ class App extends Component {
        
         </header>
       </div>
+      <Footer/>
+      </>
+
     );
   }
 }

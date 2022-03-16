@@ -2,14 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './assets/css/index.css';
 import App from './App'; 
-import { Provider, Client, dedupExchange, fetchExchange } from 'urql'
-import { cacheExchange } from '@urql/exchange-graphcache'
-
-const cache = cacheExchange({})
+import { Provider, Client } from 'urql'
 
 const client = new Client({
     url: 'https://api.spacex.land/graphql/',
-    exchanges: [dedupExchange, cache, fetchExchange],
 })
 
 

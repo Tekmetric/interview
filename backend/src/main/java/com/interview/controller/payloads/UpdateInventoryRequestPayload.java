@@ -28,4 +28,9 @@ public class UpdateInventoryRequestPayload {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer quantity;
+
+    public boolean isEmptyRequest() {
+        return this.getType() == null && this.getStatus() == null && this.getBrand() == null &&
+                this.getPartName() == null && this.getPartNumber() == null && this.getQuantity() == null;
+    }
 }

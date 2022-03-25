@@ -1,5 +1,7 @@
 package com.interview.service;
 
+import com.interview.controller.exception.InvalidInventoryQuantityException;
+import com.interview.controller.exception.InvalidInventoryUpdateRequestException;
 import com.interview.controller.exception.ResourceNotFoundException;
 import com.interview.controller.payloads.InsertInventoryRequestPayload;
 import com.interview.controller.payloads.InventoryResponsePayload;
@@ -24,6 +26,7 @@ public class InventoryService {
 
     @Transactional
     public InventoryResponsePayload createInventory(InsertInventoryRequestPayload createRequest) {
+        checkCreateInventoryRequestPayloadIsValid(createRequest);
         Inventory created = inventoryRepository.save(
                 new Inventory(
                         createRequest.getType(),
@@ -40,6 +43,7 @@ public class InventoryService {
 
     @Transactional
     public InventoryResponsePayload updateInventory(Long id, UpdateInventoryRequestPayload updateRequest) {
+        checkUpdateInventoryRequestPayloadIsValid(updateRequest);
         Inventory toBeUpdated = checkAndGetInventoryIfExist(id);
         Inventory updatedInventory = getUpdatedInventory(toBeUpdated, updateRequest);
         Inventory created = inventoryRepository.save(updatedInventory);
@@ -48,7 +52,8 @@ public class InventoryService {
 
     @Transactional
     public void deleteInventory(Long id) {
-        inventoryRepository.deleteById(id);
+        Inventory inventory = checkAndGetInventoryIfExist(id);
+        inventoryRepository.deleteById(inventory.getId());
     }
 
     @Transactional(readOnly = true)
@@ -79,4 +84,21 @@ public class InventoryService {
         toBeUpdated.setQuantity(updateRequest.getQuantity() == null ? toBeUpdated.getQuantity() : updateRequest.getQuantity());
         return toBeUpdated;
     }
+
+    private void checkCreateInventoryRequestPayloadIsValid(InsertInventoryRequestPayload createRequest) {
+        if (createRequest.getQuantity() < 1 || createRequest.getQuantity() > 1000) {
+            throw new InvalidInventoryQuantityException(
+                    "inventory.invalid.quantity", "Inventory quantity should be between 1 and 1000"
+            );
+        }
+    }
+
+    private void checkUpdateInventoryRequestPayloadIsValid(UpdateInventoryRequestPayload updateRequest) {
+        if (updateRequest.isEmptyRequest()) {
+            throw new InvalidInventoryUpdateRequestException(
+                    "inventory.invalid.update.request", "Inventory update requests can not be empty"
+            );
+        }
+    }
+
 }

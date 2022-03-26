@@ -3,7 +3,6 @@ package com.interview.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.util.ProxyUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -28,15 +27,15 @@ public abstract class BaseEntity implements Serializable {
     @Version
     private Instant updatedAt;
 
-    private Instant deletedAt;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (ProxyUtils.getUserClass(o.getClass()) != this.getClass()) return false;
-        return Objects.equals(id, ((BaseEntity) o).getId());
+        if (!(o instanceof BaseEntity)) {
+            return false;
+        }
+        return id != null && id.equals(((BaseEntity) o).id);
     }
 
     @Override

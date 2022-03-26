@@ -5,12 +5,14 @@ import com.interview.controller.payloads.InventoryResponsePayload;
 import com.interview.controller.payloads.UpdateInventoryRequestPayload;
 import com.interview.service.InventoryService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api")
 public class InventoryController {
@@ -48,7 +50,12 @@ public class InventoryController {
     }
 
     @GetMapping(value = "/inventories")
-    public ResponseEntity<List<InventoryResponsePayload>> getAllInventories(Pageable pageable) {
-        return ResponseEntity.ok(inventoryService.getAllInventories(pageable));
+    public ResponseEntity<List<InventoryResponsePayload>> getAllInventories(
+            Pageable pageable
+    ) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("X-Total-Count", "100");
+        responseHeaders.set("Access-Control-Expose-Headers", "X-Total-Count");
+        return ResponseEntity.ok().headers(responseHeaders).body(inventoryService.getAllInventories(pageable));
     }
 }

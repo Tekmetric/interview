@@ -15,7 +15,7 @@ public class UpdateInventoryRequestPayload {
 
     @JsonProperty("status")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private InventoryStatus status;
+    private Boolean status;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String brand;

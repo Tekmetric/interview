@@ -25,7 +25,7 @@ public abstract class BaseEntity implements Serializable {
     private Instant createdAt = Instant.now();
 
     @Version
-    private Instant updatedAt;
+    private Long updatedAt;
 
     @Override
     public boolean equals(Object o) {

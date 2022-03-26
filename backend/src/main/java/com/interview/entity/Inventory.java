@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,14 +49,19 @@ public class Inventory extends BaseEntity {
     private Integer quantity;
 
     @Column
+    @NotNull
+    private String supportEmail;
+
+    @Column
     private Instant deletedAt = null;
 
-    public Inventory(InventoryType type, InventoryStatus status, String brand, String partName, String partNumber, Integer quantity) {
+    public Inventory(InventoryType type, InventoryStatus status, String brand, String partName, String partNumber, Integer quantity, String supportEmail) {
         this.type = type;
         this.status = status;
         this.brand = brand;
         this.partName = partName;
         this.partNumber = partNumber;
         this.quantity = quantity;
+        this.supportEmail = supportEmail;
     }
 }

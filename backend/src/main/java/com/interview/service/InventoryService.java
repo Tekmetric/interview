@@ -1,5 +1,6 @@
 package com.interview.service;
 
+import com.interview.controller.exception.InvalidInventoryIdsException;
 import com.interview.controller.exception.InvalidInventoryQuantityException;
 import com.interview.controller.exception.InvalidInventoryUpdateRequestException;
 import com.interview.controller.exception.ResourceNotFoundException;
@@ -7,13 +8,16 @@ import com.interview.controller.payloads.InsertInventoryRequestPayload;
 import com.interview.controller.payloads.InventoryResponsePayload;
 import com.interview.controller.payloads.UpdateInventoryRequestPayload;
 import com.interview.entity.Inventory;
+import com.interview.enums.InventoryStatus;
 import com.interview.repository.InventoryRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class InventoryService {
@@ -25,16 +29,12 @@ public class InventoryService {
     }
 
     @Transactional
-    public InventoryResponsePayload createInventory(InsertInventoryRequestPayload createRequest) {
-        checkCreateInventoryRequestPayloadIsValid(createRequest);
+    public InventoryResponsePayload createInventory(InsertInventoryRequestPayload request) {
+        checkQuantityIsValid(request.getQuantity());
         Inventory created = inventoryRepository.save(
                 new Inventory(
-                        createRequest.getType(),
-                        createRequest.getStatus(),
-                        createRequest.getBrand(),
-                        createRequest.getPartName(),
-                        createRequest.getPartNumber(),
-                        createRequest.getQuantity()
+                        request.getType(), getInventoryStatus(request.isStatus()), request.getBrand(),
+                        request.getPartName(), request.getPartNumber(), request.getQuantity(), request.getSupportEmail()
                 )
         );
 
@@ -44,16 +44,34 @@ public class InventoryService {
     @Transactional
     public InventoryResponsePayload updateInventory(Long id, UpdateInventoryRequestPayload updateRequest) {
         checkUpdateInventoryRequestPayloadIsValid(updateRequest);
+        checkQuantityIsValid(updateRequest.getQuantity());
         Inventory toBeUpdated = checkAndGetInventoryIfExist(id);
         Inventory updatedInventory = getUpdatedInventory(toBeUpdated, updateRequest);
-        Inventory created = inventoryRepository.save(updatedInventory);
-        return new InventoryResponsePayload(created);
+        Inventory updated = inventoryRepository.save(updatedInventory);
+        return new InventoryResponsePayload(updated);
     }
 
     @Transactional
     public void deleteInventory(Long id) {
         Inventory inventory = checkAndGetInventoryIfExist(id);
-        inventoryRepository.deleteById(inventory.getId());
+        inventory.setDeletedAt(Instant.now());
+        inventoryRepository.save(inventory);
+    }
+
+    @Transactional
+    public void deleteInventories(Long[] ids) {
+        checkInventoryIds(ids);
+        List<Inventory> inventories = inventoryRepository.findAllByIdInAndDeletedAtIsNull(Arrays.asList(ids));
+        inventories.forEach(
+                inventory -> inventory.setDeletedAt(Instant.now())
+        );
+        inventoryRepository.saveAll(inventories);
+    }
+
+    private void checkInventoryIds(Long[] ids) {
+        if (ids == null || ids.length == 0) {
+            throw new InvalidInventoryIdsException("invalid.inventory.ids", "inventory id list should not be empty");
+        }
     }
 
     @Transactional(readOnly = true)
@@ -63,10 +81,19 @@ public class InventoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<InventoryResponsePayload> getAllInventories(Pageable pageable) {
-        return inventoryRepository.findAllByDeletedAtIsNull(pageable).stream().map(
-                InventoryResponsePayload::new
-        ).collect(Collectors.toList());
+    public Page<InventoryResponsePayload> getAllInventories(Pageable pageable, String filter) {
+        Page<InventoryResponsePayload> inventories;
+        if (filter == null || filter.trim().isEmpty()) {
+            inventories = inventoryRepository.findAllByDeletedAtIsNull(pageable).map(
+                    InventoryResponsePayload::new
+            );
+        } else {
+            inventories = inventoryRepository.findAllByPartNameContainingIgnoreCaseAndDeletedAtIsNull(filter, pageable).map(
+                    InventoryResponsePayload::new
+            );
+        }
+        return inventories;
+
     }
 
     private Inventory checkAndGetInventoryIfExist(Long id) {
@@ -75,20 +102,27 @@ public class InventoryService {
         );
     }
 
-    private Inventory getUpdatedInventory(Inventory toBeUpdated, UpdateInventoryRequestPayload updateRequest) {
-        toBeUpdated.setType(updateRequest.getType() == null ? toBeUpdated.getType() : updateRequest.getType());
-        toBeUpdated.setStatus(updateRequest.getStatus() == null ? toBeUpdated.getStatus() : updateRequest.getStatus());
-        toBeUpdated.setBrand(updateRequest.getBrand() == null ? toBeUpdated.getBrand() : updateRequest.getBrand());
-        toBeUpdated.setPartName(updateRequest.getPartName() == null ? toBeUpdated.getPartName() : updateRequest.getPartName());
-        toBeUpdated.setPartNumber(updateRequest.getPartNumber() == null ? toBeUpdated.getPartNumber() : updateRequest.getPartNumber());
-        toBeUpdated.setQuantity(updateRequest.getQuantity() == null ? toBeUpdated.getQuantity() : updateRequest.getQuantity());
+    private Inventory getUpdatedInventory(Inventory toBeUpdated, UpdateInventoryRequestPayload request) {
+        toBeUpdated.setType(request.getType() == null ? toBeUpdated.getType() : request.getType());
+        toBeUpdated.setStatus(
+                request.getStatus() == null ? toBeUpdated.getStatus() : getInventoryStatus(request.getStatus())
+        );
+        toBeUpdated.setBrand(request.getBrand() == null ? toBeUpdated.getBrand() : request.getBrand());
+        toBeUpdated.setPartName(request.getPartName() == null ? toBeUpdated.getPartName() : request.getPartName());
+        toBeUpdated.setPartNumber(request.getPartNumber() == null ? toBeUpdated.getPartNumber() : request.getPartNumber());
+        toBeUpdated.setQuantity(request.getQuantity() == null ? toBeUpdated.getQuantity() : request.getQuantity());
         return toBeUpdated;
     }
 
-    private void checkCreateInventoryRequestPayloadIsValid(InsertInventoryRequestPayload createRequest) {
-        if (createRequest.getQuantity() < 1 || createRequest.getQuantity() > 1000) {
+    private InventoryStatus getInventoryStatus(Boolean status) {
+        return status ? InventoryStatus.AVAILABLE : InventoryStatus.NOT_AVAILABLE;
+    }
+
+    private void checkQuantityIsValid(Integer quantity) {
+        // This is a sample business logic
+        if (quantity != null && (quantity < 1 || quantity > 10000)) {
             throw new InvalidInventoryQuantityException(
-                    "inventory.invalid.quantity", "Inventory quantity should be between 1 and 1000"
+                    "inventory.invalid.quantity", "Inventory quantity should be between 1 and 10000"
             );
         }
     }

@@ -8,8 +8,9 @@ create table inventory
     part_name   varchar(100) not null,
     part_number varchar(100) not null,
     quantity    int          not null,
+    support_email varchar(100) not null,
     created_at  timestamp    not null default CURRENT_TIMESTAMP,
-    updated_at  timestamp,
+    updated_at  bigint not null default 0,
     deleted_at timestamp
 );
 
@@ -19,6 +20,4 @@ CREATE
 INDEX idx_part_name ON Inventory (part_name);
 CREATE
 INDEX idx_part_number ON Inventory (part_number);
-
-CREATE SEQUENCE HIBERNATE_SEQUENCE START WITH 1000 INCREMENT BY 1;
 

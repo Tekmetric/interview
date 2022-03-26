@@ -18,7 +18,7 @@ public class InsertInventoryRequestPayload {
 
     @NotNull
     @JsonProperty("status")
-    private InventoryStatus status;
+    private boolean status;
 
     @NotNull
     private String brand;
@@ -31,4 +31,7 @@ public class InsertInventoryRequestPayload {
 
     @NotNull
     private Integer quantity;
+
+    @NotNull
+    private String supportEmail;
 }

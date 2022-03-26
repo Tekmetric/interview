@@ -63,7 +63,7 @@ class InventoryServiceIntegrationTest {
 
     @Test
     void assertThatAllInventoriesShouldReturnInitialTestDataList() {
-        List<InventoryResponsePayload> inventories = inventoryService.getAllInventories(Pageable.unpaged());
+        List<InventoryResponsePayload> inventories = inventoryService.getAllInventories(Pageable.unpaged(), "").getContent();
 
         assertThat(inventories).isNotNull();
         assertThat(inventories).size().isEqualTo(INITIAL_INVENTORY_COUNT);
@@ -72,9 +72,9 @@ class InventoryServiceIntegrationTest {
     @Test
     void assertThatInsertInventoryShouldBeInsertedToDb() {
         InsertInventoryRequestPayload createInventoryRequest = createInventoryRequestPayload();
-        assertThat(inventoryService.getAllInventories(Pageable.unpaged())).size().isEqualTo(INITIAL_INVENTORY_COUNT);
+        assertThat(inventoryService.getAllInventories(Pageable.unpaged(), "")).size().isEqualTo(INITIAL_INVENTORY_COUNT);
         InventoryResponsePayload response = inventoryService.createInventory(createInventoryRequest);
-        List<InventoryResponsePayload> inventories = inventoryService.getAllInventories(Pageable.unpaged());
+        List<InventoryResponsePayload> inventories = inventoryService.getAllInventories(Pageable.unpaged(), "").getContent();
         assertThat(inventories).size().isEqualTo(INITIAL_INVENTORY_COUNT + 1);
 
     }
@@ -114,7 +114,7 @@ class InventoryServiceIntegrationTest {
 
     @Test
     void assertThatDeleteInventoryShouldDecreaseInventoriesCount() {
-        List<InventoryResponsePayload> inventories = inventoryService.getAllInventories(Pageable.unpaged());
+        List<InventoryResponsePayload> inventories = inventoryService.getAllInventories(Pageable.unpaged(), "").getContent();
         int initialInventoryCount = inventories.size();
 
         InsertInventoryRequestPayload createInventoryRequest = createInventoryRequestPayload();
@@ -127,8 +127,8 @@ class InventoryServiceIntegrationTest {
 
     private InsertInventoryRequestPayload createInventoryRequestPayload() {
         return new InsertInventoryRequestPayload(
-                InventoryType.TYPE_A, InventoryStatus.AVAILABLE, "brand",
-                "part-name", "part-number", 100
+                InventoryType.TYPE_A, InventoryStatus.AVAILABLE.isActive(), "brand",
+                "part-name", "part-number", 100, "support@tekmetric.com"
         );
     }
 }

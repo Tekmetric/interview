@@ -19,6 +19,7 @@
             <column name="part_name" type="string"/>
             <column name="part_number" type="string"/>
             <column name="quantity" type="numeric"/>
+            <column name="support_email" type="string"/>
         </loadData>
 
     </changeSet>

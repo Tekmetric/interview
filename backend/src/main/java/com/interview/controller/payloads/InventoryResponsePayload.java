@@ -12,7 +12,7 @@ public class InventoryResponsePayload {
 
     private InventoryType type;
 
-    private InventoryStatus status;
+    private boolean status;
 
     private String brand;
 
@@ -22,13 +22,16 @@ public class InventoryResponsePayload {
 
     private Integer quantity;
 
+    private String supportEmail;
+
     public InventoryResponsePayload(Inventory inventory) {
         this.id = inventory.getId();
         this.type = inventory.getType();
-        this.status = inventory.getStatus();
+        this.status = inventory.getStatus().isActive();
         this.brand = inventory.getBrand();
         this.partName = inventory.getPartName();
         this.partNumber = inventory.getPartNumber();
         this.quantity = inventory.getQuantity();
+        this.supportEmail = inventory.getSupportEmail();
     }
 }

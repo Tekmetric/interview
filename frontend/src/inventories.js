@@ -10,7 +10,7 @@ export const InventoryCreate = props => (
             <TextInput source="partName" validate={required()}/>
             <TextInput source="partNumber" validate={required()}/>
             <TextInput source="brand" validate={required()}/>
-            <TextInput source="supportEmail" type="email" validate={[required(),email()]} />
+            <TextInput source="supportEmail" type="email" validate={[required(), email()]}/>
             <TextInput source="quantity" type="number" validate={required()}/>
             <RadioButtonGroupInput source="type" validate={required()} choices={[
                 {id: 'TYPE_A', name: 'TYPE A'},
@@ -23,7 +23,7 @@ export const InventoryCreate = props => (
 );
 
 export const InventoryEdit = props => (
-    <Edit mutationMode="pessimistic" {...props}>
+    <Edit title="Edit Inventory" mutationMode="pessimistic" {...props}>
         <SimpleForm>
             <TextInput source="id" disabled/>
             <TextInput source="partName" validate={required()}/>
@@ -42,11 +42,15 @@ export const InventoryEdit = props => (
 );
 
 const InventoryFilters = [
-    <TextInput source="q" label="Search" alwaysOn />
+    <TextInput source="q" label="Search" alwaysOn/>,
+    <TextInput source="partNumber" label="Part Number"/>,
+    <TextInput source="brand" label="Brand"/>,
+    <TextInput source="supportEmail" label="Email"/>,
+    <BooleanInput source="status" label="Availability"/>
 ];
 
 export const InventoryList = props => {
-    return <List {...props} sort={{ field: 'id', order: 'DESC' }} filters={InventoryFilters}>
+    return <List title="List of Inventories" {...props} sort={{field: 'id', order: 'DESC'}} filters={InventoryFilters}>
         <Datagrid rowClick="edit">
             <TextField source="id"/>
             <TextField source="partName" label="Name"/>

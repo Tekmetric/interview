@@ -8,14 +8,18 @@ export default {
     getList: (resource, params) => {
         const {page, perPage} = params.pagination;
         const {field, order} = params.sort;
-        const filter = params.filter
+        const filters = params.filter
 
         const query = {
             size: perPage,
             page: page - 1,
             field,
             order,
-            filter: filter.q
+            partName: filters.q,
+            partNumber: filters.partNumber,
+            brand: filters.brand,
+            supportEmail: filters.supportEmail,
+            status: filters.status
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
@@ -57,7 +61,7 @@ export default {
     delete: (resource, params) =>
         httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'DELETE',
-        }).then(() => ({data: {id:params.id} })),
+        }).then(() => ({data: {id: params.id}})),
 
     deleteMany: (resource, params) => {
         const query = {
@@ -65,6 +69,6 @@ export default {
         };
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'DELETE',
-        }).then(() => ({ data: params.ids }));
+        }).then(() => ({data: params.ids}));
     }
 };

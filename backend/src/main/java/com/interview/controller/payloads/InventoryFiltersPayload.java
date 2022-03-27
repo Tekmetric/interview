@@ -19,7 +19,7 @@ public class InventoryFiltersPayload {
 
     private Boolean status;
 
-    public boolean isFiltersEmpty() {
+    public boolean filtersIsEmpty() {
         return this.getPartName() == null && this.getPartNumber() == null && this.getBrand() == null &&
                 this.getSupportEmail() == null && this.getStatus() == null;
     }

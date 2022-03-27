@@ -68,8 +68,7 @@ public class InventoryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id") String field,
-            @RequestParam(defaultValue = "DESC") String order,
-           // @RequestParam(required = false) String filter
+            @RequestParam(defaultValue = "ASC") String order,
             InventoryFiltersPayload filters
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), field));

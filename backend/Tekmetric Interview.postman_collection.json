@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "5eeaa95c-432b-4ad9-8c61-a01414593978",
-		"name": "Tekmetric Interview Project - Postman Collection",
+		"_postman_id": "40172a89-74b9-47c5-88cc-1da6b0a34ce2",
+		"name": "Tekmetric Interview Project",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -37,7 +37,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "38354516",
+													"value": "-65833500",
 													"description": "(Required) "
 												}
 											]
@@ -62,7 +62,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "38354516",
+															"value": "-65833500",
 															"description": "(Required) "
 														}
 													]
@@ -98,7 +98,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "38354516",
+															"value": "-65833500",
 															"description": "(Required) "
 														}
 													]
@@ -134,7 +134,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "38354516",
+															"value": "-65833500",
 															"description": "(Required) "
 														}
 													]
@@ -170,7 +170,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"brand\": \"amet quis qui consect\",\n  \"partName\": \"sed eu\",\n  \"partNumber\": \"eu Lorem in ea\",\n  \"quantity\": -47244328,\n  \"emptyRequest\": false,\n  \"type\": \"TYPE_C\",\n  \"status\": true\n}",
+											"raw": "{\n  \"brand\": \"veniam aute sed\",\n  \"partName\": \"id est nostrud pariatur\",\n  \"partNumber\": \"esse id incididunt\",\n  \"supportEmail\": \"dolor non Lorem in\",\n  \"quantity\": 51647180,\n  \"emptyRequest\": false,\n  \"type\": \"TYPE_B\",\n  \"status\": false\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -190,7 +190,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "38354516",
+													"value": "-65833500",
 													"description": "(Required) "
 												}
 											]
@@ -204,7 +204,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"brand\": \"amet quis qui consect\",\n  \"partName\": \"sed eu\",\n  \"partNumber\": \"eu Lorem in ea\",\n  \"quantity\": -47244328,\n  \"emptyRequest\": false,\n  \"type\": \"TYPE_C\",\n  \"status\": true\n}",
+													"raw": "{\n  \"brand\": \"veniam aute sed\",\n  \"partName\": \"id est nostrud pariatur\",\n  \"partNumber\": \"esse id incididunt\",\n  \"supportEmail\": \"dolor non Lorem in\",\n  \"quantity\": 51647180,\n  \"emptyRequest\": false,\n  \"type\": \"TYPE_B\",\n  \"status\": false\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -224,7 +224,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "38354516",
+															"value": "-65833500",
 															"description": "(Required) "
 														}
 													]
@@ -249,7 +249,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"brand\": \"amet quis qui consect\",\n  \"partName\": \"sed eu\",\n  \"partNumber\": \"eu Lorem in ea\",\n  \"quantity\": -47244328,\n  \"emptyRequest\": false,\n  \"type\": \"TYPE_C\",\n  \"status\": true\n}",
+													"raw": "{\n  \"brand\": \"veniam aute sed\",\n  \"partName\": \"id est nostrud pariatur\",\n  \"partNumber\": \"esse id incididunt\",\n  \"supportEmail\": \"dolor non Lorem in\",\n  \"quantity\": 51647180,\n  \"emptyRequest\": false,\n  \"type\": \"TYPE_B\",\n  \"status\": false\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -269,7 +269,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "38354516",
+															"value": "-65833500",
 															"description": "(Required) "
 														}
 													]
@@ -294,7 +294,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"brand\": \"amet quis qui consect\",\n  \"partName\": \"sed eu\",\n  \"partNumber\": \"eu Lorem in ea\",\n  \"quantity\": -47244328,\n  \"emptyRequest\": false,\n  \"type\": \"TYPE_C\",\n  \"status\": true\n}",
+													"raw": "{\n  \"brand\": \"veniam aute sed\",\n  \"partName\": \"id est nostrud pariatur\",\n  \"partNumber\": \"esse id incididunt\",\n  \"supportEmail\": \"dolor non Lorem in\",\n  \"quantity\": 51647180,\n  \"emptyRequest\": false,\n  \"type\": \"TYPE_B\",\n  \"status\": false\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -314,7 +314,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "38354516",
+															"value": "-65833500",
 															"description": "(Required) "
 														}
 													]
@@ -357,7 +357,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "38354516",
+													"value": "-65833500",
 													"description": "(Required) "
 												}
 											]
@@ -382,7 +382,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "38354516",
+															"value": "-65833500",
 															"description": "(Required) "
 														}
 													]
@@ -418,7 +418,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "38354516",
+															"value": "-65833500",
 															"description": "(Required) "
 														}
 													]
@@ -454,7 +454,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "38354516",
+															"value": "-65833500",
 															"description": "(Required) "
 														}
 													]
@@ -487,7 +487,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/inventories?page=0&size=20&field=id&order=DESC&filter=veniam id",
+									"raw": "{{baseUrl}}/api/inventories?page=0&size=20&field=id&order=ASC&partName=amet in consectetu&partNumber=esse Excepteur in&brand=Duis sint des&supportEmail=irure ad adipisicing sit&status=true",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -510,11 +510,32 @@
 										},
 										{
 											"key": "order",
-											"value": "DESC"
+											"value": "ASC"
 										},
 										{
-											"key": "filter",
-											"value": "veniam id"
+											"key": "partName",
+											"value": "amet in consectetu",
+											"description": "(Required) "
+										},
+										{
+											"key": "partNumber",
+											"value": "esse Excepteur in",
+											"description": "(Required) "
+										},
+										{
+											"key": "brand",
+											"value": "Duis sint des",
+											"description": "(Required) "
+										},
+										{
+											"key": "supportEmail",
+											"value": "irure ad adipisicing sit",
+											"description": "(Required) "
+										},
+										{
+											"key": "status",
+											"value": "true",
+											"description": "(Required) "
 										}
 									]
 								}
@@ -526,7 +547,7 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{baseUrl}}/api/inventories?page=0&size=20&field=id&order=DESC&filter=veniam id",
+											"raw": "{{baseUrl}}/api/inventories?page=0&size=20&field=id&order=ASC&partName=<string>&partNumber=<string>&brand=<string>&supportEmail=<string>&status=<boolean>",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -549,11 +570,27 @@
 												},
 												{
 													"key": "order",
-													"value": "DESC"
+													"value": "ASC"
 												},
 												{
-													"key": "filter",
-													"value": "veniam id"
+													"key": "partName",
+													"value": "<string>"
+												},
+												{
+													"key": "partNumber",
+													"value": "<string>"
+												},
+												{
+													"key": "brand",
+													"value": "<string>"
+												},
+												{
+													"key": "supportEmail",
+													"value": "<string>"
+												},
+												{
+													"key": "status",
+													"value": "<boolean>"
 												}
 											]
 										}
@@ -576,7 +613,7 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{baseUrl}}/api/inventories?page=0&size=20&field=id&order=DESC&filter=veniam id",
+											"raw": "{{baseUrl}}/api/inventories?page=0&size=20&field=id&order=ASC&partName=<string>&partNumber=<string>&brand=<string>&supportEmail=<string>&status=<boolean>",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -599,11 +636,27 @@
 												},
 												{
 													"key": "order",
-													"value": "DESC"
+													"value": "ASC"
 												},
 												{
-													"key": "filter",
-													"value": "veniam id"
+													"key": "partName",
+													"value": "<string>"
+												},
+												{
+													"key": "partNumber",
+													"value": "<string>"
+												},
+												{
+													"key": "brand",
+													"value": "<string>"
+												},
+												{
+													"key": "supportEmail",
+													"value": "<string>"
+												},
+												{
+													"key": "status",
+													"value": "<boolean>"
 												}
 											]
 										}
@@ -626,7 +679,7 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{baseUrl}}/api/inventories?page=0&size=20&field=id&order=DESC&filter=veniam id",
+											"raw": "{{baseUrl}}/api/inventories?page=0&size=20&field=id&order=ASC&partName=<string>&partNumber=<string>&brand=<string>&supportEmail=<string>&status=<boolean>",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -649,11 +702,27 @@
 												},
 												{
 													"key": "order",
-													"value": "DESC"
+													"value": "ASC"
 												},
 												{
-													"key": "filter",
-													"value": "veniam id"
+													"key": "partName",
+													"value": "<string>"
+												},
+												{
+													"key": "partNumber",
+													"value": "<string>"
+												},
+												{
+													"key": "brand",
+													"value": "<string>"
+												},
+												{
+													"key": "supportEmail",
+													"value": "<string>"
+												},
+												{
+													"key": "status",
+													"value": "<boolean>"
 												}
 											]
 										}
@@ -688,7 +757,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"brand\": \"Duis veniam\",\n  \"partName\": \"ut cillum dolore\",\n  \"partNumber\": \"laboris consectetur deserunt\",\n  \"quantity\": -81855626,\n  \"status\": false,\n  \"supportEmail\": \"Excepteur qui\",\n  \"type\": \"TYPE_B\"\n}",
+									"raw": "{\n  \"brand\": \"mollit anim aliqua\",\n  \"partName\": \"qui ex et consequat\",\n  \"partNumber\": \"nisi ut\",\n  \"quantity\": -85778462,\n  \"status\": true,\n  \"supportEmail\": \"labore paria\",\n  \"type\": \"TYPE_C\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -714,7 +783,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"brand\": \"Duis veniam\",\n  \"partName\": \"ut cillum dolore\",\n  \"partNumber\": \"laboris consectetur deserunt\",\n  \"quantity\": -81855626,\n  \"status\": false,\n  \"supportEmail\": \"Excepteur qui\",\n  \"type\": \"TYPE_B\"\n}",
+											"raw": "{\n  \"brand\": \"mollit anim aliqua\",\n  \"partName\": \"qui ex et consequat\",\n  \"partNumber\": \"nisi ut\",\n  \"quantity\": -85778462,\n  \"status\": true,\n  \"supportEmail\": \"labore paria\",\n  \"type\": \"TYPE_C\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -751,7 +820,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"brand\": \"Duis veniam\",\n  \"partName\": \"ut cillum dolore\",\n  \"partNumber\": \"laboris consectetur deserunt\",\n  \"quantity\": -81855626,\n  \"status\": false,\n  \"supportEmail\": \"Excepteur qui\",\n  \"type\": \"TYPE_B\"\n}",
+											"raw": "{\n  \"brand\": \"mollit anim aliqua\",\n  \"partName\": \"qui ex et consequat\",\n  \"partNumber\": \"nisi ut\",\n  \"quantity\": -85778462,\n  \"status\": true,\n  \"supportEmail\": \"labore paria\",\n  \"type\": \"TYPE_C\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -788,7 +857,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"brand\": \"Duis veniam\",\n  \"partName\": \"ut cillum dolore\",\n  \"partNumber\": \"laboris consectetur deserunt\",\n  \"quantity\": -81855626,\n  \"status\": false,\n  \"supportEmail\": \"Excepteur qui\",\n  \"type\": \"TYPE_B\"\n}",
+											"raw": "{\n  \"brand\": \"mollit anim aliqua\",\n  \"partName\": \"qui ex et consequat\",\n  \"partNumber\": \"nisi ut\",\n  \"quantity\": -85778462,\n  \"status\": true,\n  \"supportEmail\": \"labore paria\",\n  \"type\": \"TYPE_C\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -831,7 +900,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/inventories?ids=90470847&ids=-28171016",
+									"raw": "{{baseUrl}}/api/inventories?ids=-1372536&ids=63710324",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -842,12 +911,12 @@
 									"query": [
 										{
 											"key": "ids",
-											"value": "90470847",
+											"value": "-1372536",
 											"description": "(Required) "
 										},
 										{
 											"key": "ids",
-											"value": "-28171016",
+											"value": "63710324",
 											"description": "(Required) "
 										}
 									]
@@ -860,7 +929,7 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "{{baseUrl}}/api/inventories?ids=-77703019&ids=-42823380",
+											"raw": "{{baseUrl}}/api/inventories?ids=-96256116&ids=-89249451",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -871,11 +940,11 @@
 											"query": [
 												{
 													"key": "ids",
-													"value": "-77703019"
+													"value": "-96256116"
 												},
 												{
 													"key": "ids",
-													"value": "-42823380"
+													"value": "-89249451"
 												}
 											]
 										}
@@ -898,7 +967,7 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "{{baseUrl}}/api/inventories?ids=-77703019&ids=-42823380",
+											"raw": "{{baseUrl}}/api/inventories?ids=-96256116&ids=-89249451",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -909,11 +978,11 @@
 											"query": [
 												{
 													"key": "ids",
-													"value": "-77703019"
+													"value": "-96256116"
 												},
 												{
 													"key": "ids",
-													"value": "-42823380"
+													"value": "-89249451"
 												}
 											]
 										}
@@ -936,7 +1005,7 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "{{baseUrl}}/api/inventories?ids=-77703019&ids=-42823380",
+											"raw": "{{baseUrl}}/api/inventories?ids=-96256116&ids=-89249451",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -947,11 +1016,11 @@
 											"query": [
 												{
 													"key": "ids",
-													"value": "-77703019"
+													"value": "-96256116"
 												},
 												{
 													"key": "ids",
-													"value": "-42823380"
+													"value": "-89249451"
 												}
 											]
 										}
@@ -1023,7 +1092,7 @@
 										}
 									],
 									"cookie": [],
-									"body": "veniam id"
+									"body": "velit exercitation reprehenderit"
 								},
 								{
 									"name": "Bad Request",
@@ -1084,7 +1153,7 @@
 							]
 						},
 						{
-							"name": "index 1",
+							"name": "index 6",
 							"request": {
 								"method": "PUT",
 								"header": [
@@ -1131,7 +1200,7 @@
 										}
 									],
 									"cookie": [],
-									"body": "veniam id"
+									"body": "velit exercitation reprehenderit"
 								},
 								{
 									"name": "Bad Request",
@@ -1192,7 +1261,7 @@
 							]
 						},
 						{
-							"name": "index 3",
+							"name": "index 5",
 							"request": {
 								"method": "POST",
 								"header": [
@@ -1239,7 +1308,7 @@
 										}
 									],
 									"cookie": [],
-									"body": "veniam id"
+									"body": "velit exercitation reprehenderit"
 								},
 								{
 									"name": "Bad Request",
@@ -1300,7 +1369,7 @@
 							]
 						},
 						{
-							"name": "index 4",
+							"name": "index 1",
 							"request": {
 								"method": "DELETE",
 								"header": [
@@ -1347,7 +1416,7 @@
 										}
 									],
 									"cookie": [],
-									"body": "veniam id"
+									"body": "velit exercitation reprehenderit"
 								},
 								{
 									"name": "Bad Request",
@@ -1408,7 +1477,7 @@
 							]
 						},
 						{
-							"name": "index 2",
+							"name": "index 3",
 							"request": {
 								"method": "OPTIONS",
 								"header": [
@@ -1455,7 +1524,7 @@
 										}
 									],
 									"cookie": [],
-									"body": "veniam id"
+									"body": "velit exercitation reprehenderit"
 								},
 								{
 									"name": "Bad Request",
@@ -1516,7 +1585,7 @@
 							]
 						},
 						{
-							"name": "index 5",
+							"name": "index 4",
 							"request": {
 								"method": "HEAD",
 								"header": [
@@ -1563,7 +1632,7 @@
 										}
 									],
 									"cookie": [],
-									"body": "veniam id"
+									"body": "velit exercitation reprehenderit"
 								},
 								{
 									"name": "Bad Request",
@@ -1624,7 +1693,7 @@
 							]
 						},
 						{
-							"name": "index 6",
+							"name": "index 2",
 							"request": {
 								"method": "PATCH",
 								"header": [
@@ -1671,7 +1740,7 @@
 										}
 									],
 									"cookie": [],
-									"body": "veniam id"
+									"body": "velit exercitation reprehenderit"
 								},
 								{
 									"name": "Bad Request",

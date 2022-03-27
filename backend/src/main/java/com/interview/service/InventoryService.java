@@ -87,7 +87,7 @@ public class InventoryService {
     @Transactional(readOnly = true)
     public Page<InventoryResponsePayload> getAllInventories(Pageable pageable, InventoryFiltersPayload filters) {
         Page<InventoryResponsePayload> inventories;
-        if (filters == null || filters.isFiltersEmpty()) {
+        if (filters == null || filters.filtersIsEmpty()) {
             inventories = inventoryRepository.findAllByDeletedAtIsNull(pageable).map(
                     InventoryResponsePayload::new
             );
@@ -118,6 +118,8 @@ public class InventoryService {
             InventoryStatus status = getInventoryStatus(filters.getStatus());
             specification.add(new SearchCriteria("status", status, SearchOperation.EQUAL));
         }
+
+        specification.add(new SearchCriteria("deletedAt", null, SearchOperation.IS_NULL));
         return specification;
     }
 

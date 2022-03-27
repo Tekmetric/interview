@@ -87,7 +87,7 @@ public class InventoryService {
     @Transactional(readOnly = true)
     public Page<InventoryResponsePayload> getAllInventories(Pageable pageable, InventoryFiltersPayload filters) {
         Page<InventoryResponsePayload> inventories;
-        if (filters.isFiltersEmpty()) {
+        if (filters == null || filters.isFiltersEmpty()) {
             inventories = inventoryRepository.findAllByDeletedAtIsNull(pageable).map(
                     InventoryResponsePayload::new
             );

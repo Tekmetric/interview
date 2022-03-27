@@ -50,7 +50,7 @@ const InventoryFilters = [
 ];
 
 export const InventoryList = props => {
-    return <List title="List of Inventories" {...props} sort={{field: 'id', order: 'DESC'}} filters={InventoryFilters}>
+    return <List title="List of Inventories" {...props} sort={{field: 'id', order: 'ASC'}} filters={InventoryFilters}>
         <Datagrid rowClick="edit">
             <TextField source="id"/>
             <TextField source="partName" label="Name"/>

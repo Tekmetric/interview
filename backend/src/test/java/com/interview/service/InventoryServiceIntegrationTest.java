@@ -1,11 +1,14 @@
 package com.interview.service;
 
+import com.interview.Application;
+import com.interview.controller.exception.InvalidInventoryIdsException;
 import com.interview.controller.exception.InvalidInventoryQuantityException;
 import com.interview.controller.exception.InvalidInventoryUpdateRequestException;
 import com.interview.controller.exception.ResourceNotFoundException;
 import com.interview.controller.payloads.InsertInventoryRequestPayload;
 import com.interview.controller.payloads.InventoryResponsePayload;
 import com.interview.controller.payloads.UpdateInventoryRequestPayload;
+import com.interview.entity.Inventory;
 import com.interview.enums.InventoryStatus;
 import com.interview.enums.InventoryType;
 import com.interview.repository.InventoryRepository;
@@ -13,11 +16,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
@@ -25,9 +29,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-@SpringBootTest
 @ActiveProfiles("test")
-@Transactional
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class)
 class InventoryServiceIntegrationTest {
 
     @Autowired
@@ -40,9 +44,6 @@ class InventoryServiceIntegrationTest {
     private InventoryRepository inventoryRepository;
 
     private int INVALID_QUANTITY_NUMBER = 1000000;
-
-    // test data is loading with load_data.xml liquibase script
-    private int INITIAL_INVENTORY_COUNT = 120;
 
     @BeforeAll
     static void init() {
@@ -62,21 +63,11 @@ class InventoryServiceIntegrationTest {
     }
 
     @Test
-    void assertThatAllInventoriesShouldReturnInitialTestDataList() {
-        List<InventoryResponsePayload> inventories = inventoryService.getAllInventories(Pageable.unpaged(), "").getContent();
-
-        assertThat(inventories).isNotNull();
-        assertThat(inventories).size().isEqualTo(INITIAL_INVENTORY_COUNT);
-    }
-
-    @Test
     void assertThatInsertInventoryShouldBeInsertedToDb() {
         InsertInventoryRequestPayload createInventoryRequest = createInventoryRequestPayload();
-        assertThat(inventoryService.getAllInventories(Pageable.unpaged(), "")).size().isEqualTo(INITIAL_INVENTORY_COUNT);
         InventoryResponsePayload response = inventoryService.createInventory(createInventoryRequest);
-        List<InventoryResponsePayload> inventories = inventoryService.getAllInventories(Pageable.unpaged(), "").getContent();
-        assertThat(inventories).size().isEqualTo(INITIAL_INVENTORY_COUNT + 1);
 
+        assertThat(inventoryService.getInventory(response.getId()).getId()).isEqualTo(response.getId());
     }
 
     @Test
@@ -113,8 +104,14 @@ class InventoryServiceIntegrationTest {
     }
 
     @Test
+    void assertThatInvalidInventoryIdsExceptionIfInventoryIdsNotValid() {
+        assertThatExceptionOfType(InvalidInventoryIdsException.class)
+                .isThrownBy(() -> inventoryService.deleteInventories(new Long[]{}));
+    }
+
+    @Test
     void assertThatDeleteInventoryShouldDecreaseInventoriesCount() {
-        List<InventoryResponsePayload> inventories = inventoryService.getAllInventories(Pageable.unpaged(), "").getContent();
+        List<InventoryResponsePayload> inventories = inventoryService.getAllInventories(Pageable.unpaged(), null).getContent();
         int initialInventoryCount = inventories.size();
 
         InsertInventoryRequestPayload createInventoryRequest = createInventoryRequestPayload();
@@ -122,7 +119,7 @@ class InventoryServiceIntegrationTest {
         assertThat(inventoryRepository.findAll()).size().isEqualTo(initialInventoryCount + 1);
 
         inventoryService.deleteInventory(response.getId());
-        assertThat(inventoryRepository.findAll()).size().isEqualTo(initialInventoryCount);
+        assertThat(inventoryRepository.findAllByDeletedAtIsNull(Pageable.unpaged())).size().isEqualTo(initialInventoryCount);
     }
 
     private InsertInventoryRequestPayload createInventoryRequestPayload() {

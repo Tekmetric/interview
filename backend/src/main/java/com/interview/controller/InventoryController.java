@@ -2,6 +2,7 @@ package com.interview.controller;
 
 
 import com.interview.controller.payloads.InsertInventoryRequestPayload;
+import com.interview.controller.payloads.InventoryFiltersPayload;
 import com.interview.controller.payloads.InventoryResponsePayload;
 import com.interview.controller.payloads.UpdateInventoryRequestPayload;
 import com.interview.service.InventoryService;
@@ -68,13 +69,14 @@ public class InventoryController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id") String field,
             @RequestParam(defaultValue = "DESC") String order,
-            @RequestParam(required = false) String filter
+           // @RequestParam(required = false) String filter
+            InventoryFiltersPayload filters
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), field));
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("X-Total-Count", "100");
         responseHeaders.set("Access-Control-Expose-Headers", "X-Total-Count");
 
-        return ResponseEntity.ok().headers(responseHeaders).body(inventoryService.getAllInventories(pageable, filter));
+        return ResponseEntity.ok().headers(responseHeaders).body(inventoryService.getAllInventories(pageable, filters));
     }
 }

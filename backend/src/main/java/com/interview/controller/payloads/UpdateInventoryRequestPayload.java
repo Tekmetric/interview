@@ -27,10 +27,13 @@ public class UpdateInventoryRequestPayload {
     private String partNumber;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String supportEmail;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer quantity;
 
     public boolean isEmptyRequest() {
-        return this.getType() == null && this.getStatus() == null && this.getBrand() == null &&
-                this.getPartName() == null && this.getPartNumber() == null && this.getQuantity() == null;
+        return this.getType() == null && this.getStatus() == null && this.getBrand() == null && this.getSupportEmail() == null
+                && this.getPartName() == null && this.getPartNumber() == null && this.getQuantity() == null;
     }
 }

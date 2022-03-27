@@ -5,11 +5,15 @@ import com.interview.controller.exception.InvalidInventoryQuantityException;
 import com.interview.controller.exception.InvalidInventoryUpdateRequestException;
 import com.interview.controller.exception.ResourceNotFoundException;
 import com.interview.controller.payloads.InsertInventoryRequestPayload;
+import com.interview.controller.payloads.InventoryFiltersPayload;
 import com.interview.controller.payloads.InventoryResponsePayload;
 import com.interview.controller.payloads.UpdateInventoryRequestPayload;
 import com.interview.entity.Inventory;
 import com.interview.enums.InventoryStatus;
 import com.interview.repository.InventoryRepository;
+import com.interview.repository.specs.InventorySpecification;
+import com.interview.repository.specs.SearchCriteria;
+import com.interview.repository.specs.SearchOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -81,19 +85,40 @@ public class InventoryService {
     }
 
     @Transactional(readOnly = true)
-    public Page<InventoryResponsePayload> getAllInventories(Pageable pageable, String filter) {
+    public Page<InventoryResponsePayload> getAllInventories(Pageable pageable, InventoryFiltersPayload filters) {
         Page<InventoryResponsePayload> inventories;
-        if (filter == null || filter.trim().isEmpty()) {
+        if (filters.isFiltersEmpty()) {
             inventories = inventoryRepository.findAllByDeletedAtIsNull(pageable).map(
                     InventoryResponsePayload::new
             );
         } else {
-            inventories = inventoryRepository.findAllByPartNameContainingIgnoreCaseAndDeletedAtIsNull(filter, pageable).map(
+            InventorySpecification specification = getSpecification(filters);
+            inventories = inventoryRepository.findAll(specification, pageable).map(
                     InventoryResponsePayload::new
             );
         }
         return inventories;
+    }
 
+    private InventorySpecification getSpecification(InventoryFiltersPayload filters) {
+        InventorySpecification specification = new InventorySpecification();
+        if (filters.getPartName() != null && !filters.getPartName().trim().isEmpty()) {
+            specification.add(new SearchCriteria("partName", filters.getPartName().trim(), SearchOperation.MATCH));
+        }
+        if (filters.getPartNumber() != null && !filters.getPartNumber().trim().isEmpty()) {
+            specification.add(new SearchCriteria("partNumber", filters.getPartNumber().trim(), SearchOperation.MATCH));
+        }
+        if (filters.getBrand() != null && !filters.getBrand().trim().isEmpty()) {
+            specification.add(new SearchCriteria("brand", filters.getBrand().trim(), SearchOperation.MATCH));
+        }
+        if (filters.getSupportEmail() != null && !filters.getSupportEmail().trim().isEmpty()) {
+            specification.add(new SearchCriteria("supportEmail", filters.getSupportEmail().trim(), SearchOperation.MATCH));
+        }
+        if (filters.getStatus() != null) {
+            InventoryStatus status = getInventoryStatus(filters.getStatus());
+            specification.add(new SearchCriteria("status", status, SearchOperation.EQUAL));
+        }
+        return specification;
     }
 
     private Inventory checkAndGetInventoryIfExist(Long id) {
@@ -111,6 +136,7 @@ public class InventoryService {
         toBeUpdated.setPartName(request.getPartName() == null ? toBeUpdated.getPartName() : request.getPartName());
         toBeUpdated.setPartNumber(request.getPartNumber() == null ? toBeUpdated.getPartNumber() : request.getPartNumber());
         toBeUpdated.setQuantity(request.getQuantity() == null ? toBeUpdated.getQuantity() : request.getQuantity());
+        toBeUpdated.setSupportEmail(request.getSupportEmail() == null ? toBeUpdated.getSupportEmail() : request.getSupportEmail());
         return toBeUpdated;
     }
 

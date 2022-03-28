@@ -22,6 +22,6 @@ public class ExceptionHandlerConfiguration {
     @ExceptionHandler(value = {Exception.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResponse> unKnownException(Exception ex) {
-        return ResponseEntity.status(400).body(new ErrorResponse(404, ex.getMessage()));
+        return ResponseEntity.status(404).body(new ErrorResponse(404, ex.getMessage()));
     }
 }

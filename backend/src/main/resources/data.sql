@@ -1,3 +1,5 @@
 INSERT INTO products( name, price,image_url, description) VALUES ( 'p1', 2.0, 'https://picsum.photos/200','Remember: cooked squid tastes best when choped in a bowl seasoned with woodruff.')
 INSERT INTO comments( comment,created_at, product_id) VALUES ('p1 comment','2022-04-18',1)
 INSERT INTO products( name, price,image_url, description) VALUES ('p2', 10.5,'https://picsum.photos/200', 'After crushing the melons, soak spinach, blueberries and sweet chili sauce with it in a bucket.')
+INSERT INTO products( name, price,image_url, description) VALUES ('p3', 11.5,'https://picsum.photos/200', 'Blueberries combines greatly with fresh pork butt.')
+INSERT INTO products( name, price,image_url, description) VALUES ('p4', 12.5,'https://picsum.photos/200', 'Chicken breasts combines greatly with sun-dried peanut butter.')

@@ -60,6 +60,10 @@ public class ProductService {
         throw new ProductNotFoundException(id);
     }
 
+    public long getProductsTotalCount() {
+        return productRepository.count();
+    }
+
     private Product updateProductAttributes(ProductDto productDto, Product product) {
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());

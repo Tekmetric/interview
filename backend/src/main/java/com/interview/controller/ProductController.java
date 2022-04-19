@@ -55,10 +55,15 @@ public class ProductController {
         productService.addCommentToPost(productId, commentMapper.dtoToModel(commentDto));
         return ResponseEntity.ok().build();
     }
-    
+
     @PutMapping("/products/{id}")
     public ProductDto updateProduct(@PathVariable @Valid @Positive Long id, @Valid @RequestBody ProductDto productDto) {
         return productMapper.modelToDto(productService.updateProduct(id, productDto));
+    }
+
+    @GetMapping("/products/totalCount")
+    public Long getProductsTotalCount() {
+        return productService.getProductsTotalCount();
     }
 
     @DeleteMapping("/products/{id}")

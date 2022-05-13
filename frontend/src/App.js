@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Pagination, Button, CircularProgress } from '@mui/material';
+import { Pagination, CircularProgress } from '@mui/material';
 
 import CharacterCard from './components/CharacterCard';
 import {

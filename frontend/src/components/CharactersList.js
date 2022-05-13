@@ -20,7 +20,7 @@ export default function CharactersList(props) {
     try {
       setHasError(false);
       setCharacters(null);
-      let data = await api.fetchCharacters(pageNumber);
+      const data = await api.fetchCharacters(pageNumber);
       setPageCount(data.info.pages);
       setCharacters(data.results);
     } catch (e) {

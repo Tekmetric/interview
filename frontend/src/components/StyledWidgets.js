@@ -137,3 +137,8 @@ export const PaginationWrapper = styled.div`
     justify-content: center;
     padding: 50px 0;
 `;
+
+export const NotFoundWrapper = styled.div`
+    color: white;
+    text-align: center;
+`;

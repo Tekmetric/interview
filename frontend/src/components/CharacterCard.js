@@ -23,13 +23,13 @@ export default function CharacterCard(props) {
       <CCardContentWrapper>
         <div className='section'>
           <a href={data.url} target='_blank'><h2>#{data.id}&nbsp;{data.name}</h2></a>
-          <span class='status'>
+          <span className='status'>
             <div className={getClassNameByStatus(data.status)}/>
             {`${data.status} - ${data.species}`}
           </span>
         </div>
         <div className='section'>
-          <span class="text-gray">Last known location:</span>
+          <span className="text-gray">Last known location:</span>
           <a href={data.location.url} target='_blank'>{data.location.name}</a>
         </div>
       </CCardContentWrapper>

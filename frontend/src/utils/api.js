@@ -4,5 +4,5 @@ export default {
     fetchCharacters: async (page = 1) => {
         const response = await fetch(API_PREFIX + `/character?page=${page}`);
         return response.json();
-    }
-}
+    },
+};

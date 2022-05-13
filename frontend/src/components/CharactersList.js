@@ -42,7 +42,6 @@ export default function CharactersList(props) {
       return (
         <>
           <CircularProgress color='primary' />
-          &nbsp;&nbsp;&nbsp;<h2>Loading characters...</h2>
         </>
       );
     } else if (!characters && hasError) {

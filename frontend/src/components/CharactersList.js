@@ -20,6 +20,7 @@ export default function CharactersList(props) {
     try {
       setHasError(false);
       setCharacters(null);
+
       const data = await api.fetchCharacters(pageNumber);
       setPageCount(data.info.pages);
       setCharacters(data.results);
@@ -39,11 +40,7 @@ export default function CharactersList(props) {
 
   content = useMemo(() => {
     if (!characters && !hasError) {
-      return (
-        <>
-          <CircularProgress color='primary' />
-        </>
-      );
+      return <CircularProgress data-testid='id-loading-spinner' color='primary' />;
     } else if (!characters && hasError) {
       return <h2>We've got something suspicious. Refresh this page to try again.</h2>;
     } else if (characters.length === 0) {

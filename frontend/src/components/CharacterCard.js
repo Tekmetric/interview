@@ -12,7 +12,7 @@ export default function CharacterCard(props) {
     });
 
   return (
-    <CCard>
+    <CCard role='ccard'>
       <CCardImgWrapper>
         <CCardImg src={data.image} />
       </CCardImgWrapper>

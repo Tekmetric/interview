@@ -6,9 +6,9 @@ import { ShowcaseWrapper, Showcase } from './StyledWidgets';
 
 const CharactersList = ({ characters, hasError }) => {
   const getContent = () => {
-    if (!characters && !hasError) {
+    if (!hasError && !characters) {
       return <CircularProgress data-testid='id-loading-spinner' color='primary' />;
-    } else if (characters.length === 0) {
+    } else if (!hasError && characters.length === 0) {
       return <h2>There's nobody in here. So sad!</h2>;
     } else if (hasError) {
       return <h2>We've got something suspicious. Refresh this page to try again.</h2>;

@@ -15,6 +15,7 @@ export default function Characters() {
   const [characters, setCharacters] = useState(null);
   const [pageCount, setPageCount] = useState(0);
   const [characterTotal, setCharacterTotal] = useState(0);
+  const [characterCount, setCharacterCount] = useState(0);
   const [hasError, setHasError] = useState(false);
 
   const updatePath = (q) => {
@@ -50,13 +51,10 @@ export default function Characters() {
         setCharacters(null);
 
         const data = await api.fetchCharacters(query.characterName, query.pageNumber);
-        if (data.error) {
-          setCharacters([]);
-          return;
-        }
         setPageCount(data.info.pages);
         setCharacterTotal(data.info.count);
         setCharacters(data.results);
+        setCharacterCount(data.results.length);
       } catch (err) {
         setHasError(true);
       }
@@ -68,7 +66,7 @@ export default function Characters() {
   const paginationProps = {
     pageNumber: query.pageNumber,
     pageCount,
-    characterCount: characters ? characters.length : 0,
+    characterCount,
     characterTotal,
     onChangePage,
   };

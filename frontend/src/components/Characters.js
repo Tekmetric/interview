@@ -1,22 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import CharacterSearch from './CharacterSearch';
 import CharactersPagination from './CharactersPagination';
 import CharactersList from './CharactersList';
 import api from '../utils/api';
 
-export default function Characters(props) {
+export default function Characters() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const pageParam = parseInt(searchParams.get('page')) || 1;
-
+  const [query, setQuery] = useState({
+    characterName: (searchParams.get('name') || '').trim(),
+    pageNumber: parseInt(searchParams.get('page')) || 1,
+  });
   const [characters, setCharacters] = useState(null);
-  const [pageNumber, setPageNumber] = useState(pageParam);
   const [pageCount, setPageCount] = useState(0);
   const [hasError, setHasError] = useState(false);
 
+  const updatePath = (q) => {
+    const temp = {};
+    if (q.characterName) temp.name = q.characterName;
+    temp.page = q.pageNumber;
+    setSearchParams(temp);
+  };
+
   const onChangePage = (e, page) => {
-    setSearchParams({ page });
-    setPageNumber(page);
+    const q = {
+      ...query,
+      pageNumber: page,
+    };
+    setQuery(q);
+    updatePath(q);
+  };
+
+  const onChangeName = (name) => {
+    const q = {
+      characterName: name,
+      pageNumber: 1,
+    };
+    setQuery(q);
+    updatePath(q);
+    setPageCount(0);
   };
 
   useEffect(() => {
@@ -25,22 +48,27 @@ export default function Characters(props) {
         setHasError(false);
         setCharacters(null);
 
-        const data = await api.fetchCharacters(pageNumber);
+        const data = await api.fetchCharacters(query.characterName, query.pageNumber);
+        if (data.error) {
+          setCharacters([]);
+          return;
+        }
         setPageCount(data.info.pages);
         setCharacters(data.results);
-      } catch (e) {
+      } catch (err) {
         setHasError(true);
       }
     };
 
     onLoadPage();
-  }, [pageNumber]);
+  }, [query.characterName, query.pageNumber]);
 
   return (
     <>
-      <CharactersPagination {...{ pageNumber, pageCount, onChangePage }} />
+      <CharacterSearch {...{ characterName: query.characterName, onChangeName }} />
+      <CharactersPagination {...{ pageNumber: query.pageNumber, pageCount, onChangePage }} />
       <CharactersList {...{ characters, hasError }} />
-      <CharactersPagination {...{ pageNumber, pageCount }} />
+      <CharactersPagination {...{ pageNumber: query.pageNumber, pageCount, onChangePage }} />
     </>
   );
 }

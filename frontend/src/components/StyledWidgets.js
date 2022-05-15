@@ -135,7 +135,13 @@ export const CCardContentWrapper = styled.div`
 export const PaginationWrapper = styled.div`
   display: flex;
   justify-content: center;
-  padding: 50px ${CARD_MARGIN}px;
+  padding: 20px ${CARD_MARGIN}px;
+`;
+
+export const CharacterSearchWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 50px ${CARD_MARGIN}px 20px;
 `;
 
 export const NotFoundWrapper = styled.div`

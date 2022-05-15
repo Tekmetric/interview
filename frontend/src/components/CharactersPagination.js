@@ -1,9 +1,20 @@
 import React from 'react';
 import { Pagination } from '@mui/material';
 
-import { PaginationWrapper } from './StyledWidgets';
+import { PaginationWrapper, PaginationInfo } from './StyledWidgets';
 
-const CharactersPagination = ({ pageNumber, pageCount, onChangePage }) => {
+const PAGE_SIZE = 20;
+const CharactersPagination = ({
+  pageNumber,
+  pageCount,
+  characterCount,
+  characterTotal,
+  onChangePage,
+}) => {
+  const startIndex = (pageNumber - 1) * PAGE_SIZE + 1;
+  const countLabel = characterCount
+    ? `Displaying ${startIndex}-${startIndex + characterCount - 1} of ${characterTotal}`
+    : '';
   return (
     <PaginationWrapper>
       <Pagination
@@ -14,6 +25,7 @@ const CharactersPagination = ({ pageNumber, pageCount, onChangePage }) => {
         showFirstButton
         showLastButton
       />
+      <PaginationInfo data-testid='id-pagination-info'>{countLabel}</PaginationInfo>
     </PaginationWrapper>
   );
 };

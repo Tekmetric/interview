@@ -134,8 +134,23 @@ export const CCardContentWrapper = styled.div`
 
 export const PaginationWrapper = styled.div`
   display: flex;
+  align-items: center;
   justify-content: center;
   padding: 20px ${CARD_MARGIN}px;
+
+  @media (max-width: ${SM_WIDTH}px) {
+    flex-direction: column;
+  }
+`;
+
+export const PaginationInfo = styled.label`
+  color: white;
+  font-weight: bold;
+  margin: 0 0 0 30px;
+
+  @media (max-width: ${SM_WIDTH}px) {
+    margin: 20px 0 0;
+  }
 `;
 
 export const CharacterSearchWrapper = styled.div`

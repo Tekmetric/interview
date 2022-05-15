@@ -26,7 +26,7 @@ const CharacterSearch = ({ characterName, onChangeName }) => {
     <CharacterSearchWrapper>
       <Input
         value={name}
-        placeholder={"Your character's name here"}
+        placeholder={"Search by name"}
         onChange={onChange}
         sx={{
           maxWidth: '100%',

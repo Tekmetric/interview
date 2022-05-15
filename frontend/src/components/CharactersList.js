@@ -5,7 +5,7 @@ import CharacterCard from './CharacterCard';
 import { ShowcaseWrapper, Showcase } from './StyledWidgets';
 
 const CharactersList = ({ characters, hasError }) => {
-  const content = useMemo(() => {
+  getContent = () => {
     if (!characters && !hasError) {
       return <CircularProgress data-testid='id-loading-spinner' color='primary' />;
     } else if (!characters && hasError) {
@@ -14,12 +14,11 @@ const CharactersList = ({ characters, hasError }) => {
       return <h2>There's nobody in here. So sad!</h2>;
     }
     return characters.map((c) => <CharacterCard key={c.id} data={c} />);
-  }, [characters, hasError]);
+  };
 
-  console.log('rendering list...');
   return (
     <ShowcaseWrapper>
-      <Showcase>{content}</Showcase>
+      <Showcase>{getContent()}</Showcase>
     </ShowcaseWrapper>
   );
 };

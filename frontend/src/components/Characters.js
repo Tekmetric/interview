@@ -23,16 +23,16 @@ export default function Characters() {
     setSearchParams(temp);
   };
 
-  const onChangePage = (e, page) => {
+  const onChangePage = useCallback((e, page) => {
     const q = {
       ...query,
       pageNumber: page,
     };
     setQuery(q);
     updatePath(q);
-  };
+  }, []);
 
-  const onChangeName = (name) => {
+  const onChangeName = useCallback((name) => {
     const q = {
       characterName: name,
       pageNumber: 1,
@@ -40,7 +40,7 @@ export default function Characters() {
     setQuery(q);
     updatePath(q);
     setPageCount(0);
-  };
+  }, []);
 
   useEffect(() => {
     const onLoadPage = async () => {

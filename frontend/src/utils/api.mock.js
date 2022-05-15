@@ -1,5 +1,5 @@
 jest.mock('./api', () => ({
-  fetchCharacters: jest.fn().mockImplementation((page) => {
+  fetchCharacters: jest.fn().mockImplementation((name, page) => {
     const PAYLOAD1 = {
       info: {
         count: 3,
@@ -52,9 +52,13 @@ jest.mock('./api', () => ({
     };
 
     return new Promise((resolve, reject) => {
-      if (page === 1) {
+      if (page === 1 && name === 'Smith') {
+        PAYLOAD1.results.shift();
+        PAYLOAD1.results.push(PAYLOAD2.results[0]);
         resolve(PAYLOAD1);
-      } else if (page === 2) {
+      } else if (page === 1 && !name) {
+        resolve(PAYLOAD1);
+      } else if (page === 2 && !name) {
         resolve(PAYLOAD2);
       } else {
         reject();

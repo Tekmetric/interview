@@ -1,6 +1,6 @@
 const queryString = require('query-string');
 
-const API_PREFIX = 'https://rickandmortyapi.com/api';
+const API_PREFIX = process.env.REACT_APP_API_PREFIX;
 
 export default {
   fetchCharacters: async (name = '', page = 1) => {

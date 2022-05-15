@@ -135,7 +135,7 @@ export const CCardContentWrapper = styled.div`
 export const PaginationWrapper = styled.div`
   display: flex;
   justify-content: center;
-  padding: 50px 0;
+  padding: 50px ${CARD_MARGIN}px;
 `;
 
 export const NotFoundWrapper = styled.div`

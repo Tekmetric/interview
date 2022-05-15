@@ -1,44 +1,11 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Pagination, CircularProgress } from '@mui/material';
-import { useSearchParams } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { CircularProgress } from '@mui/material';
 
 import CharacterCard from './CharacterCard';
-import { Showcase, ShowcaseWrapper, PaginationWrapper } from './StyledWidgets';
+import { ShowcaseWrapper, Showcase } from './StyledWidgets';
 
-import api from '../utils/api';
-
-export default function CharactersList(props) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const pageParam = parseInt(searchParams.get('page')) || 1;
-
-  const [characters, setCharacters] = useState(null);
-  const [pageNumber, setPageNumber] = useState(pageParam);
-  const [pageCount, setPageCount] = useState(0);
-  const [hasError, setHasError] = useState(false);
-
-  const onLoadPage = useCallback(async () => {
-    try {
-      setHasError(false);
-      setCharacters(null);
-
-      const data = await api.fetchCharacters(pageNumber);
-      setPageCount(data.info.pages);
-      setCharacters(data.results);
-    } catch (e) {
-      setHasError(true);
-    }
-  });
-
-  const onChangePage = (e, page) => {
-    setSearchParams({ page });
-    setPageNumber(page);
-  };
-
-  useEffect(() => onLoadPage(), [pageNumber]);
-
-  let content = null;
-
-  content = useMemo(() => {
+const CharactersList = ({ characters, hasError }) => {
+  const content = useMemo(() => {
     if (!characters && !hasError) {
       return <CircularProgress data-testid='id-loading-spinner' color='primary' />;
     } else if (!characters && hasError) {
@@ -49,42 +16,12 @@ export default function CharactersList(props) {
     return characters.map((c) => <CharacterCard key={c.id} data={c} />);
   }, [characters, hasError]);
 
-  const pagination = useMemo(
-    () => (
-      <PaginationWrapper>
-        <Pagination
-          color='primary'
-          variant='outlined'
-          size='large'
-          sx={{
-            '.MuiButtonBase-root': {
-              fontSize: '20px',
-            },
-            '.Mui-selected': {
-              fontWeight: 'bold',
-            },
-            '.MuiButtonBase-root:not(.Mui-selected)': {
-              color: 'white',
-            },
-          }}
-          count={pageCount}
-          page={pageNumber}
-          onChange={onChangePage}
-          showFirstButton
-          showLastButton
-        />
-      </PaginationWrapper>
-    ),
-    [pageNumber, pageCount],
-  );
-
+  console.log('rendering list...');
   return (
-    <>
-      {!hasError && pagination}
-      <ShowcaseWrapper>
-        <Showcase>{content}</Showcase>
-      </ShowcaseWrapper>
-      {!hasError && pagination}
-    </>
+    <ShowcaseWrapper>
+      <Showcase>{content}</Showcase>
+    </ShowcaseWrapper>
   );
-}
+};
+
+export default React.memo(CharactersList);

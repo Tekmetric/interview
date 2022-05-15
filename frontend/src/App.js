@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 
-import CharactersList from './components/CharactersList';
+import Characters from './components/Characters';
 import { AppHeading, NotFoundWrapper } from './components/StyledWidgets';
 
 export default function App() {
@@ -11,7 +11,7 @@ export default function App() {
         <h3>(All Characters)</h3>
       </AppHeading>
       <Routes>
-        <Route path='/' element={<CharactersList />} />
+        <Route path='/' element={<Characters />} />
         <Route
           path='*'
           element={

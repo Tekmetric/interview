@@ -25,14 +25,17 @@ export default function Characters() {
     setSearchParams(temp);
   };
 
-  const onChangePage = useCallback((e, page) => {
-    const q = {
-      ...query,
-      pageNumber: page,
-    };
-    setQuery(q);
-    updatePath(q);
-  }, []);
+  const onChangePage = useCallback(
+    (e, page) => {
+      const q = {
+        ...query,
+        pageNumber: page,
+      };
+      setQuery(q);
+      updatePath(q);
+    },
+    [query],
+  );
 
   const onChangeName = useCallback((name) => {
     const q = {

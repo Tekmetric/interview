@@ -22,3 +22,10 @@
 2. Display data from API onto your page (Table, List, etc.)
 3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
 4. Have fun
+
+## Implementation Overview
+1. Full list of R&M characters
+2. Pagination and character search (by name)
+3. Mobile responsiveness for UI
+4. React router for query parameters
+5. Unit/integration tests using [Jest](https://jestjs.io/) and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)

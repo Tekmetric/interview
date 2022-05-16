@@ -27,7 +27,7 @@
 
 ### Netlify Deployment Status
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/6d749cb9-637b-433a-99f5-cce59c8ad338/deploy-status)](https://app.netlify.com/sites/the-ricknmorty/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/6d749cb9-637b-433a-99f5-cce59c8ad338/deploy-status)](https://the-ricknmorty.netlify.app/)
 
 ### Details
 

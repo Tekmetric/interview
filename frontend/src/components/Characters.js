@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import CharacterSearch from './CharacterSearch';
 import CharactersPagination from './CharactersPagination';
 import CharactersList from './CharactersList';
-import api from '../utils/api';
+import { useFetchCharacters } from '../hooks';
 
 const initialOptions = {
   pageCount: 0,
@@ -20,7 +20,7 @@ export default function Characters() {
     ...initialOptions,
   });
   const [characters, setCharacters] = useState(null);
-  const [hasError, setHasError] = useState(false);
+  const { isLoading, hasError, fetchCharacters } = useFetchCharacters();
 
   const updatePath = () => {
     const temp = {};
@@ -42,22 +42,17 @@ export default function Characters() {
 
   useEffect(() => {
     const onLoadPage = async () => {
-      try {
-        setHasError(false);
-        setCharacters(null);
-        updatePath();
+      updatePath();
 
-        const data = await api.fetchCharacters(options.characterName, options.pageNumber);
-        setOptions((prevOptions) => ({
-          ...prevOptions,
-          pageCount: data.info.pages,
-          characterTotal: data.info.count,
-          characterCount: data.results.length,
-        }));
-        setCharacters(data.results);
-      } catch (err) {
-        setHasError(true);
-      }
+      const data = await fetchCharacters(options.characterName, options.pageNumber);
+      if (!data) return;
+      
+      setCharacters(data.characters);
+      delete data.characters;
+      setOptions((prevOptions) => ({
+        ...prevOptions,
+        ...data,
+      }));
     };
 
     onLoadPage();
@@ -71,7 +66,7 @@ export default function Characters() {
     <>
       <CharacterSearch {...{ characterName: options.characterName, onChangeName }} />
       <CharactersPagination {...paginationProps} />
-      <CharactersList {...{ characters, hasError }} />
+      <CharactersList {...{ characters, hasError, isLoading }} />
       <CharactersPagination {...paginationProps} />
     </>
   );

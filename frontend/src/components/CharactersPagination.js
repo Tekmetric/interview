@@ -10,6 +10,7 @@ const CharactersPagination = ({
   characterCount,
   characterTotal,
   onChangePage,
+  isLoading,
 }) => {
   const startIndex = (pageNumber - 1) * PAGE_SIZE + 1;
   const countLabel = characterCount
@@ -22,6 +23,7 @@ const CharactersPagination = ({
         count={pageCount}
         page={pageNumber}
         onChange={onChangePage}
+        disabled={isLoading}
         showFirstButton
         showLastButton
       />
@@ -35,7 +37,8 @@ export default React.memo(CharactersPagination, (prevProps, nextProps) => {
     prevProps.pageNumber === nextProps.pageNumber &&
     prevProps.pageCount === nextProps.pageCount &&
     prevProps.characterTotal === nextProps.characterTotal &&
-    prevProps.characterCount === nextProps.characterCount
+    prevProps.characterCount === nextProps.characterCount &&
+    prevProps.isLoading === nextProps.isLoading
   )
     return true;
   return false;

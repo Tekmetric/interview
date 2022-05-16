@@ -2,10 +2,10 @@ const queryString = require('query-string');
 
 const API_PREFIX = process.env.REACT_APP_API_PREFIX;
 
-export default {
+const api = {
   fetchCharacters: async (name = '', page = 1) => {
     const qs = queryString.stringify({ name, page }, { skipEmptyString: true });
-    const response = await fetch(API_PREFIX + `/character?${qs}`);
+    const response = await fetch(`${API_PREFIX}/character?${qs}`);
     if (response.status === 404) {
       return {
         info: {
@@ -18,3 +18,5 @@ export default {
     return response.json();
   },
 };
+
+export default api;

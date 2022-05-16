@@ -1,4 +1,4 @@
-jest.mock('./api', () => ({
+jest.mock('../api', () => ({
   fetchCharacters: jest.fn().mockImplementation((name, page) => {
     const PAYLOAD1 = {
       info: {

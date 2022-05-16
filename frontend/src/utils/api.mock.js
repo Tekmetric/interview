@@ -61,7 +61,13 @@ jest.mock('./api', () => ({
       } else if (page === 2 && !name) {
         resolve(PAYLOAD2);
       } else {
-        reject();
+        resolve({
+          info: {
+            pages: 0,
+            count: 0,
+          },
+          results: [],
+        });
       }
     });
   }),

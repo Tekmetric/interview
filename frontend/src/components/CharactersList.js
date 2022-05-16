@@ -9,7 +9,7 @@ const CharactersList = ({ characters, hasError }) => {
     if (!hasError && !characters) {
       return <CircularProgress data-testid='id-loading-spinner' color='primary' />;
     } else if (!hasError && characters.length === 0) {
-      return <h2>There's nobody in here. So sad!</h2>;
+      return <h2 data-testid='id-message-nobody'>There's nobody in here. So sad!</h2>;
     } else if (hasError) {
       return <h2>We've got something suspicious. Refresh this page to try again.</h2>;
     }

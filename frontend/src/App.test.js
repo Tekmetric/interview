@@ -17,61 +17,47 @@ const appComponent = (
   </BrowserRouter>
 );
 
-describe('App', () => {
-  it('renders loading spinner first', async () => {
-    render(appComponent);
-    await waitFor(() => screen.getByTestId('id-loading-spinner'));
-  });
+test('renders and searches characters, resets search results properly', async () => {
+  render(appComponent);
 
-  it('renders two character cards (Rick and Morty) after loading', async () => {
-    render(appComponent);
-    await waitForElementToBeRemoved(() => screen.getByTestId('id-loading-spinner'));
+  // renders loading spinner at first
+  await waitForElementToBeRemoved(() => screen.getByTestId('id-loading-spinner'));
 
-    const cards = screen.getAllByRole('ccard');
-    expect(cards).toHaveLength(2);
-    expect(within(cards[0]).getByText(/Rick Sanchez/i)).toBeInTheDocument();
-    expect(within(cards[1]).getByText(/Morty Smith/i)).toBeInTheDocument();
-  });
+  // renders two character cards (Rick and Morty) after loading
+  let cards = screen.getAllByRole('ccard');
+  expect(cards).toHaveLength(2);
+  expect(within(cards[0]).getByText(/Rick Sanchez/i)).toBeInTheDocument();
+  expect(within(cards[1]).getByText(/Morty Smith/i)).toBeInTheDocument();
 
-  it('renders two pagination controls', async () => {
-    render(appComponent);
-    await waitForElementToBeRemoved(() => screen.getByTestId('id-loading-spinner'));
+  // renders two pagination controls
+  let paginations = screen.getAllByLabelText('pagination navigation');
+  expect(paginations).toHaveLength(2);
 
-    const paginations = screen.getAllByLabelText('pagination navigation');
-    expect(paginations).toHaveLength(2);
-  });
+  // renders one card (Summer) in the next page
+  fireEvent.click(within(paginations[0]).getByLabelText('Go to page 2'));
+  await waitForElementToBeRemoved(() => screen.getByTestId('id-loading-spinner'));
+  const card = screen.getByRole('ccard');
+  expect(card).toBeInTheDocument();
+  expect(within(card).getByText(/Summer Smith/i)).toBeInTheDocument();
 
-  it('renders one card (Summer) in the next page', async () => {
-    render(appComponent);
-    await waitForElementToBeRemoved(() => screen.getByTestId('id-loading-spinner'));
-
-    const paginations = screen.getAllByLabelText('pagination navigation');
-    fireEvent.click(within(paginations[0]).getByLabelText('Go to page 2'));
-    await waitForElementToBeRemoved(() => screen.getByTestId('id-loading-spinner'));
-
-    const card = screen.getByRole('ccard');
-    expect(card).toBeInTheDocument();
-    expect(within(card).getByText(/Summer Smith/i)).toBeInTheDocument();
-  });
-
-  it('searches characters by name, resets search properly', async () => {
-    render(appComponent);
-    await waitForElementToBeRemoved(screen.getByTestId('id-loading-spinner'));
-
-    const searchInput = screen.getByTestId('id-input-character-name');
-    fireEvent.change(searchInput, { target: { value: 'Smith' } });
-    await waitFor(() => screen.getByTestId('id-loading-spinner'));
-
-    let cards = screen.getAllByRole('ccard');
-    expect(cards).toHaveLength(2);
-    expect(within(cards[0]).getByText(/Morty Smith/i)).toBeInTheDocument();
-    expect(within(cards[1]).getByText(/Summer Smith/i)).toBeInTheDocument();
-
-    fireEvent.click(screen.getByTestId('id-button-clear-search'));
-    await waitForElementToBeRemoved(() => screen.getByTestId('id-loading-spinner'));
-    
+  // searches by name "Smith" to show two characters
+  const searchInput = screen.getByTestId('id-input-character-name');
+  fireEvent.change(searchInput, { target: { value: 'Smith' } });
+  await waitFor(() => {
     cards = screen.getAllByRole('ccard');
-    expect(within(cards[0]).getByText(/Rick Sanchez/i)).toBeInTheDocument();
-    expect(within(cards[1]).getByText(/Morty Smith/i)).toBeInTheDocument();
+    expect(cards).toHaveLength(2);
   });
+  expect(within(cards[0]).getByText(/Morty Smith/i)).toBeInTheDocument();
+  expect(within(cards[1]).getByText(/Summer Smith/i)).toBeInTheDocument();
+
+  // searches by name "Wax" to display nobody message
+  fireEvent.change(searchInput, { target: { value: 'Wax' } });
+  await waitFor(() => expect(screen.getByTestId('id-message-nobody')).toBeInTheDocument());
+
+  // taps clear button to reset results
+  fireEvent.click(screen.getByTestId('id-button-clear-search'));
+  await waitForElementToBeRemoved(() => screen.getByTestId('id-loading-spinner'));
+  cards = screen.getAllByRole('ccard');
+  expect(within(cards[0]).getByText(/Rick Sanchez/i)).toBeInTheDocument();
+  expect(within(cards[1]).getByText(/Morty Smith/i)).toBeInTheDocument();
 });

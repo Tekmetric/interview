@@ -18,7 +18,7 @@ export default function CharacterCard(props) {
       </CCardImgWrapper>
       <CCardContentWrapper>
         <div className='section'>
-          <a href={data.url} target='_blank' rel="noreferrer">
+          <a href={data.url} target='_blank' rel='noreferrer'>
             <h2>
               #{data.id}&nbsp;{data.name}
             </h2>
@@ -30,8 +30,14 @@ export default function CharacterCard(props) {
         </div>
         <div className='section'>
           <span className='text-gray'>Last known location:</span>
-          <a href={data.location.url} target='_blank' rel="noreferrer">
+          <a href={data.location.url} target='_blank' rel='noreferrer'>
             {data.location.name}
+          </a>
+        </div>
+        <div className='section'>
+          <span className='text-gray'>First seen in:</span>
+          <a href={data.origin.url || null} target='_blank' rel='noreferrer'>
+            {data.origin.name}
           </a>
         </div>
       </CCardContentWrapper>

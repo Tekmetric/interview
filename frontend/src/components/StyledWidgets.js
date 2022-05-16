@@ -1,10 +1,16 @@
 import styled from 'styled-components';
 
 const CARD_WIDTH = 550;
-const CARD_HEIGHT = 180;
+const CARD_HEIGHT = 220;
 const CARD_MARGIN = 15;
 const SM_WIDTH = CARD_WIDTH + CARD_MARGIN * 2;
 const SM_IMAGE_HEIGHT = 300;
+const COLOR_GRAY = '#9e9e9e';
+const COLOR_HOVERED_LINK = '#f08d49';
+
+export const StickyContent = styled.div`
+  flex: 1;
+`;
 
 export const AppHeading = styled.div`
   color: #000;
@@ -65,7 +71,7 @@ export const CCardImg = styled.img`
 export const CCardContentWrapper = styled.div`
   flex: 3 1 0%;
   position: relative;
-  padding: 15px 20px;
+  padding: 10px 20px;
   display: flex;
   color: #eee;
   width: 0;
@@ -90,7 +96,7 @@ export const CCardContentWrapper = styled.div`
     color: #eee;
 
     :hover {
-      color: #f08d49;
+      color: ${COLOR_HOVERED_LINK};
     }
   }
 
@@ -111,7 +117,7 @@ export const CCardContentWrapper = styled.div`
     height: 10px;
     width: 10px;
     margin-right: 10px;
-    background-color: #9e9e9e;
+    background-color: ${COLOR_GRAY};
     border-radius: 50%;
   }
 
@@ -124,7 +130,7 @@ export const CCardContentWrapper = styled.div`
   }
 
   .text-gray {
-    color: #9e9e9e;
+    color: ${COLOR_GRAY};
   }
 
   @media (max-width: ${SM_WIDTH}px) {
@@ -162,4 +168,27 @@ export const CharacterSearchWrapper = styled.div`
 export const NotFoundWrapper = styled.div`
   color: white;
   text-align: center;
+`;
+
+export const AppFooter = styled.div`
+  color: ${COLOR_GRAY};
+  width: ${CARD_WIDTH}px;
+  max-width: 90%;
+  margin: 40px auto 0;
+  padding-bottom: 40px;
+  border-top: 1px solid ${COLOR_GRAY};
+`;
+
+export const CopyrightInfo = styled.p`
+  width: 100%;
+  text-align: center;
+
+  a {
+    color: ${COLOR_GRAY};
+    text-decoration: none;
+
+    :hover {
+      color: ${COLOR_HOVERED_LINK};
+    }
+  }
 `;

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Input, InputAdornment, IconButton } from '@mui/material';
-import ClearIcon from '@mui/icons-material/Clear';
+import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
 import { debounce } from 'lodash';
 
 import { CharacterSearchWrapper } from './StyledWidgets';
@@ -26,16 +26,18 @@ const CharacterSearch = ({ characterName, onChangeName }) => {
     <CharacterSearchWrapper>
       <Input
         value={name}
-        placeholder={"Search by name"}
+        placeholder={'Search by name'}
         onChange={onChange}
         sx={{
           maxWidth: '100%',
           width: '400px',
-          '.MuiInput-input': {
-            textAlign: 'center',
-          },
         }}
         inputProps={{ 'data-testid': 'id-input-character-name' }}
+        startAdornment={
+          <InputAdornment position='start'>
+            <SearchIcon />
+          </InputAdornment>
+        }
         endAdornment={
           name && (
             <InputAdornment position='end'>

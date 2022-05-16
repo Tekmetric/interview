@@ -13,9 +13,9 @@ const CharactersPagination = ({
   isLoading,
 }) => {
   const startIndex = (pageNumber - 1) * PAGE_SIZE + 1;
-  const countLabel = characterCount
-    ? `Displaying ${startIndex}-${startIndex + characterCount - 1} of ${characterTotal}`
-    : '';
+  const countLabel = `Displaying ${startIndex}-${
+    startIndex + characterCount - 1
+  } of ${characterTotal}`;
   return (
     <PaginationWrapper>
       <Pagination
@@ -27,7 +27,7 @@ const CharactersPagination = ({
         showFirstButton
         showLastButton
       />
-      <PaginationInfo data-testid='id-pagination-info'>{countLabel}</PaginationInfo>
+      {!!characterCount && <PaginationInfo data-testid='id-pagination-info'>{countLabel}</PaginationInfo>}
     </PaginationWrapper>
   );
 };

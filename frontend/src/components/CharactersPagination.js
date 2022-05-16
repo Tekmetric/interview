@@ -30,4 +30,13 @@ const CharactersPagination = ({
   );
 };
 
-export default React.memo(CharactersPagination);
+export default React.memo(CharactersPagination, (prevProps, nextProps) => {
+  if (
+    prevProps.pageNumber === nextProps.pageNumber &&
+    prevProps.pageCount === nextProps.pageCount &&
+    prevProps.characterTotal === nextProps.characterTotal &&
+    prevProps.characterCount === nextProps.characterCount
+  )
+    return true;
+  return false;
+});

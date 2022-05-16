@@ -6,45 +6,38 @@ import CharactersPagination from './CharactersPagination';
 import CharactersList from './CharactersList';
 import api from '../utils/api';
 
+const initialOptions = {
+  pageCount: 0,
+  characterTotal: 0,
+  characterCount: 0,
+};
+
 export default function Characters() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [query, setQuery] = useState({
+  const [options, setOptions] = useState({
     characterName: (searchParams.get('name') || '').trim(),
     pageNumber: parseInt(searchParams.get('page')) || 1,
+    ...initialOptions,
   });
   const [characters, setCharacters] = useState(null);
-  const [pageCount, setPageCount] = useState(0);
-  const [characterTotal, setCharacterTotal] = useState(0);
-  const [characterCount, setCharacterCount] = useState(0);
   const [hasError, setHasError] = useState(false);
 
-  const updatePath = (q) => {
+  const updatePath = () => {
     const temp = {};
-    if (q.characterName) temp.name = q.characterName;
-    temp.page = q.pageNumber;
+    if (options.characterName) temp.name = options.characterName;
+    temp.page = options.pageNumber;
     setSearchParams(temp);
   };
 
   const onChangePage = useCallback(
     (e, page) => {
-      const q = {
-        ...query,
-        pageNumber: page,
-      };
-      setQuery(q);
-      updatePath(q);
+      setOptions({ ...options, pageNumber: page });
     },
-    [query],
+    [options],
   );
 
   const onChangeName = useCallback((name) => {
-    const q = {
-      characterName: name,
-      pageNumber: 1,
-    };
-    setQuery(q);
-    updatePath(q);
-    setPageCount(0);
+    setOptions({ ...initialOptions, characterName: name, pageNumber: 1 });
   }, []);
 
   useEffect(() => {
@@ -52,30 +45,31 @@ export default function Characters() {
       try {
         setHasError(false);
         setCharacters(null);
+        updatePath();
 
-        const data = await api.fetchCharacters(query.characterName, query.pageNumber);
-        setPageCount(data.info.pages);
-        setCharacterTotal(data.info.count);
+        const data = await api.fetchCharacters(options.characterName, options.pageNumber);
+        setOptions((prevOptions) => ({
+          ...prevOptions,
+          pageCount: data.info.pages,
+          characterTotal: data.info.count,
+          characterCount: data.results.length,
+        }));
         setCharacters(data.results);
-        setCharacterCount(data.results.length);
       } catch (err) {
         setHasError(true);
       }
     };
 
     onLoadPage();
-  }, [query.characterName, query.pageNumber]);
+  }, [options.characterName, options.pageNumber]);
 
   const paginationProps = {
-    pageNumber: query.pageNumber,
-    pageCount,
-    characterCount,
-    characterTotal,
+    ...options,
     onChangePage,
   };
   return (
     <>
-      <CharacterSearch {...{ characterName: query.characterName, onChangeName }} />
+      <CharacterSearch {...{ characterName: options.characterName, onChangeName }} />
       <CharactersPagination {...paginationProps} />
       <CharactersList {...{ characters, hasError }} />
       <CharactersPagination {...paginationProps} />

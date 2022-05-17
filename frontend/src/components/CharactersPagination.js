@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pagination } from '@mui/material';
+import { omit, isEqual } from 'lodash';
 
 import { PaginationWrapper, PaginationInfo } from './StyledWidgets';
 
@@ -27,19 +28,14 @@ const CharactersPagination = ({
         showFirstButton
         showLastButton
       />
-      {!!characterCount && <PaginationInfo data-testid='id-pagination-info'>{countLabel}</PaginationInfo>}
+      {!!characterCount && (
+        <PaginationInfo data-testid='id-pagination-info'>{countLabel}</PaginationInfo>
+      )}
     </PaginationWrapper>
   );
 };
 
 export default React.memo(CharactersPagination, (prevProps, nextProps) => {
-  if (
-    prevProps.pageNumber === nextProps.pageNumber &&
-    prevProps.pageCount === nextProps.pageCount &&
-    prevProps.characterTotal === nextProps.characterTotal &&
-    prevProps.characterCount === nextProps.characterCount &&
-    prevProps.isLoading === nextProps.isLoading
-  )
-    return true;
+  if (isEqual(omit(prevProps, ['onChangePage']), omit(nextProps, ['onChangePage']))) return true;
   return false;
 });

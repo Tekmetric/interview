@@ -18,7 +18,7 @@ const appComponent = (
 );
 
 test('renders and searches characters, resets search results properly', async () => {
-  render(appComponent);
+  const { unmount } = render(appComponent);
 
   // renders loading spinner at first
   await waitForElementToBeRemoved(() => screen.getByTestId('id-loading-spinner'));
@@ -60,4 +60,7 @@ test('renders and searches characters, resets search results properly', async ()
   cards = screen.getAllByRole('ccard');
   expect(within(cards[0]).getByText(/Rick Sanchez/i)).toBeInTheDocument();
   expect(within(cards[1]).getByText(/Morty Smith/i)).toBeInTheDocument();
+
+  // Unmount the rendered component
+  unmount();
 });

@@ -4,7 +4,11 @@ import { CircularProgress } from '@mui/material';
 import CharacterCard from './CharacterCard';
 import { ShowcaseWrapper, Showcase } from './StyledWidgets';
 
-const CharactersList = ({ characters, hasError, isLoading }) => {
+const CharactersList = ({ data }) => {
+  return data.map((c) => <CharacterCard key={c.id} data={c} />);
+};
+
+const CharactersWrapper = ({ characters, hasError, isLoading }) => {
   const getContent = () => {
     if (hasError) {
       return <h2>We've got something suspicious. Refresh this page to try again.</h2>;
@@ -13,7 +17,7 @@ const CharactersList = ({ characters, hasError, isLoading }) => {
     } else if (characters && characters.length === 0) {
       return <h2 data-testid='id-message-nobody'>There's nobody in here. So sad!</h2>;
     } else if (characters) {
-      return characters.map((c) => <CharacterCard key={c.id} data={c} />);
+      return <CharactersList data={characters} />;
     }
     return <nobr />;
   };
@@ -25,4 +29,4 @@ const CharactersList = ({ characters, hasError, isLoading }) => {
   );
 };
 
-export default React.memo(CharactersList);
+export default React.memo(CharactersWrapper);

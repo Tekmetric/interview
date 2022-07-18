@@ -1,0 +1,26 @@
+#product {
+    padding-top: 12px;
+    padding-bottom: 12px;
+ 
+    .breadcrumbs {
+        margin: 10px 0 15px;
+        text-transform: capitalize;
+    }
+
+    .titleGrid {
+        display: flex;
+        h1 {
+            margin: 10px;
+        }
+        .title-price {
+            flex: 1;
+        }
+        .rating {
+            align-self: flex-start;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin: 14px;
+        }
+    }
+}

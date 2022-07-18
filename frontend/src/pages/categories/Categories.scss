@@ -1,0 +1,23 @@
+#categories {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    
+    .breadcrumbs {
+        margin: 10px 0 15px;
+        text-transform: capitalize;
+    }
+    .cardActionArea {
+        max-width: 345px;
+        
+        .card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            
+            .cardContent {
+                flex-grow: 1;
+                text-transform: capitalize;
+            }
+        }
+    }
+}

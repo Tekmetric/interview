@@ -1,0 +1,16 @@
+#products {
+    padding-top: 12px;
+    padding-bottom: 12px;
+ 
+    .breadcrumbs {
+        margin: 10px 0 15px;
+        text-transform: capitalize;
+    }
+
+    .thumbnail {
+        width: 150px;
+        height: auto;
+        border-radius: 5px;   
+        filter: drop-shadow(5px 5px 10px rgba(200, 200, 200, 1));
+    }
+}

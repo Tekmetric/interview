@@ -20,15 +20,6 @@ export const reviewList: Review[] = [
         rating: 8,
     },
     {
-        product: 'Hoop-Dee-Doo Musical Revue',
-        manufacturer: "Disney's Fort Wilderness Resort",
-        category: 'Service Review',
-        videoTitle:
-            'My Disney Port Orleans Resort Room Tour and Vacation Review',
-        videoCode: 'Pf8oA6_mH4c',
-        dateReleased: '=new Date(2018, 4, 17)',
-    },
-    {
         product: 'Vacation',
         manufacturer: "Disney's Port Orleans Resort - Riverside",
         category: 'Service Review',

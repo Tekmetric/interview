@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "importHelpers": false,
+        "skipLibCheck": true,
+        "module": "commonjs",
+        "target": "ES2016",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "lib": ["es2019"]
+    }
+}

@@ -5,6 +5,9 @@ import bodyParser from 'body-parser';
 import pino from 'pino-http';
 import { logger } from './log';
 
+import { API_VERSION } from './config';
+import routes from './routes';
+
 const app = express();
 
 app.options('*', cors());
@@ -17,6 +20,8 @@ app.use(bodyParser.json() as RequestHandler);
 app.use(pino() as RequestHandler);
 
 app.get('/', (_req, res) => res.send('API is running'));
+
+app.use(`/v${API_VERSION}`, routes);
 
 const port = process.env.PORT || '3001';
 

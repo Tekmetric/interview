@@ -38,7 +38,7 @@ const HeaderToolbar = () => {
 export const Header = () => {
 	return (
 		<AppBar
-			position="fixed"
+			position="sticky"
 			sx={{
 				background: theme => theme.palette.background.default,
 				paddingTop: {

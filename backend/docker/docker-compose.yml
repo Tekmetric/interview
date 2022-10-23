@@ -1,0 +1,20 @@
+version: "3.5"
+services:
+  tekmetric:
+    image: tekmetric:interview
+    ports:
+      - '8080:8080'
+    expose:
+      - '8080'
+  prometheus:
+    image: tekmetric:prometheus
+    ports:
+      - '9090:9090'
+    expose:
+      - '9090'
+  grafana:
+    image: tekmetric:grafana
+    ports:
+      - '3000:3000'
+    expose:
+      - '3000'

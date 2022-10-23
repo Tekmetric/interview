@@ -1,0 +1,23 @@
+# config file version
+apiVersion: 1
+
+deleteDatasources:
+  - name: Prometheus
+    orgId: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: Server
+    orgId: 1
+    url: http://host.docker.internal:9090
+    basicAuth: false
+    basicAuthUser:
+    basicAuthPassword:
+    withCredentials:
+    jsonData:
+      graphiteVersion: "1.1"
+      tlsAuth: false
+      tlsAuthWithCACert: false
+    version: 1
+    editable: true

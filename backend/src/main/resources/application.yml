@@ -1,0 +1,36 @@
+server:
+  port: 8080
+info:
+  app:
+    name: Temetric Inteview CRUD Service
+    version: 1.0-SNAPSHOT
+    description: Temetric Inteview CRUD Service - Popa Bogdan
+spring:
+  application:
+    name: 'Tekmetric-Interview-CRUD-Service'
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health, prometheus
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true

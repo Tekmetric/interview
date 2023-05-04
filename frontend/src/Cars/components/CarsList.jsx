@@ -16,19 +16,14 @@ function CarsList() {
             <CardMedia sx={{ height: 140 }} image={car.url} title="green iguana" />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
-                {car.name}
+                {car.brand} - {car.model}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {car.description}
               </Typography>
             </CardContent>
             <CardActions>
-              <Button
-                size="small"
-                onClick={() => {
-                  console.log(car.id);
-                  navigate(`${car.id}`);
-                }}>
+              <Button size="small" onClick={() => navigate(`${car.id}`)}>
                 Details
               </Button>
             </CardActions>

@@ -1,7 +1,8 @@
 import { Card, CardContent, Grid, CardMedia, Typography, CardActions, Button } from '@mui/material';
 import React from 'react';
-import { CARS } from '../../constants';
+import { CARS } from '../../shared/constants';
 import { useNavigate } from 'react-router-dom';
+import { truncate } from '../../shared/helpers';
 //import logo from './logo.svg';
 
 function CarsList() {
@@ -19,7 +20,7 @@ function CarsList() {
                 {car.brand} - {car.model}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {car.description}
+                {truncate(car.description, 180)}
               </Typography>
             </CardContent>
             <CardActions>

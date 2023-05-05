@@ -8,8 +8,11 @@
     "@fontsource/roboto": "^4.5.8",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.12.3",
+    "@mui/x-date-pickers": "^6.3.0",
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
+    "dayjs": "^1.11.7",
+    "formik": "^2.2.9",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
     "prop-types": "^15.8.1",
@@ -19,7 +22,8 @@
     "react-router-dom": "^6.11.0",
     "react-scripts": "^5.0.1",
     "sort-by": "^1.2.0",
-    "swr": "^2.1.5"
+    "swr": "^2.1.5",
+    "yup": "^1.1.1"
   },
   "scripts": {
     "start": "react-scripts start",

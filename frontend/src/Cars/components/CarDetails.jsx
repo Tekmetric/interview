@@ -11,7 +11,7 @@ import {
   Button
 } from '@mui/material';
 import React from 'react';
-import { CARS } from '../../constants';
+import { CARS } from '../../shared/constants';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 //import logo from './logo.svg';
@@ -72,7 +72,7 @@ function CarDetails() {
             <Button>Edit</Button>
           </Box>
           <Typography variant="h5" color="primary" sx={{ fontWeight: 'bold', mb: 2 }}>
-            {formatter.format(car.price)}
+            {formatter.format(car.minPrice)} - {formatter.format(car.maxPrice)}
           </Typography>
           <Typography variant="p" color="text.secondary">
             {car.description}

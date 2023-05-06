@@ -1,9 +1,9 @@
 import { ROOT_URL } from '../../shared/constants';
 import axios from 'axios';
 
-export const getCars = async (searchParams) => {
-  console.log('GET ALL /cars');
-  const res = await axios.get(`${ROOT_URL}/cars?${searchParams.toString()}`);
+export const getCars = async (searchParams, page) => {
+  console.log(`GET ALL /cars?${searchParams.toString()}&page=${page}`);
+  const res = await axios.get(`${ROOT_URL}/cars?${searchParams.toString()}&page=${page}`);
   return res.data;
 };
 

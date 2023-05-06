@@ -14,8 +14,8 @@ export default function CarsFilters() {
   };
 
   return (
-    <Grid container spacing={2} sx={{ padding: '2rem 5rem' }}>
-      <Grid item xs={12} md={4} lg={3}>
+    <Grid container spacing={2}>
+      <Grid item xs={12} md={6} lg={4}>
         <FormControl fullWidth>
           <InputLabel id="brand-select-label">Brand</InputLabel>
           <Select
@@ -31,7 +31,7 @@ export default function CarsFilters() {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={12} md={4} lg={3}>
+      <Grid item xs={12} md={6} lg={4}>
         <FormControl fullWidth>
           <InputLabel id="color-select-label">Color</InputLabel>
           <Select
@@ -47,7 +47,6 @@ export default function CarsFilters() {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={12} md={3}></Grid>
     </Grid>
   );
 }

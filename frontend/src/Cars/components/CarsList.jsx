@@ -7,7 +7,8 @@ import {
   CardActions,
   Button,
   Box,
-  Pagination
+  Pagination,
+  Fab
 } from '@mui/material';
 import React, { useState } from 'react';
 
@@ -16,20 +17,22 @@ import { truncate } from '../../shared/helpers';
 import CarsFilters from './CarsFilters';
 import { useQuery } from 'react-query';
 import { getCars } from '../api';
+import AddIcon from '@mui/icons-material/Add';
 //import logo from './logo.svg';
 
 function CarsList() {
   const navigate = useNavigate();
+
   const [page, setPage] = useState(1);
   const handlePageChange = (event, val) => {
     setPage(val);
   };
+
   const [searchParams] = useSearchParams({});
-  const {
-    data: cars,
-    isLoading,
-    error
-  } = useQuery('/cars?' + searchParams.toString(), () => getCars(searchParams));
+  const { data, isLoading, error } = useQuery(['/cars', searchParams.toString(), page], () =>
+    getCars(searchParams, page)
+  );
+  console.log(data);
 
   if (isLoading) {
     return 'Loading...';
@@ -39,10 +42,21 @@ function CarsList() {
     return 'Error' + error.message;
   }
 
+  const { cars, carPages } = data;
+
   return (
     <Box sx={{ position: 'relative', height: '100%' }}>
       <Box display="flex" flexDirection="column" alignItems="center" sx={{ mt: 5 }}>
-        <CarsFilters />
+        <Grid container sx={{ padding: '2rem 5rem' }}>
+          <Grid item xs={12} md={8}>
+            <CarsFilters />
+          </Grid>
+          <Grid item xs={12} md={4} display="flex" alignItems="center" justifyContent="flex-end">
+            <Fab color="primary" onClick={() => navigate('/new')}>
+              <AddIcon />
+            </Fab>
+          </Grid>
+        </Grid>
         <Grid container spacing={2} sx={{ padding: '2rem 5rem' }}>
           {cars.map((car) => (
             <Grid item xs={12} md={4} lg={3} key={car._id}>
@@ -65,7 +79,7 @@ function CarsList() {
             </Grid>
           ))}
         </Grid>
-        <Pagination count={10} page={page} onChange={handlePageChange} sx={{ mt: 5 }} />
+        <Pagination count={carPages} page={page} onChange={handlePageChange} sx={{ mt: 5 }} />
       </Box>
     </Box>
   );

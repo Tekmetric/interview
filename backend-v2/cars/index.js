@@ -1,6 +1,8 @@
 const Car = require("./models/Car");
 const router = require("./routes");
 
+const RECORDS_PER_PAGE = 4;
+
 const getFilters = (queryParams) => {
   const filters = {};
   if (queryParams.brand && queryParams.brand !== "all") {
@@ -9,13 +11,35 @@ const getFilters = (queryParams) => {
   if (queryParams.color && queryParams.color !== "all") {
     filters["color"] = { $regex: new RegExp(queryParams.color, "i") };
   }
+  return filters;
+};
+
+const getPaging = (queryParams) => {
+  return {
+    limit: RECORDS_PER_PAGE,
+    skip: (parseInt(queryParams.page) - 1) * RECORDS_PER_PAGE,
+  };
+};
+
+const getTotalPages = (totalCars) => {
+  if (totalCars % RECORDS_PER_PAGE === 0) {
+    return parseInt(totalCars / RECORDS_PER_PAGE);
+  }
+  return parseInt(totalCars / RECORDS_PER_PAGE) + 1;
 };
 
 router.get("/", async (req, res) => {
   console.log("Getting cars");
   console.log(req.query);
-  const cars = await Car.find(getFilters(req.query));
-  res.send(cars).status(200);
+  const cars = await Car.find(
+    { ...getFilters(req.query) },
+    {},
+    {
+      ...getPaging(req.query),
+    }
+  );
+  const totalCars = await Car.count({ ...getFilters(req.query) });
+  res.send({ cars, carPages: getTotalPages(totalCars) }).status(200);
 });
 
 router.get("/:id", async (req, res) => {

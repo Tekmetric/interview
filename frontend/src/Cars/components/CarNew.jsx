@@ -4,20 +4,30 @@ import { useFormik } from 'formik';
 import carValidationSchema from '../validation';
 import CarForm from './CarForm';
 import { INITIAL_CAR_VALUES } from '../../shared/constants';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { postCar } from '../api';
 import { useNavigate } from 'react-router-dom';
 
 function CarNew() {
-  const mutation = useMutation('/cars', postCar);
+  const queryClient = useQueryClient();
+  const mutation = useMutation('/cars', postCar, {
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+      navigate('/');
+    }
+  });
   const navigate = useNavigate();
+
+  // const handleMutationSuccess = useCallback(() => {
+  //   queryClient.fetchQuery('/cars');
+  //   navigate('/');
+  // }, [navigate, queryClient]);
 
   const formik = useFormik({
     initialValues: { ...INITIAL_CAR_VALUES },
     validationSchema: carValidationSchema,
     onSubmit: (values) => {
       mutation.mutate(values);
-      navigate('/');
     }
   });
 

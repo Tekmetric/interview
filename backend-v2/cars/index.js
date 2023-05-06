@@ -1,8 +1,20 @@
 const Car = require("./models/Car");
 const router = require("./routes");
 
+const getFilters = (queryParams) => {
+  const filters = {};
+  if (queryParams.brand && queryParams.brand !== "all") {
+    filters["brand"] = { $regex: new RegExp(queryParams.brand, "i") };
+  }
+  if (queryParams.color && queryParams.color !== "all") {
+    filters["color"] = { $regex: new RegExp(queryParams.color, "i") };
+  }
+};
+
 router.get("/", async (req, res) => {
-  const cars = await Car.find();
+  console.log("Getting cars");
+  console.log(req.query);
+  const cars = await Car.find(getFilters(req.query));
   res.send(cars).status(200);
 });
 

@@ -9,30 +9,35 @@ import {
   Box,
   Pagination
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { CARS } from '../../shared/constants';
+import React, { useState } from 'react';
+
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { truncate } from '../../shared/helpers';
 import CarsFilters from './CarsFilters';
+import { useQuery } from 'react-query';
+import { getCars } from '../api';
 //import logo from './logo.svg';
 
 function CarsList() {
-  const [cars, setCars] = useState(CARS);
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const handlePageChange = (event, val) => {
     setPage(val);
   };
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams({});
+  const {
+    data: cars,
+    isLoading,
+    error
+  } = useQuery('/cars?' + searchParams.toString(), () => getCars(searchParams));
 
-  useEffect(() => {
-    const newCars = CARS.filter(
-      (car) =>
-        car.brand.toLowerCase() === searchParams.get('brand') &&
-        car.color.toLowerCase() === searchParams.get('color')
-    );
-    setCars(newCars);
-  }, [searchParams]);
+  if (isLoading) {
+    return 'Loading...';
+  }
+
+  if (error) {
+    return 'Error' + error.message;
+  }
 
   return (
     <Box sx={{ position: 'relative', height: '100%' }}>
@@ -40,7 +45,7 @@ function CarsList() {
         <CarsFilters />
         <Grid container spacing={2} sx={{ padding: '2rem 5rem' }}>
           {cars.map((car) => (
-            <Grid item xs={12} md={4} lg={3} key={car.id}>
+            <Grid item xs={12} md={4} lg={3} key={car._id}>
               <Card>
                 <CardMedia sx={{ height: 140 }} image={car.url} title="green iguana" />
                 <CardContent>
@@ -52,7 +57,7 @@ function CarsList() {
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Button size="small" onClick={() => navigate(`${car.id}`)}>
+                  <Button size="small" onClick={() => navigate(`${car._id}`)}>
                     Details
                   </Button>
                 </CardActions>

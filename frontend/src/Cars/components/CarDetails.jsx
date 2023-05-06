@@ -11,14 +11,11 @@ import {
   Button
 } from '@mui/material';
 import React from 'react';
-import { CARS } from '../../shared/constants';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { getCar } from '../api';
+import { useQuery } from 'react-query';
 //import logo from './logo.svg';
-
-function getCarById(carId) {
-  return CARS.find((car) => car.id == carId);
-}
 
 function CarMainDetails({ car }) {
   const mainDetails = [
@@ -56,7 +53,16 @@ const formatter = new Intl.NumberFormat('en-US', {
 
 function CarDetails() {
   const { id: carId } = useParams();
-  const car = getCarById(carId);
+  const { data: car, isLoading, error } = useQuery('/cars/' + carId, () => getCar(carId));
+  const navigate = useNavigate();
+
+  if (isLoading) {
+    return 'Loading...';
+  }
+
+  if (error) {
+    return 'Error ' + error.message;
+  }
 
   return (
     <Paper sx={{ margin: '5rem 10rem' }}>
@@ -69,7 +75,7 @@ function CarDetails() {
             <Typography variant="h3">
               {car.brand} - {car.model}
             </Typography>
-            <Button>Edit</Button>
+            <Button onClick={() => navigate(`/${car._id}/edit`)}>Edit</Button>
           </Box>
           <Typography variant="h5" color="primary" sx={{ fontWeight: 'bold', mb: 2 }}>
             {formatter.format(car.minPrice)} - {formatter.format(car.maxPrice)}

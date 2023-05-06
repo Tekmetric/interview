@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 
+export const ROOT_URL = 'http://localhost:3001';
+
 export const CARS = [
   {
     id: 1,

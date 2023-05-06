@@ -1,24 +1,32 @@
 import React from 'react';
-import { CARS } from '../../shared/constants';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Paper, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import carValidationSchema from '../validation';
 import CarForm from './CarForm';
-
-function getCarById(carId) {
-  return CARS.find((car) => car.id == carId);
-}
+import { getCar, patchCar } from '../api';
+import { useMutation, useQuery } from 'react-query';
 
 function CarEdit() {
   const { id: carId } = useParams();
-  const car = getCarById(carId);
+  const { data: car, isLoading, error } = useQuery('/cars/' + carId, () => getCar(carId));
+  const mutation = useMutation('/cars', patchCar);
+  const navigate = useNavigate();
+
+  if (isLoading) {
+    return 'Loading...';
+  }
+
+  if (error) {
+    return 'Error ' + error.message;
+  }
 
   const formik = useFormik({
     initialValues: { ...car },
     validationSchema: carValidationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      mutation.mutate(carId, values);
+      navigate('/');
     }
   });
 

@@ -34,27 +34,50 @@ router.get("/", async (req, res) => {
   const cars = await Car.find(
     { ...getFilters(req.query) },
     {},
-    {
-      ...getPaging(req.query),
-    }
+    { ...getPaging(req.query) }
   );
   const totalCars = await Car.count({ ...getFilters(req.query) });
   res.send({ cars, carPages: getTotalPages(totalCars) }).status(200);
 });
 
+router.get("/brands", async (req, res) => {
+  console.log("Getting brands");
+  const brands = await Car.distinct("brand");
+  const brandsOptions = brands.map((brand) => ({
+    key: brand.toLowerCase(),
+    value: brand,
+  }));
+  brandsOptions.unshift({ key: "all", value: "All" });
+  res.send(brandsOptions).status(200);
+});
+
+router.get("/colors", async (req, res) => {
+  console.log("Getting colors");
+  const colors = await Car.distinct("color");
+  const colorsOptions = colors.map((color) => ({
+    key: color.toLowerCase(),
+    value: color,
+  }));
+  colorsOptions.unshift({ key: "all", value: "All" });
+  res.send(colorsOptions).status(200);
+});
+
 router.get("/:id", async (req, res) => {
+  console.log("Getting car " + req.params.id);
   const car = await Car.findById(req.params.id);
   res.send(car).status(200);
 });
 
 router.post("/", async (req, res) => {
-  console.log(req.body);
+  console.log("Creating car " + req.body);
   const car = new Car(req.body);
   await car.save();
   res.send(car).status(201);
 });
 
 router.patch("/:id", async (req, res) => {
+  console.log("Updating car " + req.params.id);
+  console.log(req.body);
   const car = await Car.findOneAndUpdate({ _id: req.params.id }, req.body, {
     new: true,
   });
@@ -62,8 +85,9 @@ router.patch("/:id", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
+  console.log("Deleting car " + req.params.id);
   const car = await Car.findOneAndDelete({ _id: req.params.id });
-  res.send().status(204);
+  res.send(car).status(204);
 });
 
 module.exports = router;

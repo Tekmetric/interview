@@ -1,9 +1,10 @@
-import { Button, Grid, TextField } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
+import ButtonWithProgress from '../../shared/components/ButtonWithProgress';
 
-export default function CarForm({ formik }) {
+export default function CarForm({ formik, isLoading }) {
   return (
     <form onSubmit={formik.handleSubmit}>
       <Grid container sx={{ py: 5, px: 10 }} spacing={2}>
@@ -119,9 +120,9 @@ export default function CarForm({ formik }) {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button color="primary" variant="contained" fullWidth type="submit">
+          <ButtonWithProgress variant="contained" fullWidth type="submit" loading={isLoading}>
             Submit
-          </Button>
+          </ButtonWithProgress>
         </Grid>
       </Grid>
     </form>
@@ -129,5 +130,6 @@ export default function CarForm({ formik }) {
 }
 
 CarForm.propTypes = {
-  formik: PropTypes.object.isRequired
+  formik: PropTypes.object.isRequired,
+  isLoading: PropTypes.bool
 };

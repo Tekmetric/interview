@@ -37,7 +37,7 @@ function CarNew() {
         <Typography align="center" variant="h3" gutterBottom>
           New Car
         </Typography>
-        <CarForm formik={formik} />
+        <CarForm formik={formik} isLoading={mutation.isLoading} />
       </Paper>
     </Box>
   );

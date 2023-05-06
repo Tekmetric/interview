@@ -1,32 +1,30 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, CircularProgress, Paper, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import carValidationSchema from '../validation';
 import CarForm from './CarForm';
 import { getCar, patchCar } from '../api';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import ErrorComponent from '../../shared/components/ErrorComponent';
 
 function CarEdit() {
   const { id: carId } = useParams();
   const { data: car, isLoading, error } = useQuery('/cars/' + carId, () => getCar(carId));
-  const mutation = useMutation('/cars', patchCar);
+  const queryClient = useQueryClient();
+  const mutation = useMutation(patchCar, {
+    onSuccess: () => {
+      queryClient.resetQueries();
+      navigate(`/${carId}`);
+    }
+  });
   const navigate = useNavigate();
-
-  if (isLoading) {
-    return 'Loading...';
-  }
-
-  if (error) {
-    return 'Error ' + error.message;
-  }
 
   const formik = useFormik({
     initialValues: { ...car },
     validationSchema: carValidationSchema,
     onSubmit: (values) => {
-      mutation.mutate(carId, values);
-      navigate('/');
+      mutation.mutate({ carId, values });
     }
   });
 
@@ -36,7 +34,9 @@ function CarEdit() {
         <Typography align="center" variant="h3" gutterBottom>
           Edit Car
         </Typography>
-        <CarForm formik={formik} />
+        {isLoading && <CircularProgress />}
+        {error && <ErrorComponent error={error} />}
+        {!isLoading && !error && <CarForm formik={formik} isLoading={mutation.isLoading} />}
       </Paper>
     </Box>
   );

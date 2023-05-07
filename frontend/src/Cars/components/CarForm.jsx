@@ -62,7 +62,7 @@ export default function CarForm({ formik, isLoading }) {
             label="Manufacturing Year"
             value={dayjs().year(formik.values.year)}
             onChange={(e) => {
-              formik.handleChange(e.year().toString());
+              formik.setFieldValue('year', e.year());
             }}
             error={formik.touched.year && Boolean(formik.errors.year)}
             helperText={formik.touched.year && formik.errors.year}

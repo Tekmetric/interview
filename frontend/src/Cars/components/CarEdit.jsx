@@ -7,6 +7,7 @@ import CarForm from './CarForm';
 import { getCar, patchCar } from '../api';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import ErrorComponent from '../../shared/components/ErrorComponent';
+import { INITIAL_CAR_VALUES } from '../../shared/constants';
 
 function CarEdit() {
   const { id: carId } = useParams();
@@ -21,7 +22,7 @@ function CarEdit() {
   const navigate = useNavigate();
 
   const formik = useFormik({
-    initialValues: { ...car },
+    initialValues: isLoading ? { ...INITIAL_CAR_VALUES } : { ...car },
     validationSchema: carValidationSchema,
     onSubmit: (values) => {
       mutation.mutate({ carId, values });

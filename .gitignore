@@ -3,3 +3,5 @@ backend/.idea/*
 backend/*.iml
 backend/target/**
 backend-v2/node_modules
+frontend/.DS_Store
+frontend/public/.DS_Store

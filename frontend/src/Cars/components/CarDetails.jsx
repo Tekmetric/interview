@@ -17,6 +17,7 @@ import PropTypes from 'prop-types';
 import { getCar } from '../api';
 import { useQuery } from 'react-query';
 import ErrorComponent from '../../shared/components/ErrorComponent';
+import { getImage } from '../../shared/helpers';
 //import logo from './logo.svg';
 
 function CarMainDetails({ car }) {
@@ -66,14 +67,14 @@ function CarDetails() {
         <>
           <Grid container>
             <Grid item xs={12} md={6} style={{ paddingTop: 0 }}>
-              <img src={car.url} alt="Car Image" style={{ maxWidth: '100%' }} />
+              <img src={getImage(car.url)} alt="Car Image" style={{ maxWidth: '100%' }} />
             </Grid>
             <Grid item xs={12} md={6} sx={{ px: 6, py: 2 }}>
               <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
                 <Typography variant="h3">
                   {car.brand} - {car.model}
                 </Typography>
-                <Button onClick={() => navigate(`/${car._id}/edit`)}>Edit</Button>
+                <Button onClick={() => navigate(`/cars/${car._id}/edit`)}>Edit</Button>
               </Box>
               <Typography variant="h5" color="primary" sx={{ fontWeight: 'bold', mb: 2 }}>
                 {formatter.format(car.minPrice)} - {formatter.format(car.maxPrice)}

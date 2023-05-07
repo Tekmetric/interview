@@ -27,9 +27,10 @@ function App() {
           <Routes>
             <Route path="/" element={<ResponsiveAppBar />}>
               <Route index element={<CarsList />} />
-              <Route path="new" element={<CarNew />} />
-              <Route path=":id" element={<CarDetails />} />
-              <Route path=":id/edit" element={<CarEdit />} />
+              <Route path="/cars" element={<CarsList />} />
+              <Route path="/cars/new" element={<CarNew />} />
+              <Route path="/cars/:id" element={<CarDetails />} />
+              <Route path="/cars/:id/edit" element={<CarEdit />} />
               {/* <Route path="about" element={<About />} />
             <Route path="dashboard" element={<Dashboard />} />
 

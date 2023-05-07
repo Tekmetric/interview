@@ -4,7 +4,7 @@ export const ROOT_URL = 'http://localhost:3001';
 
 export const CARS = [
   {
-    id: 1,
+    _id: 1,
     brand: 'BMW',
     color: 'Black',
     description:
@@ -17,7 +17,7 @@ export const CARS = [
     url: 'https://www.topgear.com/sites/default/files/images/news-article/2015/07/75188e63e4d7cff5b227b81467219769/e90_1.jpg'
   },
   {
-    id: 2,
+    _id: 2,
     brand: 'Audi',
     color: 'White',
     description:
@@ -30,7 +30,7 @@ export const CARS = [
     url: 'https://hips.hearstapps.com/hmg-prod/amv-prod-cad-assets/images/14q1/562749/2015-audi-a4-feature-car-and-driver-photo-581834-s-original.jpg?fill=2:1&resize=1200:*'
   },
   {
-    id: 3,
+    _id: 3,
     brand: 'Mercedes',
     color: 'Gray',
     description:
@@ -43,7 +43,7 @@ export const CARS = [
     url: 'https://www.carscoops.com/wp-content/uploads/2013/12/2015-Mercedes-C-Class-01.jpg'
   },
   {
-    id: 4,
+    _id: 4,
     brand: 'Kia',
     color: 'Penta Metal',
     description:

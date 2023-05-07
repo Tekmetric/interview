@@ -15,7 +15,7 @@ function CarEdit() {
   const mutation = useMutation(patchCar, {
     onSuccess: () => {
       queryClient.resetQueries();
-      navigate(`/${carId}`);
+      navigate(`/cars/${carId}`);
     }
   });
   const navigate = useNavigate();

@@ -18,11 +18,6 @@ function CarNew() {
   });
   const navigate = useNavigate();
 
-  // const handleMutationSuccess = useCallback(() => {
-  //   queryClient.fetchQuery('/cars');
-  //   navigate('/');
-  // }, [navigate, queryClient]);
-
   const formik = useFormik({
     initialValues: { ...INITIAL_CAR_VALUES },
     validationSchema: carValidationSchema,

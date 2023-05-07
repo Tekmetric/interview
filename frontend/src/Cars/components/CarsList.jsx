@@ -14,7 +14,7 @@ import {
 import React, { useState } from 'react';
 
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { truncate } from '../../shared/helpers';
+import { getImage, truncate } from '../../shared/helpers';
 import CarsFilters from './CarsFilters';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { deleteCar, getCars } from '../api';
@@ -54,7 +54,7 @@ function CarCardsList({ cars }) {
         {cars.map((car) => (
           <Grid item xs={12} md={4} lg={3} key={car._id}>
             <Card>
-              <CardMedia sx={{ height: 200 }} image={car.url} title="green iguana" />
+              <CardMedia sx={{ height: 200 }} image={getImage(car.url)} title="green iguana" />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   {car.brand} - {car.model}
@@ -64,7 +64,7 @@ function CarCardsList({ cars }) {
                 </Typography>
               </CardContent>
               <CardActions sx={{ flexDirection: 'row-reverse' }}>
-                <Button size="small" onClick={() => navigate(`${car._id}`)}>
+                <Button size="small" onClick={() => navigate(`/cars/${car._id}`)}>
                   Details
                 </Button>
                 <ButtonWithProgress
@@ -112,7 +112,7 @@ function CarsList() {
             <CarsFilters />
           </Grid>
           <Grid item xs={12} md={4} display="flex" alignItems="center" justifyContent="flex-end">
-            <Fab color="primary" onClick={() => navigate('/new')}>
+            <Fab color="primary" onClick={() => navigate('/cars/new')}>
               <AddIcon />
             </Fab>
           </Grid>

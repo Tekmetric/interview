@@ -59,8 +59,8 @@ function CarCardsList({ cars }) {
                 <Typography gutterBottom variant="h5" component="div">
                   {car.brand} - {car.model}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {truncate(car.description, 180)}
+                <Typography variant="p" fontSize={14} color="text.secondary">
+                  {truncate(car.description, 160)}
                 </Typography>
               </CardContent>
               <CardActions sx={{ flexDirection: 'row-reverse' }}>

@@ -120,7 +120,12 @@ export default function CarForm({ formik, isLoading }) {
           />
         </Grid>
         <Grid item xs={12}>
-          <ButtonWithProgress variant="contained" fullWidth type="submit" loading={isLoading}>
+          <ButtonWithProgress
+            variant="contained"
+            fullWidth
+            type="submit"
+            loading={isLoading}
+            sx={{ py: 1.4 }}>
             Submit
           </ButtonWithProgress>
         </Grid>

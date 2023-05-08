@@ -79,7 +79,11 @@ function ResponsiveAppBar() {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-              <Avatar alt="Cristian B" src="/static/images/avatar/2.jpg" />
+              <Avatar
+                alt="Cristian B"
+                src="/static/images/avatar/2.jpg"
+                sx={{ bgcolor: 'black' }}
+              />
             </Box>
           </Toolbar>
         </Container>

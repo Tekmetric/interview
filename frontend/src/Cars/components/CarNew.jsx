@@ -28,7 +28,7 @@ function CarNew() {
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" sx={{ pt: 5, px: 1 }}>
-      <Paper sx={{ maxWidth: 'lg' }}>
+      <Paper sx={{ maxWidth: 'lg', pt: 5 }}>
         <Typography align="center" variant="h3" gutterBottom>
           New Car
         </Typography>

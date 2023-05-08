@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 const ArtObject = (props) => {
-  const { title, author, image, id } = props;
+  const { title, artist, image, id } = props;
 
   return (
     <div className="flex justify-center items-center">
@@ -11,7 +11,7 @@ const ArtObject = (props) => {
         </div>
         <div>
           <h1 className="text-center bg-teal-500 text-white">{title}</h1>
-          <h2>{author}</h2>
+          <h2>{artist}</h2>
         </div>
       </Link>
     </div>

@@ -13,7 +13,7 @@ const AUTHORS = [
 const ArtList = () => {
   const [requestParams, setRequestParams] = useState({
     title: "",
-    author: "",
+    artist: "",
   });
 
   const results = useQuery(["artList", requestParams], fetchArt);
@@ -27,7 +27,7 @@ const ArtList = () => {
           e.preventDefault();
           const formData = new FormData(e.target);
           const obj = {
-            author: formData.get("author") ?? "",
+            artist: formData.get("artist") ?? "",
             title: formData.get("title") ?? "",
           };
           setRequestParams(obj);
@@ -43,13 +43,13 @@ const ArtList = () => {
           />
         </label>
 
-        <label htmlFor="author">
-          Author
-          <select id="author" name="author" className="w-60 mb-5 block">
+        <label htmlFor="artist">
+          Artist
+          <select id="artist" name="artist" className="w-60 mb-5 block">
             <option />
-            {AUTHORS.map((author) => (
-              <option key={author} value={author}>
-                {author}
+            {AUTHORS.map((artist) => (
+              <option key={artist} value={artist}>
+                {artist}
               </option>
             ))}
           </select>

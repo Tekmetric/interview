@@ -10,7 +10,7 @@ const Results = ({ artObjects }) => {
         artObjects.map((artObject) => {
           return (
             <ArtObject
-              author={artObject.author}
+              artist={artObject.artist}
               image={artObject.hasImage ? artObject.webImage?.url : notFound}
               key={artObject.id}
               title={artObject.title}

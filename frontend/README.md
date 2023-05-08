@@ -33,7 +33,7 @@ We created a simple React Application that allows the user to view Art pieces fr
 
 - Displaying a custom set of art objects based on the user input
   - Navigate to the [homepage](http://localhost:5173/) (by default we display the first objects returned by the API)
-  - The list can be customized by selecting from a fixed list of Authors or by inputting a title(substrings also work)
+  - The list can be customized by selecting from a fixed list of Artists or by inputting a title(substrings also work)
   - We use the [Collection API](https://data.rijksmuseum.nl/object-metadata/api/#collection-api) for all operations described in this feature
 - Displaying a detailed view of a certain art object
   - By clicking on an art object from the homepage we navigate to the `/details` page of that art object

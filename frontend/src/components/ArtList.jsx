@@ -22,7 +22,7 @@ const ArtList = () => {
   return (
     <div className="w-10/12 mx-auto">
       <form
-        className="p-5 m-10 rounded-lg bg-gray-200 shadow-lg flex flex-col justify-center items-center"
+        className="bg-white shadow-md rounded p-8 mb-4 w-10/12 mx-auto grid grid-cols-5 gap-3 items-center"
         onSubmit={(e) => {
           e.preventDefault();
           const formData = new FormData(e.target);
@@ -33,19 +33,19 @@ const ArtList = () => {
           setRequestParams(obj);
         }}
       >
-        <label htmlFor="title">
+        <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2 col-span-2">
           Title
           <input
             id="title"
             name="title"
             placeholder="Title"
-            className="w-60 mb-10 block"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </label>
 
-        <label htmlFor="artist">
+        <label htmlFor="artist" className="block text-gray-700 text-sm font-bold mb-2 col-span-2">
           Artist
-          <select id="artist" name="artist" className="w-60 mb-5 block">
+          <select id="artist" name="artist" className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             <option />
             {AUTHORS.map((artist) => (
               <option key={artist} value={artist}>
@@ -55,8 +55,8 @@ const ArtList = () => {
           </select>
         </label>
 
-        <button className="text-white rounded px-7 py-2 border-none bg-teal-500">
-          Submit
+        <button className="p-10 allign-middle mt-3 bg-transparent hover:bg-teal-500 text-teal-700 font-semibold hover:text-white py-2 px-4 border border-teal-500 hover:border-transparent rounded">
+          Search
         </button>
       </form>
       {results?.isLoading ? (

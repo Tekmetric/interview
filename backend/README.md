@@ -6,11 +6,8 @@
 - Maven
 - Java 1.8 (or higher, update version in pom.xml if needed)
 
-#### Clone the project locally
-- `https://github.com/tfuqua/interview.git`
-
-#### Create your own branch and push to origin
-- `[your_name]_crud_api`
+#### Fork the repository and clone it locally
+- https://github.com/Tekmetric/interview.git
 
 #### Import project into IDE
 - Project root is located in `backend` folder
@@ -34,3 +31,6 @@
 - JDBC URL: jdbc:h2:mem:testdb
 - Username: sa
 - Password: password
+
+### Submitting your coding exercise
+Once you have finished the coding exercise please create a PR into Tekmetric/interview

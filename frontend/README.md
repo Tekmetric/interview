@@ -2,14 +2,8 @@
 
 ## Steps to get started:
 
-#### Clone the poject locally
-`git clone https://github.com/tfuqua/interview.git`
-
-#### Create your own git branch
-`git checkout -b [name_of_your_new_branch]`
-
-#### Push your branch up to git
-`git push origin [name_of_your_new_branch]`
+#### Fork the repository and clone it locally
+- https://github.com/Tekmetric/interview.git
 
 #### Let's install the project locally
 `npm install`
@@ -22,3 +16,6 @@
 2. Display data from API onto your page (Table, List, etc.)
 3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
 4. Have fun
+
+### Submitting your coding exercise
+Once you have finished the coding exercise please create a PR into Tekmetric/interview

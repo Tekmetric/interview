@@ -3,6 +3,7 @@ package com.interview.service;
 import com.interview.domain.Book;
 import com.interview.domain.Review;
 import com.interview.dto.*;
+import com.interview.exception.DuplicateResourceException;
 import com.interview.exception.ResourceNotFoundException;
 import com.interview.mapper.BookMapper;
 import com.interview.mapper.ReviewMapper;
@@ -35,21 +36,23 @@ public class BookService {
 
     @Transactional
     public IdWrapperDto createBooks(BookDto bookDto) {
+        validateBookIsUnique(bookDto);
         Book book = bookMapper.toEntity(bookDto);
         bookRepository.save(book);
         return new IdWrapperDto(book.getId());
     }
 
     @Transactional
-    public void updateBook(Long id, BookDto bookDto) {
-        Book book = findBook(id);
+    public void updateBook(BookDto bookDto) {
+        validateBookIsUnique(bookDto);
+        Book book = findBook(bookDto.getId());
         book.setAuthor(bookDto.getAuthor());
         book.setTitle(bookDto.getTitle());
     }
 
     @Transactional
     public void deleteBook(Long id) {
-        checkIfBookExists(id);
+        validateBookExists(id);
         bookRepository.deleteById(id);
     }
 
@@ -62,7 +65,7 @@ public class BookService {
 
     @Transactional
     public void deleteReview(Long id) {
-        checkIfReviewExists(id);
+        validateReviewExists(id);
         reviewRepository.deleteById(id);
     }
 
@@ -71,19 +74,25 @@ public class BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot find book with id: " + id));
     }
 
-    private void checkIfBookExists(Long id) {
-        boolean exists = bookRepository.existsById(id);
-
-        if (!exists) {
+    private void validateBookExists(Long id) {
+        if (!bookRepository.existsById(id)) {
             throw new ResourceNotFoundException("Cannot find book with id: " + id);
         }
     }
 
-    private void checkIfReviewExists(Long id) {
-        boolean exists = reviewRepository.existsById(id);
-
-        if (!exists) {
+    private void validateReviewExists(Long id) {
+        if (!reviewRepository.existsById(id)) {
             throw new ResourceNotFoundException("Cannot find review with id: " + id);
+        }
+    }
+
+    private void validateBookIsUnique(BookDto bookDto) {
+        if (bookDto.getId() != null && bookRepository.existsByTitleAndAuthorAndIdNot(bookDto.getTitle(), bookDto.getAuthor(), bookDto.getId())) {
+            throw new DuplicateResourceException(String.format("Book with title: '%s' and author: '%s' already exists.", bookDto.getTitle(), bookDto.getAuthor()));
+        }
+
+        if (bookDto.getId() == null && bookRepository.existsByTitleAndAuthor(bookDto.getTitle(), bookDto.getAuthor())) {
+            throw new DuplicateResourceException(String.format("Book with title: '%s' and author: '%s' already exists.", bookDto.getTitle(), bookDto.getAuthor()));
         }
     }
 

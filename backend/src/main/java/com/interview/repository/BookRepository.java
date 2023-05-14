@@ -19,4 +19,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("DELETE FROM Book b where b.id = :id")
     void deleteById(Long id);
 
+    boolean existsByTitleAndAuthor(String title, String author);
+
+    boolean existsByTitleAndAuthorAndIdNot(String title, String author, Long id);
+
 }

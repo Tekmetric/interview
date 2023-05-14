@@ -5,6 +5,8 @@ import com.interview.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/books")
@@ -18,18 +20,19 @@ public class BookResource {
     }
 
     @GetMapping
-    public PageResponseDto<BookDto> getBooks(@ModelAttribute PageRequestDto pageRequestDto) {
+    public PageResponseDto<BookDto> getBooks(@ModelAttribute @Valid PageRequestDto pageRequestDto) {
         return bookService.getBooks(pageRequestDto);
     }
 
     @PostMapping
-    public IdWrapperDto createBook(@RequestBody BookDto bookDto) {
+    public IdWrapperDto createBook(@RequestBody @Valid BookDto bookDto) {
         return bookService.createBooks(bookDto);
     }
 
     @PatchMapping("/{id}")
     public void updateBook(@PathVariable Long id, @RequestBody BookDto bookDto) {
-        bookService.updateBook(id, bookDto);
+        bookDto.setId(id);
+        bookService.updateBook(bookDto);
     }
 
     @DeleteMapping("/{id}")

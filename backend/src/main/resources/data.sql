@@ -2,15 +2,16 @@ CREATE TABLE book
 (
     id     BIGINT PRIMARY KEY AUTO_INCREMENT,
     title  VARCHAR(255) NOT NULL,
-    author VARCHAR(255) NOT NULL
+    author VARCHAR(255) NOT NULL,
+    UNIQUE (title, author)
 );
 
 CREATE TABLE review
 (
     id      BIGINT PRIMARY KEY AUTO_INCREMENT,
-    rating  INTEGER      NOT NULL,
-    comment VARCHAR(255) NOT NULL,
-    book_id BIGINT       NOT NULL,
+    rating  INTEGER NOT NULL,
+    comment VARCHAR(255),
+    book_id BIGINT  NOT NULL,
     FOREIGN KEY (book_id) REFERENCES book (id) ON DELETE CASCADE
 );
 

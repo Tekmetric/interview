@@ -3,6 +3,7 @@ package com.interview.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,7 +22,17 @@ public class Book {
 
     private String author;
 
+    @Builder.Default
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews;
+    private List<Review> reviews = new ArrayList<>();
+
+    public void addReviews(List<Review> reviews) {
+        reviews.forEach(this::addReview);
+    }
+
+    public void addReview(Review review) {
+        reviews.add(review);
+        review.setBook(this);
+    }
 
 }

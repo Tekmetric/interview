@@ -1,12 +1,14 @@
 package com.interview.mapper;
 
 import com.interview.domain.Book;
+import com.interview.domain.Review;
 import com.interview.dto.BookDto;
 import com.interview.dto.PageResponseDto;
 import com.interview.dto.ReviewDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,5 +42,21 @@ public class BookMapper {
                 .title(book.getTitle())
                 .author(book.getAuthor())
                 .build();
+    }
+
+    public Book toEntity(BookDto bookDto) {
+        Book book = Book.builder()
+                .author(bookDto.getAuthor())
+                .title(bookDto.getTitle())
+                .build();
+
+        if (!CollectionUtils.isEmpty(bookDto.getReviews())) {
+            List<Review> reviews = bookDto.getReviews().stream()
+                    .map(reviewMapper::toEntity)
+                    .collect(Collectors.toList());
+            book.addReviews(reviews);
+        }
+
+        return book;
     }
 }

@@ -14,4 +14,11 @@ public class ReviewMapper {
                 .comment(review.getComment())
                 .build();
     }
+
+    public Review toEntity(ReviewDto reviewDto) {
+        return Review.builder()
+                .rating(reviewDto.getRating())
+                .comment(reviewDto.getComment())
+                .build();
+    }
 }

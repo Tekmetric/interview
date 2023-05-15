@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 
 @Data
@@ -14,7 +15,7 @@ import javax.validation.constraints.Positive;
 @AllArgsConstructor
 public class PageRequestDto {
 
-    @Positive
+    @Min(0)
     @Builder.Default
     private int page = 0;
 

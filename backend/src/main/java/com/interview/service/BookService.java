@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class BookService {
 
     private final BookRepository bookRepository;
@@ -34,7 +35,6 @@ public class BookService {
         return bookMapper.toDto(books);
     }
 
-    @Transactional
     public IdWrapperDto createBooks(BookDto bookDto) {
         validateBookIsUnique(bookDto);
         Book book = bookMapper.toEntity(bookDto);
@@ -42,7 +42,6 @@ public class BookService {
         return new IdWrapperDto(book.getId());
     }
 
-    @Transactional
     public void updateBook(BookDto bookDto) {
         validateBookIsUnique(bookDto);
         Book book = findBook(bookDto.getId());
@@ -50,20 +49,17 @@ public class BookService {
         book.setTitle(bookDto.getTitle());
     }
 
-    @Transactional
     public void deleteBook(Long id) {
         validateBookExists(id);
         bookRepository.deleteById(id);
     }
 
-    @Transactional
     public void addReview(Long id, ReviewDto reviewDto) {
         Book book = findBook(id);
         Review review = reviewMapper.toEntity(reviewDto);
         book.addReview(review);
     }
 
-    @Transactional
     public void deleteReview(Long id) {
         validateReviewExists(id);
         reviewRepository.deleteById(id);

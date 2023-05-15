@@ -1,8 +1,8 @@
 CREATE TABLE book
 (
     id     BIGINT PRIMARY KEY AUTO_INCREMENT,
-    title  VARCHAR(255) NOT NULL,
-    author VARCHAR(255) NOT NULL,
+    title  VARCHAR(100) NOT NULL,
+    author VARCHAR(50)  NOT NULL,
     UNIQUE (title, author)
 );
 

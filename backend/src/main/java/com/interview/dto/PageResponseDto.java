@@ -22,4 +22,3 @@ public class PageResponseDto<T> {
     private long totalNumberOfElements;
 
 }
-

@@ -1,27 +1,17 @@
-import React, { Component } from 'react';
-//import logo from './logo.svg';
- 
+import React from 'react';
+import { ChakraProvider } from "@chakra-ui/react";
+import StoreContainer from "./components/storeContainer/StoreContainer";
+import { ProductsProvider } from "./context/ProductsContext";
+import customTheme from "./theme";
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <h2>Welcome to the interview app!</h2>
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-
-        <or>
-          <li>Fetch Data from a public API <a href="https://github.com/toddmotto/public-apis">Samples</a></li>
-          <li>Display data from API onto your page (Table, List, etc.)</li>
-          <li>Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)</li> 
-        </or>   
-       
-        </header>
-      </div>
-    );
-  }
+const App = () => {
+  return (
+    <ChakraProvider theme={customTheme}>
+      <ProductsProvider>
+        <StoreContainer/>
+      </ProductsProvider>
+    </ChakraProvider>
+  );
 }
 
 export default App;

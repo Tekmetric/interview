@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserToSaveOrUpdateDto {
+public class UserToSaveDto {
     private String lastname;
     private String firstname;
 }

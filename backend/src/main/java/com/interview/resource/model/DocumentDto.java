@@ -5,15 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class DocumentDto {
     private Long id;
-    private String lastname;
-    private String firstname;
-    private Set<DocumentDto> documents;
+    private String name;
 }

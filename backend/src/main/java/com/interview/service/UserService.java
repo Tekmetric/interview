@@ -5,6 +5,7 @@ import com.interview.service.mapper.UserServiceMapper;
 import com.interview.service.model.UserDm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final DocumentService documentService;
     private final UserRepository userRepository;
     private final UserServiceMapper userServiceMapper;
 
@@ -20,12 +22,26 @@ public class UserService {
         return userServiceMapper.toDm(
                 userRepository.findById(id).orElse(null));
     }
+
     public List<UserDm> findAll() {
         return userServiceMapper.toUserDmList(
                 userRepository.findAll());
     }
 
-    public UserDm saveOrUpdate(UserDm userDm) {
+    public UserDm saveNew(UserDm userDm) {
+        return userServiceMapper.toDm(
+                userRepository.save(
+                        userServiceMapper.toEntity(userDm)));
+    }
+
+    public UserDm update(UserDm userDm) {
+        if (userDm == null) {
+            return null;
+        }
+        if (!CollectionUtils.isEmpty(userDm.getDocuments())) {
+            userDm.setDocuments(documentService.saveNew(userDm.getDocuments(), userDm));
+        }
+
         return userServiceMapper.toDm(
                 userRepository.save(
                         userServiceMapper.toEntity(userDm)));

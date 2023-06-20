@@ -2,7 +2,7 @@ package com.interview.resource;
 
 import com.interview.resource.mapper.UserResourceMapper;
 import com.interview.resource.model.UserDto;
-import com.interview.resource.model.UserToSaveOrUpdateDto;
+import com.interview.resource.model.UserToSaveDto;
 import com.interview.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,21 +37,20 @@ public class UserResource {
                         userService.findAll()));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long userId,
-                                              @RequestBody UserToSaveOrUpdateDto toUpdate) {
+    @PostMapping
+    public ResponseEntity<UserDto> saveNewUser(@RequestBody UserToSaveDto toUpdate) {
         return ResponseEntity.ok(
                 userResourceMapper.toDto(
-                        userService.saveOrUpdate(
-                                userResourceMapper.toDm(userId, toUpdate))));
+                        userService.saveNew(
+                                userResourceMapper.toDm(toUpdate))));
     }
 
-    @PostMapping
-    public ResponseEntity<UserDto> saveNewUser(@RequestBody UserToSaveOrUpdateDto toUpdate) {
+    @PutMapping
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto toUpdate) {
         return ResponseEntity.ok(
                 userResourceMapper.toDto(
-                        userService.saveOrUpdate(
-                                userResourceMapper.toDm(null, toUpdate))));
+                        userService.update(
+                                userResourceMapper.toDm(toUpdate))));
     }
 
     @DeleteMapping("/{id}")

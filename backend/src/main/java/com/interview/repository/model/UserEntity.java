@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Entity(name = "user")
+@Entity(name = "app_user")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class UserEntity {
     private String firstname;
     @Column
     private String lastname;
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user", cascade = CascadeType.REMOVE)
     private Set<DocumentEntity> documents;
     @Override
     public boolean equals(Object o) {

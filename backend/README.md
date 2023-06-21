@@ -72,3 +72,8 @@ Once you have finished the coding exercise please create a PR into Tekmetric/int
 7. Swagger
 - `curl -X GET http://localhost:8080/swagger-ui`
 
+## Service Architecture
+3-tier architecture used (Resource, Service and Repository) with Mapstruct mappers used to fully delimit the layers and ensure layers only contain their corresponding model classes:
+- Resource layer -> DTO model classes, for API
+- Service layer -> DM model classes, for business computations
+- Repository layer -> Entity model classes, for persistence

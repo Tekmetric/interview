@@ -1,5 +1,7 @@
 package com.interview.configuration;
 
+import io.micrometer.core.aop.TimedAspect;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.h2.server.web.WebServlet;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +31,8 @@ public class AppConfiguration {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/api/**"))
+                .paths(PathSelectors.ant("/api/**")
+                        .or(PathSelectors.ant("/actuator")))
                 .build();
     }
 
@@ -42,5 +45,10 @@ public class AppConfiguration {
         ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<>(new WebServlet());
         registration.addUrlMappings("/h2-console/*");
         return registration;
+    }
+
+    @Bean
+    public TimedAspect timedAspect(MeterRegistry registry) {
+        return new TimedAspect(registry);
     }
 }

@@ -4,6 +4,7 @@ import com.interview.resource.mapper.UserResourceMapper;
 import com.interview.resource.model.UserDto;
 import com.interview.resource.model.UserToSaveDto;
 import com.interview.service.UserService;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class UserResource {
     private final UserService userService;
     private final UserResourceMapper userResourceMapper;
 
+    @Timed
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> findById(@PathVariable("id") Long userId) {
         if (userId == null || userId <= 0) {
@@ -30,6 +32,7 @@ public class UserResource {
                         userService.getBy(userId)));
     }
 
+    @Timed
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
         return ResponseEntity.ok(
@@ -37,6 +40,7 @@ public class UserResource {
                         userService.findAll()));
     }
 
+    @Timed
     @PostMapping
     public ResponseEntity<UserDto> saveNewUser(@RequestBody UserToSaveDto toUpdate) {
         return ResponseEntity.ok(
@@ -45,6 +49,7 @@ public class UserResource {
                                 userResourceMapper.toDm(toUpdate))));
     }
 
+    @Timed
     @PutMapping
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto toUpdate) {
         return ResponseEntity.ok(
@@ -53,6 +58,7 @@ public class UserResource {
                                 userResourceMapper.toDm(toUpdate))));
     }
 
+    @Timed
     @DeleteMapping("/{id}")
     public ResponseEntity deleteById(@PathVariable("id") Long userId) {
         if (userId == null || userId <= 0) {

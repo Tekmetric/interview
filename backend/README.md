@@ -16,7 +16,7 @@
 - `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
 
 #### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
+- `curl -X GET   http://localhost:8080/api/users`
 
 #### After finishing the goals listed below create a PR
 
@@ -34,3 +34,39 @@
 
 ### Submitting your coding exercise
 Once you have finished the coding exercise please create a PR into Tekmetric/interview
+
+
+# API Submission, by [Mihnea Lazar](https://github.com/lzrmihnea/) 
+
+## API Endpoints: 
+1. Retrieving all Users
+- `curl -X GET   http://localhost:8080/api/welcome`
+
+2. Retrieving single User
+- `curl -X GET http://localhost:8080/api/users/3`
+
+3. Create User
+- `curl 'http://localhost:8080/api/users' \
+-X 'PUT' \
+--data-raw $' {\n    "lastname": "Potter",\n    "firstname": "Harry"\n  }' \
+--compressed`
+
+4. Update User with Document
+- `curl 'http://localhost:8080/api/users' \
+-X 'PUT' \
+--data-raw $' {\n    "id": 3,\n    "lastname": "Potter",\n    "firstname": "Harry",\n    "documents": [\n      {\n        "name": "Avadakedavra spell"\n      }\n    ]\n  }' \
+--compressed`
+
+5. Delete User 
+- `curl 'http://localhost:8080/api/users/3' \
+-X 'DELETE' \
+--compressed`
+
+6. Monitoring 
+- `curl -X GET   http://localhost:8080/actuator/health`
+- `curl -X GET   http://localhost:8080/actuator/info`
+- `curl -X GET   http://localhost:8080/actuator/prometheus`
+
+7. Swagger
+- `curl -X GET http://localhost:8080/swagger-ui`
+

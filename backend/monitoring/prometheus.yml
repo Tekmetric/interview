@@ -1,0 +1,10 @@
+global:
+  scrape_interval:     30s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'Interview App Scrape'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['localhost:8080']

@@ -5,6 +5,7 @@ import com.interview.service.mapper.UserServiceMapper;
 import com.interview.service.model.UserDm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityNotFoundException;
@@ -12,17 +13,20 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
 
     private final DocumentService documentService;
     private final UserRepository userRepository;
     private final UserServiceMapper userServiceMapper;
 
+    @Transactional(readOnly = true)
     public UserDm getBy(Long id) {
         return userServiceMapper.toDm(
                 userRepository.findById(id).orElse(null));
     }
 
+    @Transactional(readOnly = true)
     public List<UserDm> findAll() {
         return userServiceMapper.toUserDmList(
                 userRepository.findAll());

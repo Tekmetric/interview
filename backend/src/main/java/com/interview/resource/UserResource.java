@@ -63,7 +63,7 @@ public class UserResource {
 
     @Timed
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteById(@PathVariable("id") Long userId) {
+    public ResponseEntity<Object> deleteById(@PathVariable("id") Long userId) {
         if (userId == null || userId <= 0) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

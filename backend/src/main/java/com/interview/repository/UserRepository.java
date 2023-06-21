@@ -11,10 +11,12 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    @Query("SELECT ue FROM app_user ue " +
+    @Query("SELECT DISTINCT ue FROM app_user ue " +
+            "LEFT JOIN document doc ON doc.user=ue " +
             "WHERE (:searchByQuery IS NULL " +
             "OR (ue.firstname LIKE %:searchByQuery% " +
-            "OR ue.lastname LIKE %:searchByQuery%))"
+            "OR ue.lastname LIKE %:searchByQuery% " +
+            "OR doc.name LIKE %:searchByQuery%))"
     )
     List<UserEntity> findAllBy(String searchByQuery, Pageable pageable);
 }

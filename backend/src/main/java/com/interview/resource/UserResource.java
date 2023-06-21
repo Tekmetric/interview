@@ -34,10 +34,13 @@ public class UserResource {
 
     @Timed
     @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers() {
+    public ResponseEntity<List<UserDto>> getUsers(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
+            @RequestParam(value = "searchBy", required = false) String searchBy) {
         return ResponseEntity.ok(
                 userResourceMapper.toUserDtoList(
-                        userService.findAll()));
+                        userService.findAll(page, size, searchBy)));
     }
 
     @Timed

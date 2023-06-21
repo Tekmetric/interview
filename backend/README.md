@@ -40,7 +40,8 @@ Once you have finished the coding exercise please create a PR into Tekmetric/int
 
 ## API Endpoints: 
 1. Retrieving all Users
-- `curl -X GET   http://localhost:8080/api/welcome`
+- `curl -X GET   http://localhost:8080/api/users`
+- `curl -X GET   http://localhost:8080/api/users?page=0&size=2&searchBy=Severus`
 
 2. Retrieving single User
 - `curl -X GET http://localhost:8080/api/users/3`

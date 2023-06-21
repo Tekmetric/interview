@@ -4,6 +4,7 @@ import com.interview.repository.UserRepository;
 import com.interview.service.mapper.UserServiceMapper;
 import com.interview.service.model.UserDm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -16,6 +17,8 @@ import java.util.List;
 @Transactional
 public class UserService {
 
+    public static final int PAGE_NUMBER_DEFAULT = 0;
+    public static final int PAGE_SIZE_DEFAULT = 32;
     private final DocumentService documentService;
     private final UserRepository userRepository;
     private final UserServiceMapper userServiceMapper;
@@ -27,9 +30,9 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserDm> findAll() {
+    public List<UserDm> findAll(Integer page, Integer size, String searchBy) {
         return userServiceMapper.toUserDmList(
-                userRepository.findAll());
+                userRepository.findAllBy(searchBy, getPageRequest(page, size)));
     }
 
     public UserDm saveNew(UserDm userDm) {
@@ -59,5 +62,11 @@ public class UserService {
         }
         userRepository.delete(
                 userServiceMapper.toEntity(foundUser));
+    }
+
+    private static PageRequest getPageRequest(Integer page, Integer size) {
+        int pageNumber = page == null ? PAGE_NUMBER_DEFAULT : page;
+        int pageSize = size == null ? PAGE_SIZE_DEFAULT : size;
+        return PageRequest.of(pageNumber, pageSize);
     }
 }

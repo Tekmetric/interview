@@ -22,7 +22,7 @@ class UserResourceIntegrationTest {
 
     @Test
     void getAll_expectedDefaultUsersExist() {
-        List<UserDto> actualUsers = userResource.getUsers().getBody();
+        List<UserDto> actualUsers = userResource.getUsers(null, null, null).getBody();
 
         assert actualUsers != null;
         assertEquals(2, actualUsers.size());
@@ -50,7 +50,7 @@ class UserResourceIntegrationTest {
 
         userResource.saveNewUser(expectedUser);
 
-        List<UserDto> actualUsers = userResource.getUsers().getBody();
+        List<UserDto> actualUsers = userResource.getUsers(null, null, null).getBody();
 
         assert actualUsers != null;
         assertEquals(3, actualUsers.size());

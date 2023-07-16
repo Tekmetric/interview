@@ -1,11 +1,14 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./views/login/login";
+
 const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-      </header>
+    <div className="bg-slate-100 h-screen">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 };

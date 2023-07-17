@@ -8,7 +8,7 @@ const FavoriteDogContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
-}): any => {
+}) => {
   const [favoriteDog, setFavoriteDog] = useState<Dog | null>(null);
 
   const setYourFavoriteDog = (dog: Dog) => {

@@ -1,15 +1,16 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Container,
   Header,
   FavoriteDogContextProvider,
-  type Dog,
   type DogLists,
+  type Dog,
 } from './components';
 import {
   addElementToList,
   removeElementFromList,
 } from './helpers/listOperations';
+import type { DropResult } from '@hello-pangea/dnd';
 
 const App = () => {
   const [dogsPetted, setDogsPetted] = useState<number>(0);
@@ -20,7 +21,6 @@ const App = () => {
   });
 
   const [inital, setInitial] = useState<boolean>(true);
-  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const addDogs = async () => {
@@ -30,7 +30,6 @@ const App = () => {
 
     if (data) {
       const newDogs = [...dogs.beforePet, ...data];
-      console.log(newDogs);
       setDogs({
         afterPet: dogs.afterPet,
         beforePet: newDogs,
@@ -46,7 +45,7 @@ const App = () => {
     if (response.status !== 200) {
       setError('Error fetching data.');
     }
-    return data as Array<any>;
+    return data as Array<Dog>;
   }, []);
 
   useEffect(() => {
@@ -54,7 +53,6 @@ const App = () => {
       const data = await fetchData(Math.floor(Math.random() * (30 + 1)));
       if (data) {
         const newDogs = [...dogs.beforePet, ...data];
-        console.log(newDogs);
         setDogs({
           afterPet: dogs.afterPet,
           beforePet: newDogs,
@@ -67,10 +65,10 @@ const App = () => {
     }
   }, [fetchData, inital, dogs]);
 
-  const onDragEnd = (element: any) => {
+  const onDragEnd = (element: DropResult) => {
+    console.log(typeof element);
     // if the element is not dropped in a droppable area, do nothing
     if (!element.destination) {
-      console.log(element);
       return;
     }
 
@@ -104,9 +102,15 @@ const App = () => {
       <div className="relative mx-[100px] flex min-h-screen flex-col justify-center py-6 sm:py-12">
         <div className="relative mx-auto min-w-full rounded-xl bg-gray-600 bg-opacity-50 px-6 pb-8 pt-10 shadow-xl ring-1 ring-gray-900/5 sm:px-1">
           <Header onAddDogsClick={addDogs} dogsPetted={dogsPetted} />
-          <div className="flex max-w-full justify-center gap-[100px]">
-            <Container list={dogs} onDragEnd={onDragEnd} />
-          </div>
+          {error === null ? (
+            <div className="flex max-w-full justify-center gap-[100px]">
+              <Container list={dogs} onDragEnd={onDragEnd} />
+            </div>
+          ) : (
+            <div className="flex max-w-full justify-center gap-[100px]">
+              <p className="text-center text-2xl text-white">{error}</p>
+            </div>
+          )}
         </div>
       </div>
     </FavoriteDogContextProvider>

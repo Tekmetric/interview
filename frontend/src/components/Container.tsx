@@ -3,12 +3,13 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
   Draggable,
+  DropResult,
 } from '@hello-pangea/dnd';
-import { Column, Card } from './index';
+import { Column, Card, type DogLists } from './index';
 
 type ContainerProps = {
-  list: { beforePet: Array<any>; afterPet: Array<any> };
-  onDragEnd: (result: any) => void;
+  list: DogLists;
+  onDragEnd: (element: DropResult) => void;
 };
 
 const Container = ({ list, onDragEnd }: ContainerProps) => {
@@ -19,7 +20,7 @@ const Container = ({ list, onDragEnd }: ContainerProps) => {
           {list.beforePet.map((item, index) => (
             <Draggable key={item.id} draggableId={item.id + ''} index={index}>
               {(
-                provided: DraggableProvided | any,
+                provided: DraggableProvided,
                 snapshot: DraggableStateSnapshot
               ) => (
                 <div>

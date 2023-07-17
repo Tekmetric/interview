@@ -17,7 +17,7 @@ const Card = ({ dogEntry, isDragging = false }: CardProps) => {
       key={dogEntry.id}
       className={`${
         isDragging ? 'rotate-6' : ''
-      } my-0.5 flex h-[150px] max-w-2xl flex-row justify-start overflow-hidden rounded-xl
+      } my-0.5 flex h-[150px] flex-row justify-start overflow-hidden rounded-xl
              border bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-slate-700/[.7]`}
     >
       <img

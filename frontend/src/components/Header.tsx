@@ -7,7 +7,9 @@ type HeaderProps = {
 };
 
 const Header = ({ onAddDogsClick, dogsPetted }: HeaderProps) => {
+  // Get the favorite dog from the react context
   const [favoriteDog] = useContext(FavoriteDogContext);
+
   return (
     <header className="mx-auto mb-9 flex max-w-md flex-col ">
       <h1 className="text-3xl font-bold text-green-500 underline">

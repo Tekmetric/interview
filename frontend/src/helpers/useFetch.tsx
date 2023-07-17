@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
+import { Dog } from '../components/types';
 
 // Leaving this here as a talking point for the interview
-// Deprecated, using fetch inside a callback instead 
+// Deprecated, using fetch inside a callback instead
 export const useFetch = (url: string) => {
-  const [data, setData] = useState<Array<any>>([]);
+  const [data, setData] = useState<Array<Dog>>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log(url);
       const response = await fetch(url);
       const data = await response.json();
 

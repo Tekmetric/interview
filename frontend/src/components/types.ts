@@ -1,7 +1,7 @@
 type Dog = {
   id: number;
   name: string;
-  bread_for: string;
+  bred_for: string;
   life_span: string;
   temperament: string;
   weight: {

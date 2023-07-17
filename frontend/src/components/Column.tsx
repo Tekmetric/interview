@@ -8,7 +8,10 @@ type ColumnProps = {
 
 const Column = ({ title, droppableId, children }: ColumnProps) => {
   return (
-    <div className="flex flex-col min-w-[70%] max-w-[350px]">
+    <div
+      className="flex min-w-[70%] max-w-[350px] flex-col"
+      data-testid="dog-list"
+    >
       <h2 className="mx-5 mb-2 text-2xl font-bold uppercase">{title}</h2>
       <Droppable droppableId={droppableId}>
         {(provided: DroppableProvided) => (

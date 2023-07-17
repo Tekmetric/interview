@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Container, Header, type Dog, type DogLists } from './components';
-import { useFetch } from './helpers/useFetch';
 import {
   addElementToList,
   removeElementFromList,
@@ -24,7 +23,6 @@ const App = () => {
     const data = await fetchData(randNumber);
 
     if (data) {
-      // setDogs();
       const newDogs = [...dogs.beforePet, ...data];
       console.log(newDogs);
       setDogs({

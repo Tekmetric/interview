@@ -5,14 +5,14 @@ const Column = () => {
     data: dogs,
     loading,
     error,
-  } = useFetch('https://api.thedogapi.com/v1/breeds?limit=10&page=1');
+  } = useFetch('https://api.thedogapi.com/v1/breeds?limit=5&page=1');
 
   return (
     <>
       {loading && <div>Loading...</div>}
       {error && <div>Error: {error}</div>}
       {dogs && !error && !loading && (
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col mx-10">
           <h2 className="text-2xl font-bold text-gray-800">
             Dogs
           </h2>

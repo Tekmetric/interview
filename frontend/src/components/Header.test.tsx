@@ -23,6 +23,7 @@ const DOG_MOCK: Dog = {
     url: 'https://cdn2.thedogapi.com/images/ryNYMx94X.jpg',
   },
 };
+
 function renderWithContext() {
   return render(
     <FavoriteDogContext.Provider value={[DOG_MOCK, (dog: Dog) => {}]}>

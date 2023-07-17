@@ -72,10 +72,12 @@ const App = () => {
       return;
     }
 
-    const sourceColumnName: 'afterPet' | 'beforePet' =
-      element.source.droppableId;
-    const destinationColumnName: 'afterPet' | 'beforePet' =
-      element.destination.droppableId;
+    const sourceColumnName = element.source.droppableId as
+      | 'afterPet'
+      | 'beforePet';
+    const destinationColumnName = element.destination.droppableId as
+      | 'afterPet'
+      | 'beforePet';
 
     const shallowDogLists: DogLists = { ...dogs };
 

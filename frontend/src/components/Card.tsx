@@ -1,19 +1,21 @@
-import React from 'react';
 import type { Dog } from './types';
 
-type Props = {
+type CardProps = {
   dogEntry: Dog;
+  isDragging: boolean;
 };
 
-const Card = ({ dogEntry }: Props) => {
+const Card = ({ dogEntry, isDragging = false }: CardProps) => {
   return (
     <div
       key={dogEntry.id}
-      className="my-0.5 flex h-[150px] max-w-2xl flex-row justify-center rounded-xl border bg-white
-             shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-slate-700/[.7]"
+      className={`${
+        isDragging ? 'rotate-6' : ''
+      } my-0.5 flex h-[150px] max-w-2xl flex-row justify-start overflow-hidden rounded-xl
+             border bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-slate-700/[.7]`}
     >
       <img
-        className="mx-auto mt-3 h-auto w-[14rem] rounded-xl"
+        className="mx-auto h-full w-[10rem] rounded-xl object-cover"
         src={dogEntry.image?.url}
         alt={dogEntry.name}
       />
@@ -29,7 +31,7 @@ const Card = ({ dogEntry }: Props) => {
       </div>
       <button
         type="button"
-        className="inline-flex items-center justify-center gap-2 rounded-md border-2 border-gray-200 px-4 py-[.688rem] text-sm font-semibold text-blue-500 transition-all hover:border-blue-500 hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-700 dark:hover:border-blue-500"
+        className="mx-2 my-auto inline-flex h-[50%] items-center justify-center gap-2 rounded-md border-2 border-gray-200 px-4 py-[.688rem] text-sm font-semibold text-blue-500 transition-all hover:border-blue-500 hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-700 dark:hover:border-blue-500"
       >
         Favourite
       </button>

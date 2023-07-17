@@ -6,7 +6,7 @@ type HeaderProps = {
 
 const Header = ({ onAddDogsClick, dogsPetted }: HeaderProps) => {
   return (
-    <header className="mb-9 flex flex-col ">
+    <header className="mx-auto max-w-md mb-9 flex flex-col ">
       <h1 className="text-3xl font-bold text-green-500 underline">
         Tekmetric Interview
       </h1>

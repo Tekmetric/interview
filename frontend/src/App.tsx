@@ -45,7 +45,7 @@ const App = () => {
 
   useEffect(() => {
     const fetchDogs = async () => {
-      const data = await fetchData(0);
+      const data = await fetchData(Math.floor(Math.random() * (30 + 1)));
       if (data) {
         const newDogs = [...dogs.beforePet, ...data];
         console.log(newDogs);
@@ -72,10 +72,10 @@ const App = () => {
       element.source.droppableId;
     const destinationColumnName: 'afterPet' | 'beforePet' =
       element.destination.droppableId;
-    
+
     const shallowDogLists: DogLists = { ...dogs };
 
-    const originalColumn = shallowDogLists[sourceColumnName]; 
+    const originalColumn = shallowDogLists[sourceColumnName];
     const [removedElement, newDogsColumn] = removeElementFromList(
       originalColumn,
       element.source.index

@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { screen, render, waitFor } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import Column from './Column';
 import { DragDropContext } from '@hello-pangea/dnd';
 describe('testing Column', () => {

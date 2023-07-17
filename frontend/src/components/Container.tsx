@@ -14,7 +14,7 @@ type ContainerProps = {
 const Container = ({ list, onDragEnd }: ContainerProps) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex justify-center p-3 min-w-[70%]">
+      <div className="flex min-w-[70%] justify-center p-3">
         <Column title="To be petted" droppableId="beforePet">
           {list.beforePet.map((item, index) => (
             <Draggable key={item.id} draggableId={item.id + ''} index={index}>
@@ -28,7 +28,7 @@ const Container = ({ list, onDragEnd }: ContainerProps) => {
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                    <Card dogEntry={item} />
+                    <Card dogEntry={item} isDragging={snapshot.isDragging} />
                   </div>
                 </div>
               )}
@@ -37,14 +37,18 @@ const Container = ({ list, onDragEnd }: ContainerProps) => {
         </Column>
         <Column title="Petted" droppableId="afterPet">
           {list.afterPet.map((item, index) => (
-            <Draggable draggableId={item.id + ' after'} index={index} key={item.id}>
+            <Draggable
+              draggableId={item.id + ' after'}
+              index={index}
+              key={item.id}
+            >
               {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.draggableProps}
                   {...provided.dragHandleProps}
                 >
-                  <Card dogEntry={item} />
+                  <Card dogEntry={item} isDragging={snapshot.isDragging} />{' '}
                 </div>
               )}
             </Draggable>

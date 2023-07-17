@@ -9,6 +9,7 @@ export const useFetch = (url: string) => {
     const fetchData = async () => {
       const response = await fetch(url);
       const data = await response.json();
+
       if (response.status !== 200) {
         setError('Error fetching data.');
       }

@@ -1,11 +1,13 @@
-import { useFetch } from "../helpers/useFetch";
+import { useFetch } from '../helpers/useFetch';
 
 const Column = () => {
-    const { data: dogs, loading, error } = useFetch(
-        "https://api.thedogapi.com/v1/breeds?limit=10&page=1"
-    );
+  const {
+    data: dogs,
+    loading,
+    error,
+  } = useFetch('https://api.thedogapi.com/v1/breeds?limit=10&page=1');
 
-    return (
+  return (
     <>
       {loading && <div>Loading...</div>}
       {error && <div>Error: {error}</div>}

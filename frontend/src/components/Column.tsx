@@ -1,7 +1,4 @@
-import {
-  Droppable,
-  DroppableProvided,
-} from 'react-beautiful-dnd';
+import { Droppable, DroppableProvided } from '@hello-pangea/dnd';
 
 type ColumnProps = {
   title: string;

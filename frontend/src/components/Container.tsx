@@ -3,7 +3,7 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
   Draggable,
-} from 'react-beautiful-dnd';
+} from '@hello-pangea/dnd';
 import { Column, Card } from './index';
 
 type ContainerProps = {

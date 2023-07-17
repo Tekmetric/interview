@@ -1,52 +1,106 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Container, Header, type Dog, type DogLists } from './components';
 import { useFetch } from './helpers/useFetch';
+import {
+  addElementToList,
+  removeElementFromList,
+} from './helpers/listOperations';
 
 const App = () => {
-  const [page, setPage] = useState<number>(0);
-  const dogs = useRef<DogLists>({ afterPet: [], beforePet: [] });
+  const [dogsPetted, setDogsPetted] = useState<number>(0);
 
-  const {
-    data,
-    loading,
-    error,
-  }: { data: Array<Dog>; loading: boolean; error: string | null } = useFetch(
-    `https://api.thedogapi.com/v1/breeds?limit=5&page=${page}`
-  );
+  const [dogs, setDogs] = useState<DogLists>({
+    afterPet: [],
+    beforePet: [],
+  });
 
-  const addDogs = () => {
-    const randNumber = Math.floor(Math.random() * 30);
-    console.log(randNumber);
-    setPage(randNumber);
+  const [inital, setInitial] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const addDogs = async () => {
+    const randNumber = Math.floor(Math.random() * (30 + 1));
+
+    const data = await fetchData(randNumber);
+
+    if (data) {
+      // setDogs();
+      const newDogs = [...dogs.beforePet, ...data];
+      console.log(newDogs);
+      setDogs({
+        afterPet: dogs.afterPet,
+        beforePet: newDogs,
+      });
+    }
   };
 
-  useEffect(() => {
-    if (data && !loading && !error) {
-      const foundDuplicate = dogs.current.beforePet.find(
-        (dog: Dog) => dog.id === data[0].id
-      );
-      if (!foundDuplicate) {
-        const newDogs = [...dogs.current.beforePet, ...data];
-        console.log(newDogs);
-
-        dogs.current = { beforePet: newDogs, afterPet: dogs.current.afterPet };
-      } else {
-        console.log('Duplicate found, retrying...');
-        // This is commented because on dev it will fetch twice
-        // Since React 18, tries to double render when StrictMode is on
-        // setPage(Math.floor(Math.random() * 30));
-      }
+  const fetchData = useCallback(async (page: number) => {
+    const response = await fetch(
+      `https://api.thedogapi.com/v1/breeds?limit=5&page=${page}`
+    );
+    const data = await response.json();
+    if (response.status !== 200) {
+      setError('Error fetching data.');
     }
-  }, [data, loading, error, dogs]);
+    return data as Array<any>;
+  }, []);
 
-  const onDragEnd = (element: any) => { };
+  useEffect(() => {
+    const fetchDogs = async () => {
+      const data = await fetchData(0);
+      if (data) {
+        const newDogs = [...dogs.beforePet, ...data];
+        console.log(newDogs);
+        setDogs({
+          afterPet: dogs.afterPet,
+          beforePet: newDogs,
+        });
+      }
+    };
+    if (inital) {
+      fetchDogs();
+      setInitial(false);
+    }
+  }, [fetchData, inital, dogs]);
+
+  const onDragEnd = (element: any) => {
+    // if the element is not dropped in a droppable area, do nothing
+    if (!element.destination) {
+      console.log(element);
+      return;
+    }
+
+    const sourceColumnName: 'afterPet' | 'beforePet' =
+      element.source.droppableId;
+    const destinationColumnName: 'afterPet' | 'beforePet' =
+      element.destination.droppableId;
+    
+    const shallowDogLists: DogLists = { ...dogs };
+
+    const originalColumn = shallowDogLists[sourceColumnName]; 
+    const [removedElement, newDogsColumn] = removeElementFromList(
+      originalColumn,
+      element.source.index
+    );
+    shallowDogLists[sourceColumnName] = newDogsColumn;
+
+    const destinationList = shallowDogLists[destinationColumnName];
+    shallowDogLists[destinationColumnName] = addElementToList(
+      destinationList,
+      element.destination.index,
+      removedElement
+    );
+
+    setDogs(shallowDogLists);
+    setDogsPetted(shallowDogLists.afterPet.length);
+  };
 
   return (
     <div className="relative mx-[100px] flex min-h-screen flex-col justify-center py-6 sm:py-12">
       <div className="relative mx-auto min-w-full rounded-xl bg-gray-600 bg-opacity-50 px-6 pb-8 pt-10 shadow-xl ring-1 ring-gray-900/5 sm:px-1">
-        <Header onAddDogsClick={addDogs} />
-        <div className="flex gap-[100px] justify-center max-w-full">
-          <Container list={dogs.current} onDragEnd={onDragEnd} />
+        <Header onAddDogsClick={addDogs} dogsPetted={dogsPetted} />
+        <div className="flex max-w-full justify-center gap-[100px]">
+          <Container list={dogs} onDragEnd={onDragEnd} />
         </div>
       </div>
     </div>

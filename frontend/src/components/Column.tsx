@@ -1,16 +1,19 @@
 import { useFetch } from '../helpers/useFetch';
+import type { Dog } from './types';
 
 const Column = () => {
   const {
     data: dogs,
     loading,
     error,
-  } = useFetch('https://api.thedogapi.com/v1/breeds?limit=5&page=1');
-
+  }: { data: Array<Dog>, loading: boolean, error: string | null} = useFetch(
+    'https://api.thedogapi.com/v1/breeds?limit=5&page=1'
+  );
+    console.log("in column")
   return (
     <>
       {loading && <div>Loading...</div>}
-      {error && <div>Error: {error}</div>}
+      {error && <div>Error: {error.toString()}</div>}
       {dogs && !error && !loading && (
         <div className="flex flex-col mx-10">
           <h2 className="text-2xl font-bold text-gray-800">

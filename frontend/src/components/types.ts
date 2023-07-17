@@ -1,4 +1,5 @@
 type Dog = {
+  id: number;
   name: string;
   bread_for: string;
   life_span: string;
@@ -15,4 +16,9 @@ type Dog = {
   };
 };
 
-export type { Dog };
+type DogLists = {
+  beforePet: Array<Dog>;
+  afterPet: Array<Dog>;
+};
+
+export type { Dog, DogLists };

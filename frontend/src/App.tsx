@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Column, Header, type Dog, type DogLists } from './components';
+import { Container, Header, type Dog, type DogLists } from './components';
 import { useFetch } from './helpers/useFetch';
 
 const App = () => {
@@ -13,7 +13,6 @@ const App = () => {
   }: { data: Array<Dog>; loading: boolean; error: string | null } = useFetch(
     `https://api.thedogapi.com/v1/breeds?limit=5&page=${page}`
   );
-
 
   const addDogs = () => {
     const randNumber = Math.floor(Math.random() * 30);
@@ -40,13 +39,14 @@ const App = () => {
     }
   }, [data, loading, error, dogs]);
 
+  const onDragEnd = (element: any) => { };
+
   return (
     <div className="relative mx-[100px] flex min-h-screen flex-col justify-center py-6 sm:py-12">
       <div className="relative mx-auto min-w-full rounded-xl bg-gray-600 bg-opacity-50 px-6 pb-8 pt-10 shadow-xl ring-1 ring-gray-900/5 sm:px-1">
         <Header onAddDogsClick={addDogs} />
-        <div className="flex gap-[100px]">
-          <Column />
-          <Column />
+        <div className="flex gap-[100px] justify-center max-w-full">
+          <Container list={dogs.current} onDragEnd={onDragEnd} />
         </div>
       </div>
     </div>

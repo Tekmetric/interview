@@ -1,0 +1,40 @@
+import React from 'react';
+import type { Dog } from './types';
+
+type Props = {
+  dogEntry: Dog;
+};
+
+const Card = ({ dogEntry }: Props) => {
+  return (
+    <div
+      key={dogEntry.id}
+      className="my-0.5 flex h-[150px] max-w-2xl flex-row justify-center rounded-xl border bg-white
+             shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-slate-700/[.7]"
+    >
+      <img
+        className="mx-auto mt-3 h-auto w-[14rem] rounded-xl"
+        src={dogEntry.image?.url}
+        alt={dogEntry.name}
+      />
+      <div className="block max-h-1 text-ellipsis p-4 md:p-5 ">
+        <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+          {dogEntry.name}
+        </h3>
+        <p className="mt-1 text-gray-800 dark:text-gray-400 ">
+          <strong>Life Span:</strong> {dogEntry.life_span}
+          <br />
+          <strong>Temperament:</strong> {dogEntry.temperament}
+        </p>
+      </div>
+      <button
+        type="button"
+        className="inline-flex items-center justify-center gap-2 rounded-md border-2 border-gray-200 px-4 py-[.688rem] text-sm font-semibold text-blue-500 transition-all hover:border-blue-500 hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-700 dark:hover:border-blue-500"
+      >
+        Favourite
+      </button>
+    </div>
+  );
+};
+
+export default Card;

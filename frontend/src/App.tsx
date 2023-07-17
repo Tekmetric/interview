@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Container, Header, type Dog, type DogLists } from './components';
+import {
+  Container,
+  Header,
+  FavoriteDogContextProvider,
+  type Dog,
+  type DogLists,
+} from './components';
 import {
   addElementToList,
   removeElementFromList,
@@ -94,14 +100,16 @@ const App = () => {
   };
 
   return (
-    <div className="relative mx-[100px] flex min-h-screen flex-col justify-center py-6 sm:py-12">
-      <div className="relative mx-auto min-w-full rounded-xl bg-gray-600 bg-opacity-50 px-6 pb-8 pt-10 shadow-xl ring-1 ring-gray-900/5 sm:px-1">
-        <Header onAddDogsClick={addDogs} dogsPetted={dogsPetted} />
-        <div className="flex max-w-full justify-center gap-[100px]">
-          <Container list={dogs} onDragEnd={onDragEnd} />
+    <FavoriteDogContextProvider>
+      <div className="relative mx-[100px] flex min-h-screen flex-col justify-center py-6 sm:py-12">
+        <div className="relative mx-auto min-w-full rounded-xl bg-gray-600 bg-opacity-50 px-6 pb-8 pt-10 shadow-xl ring-1 ring-gray-900/5 sm:px-1">
+          <Header onAddDogsClick={addDogs} dogsPetted={dogsPetted} />
+          <div className="flex max-w-full justify-center gap-[100px]">
+            <Container list={dogs} onDragEnd={onDragEnd} />
+          </div>
         </div>
       </div>
-    </div>
+    </FavoriteDogContextProvider>
   );
 };
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+// Leaving this here as a talking point for the interview
 // Deprecated, using fetch inside a callback instead 
 export const useFetch = (url: string) => {
   const [data, setData] = useState<Array<any>>([]);

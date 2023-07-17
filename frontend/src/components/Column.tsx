@@ -16,7 +16,7 @@ const Column = ({ title, droppableId, children }: ColumnProps) => {
       <Droppable droppableId={droppableId}>
         {(provided: DroppableProvided) => (
           <div ref={provided.innerRef} className="h-screen">
-            <div className="mx-2 flex h-fit flex-col gap-y-3 rounded-md bg-green-200 p-5">
+            <div className="mx-2 flex h-fit flex-col gap-y-3 rounded-md bg-green-200 bg-opacity-30 p-5">
               {children}
               {provided.placeholder}
             </div>

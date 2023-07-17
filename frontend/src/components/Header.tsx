@@ -11,8 +11,8 @@ const Header = ({ onAddDogsClick, dogsPetted }: HeaderProps) => {
   const [favoriteDog] = useContext(FavoriteDogContext);
 
   return (
-    <header className="mx-auto mb-9 flex max-w-md flex-col ">
-      <h1 className="text-3xl font-bold text-green-500 underline">
+    <header className="mx-auto mb-9 flex flex-col items-center">
+      <h1 className="text-3xl font-bold text-gray-200 sm:text-5xl lg:text-6xl lg:leading-tight">
         Tekmetric Interview
       </h1>
       <span className="text-xl text-white">Dogs Petted {dogsPetted}</span>

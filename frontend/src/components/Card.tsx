@@ -38,7 +38,7 @@ const Card = ({ dogEntry, isDragging = false }: CardProps) => {
       </div>
       <button
         type="button"
-        className="mx-2 my-auto inline-flex h-[50%] items-center justify-center gap-2 rounded-md border-2 border-gray-200 px-4 py-[.688rem] text-sm font-semibold text-blue-500 transition-all hover:border-blue-500 hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-700 dark:hover:border-blue-500"
+        className="my-auto mr-8 inline-flex h-[40%] items-center justify-center gap-2 rounded-md border-2 border-gray-200 px-4 py-[.688rem] text-sm font-semibold text-blue-500 transition-all hover:border-blue-500 hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-700 dark:hover:border-blue-500"
         onClick={handleFavoriteDog}
       >
         Favorite

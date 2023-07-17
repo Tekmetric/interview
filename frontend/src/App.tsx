@@ -66,7 +66,6 @@ const App = () => {
   }, [fetchData, inital, dogs]);
 
   const onDragEnd = (element: DropResult) => {
-    console.log(typeof element);
     // if the element is not dropped in a droppable area, do nothing
     if (!element.destination) {
       return;

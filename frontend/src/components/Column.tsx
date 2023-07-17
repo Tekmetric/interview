@@ -12,7 +12,9 @@ const Column = ({ title, droppableId, children }: ColumnProps) => {
       className="flex min-w-[70%] max-w-[350px] flex-col"
       data-testid="dog-list"
     >
-      <h2 className="mx-5 mb-2 text-2xl font-bold uppercase">{title}</h2>
+      <h2 className="mx-5 mb-2 text-2xl font-bold capitalize text-green-100">
+        {title}
+      </h2>
       <Droppable droppableId={droppableId}>
         {(provided: DroppableProvided) => (
           <div ref={provided.innerRef} className="h-screen">

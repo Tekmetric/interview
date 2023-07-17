@@ -16,7 +16,7 @@ const Container = ({ list, onDragEnd }: ContainerProps) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="flex min-w-[70%] justify-center p-3">
-        <Column title="To be petted" droppableId="beforePet">
+        <Column title="Will be petted" droppableId="beforePet">
           {list.beforePet.map((item, index) => (
             <Draggable key={item.id} draggableId={item.id + ''} index={index}>
               {(

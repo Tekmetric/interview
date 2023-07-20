@@ -1,10 +1,9 @@
 import { TextField, Button, Box } from '@mui/material';
-import { FormDataType } from '../../shared/types/login';
+import { LoginDataType, FormDataType } from '../../shared/types/login';
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { AuthDataType } from '../../views/login/types';
 
 type LoginFormPropsType = {
-  setAuthData: React.Dispatch<React.SetStateAction<AuthDataType>>;
+  setAuthData: React.Dispatch<React.SetStateAction<LoginDataType>>;
 };
 
 const LoginForm = ({ setAuthData }: LoginFormPropsType) => {

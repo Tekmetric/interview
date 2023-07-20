@@ -1,0 +1,6 @@
+.chapter-list-wrapper {
+  @apply flex flex-col items-center gap-8;
+  @apply h-full;
+
+  padding: 0 20vw 0 20vw;
+}

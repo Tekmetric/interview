@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { GlobalContext } from '../../shared/context/global';
 import { useLoginApi } from '../../shared/hooks/api/use-login-api';
 import { LoginDataType } from '../../shared/types/login';
+import Loader from '../../components/loader';
 
 const Login = () => {
   const apiGrantType = process.env.REACT_APP_API_GRANT_TYPE;
@@ -36,7 +37,7 @@ const Login = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       {isError && <p>Error login</p>}
-      <LoginForm setAuthData={setAuthData} />
+      {isLoading ? <Loader /> : <LoginForm setAuthData={setAuthData} />}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import Chapter from '../../features/chapters/chapter';
 import { ChapterType } from '../../shared/types/chapter';
 import { Typography } from '@mui/material';
 import Loader from '../../components/loader';
+import BackToTop from '../../components/back-to-top';
 import './chapter-list.css';
 
 const ChapterList = () => {
@@ -21,7 +22,6 @@ const ChapterList = () => {
 
   useEffect(() => {
     if (data) {
-      console.log('chapters', data);
       setChapters(data);
     }
   }, [data]);
@@ -50,6 +50,7 @@ const ChapterList = () => {
             );
           })
         )}
+        <BackToTop />
       </div>
     </>
   );

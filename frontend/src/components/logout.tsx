@@ -7,7 +7,7 @@ const Logout = () => {
 
     return (
         <IconButton
-            className='fixed top-9 right-5'
+            className='absolute top-9 right-5'
             aria-label="Logout button"
             title="Logout"
             onClick={logout}

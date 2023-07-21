@@ -16,14 +16,14 @@ const Login = () => {
     scope: apiScope ?? '',
   });
 
-  const { data, mutate, isLoading, isError } = useLoginApi(authData);
+  const { data, mutate: login, isLoading, isError } = useLoginApi(authData);
 
   const { setGlobalState } = useContext(GlobalContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (authData.client_id && authData.client_secret) {
-      mutate();
+      login();
     }
   }, [authData]);
 
@@ -34,7 +34,7 @@ const Login = () => {
 
       if (!isLoading) navigate('/chapters');
     }
-  }, [data]);
+  }, [data, isLoading]);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">

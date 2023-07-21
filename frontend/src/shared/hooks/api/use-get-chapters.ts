@@ -8,7 +8,6 @@ export const useGetChapters = (accessToken: string) => {
   return useQuery({
     queryKey: ['query:chapters'],
     queryFn: async () => {
-      console.log('fetch');
       const response = await fetch(`${baseUrl}${apiPath}=${accessToken}`);
 
       if (!response.ok) {

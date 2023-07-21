@@ -4,7 +4,7 @@ import { useState } from 'react';
 import useScroll from '../shared/hooks/utils/use-scroll';
 
 const BackToTop = () => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   const hide = (offsetY?: number) => {
     if (offsetY !== undefined && offsetY < 400) {

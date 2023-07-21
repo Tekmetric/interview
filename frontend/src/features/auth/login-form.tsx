@@ -3,10 +3,11 @@ import { LoginDataType, FormDataType } from '../../shared/types/login';
 import { ChangeEvent, FormEvent, useState } from 'react';
 
 type LoginFormPropsType = {
+  isError: boolean;
   setAuthData: React.Dispatch<React.SetStateAction<LoginDataType>>;
 };
 
-const LoginForm = ({ setAuthData }: LoginFormPropsType) => {
+const LoginForm = ({ isError, setAuthData }: LoginFormPropsType) => {
   const [formData, setFormData] = useState<FormDataType>({
     client_id: '',
     client_secret: '',
@@ -75,6 +76,7 @@ const LoginForm = ({ setAuthData }: LoginFormPropsType) => {
         onChange={handleSecureChange}
         inputProps={{ 'data-testid': 'client-secret-input' }}
       />
+      {isError && <p className='text-red-700 text-center font-semibold'>Login failed !</p>}
       <Button
         className="font-bold"
         type="submit"

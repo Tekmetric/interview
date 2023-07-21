@@ -38,8 +38,7 @@ const Login = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      {isError && <p>Error login</p>}
-      {isLoading ? <Loader /> : <LoginForm setAuthData={setAuthData} />}
+      {isLoading ? <Loader /> : <LoginForm isError={isError} setAuthData={setAuthData} />}
     </div>
   );
 };

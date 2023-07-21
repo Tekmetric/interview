@@ -1,6 +1,6 @@
 import { createContext, useState, ReactNode, Dispatch, SetStateAction } from 'react';
 
-type GlobalStateType = {
+export type GlobalStateType = {
   token: string;
 };
 

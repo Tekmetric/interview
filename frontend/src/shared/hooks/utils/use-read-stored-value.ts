@@ -21,7 +21,6 @@ const useReadStoredValue = (key: string) => {
   const [storedValue, setStoredValue] = useState(readValue);
 
   useEffect(() => {
-    console.log('exec');
     setStoredValue(readValue());
   }, [globalState]);
 

@@ -38,10 +38,9 @@ const LoginForm = ({ isError, setAuthData }: LoginFormPropsType) => {
   };
 
   return (
-    <Box
+    <form
       className="max-w-sm px-6 py-8 bg-slate-200 rounded-md shadow-md shadow-gray-400"
       onSubmit={handleSubmit}
-      component="form"
       noValidate
     >
       <p className="text-center text-xl font-medium mb-2">
@@ -91,7 +90,7 @@ const LoginForm = ({ isError, setAuthData }: LoginFormPropsType) => {
           Don&apos;t have an account?
         </a>
       </p>
-    </Box>
+    </form>
   );
 };
 

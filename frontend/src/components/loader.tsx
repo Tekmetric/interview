@@ -1,10 +1,10 @@
-import { Box, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 
 const Loader = () => {
   return (
-    <Box className="flex">
+    <div className="flex">
       <CircularProgress />
-    </Box>
+    </div>
   );
 };
 

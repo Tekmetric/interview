@@ -5,8 +5,15 @@ import LoginForm from './login-form';
 describe('LoginForm component', () => {
   const mockSetAuthData = jest.fn();
 
+  it('should render error text', () => {
+    render(<LoginForm isError={true} setAuthData={mockSetAuthData} />);
+
+    const errorText = screen.getByText('Login failed !');
+    expect(errorText).toBeInTheDocument();
+  });
+
   beforeEach(() => {
-    render(<LoginForm setAuthData={mockSetAuthData} />);
+    render(<LoginForm isError={false} setAuthData={mockSetAuthData} />);
   });
 
   it('should render the "Sign In to Bhagavad Gita" text', () => {

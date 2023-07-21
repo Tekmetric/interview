@@ -1,11 +1,10 @@
-import { useContext } from 'react';
-import { GlobalContext } from '../../shared/context/global';
 import { Navigate, Outlet } from 'react-router';
+import useReadStoredValue from '../../shared/hooks/utils/use-read-stored-value';
 
 const RequireAuth = () => {
-  const { globalState } = useContext(GlobalContext);
+  const storedToken = useReadStoredValue<string>('token');
 
-  return globalState?.token ? <Outlet /> : <Navigate to="/" />;
+  return storedToken ? <Outlet /> : <Navigate to="/" />;
 };
 
 export default RequireAuth;

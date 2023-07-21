@@ -30,6 +30,8 @@ const Login = () => {
   useEffect(() => {
     if (data) {
       setGlobalState({ token: data.access_token });
+      localStorage.setItem('token', data.access_token);
+
       if (!isLoading) navigate('/chapters');
     }
   }, [data]);

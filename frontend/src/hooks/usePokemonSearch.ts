@@ -7,6 +7,11 @@ export type UsePokemonSearchType = {
   setSearchText: (searchText: string) => void;
 };
 
+/**
+ * This hook does an in-place filtering over the already fetched items based on a provided searching text
+ * Filters out pokemons whose name do not contain the searching text
+ * @param pokemons
+ */
 const usePokemonSearch = (pokemons: Pokemon[]): UsePokemonSearchType => {
   const [searchText, setSearchText] = useState<string>('');
   const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>([]);

@@ -1,35 +1,22 @@
-import React, { Fragment, FunctionComponent, ReactElement, useEffect, useState } from 'react';
+import React, { Fragment, FunctionComponent, ReactElement } from 'react';
 import { PaginatedPokemonsResponse, Pokemon } from '../../api/fetchPokemons';
-import { Button, TextField } from '@mui/material';
+import { Button } from '@mui/material';
 import LoadingComponent from '../LoadingComponent';
 import { useInfinitePokemons } from '../../hooks/useInfinitePokemons';
 import PokemonListItem from './PokemonListItem';
+import SearchInput from '../SearchInput';
+import usePokemonSearch from '../../hooks/usePokemonSearch';
 
 const PokemonsList: FunctionComponent = (): ReactElement => {
-  const [searchText, setSearchText] = useState<string>('');
-  const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>([]);
-
   const { data, fetchNextPage } = useInfinitePokemons();
+
   const pokemons =
     data?.pages.flatMap((results: PaginatedPokemonsResponse) => results.results) ?? [];
-  useEffect(() => {
-    const filteringResults = pokemons.filter((pokemon: Pokemon) =>
-      pokemon.name.includes(searchText),
-    );
-    setFilteredPokemons(filteringResults);
-  }, [data, searchText]);
+  const { filteredPokemons, setSearchText } = usePokemonSearch(pokemons);
 
   return (
     <Fragment>
-      <div className='w-full flex flex-row mb-10 justify-center'>
-        <TextField
-          className='w-full md:w-2/4 lg:w-1/3'
-          onChange={(e) => setSearchText(e.target.value)}
-          id='search-input'
-          variant='filled'
-          label="Search by pokemon's name"
-        />
-      </div>
+      <SearchInput setSearchText={setSearchText} label={"Search by pokemons's name"} />
       {filteredPokemons ? (
         <div className='grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
           {filteredPokemons.map((pokemon: Pokemon) => (

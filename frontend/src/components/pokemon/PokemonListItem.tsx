@@ -22,7 +22,9 @@ const PokemonListItem = ({ name }: Props): ReactElement => {
         <Typography gutterBottom variant='h5' component='h3'>
           {name}
         </Typography>
-        <Typography><b className="text-2xl">#{currentPokemonIndex} </b></Typography>
+        <Typography>
+          <b className='text-2xl'>#{currentPokemonIndex} </b>
+        </Typography>
       </CardContent>
     </Card>
   );

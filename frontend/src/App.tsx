@@ -1,25 +1,17 @@
 import React from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Container } from '@mui/material'
+import PokemonsList from './components/PokemonsList'
+
+const client = new QueryClient()
 
 function App() {
   return (
-    <div className='w-full flex flex-col justify-center items-center'>
-      <h2 className='m-10'>Welcome to the interview app!</h2>
-      <p>
-        Edit <code>src/App.js</code> and save to reload.
-      </p>
-
-      <ul className='m-10'>
-        <li>
-          Fetch Data from a public API{' '}
-          <a href='https://github.com/toddmotto/public-apis'>Samples</a>
-        </li>
-        <li>Display data from API onto your page (Table, List, etc.)</li>
-        <li>
-          Apply a styling solution of your choice to make your page look different (CSS, SASS,
-          CSS-in-JS)
-        </li>
-      </ul>
-    </div>
+    <QueryClientProvider client={client}>
+      <Container className='bg-blue-100 shadow-blue-400 shadow-xl p-10 m-10 min-h-screen h-full '>
+        <PokemonsList />
+      </Container>
+    </QueryClientProvider>
   )
 }
 

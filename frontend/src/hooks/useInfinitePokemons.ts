@@ -14,5 +14,7 @@ export function useInfinitePokemons() {
       }),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.results.length === 0 ? undefined : allPages.length + 1,
+    cacheTime: Infinity,
+    staleTime: Infinity,
   });
 }

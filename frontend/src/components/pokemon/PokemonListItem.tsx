@@ -8,7 +8,11 @@ type Props = {
 const PokemonListItem = ({ name }: Props): ReactElement => {
   return (
     <Card>
-      <CardMedia />
+      <CardMedia
+        component='div'
+        sx={{ pt: '50%' }}
+        image={`https://source.unsplash.com/random?${name},pokemon`}
+      />
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography gutterBottom variant='h5' component='h3'>
           {name}

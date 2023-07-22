@@ -1,7 +1,7 @@
 import React from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Container } from '@mui/material'
-import PokemonsList from './components/PokemonsList'
+import PokemonsList from './components/pokemon/PokemonsList'
 
 const client = new QueryClient()
 

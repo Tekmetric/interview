@@ -14,7 +14,7 @@ export type UsePokemonSearchType = {
  */
 const usePokemonSearch = (pokemons: Pokemon[]): UsePokemonSearchType => {
   const [searchText, setSearchText] = useState<string>('');
-  const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>([]);
+  const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>(pokemons);
 
   useDebouncedEffect(
     () => {

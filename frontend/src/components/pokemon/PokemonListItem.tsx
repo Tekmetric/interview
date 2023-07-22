@@ -12,7 +12,7 @@ const PokemonListItem = ({ name }: Props): ReactElement => {
   const currentPokemonIndex = pokemons.findIndex((pokemon: Pokemon) => pokemon.name === name);
 
   return (
-    <Card>
+    <Card data-testid={`pokemonItem-${name}`}>
       <CardMedia
         component='div'
         sx={{ pt: '50%' }}

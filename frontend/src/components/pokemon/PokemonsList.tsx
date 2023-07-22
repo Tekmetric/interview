@@ -1,12 +1,25 @@
-import React, { Fragment, FunctionComponent, ReactElement } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { fetchPokemons, Pokemon } from '../../api/fetchPokemons'
-import { Card, CardContent, CardMedia, Typography } from '@mui/material'
-import LoadingComponent from '../LoadingComponent'
+import React, { Fragment, FunctionComponent, ReactElement } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { fetchPokemons, PaginatedPokemonsResponse, Pokemon } from '../../api/fetchPokemons';
+import { Button, Card, CardContent, CardMedia, Typography } from '@mui/material';
+import LoadingComponent from '../LoadingComponent';
+
+export const DEFAULT_PAGE_SIZE: number = 5;
+export const DEFAULT_OFFSET_SIZE: number = 5;
 
 const PokemonsList: FunctionComponent = (): ReactElement => {
-  const { data } = useQuery(['pokemons'], fetchPokemons)
-  const pokemons = data?.results
+  const { data, fetchNextPage } = useInfiniteQuery({
+    queryKey: ['pokemons'],
+    queryFn: ({ pageParam = 0 }) =>
+      fetchPokemons({
+        offset: DEFAULT_OFFSET_SIZE * pageParam,
+        limit: DEFAULT_PAGE_SIZE,
+      }),
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.results.length === 0 ? undefined : allPages.length + 1,
+  });
+  const pokemons =
+    data?.pages.flatMap((results: PaginatedPokemonsResponse) => results.results) ?? [];
 
   return (
     <Fragment>
@@ -26,8 +39,13 @@ const PokemonsList: FunctionComponent = (): ReactElement => {
       ) : (
         <LoadingComponent loadingText='Loading pokemons...' />
       )}
+      <div className='w-full flex flex-row justify-center mt-10'>
+        <Button onClick={() => fetchNextPage()} variant='contained'>
+          More
+        </Button>
+      </div>
     </Fragment>
-  )
-}
+  );
+};
 
-export default PokemonsList
+export default PokemonsList;

@@ -1,9 +1,9 @@
-import React from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Container } from '@mui/material'
-import PokemonsList from './components/pokemon/PokemonsList'
+import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Container } from '@mui/material';
+import PokemonsList from './components/pokemon/PokemonsList';
 
-const client = new QueryClient()
+const client = new QueryClient();
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <PokemonsList />
       </Container>
     </QueryClientProvider>
-  )
+  );
 }
 
-export default App
+export default App;

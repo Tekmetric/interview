@@ -1,9 +1,6 @@
-const POKEMON_API_SERVER = 'https://pokeapi.co/api/v2';
+import Pokemon from '../models/Pokemon';
 
-export interface Pokemon {
-  name: string;
-  url?: string;
-}
+const POKEMON_API_SERVER = 'https://pokeapi.co/api/v2';
 
 type PaginationProps = { offset: number; limit: number };
 

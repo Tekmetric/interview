@@ -1,6 +1,6 @@
-import { Pokemon } from '../api/fetchPokemons';
 import { useState } from 'react';
 import useDebouncedEffect from './useDebouncedEffect';
+import Pokemon from '../models/Pokemon';
 
 export type UsePokemonSearchType = {
   filteredPokemons: Pokemon[];

@@ -1,18 +1,15 @@
-import React, { Fragment, FunctionComponent, ReactElement } from 'react';
-import { PaginatedPokemonsResponse, Pokemon } from '../../api/fetchPokemons';
+import React, { Fragment, FunctionComponent, ReactElement, useContext } from 'react';
 import { Button } from '@mui/material';
 import LoadingComponent from '../LoadingComponent';
-import { useInfinitePokemons } from '../../hooks/useInfinitePokemons';
 import PokemonListItem from './PokemonListItem';
 import SearchInput from '../SearchInput';
-import usePokemonSearch from '../../hooks/usePokemonSearch';
+import usePokemonSearch, { UsePokemonSearchType } from '../../hooks/usePokemonSearch';
+import { PokemonsContext, PokemonsContextType } from '../../contexts/PokemonsContext';
+import Pokemon from '../../models/Pokemon';
 
 const PokemonsList: FunctionComponent = (): ReactElement => {
-  const { data, fetchNextPage } = useInfinitePokemons();
-
-  const pokemons =
-    data?.pages.flatMap((results: PaginatedPokemonsResponse) => results.results) ?? [];
-  const { filteredPokemons, setSearchText } = usePokemonSearch(pokemons);
+  const { pokemons, fetchNextPage } = useContext<PokemonsContextType>(PokemonsContext);
+  const { filteredPokemons, setSearchText }: UsePokemonSearchType = usePokemonSearch(pokemons);
 
   return (
     <Fragment>

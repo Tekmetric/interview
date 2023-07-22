@@ -20,6 +20,7 @@
     },
     "plugins": [
         "@typescript-eslint",
+        "eslint-plugin-query",
         "react",
         "react-hooks",
         "prettier"

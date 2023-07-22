@@ -1,11 +1,16 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useContext } from 'react';
 import { Card, CardContent, CardMedia, Typography } from '@mui/material';
+import { PokemonsContext, PokemonsContextType } from '../../contexts/PokemonsContext';
+import Pokemon from '../../models/Pokemon';
 
 type Props = {
   name: string;
 };
 
 const PokemonListItem = ({ name }: Props): ReactElement => {
+  const { pokemons }: PokemonsContextType = useContext(PokemonsContext);
+  const currentPokemonIndex = pokemons.findIndex((pokemon: Pokemon) => pokemon.name === name);
+
   return (
     <Card>
       <CardMedia
@@ -17,6 +22,7 @@ const PokemonListItem = ({ name }: Props): ReactElement => {
         <Typography gutterBottom variant='h5' component='h3'>
           {name}
         </Typography>
+        <Typography><b className="text-2xl">#{currentPokemonIndex} </b></Typography>
       </CardContent>
     </Card>
   );

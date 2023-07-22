@@ -10,11 +10,12 @@ import Pokemon from '../../models/Pokemon';
 const PokemonsList: FunctionComponent = (): ReactElement => {
   const { pokemons, fetchNextPage, hasNextPage } = useContext<PokemonsContextType>(PokemonsContext);
   const { filteredPokemons, setSearchText }: UsePokemonSearchType = usePokemonSearch(pokemons);
+  const filteredPokemonsIsNonEmpty = filteredPokemons?.length > 0;
 
   return (
     <Fragment>
       <SearchInput setSearchText={setSearchText} label={"Search by pokemons's name"} />
-      {filteredPokemons?.length > 0 ? (
+      {filteredPokemonsIsNonEmpty ? (
         <div className='grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
           {filteredPokemons.map((pokemon: Pokemon) => (
             <PokemonListItem key={pokemon.name} name={pokemon.name} />
@@ -23,11 +24,13 @@ const PokemonsList: FunctionComponent = (): ReactElement => {
       ) : (
         <LoadingComponent loadingText='Loading pokemons...' />
       )}
-      <div className='w-full flex flex-row justify-center mt-10'>
-        <Button onClick={() => fetchNextPage()} variant='contained' disabled={!hasNextPage}>
-          More
-        </Button>
-      </div>
+      {filteredPokemonsIsNonEmpty ? (
+        <div className='w-full flex flex-row justify-center mt-10'>
+          <Button onClick={() => fetchNextPage()} variant='contained' disabled={!hasNextPage}>
+            More
+          </Button>
+        </div>
+      ) : null}
     </Fragment>
   );
 };

@@ -1,0 +1,13 @@
+.Navbar {
+}
+
+.TextLogo {
+    font-size: 30px;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.active {
+    font-weight: bold;
+    color: green;
+}

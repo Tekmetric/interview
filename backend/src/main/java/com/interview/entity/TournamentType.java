@@ -3,6 +3,7 @@ package com.interview.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 import lombok.ToString;
 

@@ -10,6 +10,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SpecificationUtil<T> {
+    /**
+     * Parse query to the criteria object (key, operation, value)
+     *
+     * @param query - provided query that need to be parsed
+     * @return a list of search criteria
+     */
     public static List<SearchCriteria> getSearchCriteria(String query) {
 
         Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(.*?),");

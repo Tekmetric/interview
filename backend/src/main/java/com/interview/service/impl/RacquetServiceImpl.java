@@ -18,6 +18,11 @@ public class RacquetServiceImpl implements RacquetService {
         this.racquetMapper = racquetMapper;
     }
 
+    /**
+     * Get all racquets that are present in the database
+     *
+     * @return a list of racquets
+     */
     @Override
     public List<RacquetDto> findAll() {
         return racquetMapper.buildDtoList(racquetRepository.findAll());

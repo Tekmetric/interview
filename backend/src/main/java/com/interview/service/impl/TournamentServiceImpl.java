@@ -18,6 +18,11 @@ public class TournamentServiceImpl implements TournamentService {
         this.tournamentMapper = tournamentMapper;
     }
 
+    /**
+     * Get all tournaments that are present in the database
+     *
+     * @return a list of tournaments
+     */
     @Override
     public List<TournamentDto> findAll() {
         return tournamentMapper.buildDtoList(tournamentRepository.findAll());

@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Entity
 public class Tournament {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
     @Column(name = "NAME", unique = true)

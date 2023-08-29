@@ -13,7 +13,7 @@ import lombok.ToString;
 @Entity
 public class Surface {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
     @Column(name = "NAME", unique = true)

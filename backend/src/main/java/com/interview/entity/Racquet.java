@@ -14,7 +14,7 @@ import lombok.ToString;
 @Entity
 public class Racquet {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
     @Column(name = "BRAND")

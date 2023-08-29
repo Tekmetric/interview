@@ -3,6 +3,9 @@ package com.interview.exception;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
+/**
+ * Object used for api response when exception is thrown
+ */
 @Data
 public class ApiError {
 

@@ -29,6 +29,12 @@ public class PlayerServiceImpl implements PlayerService {
         this.playerMapper = playerMapper;
     }
 
+    /**
+     * Method for getting all players from the database
+     *
+     * @param query - used for filtering e.g. query=name:Alin
+     * @return list of all players found
+     */
     @Override
     public List<PlayerDto> findAll(String query) {
         Specification<Player> specification = buildSpecifications(
@@ -38,6 +44,13 @@ public class PlayerServiceImpl implements PlayerService {
         return playerMapper.buildDtoList(playerRepository.findAll(specification, Sort.by("rank")));
     }
 
+    /**
+     * Find one player entity by id
+     *
+     * @param id - provided id for which the app should return data
+     * @return a player object if found
+     * @throws PlayerServiceException - if player with specified id is not found
+     */
     @Override
     public PlayerDto findPlayer(Long id) throws PlayerServiceException {
         Player playerOptional = playerRepository
@@ -47,6 +60,13 @@ public class PlayerServiceImpl implements PlayerService {
         return playerMapper.buildDto(playerOptional);
     }
 
+    /**
+     * Create/Edit a new player based on provided dto
+     *
+     * @param playerDto - request data that will be saved
+     * @return the newly created/updated player
+     * @throws PlayerServiceException - if player is not unique based on name
+     */
     @Override
     public PlayerDto save(PlayerDto playerDto) throws PlayerServiceException {
         Player entity = playerMapper.buildEntity(playerDto);
@@ -57,12 +77,23 @@ public class PlayerServiceImpl implements PlayerService {
         return playerMapper.buildDto(playerRepository.save(entity));
     }
 
+    /**
+     * Delete layer by id
+     *
+     * @param id - id that is provided for deletion
+     */
     @Override
     public void delete(Long id) {
         playerRepository.deleteById(id);
     }
 
-    public boolean checkDuplicatePlayer(PlayerDto playerDto) {
+    /**
+     * Check if a player is a duplicate based on name
+     *
+     * @param playerDto - used for validation
+     * @return true is a player is same name is present
+     */
+    private boolean checkDuplicatePlayer(PlayerDto playerDto) {
         return playerRepository.findByName(playerDto.getName()).isPresent();
     }
 }

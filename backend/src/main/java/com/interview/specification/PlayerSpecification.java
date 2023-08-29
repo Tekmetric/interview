@@ -17,6 +17,15 @@ public class PlayerSpecification implements Specification<Player> {
         this.searchCriteria = searchCriteria;
     }
 
+    /**
+     * Return a predicate based on the criteria operation type
+     * e.g. if operation is : then if type of the key is string then a like operation is used.
+     *
+     * @param root
+     * @param query
+     * @param builder
+     * @return
+     */
     @Override
     public Predicate toPredicate
         (Root<Player> root, CriteriaQuery<?> query, CriteriaBuilder builder) {

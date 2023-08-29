@@ -65,6 +65,7 @@ Each player can participate to different tournaments, have different racquets an
   Use ```javac DemoApplication.java``` to compile the code and then ```java DemoApplication``` to run the app.
 
 ### Example to TEST the application ###
+Using the integration tests provided in ```PlayerApplicationTest``` or using this cmd below.
 
 * Load all players in the system
   ```curl -X GET http://localhost:8085/api/players```
@@ -201,10 +202,6 @@ curl -d '
 ' -H "Content-Type: application/json" -X POST http://localhost:8085/api/players
 ```
 
-### Who do I talk to? ###
-
-* alinbizau93@gmail.com
-
 #### Import project into IDE
 
 - Project root is located in `backend` folder
@@ -213,27 +210,5 @@ curl -d '
 
 - `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
 
-#### Test that your app is running
-
-- `curl -X GET   http://localhost:8080/api/welcome`
-
-#### After finishing the goals listed below create a PR
-
-### Goals
-
-1. Design basic CRUD API with data store using Spring Boot and in memory H2 database (pre-configured, see below)
-2. API should include one object with create, read, update, and delete operations. Read should include fetching a single
-   item and list of items.
-3. Provide SQL create scripts for your object(s) in resources/data.sql
-4. Demo API functionality using API client tool
-
-#### H2 Configuration
-
-- Console: http://localhost:8080/h2-console
-- JDBC URL: jdbc:h2:mem:testdb
-- Username: sa
-- Password: password
-
-### Submitting your coding exercise
-
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+### Who do I talk to? ###
+* alinbizau93@gmail.com

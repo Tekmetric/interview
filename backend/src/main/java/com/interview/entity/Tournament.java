@@ -39,7 +39,4 @@ public class Tournament {
     @JoinColumn(name = "SURFACE_ID")
     @ManyToOne(cascade = CascadeType.MERGE, optional = false)
     private Surface surface;
-    @JoinColumn(name = "TYPE_ID")
-    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
-    private TournamentType type;
 }

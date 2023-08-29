@@ -17,6 +17,5 @@ public class TournamentDto {
     private Double prizeMoney;
     private String date;
     private SurfaceDto surface;
-    private TournamentTypeDto type;
 }
 

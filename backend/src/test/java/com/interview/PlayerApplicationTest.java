@@ -235,7 +235,6 @@ class PlayerApplicationTest {
             .date("26-06-2023")
             .prizeMoney(1500000.00)
             .surface(SurfaceDto.builder().name("HARD").build())
-            .type(TournamentTypeDto.builder().name("ATP").build())
             .build());
 
         PlayerDto player = PlayerDto.builder()

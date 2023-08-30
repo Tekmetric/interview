@@ -2,10 +2,13 @@ import React, {useEffect} from 'react';
 import styles from './Player.module.css';
 import {useDispatch, useSelector} from "react-redux";
 import {deletePlayerData, loadPlayers} from "../../redux/actions/playerActions";
+import {useNavigate} from "react-router-dom";
+import {formatDate} from "../../util/DateUtil";
 
 const Player = () => {
     const players = useSelector((state) => state.players);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (players.length === 0) {
@@ -13,6 +16,7 @@ const Player = () => {
         }
     }, [dispatch, players.length]);
 
+    const navigateToDetails = (player) => navigate('/details', {replace: true, state: {player: player}});
     const deletePlayer = (player) => {
         const shouldDelete = window.confirm('Do you really want to delete this player?');
         if (shouldDelete) {
@@ -20,11 +24,37 @@ const Player = () => {
         }
     }
 
+    const createNewPlayer = () => {
+        navigate('/details', {
+            replace: true, state: {
+                player: {
+                    name: "",
+                    rank: null,
+                    birthdate: formatDate(new Date()),
+                    birthplace: "",
+                    turnedPro: formatDate(new Date()),
+                    weight: null,
+                    height: null,
+                    coach: "",
+                    stats: {
+                        aces: null,
+                        doubleFaults: null,
+                        wins: null,
+                        losses: null,
+                    },
+                    previousResults: [{points: null, opponentPoints: null, opponentName: ""}],
+                    tournaments: [],
+                    racquets: []
+                }
+            }
+        });
+    }
+
     return (<div className={styles.Player}>
         <div
             className="max-w-screen-xl mx-2 sm:mx-auto px-4 sm:px-6 lg:px-0 py-6 pb-20 sm:py-8 rounded-[2.25rem]
             sm:rounded-xl bg-white shadow-lg sm:shadow-md transform lg:-translate-y-12">
-            <button title="Create player"
+            <button onClick={createNewPlayer} title="Create player"
                     className="floating-button fixed z-100 right-8 bg-white-600 w-20 h-20 rounded-full drop-shadow-lg flex
                 justify-center items-center text-white text-4xl  hover:drop-shadow-2xl bg-white
                 hover:animate-bounce duration-300">
@@ -116,7 +146,7 @@ const Player = () => {
                                         </svg>
                                     </button>
                                     <div></div>
-                                    <button>
+                                    <button onClick={() => navigateToDetails(player)}>
                                         <svg className="h-8 w-8 text-teal-500" fill="none" viewBox="0 0 24 24"
                                              stroke="currentColor">
                                             <path

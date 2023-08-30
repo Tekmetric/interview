@@ -10,6 +10,7 @@ This application represents an API for a tennis player entity.
 * MapStruct
 * Spring Data
 * H2 Database
+* Spring Boot Actuator
 
 ##### Technical explanation #####
 
@@ -27,6 +28,7 @@ in controller.
 In controller, we define the rest api for all the necessary operations (GET, POST, DELETE).
 
 The application provides some integration test that covers different flows.
+Also, we can check status on the application and DB using the actuator url (````http://localhost:8085/actuator/health/````)
 
 ### What's the application about? ###
 
@@ -65,11 +67,13 @@ Each player can participate to different tournaments, have different racquets an
   Use ```javac DemoApplication.java``` to compile the code and then ```java DemoApplication``` to run the app.
 
 ### Example to TEST the application ###
+To test is the app is up and healthy: ```http://localhost:8085/actuator/health```.
+
 Using the integration tests provided in ```PlayerApplicationTest``` or using this cmd below.
 
 * Load all players in the system
   ```curl -X GET http://localhost:8085/api/players```
-* Load all players in the system based on specific query
+* Load one/all players in the system based on specific query
   ```curl -X GET "http://localhost:8085/api/players?query=name:Alin"```
 * Load player by id
   ```curl -X GET http://localhost:8085/api/players/1```

@@ -45,23 +45,22 @@ const Details = () => {
         remove: removePreviousResult
     } = useFieldArray({
         control,
-        name: "previousResults"
+        name: "previousResults",
+        keyName: "key"
     });
     const {
-        fields: tournamentFields,
-        remove: removeTournament,
-        append: appendTournament,
+        fields: tournamentFields
     } = useFieldArray({
         control,
-        name: "tournaments"
+        name: "tournaments",
+        keyName: "key"
     });
-    let {
-        fields: racquetsFields,
-        remove: removeRacquets,
-        append: appendRacquets,
+    const {
+        fields: racquetsFields
     } = useFieldArray({
         control,
-        name: "racquets"
+        name: "racquets",
+        keyName: "key"
     });
 
     const onSubmit = (player) => {
@@ -193,7 +192,8 @@ const Details = () => {
                                     <input type="number" name="height" id="height"
                                            className={errors.name?.type === 'required' ? "invalid transition-all flex items-center h-10 border mt-1 rounded px-4\n" +
                                                "w-full bg-gray-50" : "transition-all flex items-center h-10 border mt-1 rounded px-4\n" +
-                                               "w-full bg-gray-50"}                                           {...register("height", {
+                                               "w-full bg-gray-50"}
+                                           {...register("height", {
                                                valueAsNumber: true,
                                                required: {
                                                    value: true
@@ -268,8 +268,7 @@ const Details = () => {
                                             getOptionValue={(option) => option.id}
                                             className="basic-multi-select"
                                             onChange={(selectedOption) => {
-                                                removeTournament(selectedOption)
-                                                appendTournament(selectedOption);
+                                                setValue("tournaments", selectedOption);
                                             }}
                                             classNamePrefix="select"/>
                                 </div>
@@ -281,8 +280,7 @@ const Details = () => {
                                             getOptionLabel={(option) => option.brand + " - " + option.model}
                                             getOptionValue={(option) => option.id}
                                             onChange={(selectedOption) => {
-                                                removeRacquets(selectedOption);
-                                                appendRacquets(selectedOption);
+                                                setValue("racquets", selectedOption);
                                             }}
                                             className="basic-multi-select"
                                             classNamePrefix="select"/>
@@ -302,25 +300,35 @@ const Details = () => {
                                     <div className="md:col-span-2">
                                         <label htmlFor="opponentName">Opponent Name</label>
                                         <input type="text" name="opponentName" id="opponentName"
-                                               className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                               {...register(`previousResults.${index}.opponentName`)}/>
+                                               className={errors.previousResults && errors?.previousResults[index]?.opponentName?.type === 'required' ? "invalid h-10 border mt-1 rounded px-4 w-full bg-gray-50" : "h-10 border mt-1 rounded px-4 w-full bg-gray-50"}
+                                               {...register(`previousResults.${index}.opponentName`, {
+                                                   required: {
+                                                       value: true
+                                                   },
+                                               })}/>
                                     </div>
 
                                     <div className="md:col-span-1">
                                         <label htmlFor="points">Points</label>
                                         <input type="number" name="points" id="points"
-                                               className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                               className={errors.previousResults && errors?.previousResults[index]?.points?.type === 'required' ? "invalid h-10 border mt-1 rounded px-4 w-full bg-gray-50" : "h-10 border mt-1 rounded px-4 w-full bg-gray-50"}
                                                {...register(`previousResults.${index}.points`, {
                                                    valueAsNumber: true,
+                                                   required: {
+                                                       value: true
+                                                   },
                                                })}/>
                                     </div>
 
                                     <div className="md:col-span-1">
                                         <label htmlFor="opponentPoints">Opponent Points</label>
                                         <input type="number" name="opponentPoints" id="opponentPoints"
-                                               className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                               className={errors.previousResults && errors?.previousResults[index]?.opponentPoints?.type === 'required' ? "invalid h-10 border mt-1 rounded px-4 w-full bg-gray-50" : "h-10 border mt-1 rounded px-4 w-full bg-gray-50"}
                                                {...register(`previousResults.${index}.opponentPoints`, {
                                                    valueAsNumber: true,
+                                                   required: {
+                                                       value: true
+                                                   }
                                                })}/>
                                     </div>
                                     <div className="btn-box">

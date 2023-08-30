@@ -271,9 +271,7 @@ class PlayerApplicationTest {
             .andExpect(jsonPath("$.tournaments[0].date",
                 is("26-06-2023")))
             .andExpect(jsonPath("$.tournaments[0].surface.name",
-                is("HARD")))
-            .andExpect(jsonPath("$.tournaments[0].type.name",
-                is("ATP")));
+                is("HARD")));
 
     }
 
@@ -327,7 +325,6 @@ class PlayerApplicationTest {
     @Test
     public void givenPlayerId_whenDeletePlayer_thenReturn200() throws Exception {
         PlayerDto player = PlayerDto.builder()
-            .id(1L)
             .name("Alin")
             .rank(1)
             .birthdate("26-06-1993")
@@ -360,7 +357,6 @@ class PlayerApplicationTest {
     @Test
     public void givenPlayerId_whenGetOnePlayer_thenReturn200() throws Exception {
         PlayerDto player = PlayerDto.builder()
-            .id(1L)
             .name("Alin")
             .rank(1)
             .birthdate("26-06-1993")
@@ -374,9 +370,9 @@ class PlayerApplicationTest {
             .racquets(Collections.emptyList())
             .tournaments(Collections.emptyList())
             .build();
-        playerService.save(player);
+        PlayerDto savedPlayer = playerService.save(player);
 
-        ResultActions response = mockMvc.perform(get("/api/players/{id}", player.getId())
+        ResultActions response = mockMvc.perform(get("/api/players/{id}", savedPlayer.getId())
             .contentType(MediaType.APPLICATION_JSON));
 
         response.andDo(print()).

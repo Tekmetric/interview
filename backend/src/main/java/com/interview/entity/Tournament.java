@@ -37,6 +37,6 @@ public class Tournament {
     @NotNull
     private LocalDate date;
     @JoinColumn(name = "SURFACE_ID")
-    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false, fetch = FetchType.LAZY)
     private Surface surface;
 }

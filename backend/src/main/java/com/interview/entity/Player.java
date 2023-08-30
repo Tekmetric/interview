@@ -50,13 +50,13 @@ public class Player {
     private Stats stats;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Score> previousResults;
-    @ManyToMany(cascade = CascadeType.MERGE)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(
         name = "PLAYER_TOURNAMENT",
         joinColumns = @JoinColumn(name = "PLAYER_ID"),
         inverseJoinColumns = @JoinColumn(name = "TOURNAMENT_ID"))
     private List<Tournament> tournaments = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.MERGE)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(
         name = "PLAYER_RACQUET",
         joinColumns = @JoinColumn(name = "PLAYER_ID"),

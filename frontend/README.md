@@ -1,21 +1,46 @@
-# Tech Interview Project
+# About the project
+This project show an example of CRUD operations for a tennis player entity.
 
-## Steps to get started:
+##### Technical explanation #####
+We have 2 routes here: 1 is for displaying the list of player, with some basic action, delete/edit each row from the list
+and a create new player button.
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+In Order to interact with our api, we are using axios and redux to cache our data and improve performance.
+The flow is like this:
+The app have a global store, which contains 3 array, player (which is the main data), tournaments and racquets.
+When you open the players list page, react will call the api and load the list of player and also dispatch an action
+for updating the current state( the list of players) through resolvers since the store is immutable.
+When a new user is added or updated, after calling the create/update api,the app will emit an action CREATE/UPDATE
+to update the store and if we have any changes the UI will update, in our case, after save new player the app will
+navigate to players list and show the new data without calling again the api (the players list from the store was
+updated with the player object from the create/update api response.
 
-#### Let's install the project locally
-`npm install`
+To manipulate the create/edit form, the app is using ```form hook``` (useForm())) and add required validation for some fields.
 
-#### Let's start the project locally
-`npm start`
+# Technologies used
+* React
+* React Redux
+* TailwindCSS
+* Axios
 
-### Goals
-1. Fetch Data from the backend Crud API you created or from a public API
-2. Display data from API onto your page (Table, List, etc.)
-3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
-4. Have fun
+# Get started
+* backend should be started. Follow instruction from backend README
+* ```npm install```
+* ```npm start```
+* open the browser at ```http://localhost:3000```
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+# Use case
+The main page will be displayed where players list will show and we can select to edit a player by clicking on
+```pencil``` icon or delete one by clicking on ```delete``` icon.
+By pressing delete will ask you for a ```confirmation before``` the delete api will be called.
+
+By pressing ```pencil``` icon, the app will navigate to a new route ```/details``` and there you can see the form with
+the selected player data and after you update some of the field by pressing ```Save changes```
+button the player record will be updated.
+
+Clicking on the plus button will open the same route ```/details``` but the form will be empty for you to create a new
+player.
+
+### Who do I talk to? ###
+
+* alinbizau93@gmail.com

@@ -1,5 +1,4 @@
 # README #
-
 This application represents an API for a tennis player entity.
 
 ## Technologies used ##
@@ -25,10 +24,10 @@ racquets).
 Then we have a JpaRepository for every model that we are using in this application. =
 The next layer used is the service one, where repository and mapper is injected and we provide the method to be used
 in controller.
-In controller, we define the rest api for all the necessary operations (GET, POST, DELETE).
+In controller, we define the rest api endpoints for all the necessary operations (GET, POST, DELETE).
 
-The application provides some integration test that covers different flows.
-Also, we can check status on the application and DB using the actuator url (````http://localhost:8085/actuator/health/````)
+The application provides some integration tests that cover different flows.
+Also, we can check the status on the application and DB using the actuator url (````http://localhost:8085/actuator/health/````)
 
 ### What's the application about? ###
 
@@ -55,38 +54,32 @@ Each player can participate to different tournaments, have different racquets an
 
 ### Constraints ###
 
-* For the Player, Tournament, Surface, TournamentType, name field is unique
-* For the Racquet, brand and model fields are mandatory.
-
-### How do I get set up? ###
-
-* To install the dependencies open the project and run ```mvn clean install```
-  or use reload maven project option from IntelliJ
-* Run the ```DemoApplication.java``` class as a Java application.
-* If you don't open the project, open a console after you set java path in your system.
-  Use ```javac DemoApplication.java``` to compile the code and then ```java DemoApplication``` to run the app.
+* For the Player, Tournament, Surface, TournamentType, the name field is unique
+* For the Racquet, brand and model, the fields are mandatory.
 
 ### Example to TEST the application ###
-To test is the app is up and healthy: ```http://localhost:8085/actuator/health```.
+To test if the app is up and healthy: ```http://localhost:8085/actuator/health```.
 
-Using the integration tests provided in ```PlayerApplicationTest``` or using this cmd below.
+To test the functionalities, the following options can be used:
+1. Using the frontend that I've created
+2. Using the integration tests provided in ```PlayerApplicationTest``` 
+3. Using this commands below:
 
-* Load all players in the system
-  ```curl -X GET http://localhost:8085/api/players```
-* Load one/all players in the system based on specific query
-  ```curl -X GET "http://localhost:8085/api/players?query=name:Alin"```
-* Load player by id
-  ```curl -X GET http://localhost:8085/api/players/1```
-* Load all tournaments in the system (used in FE)
-  ```curl -X GET http://localhost:8085/api/tournaments```
-* Load all racquets in the system (used in FE)
-  ```curl -X GET http://localhost:8085/api/racquets```
-* Delete player by id
-  ```curl -X DELETE http://localhost:8085/api/players/2```
-* Check if the player was deleted
-  ```curl -X GET http://localhost:8085/api/players/2```
-
-* Add a new player
+   * Load all players in the system
+     ```curl -X GET http://localhost:8085/api/players```
+   * Load one/all players in the system based on specific query
+     ```curl -X GET "http://localhost:8085/api/players?query=name:Alin"```
+   * Load player by id
+     ```curl -X GET http://localhost:8085/api/players/1```
+   * Load all tournaments in the system (used in FE)
+     ```curl -X GET http://localhost:8085/api/tournaments```
+   * Load all racquets in the system (used in FE)
+     ```curl -X GET http://localhost:8085/api/racquets```
+   * Delete player by id
+     ```curl -X DELETE http://localhost:8085/api/players/2```
+   * Check if the player was deleted
+     ```curl -X GET http://localhost:8085/api/players/2```
+   * Add a new player
 
 ```
 curl -d '{
@@ -158,6 +151,11 @@ curl -d '
                 "points": 1,
                 "opponentName": "Carlos Alcaraz",
                 "opponentPoints": 6
+            },
+             {  
+                "points": 3,
+                "opponentName": "Rafael Nadal",
+                "opponentPoints": 6
             }
         ],
         "tournaments": [
@@ -211,7 +209,8 @@ curl -d '
 - Project root is located in `backend` folder
 
 #### Build and run your app
-
+- To install the dependencies open the project and run ```mvn clean install```
+  or use reload maven project option from IntelliJ
 - `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
 
 ### Who do I talk to? ###

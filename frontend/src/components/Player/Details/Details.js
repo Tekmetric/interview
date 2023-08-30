@@ -35,6 +35,7 @@ const Details = () => {
         register,
         handleSubmit,
         setValue,
+        formState: {errors}
     } = useForm({
         defaultValues: defaultFormValues
     });
@@ -107,15 +108,23 @@ const Details = () => {
                                 <div className="md:col-span-4">
                                     <label htmlFor="full_name">Full Name</label>
                                     <input type="text" name="full_name" id="full_name"
-                                           className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                           {...register("name")} />
+                                           className={errors.name?.type === 'required' ? "invalid h-10 border mt-1 rounded px-4 w-full bg-gray-50" : "h-10 border mt-1 rounded px-4 w-full bg-gray-50"}
+                                           {...register("name", {
+                                               required: {
+                                                   value: true
+                                               },
+                                           })} />
                                 </div>
 
                                 <div className="md:col-span-1">
                                     <label htmlFor="rank">Rank</label>
                                     <input type="number" name="rank" id="rank"
-                                           className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                           {...register("rank")} />
+                                           className={errors.name?.type === 'required' ? "invalid h-10 border mt-1 rounded px-4 w-full bg-gray-50" : "h-10 border mt-1 rounded px-4 w-full bg-gray-50"}
+                                           {...register("rank", {
+                                               required: {
+                                                   value: true
+                                               },
+                                           })} />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label htmlFor="birthplace">Birthdate</label>
@@ -138,8 +147,12 @@ const Details = () => {
                                 <div className="md:col-span-1">
                                     <label htmlFor="birthplace">Birthplace</label>
                                     <input type="text" name="birthplace" id="birthplace"
-                                           className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                           {...register("birthplace")}
+                                           className={errors.name?.type === 'required' ? "invalid h-10 border mt-1 rounded px-4 w-full bg-gray-50" : "h-10 border mt-1 rounded px-4 w-full bg-gray-50"}
+                                           {...register("birthplace", {
+                                               required: {
+                                                   value: true
+                                               },
+                                           })}
                                            placeholder=""/>
                                 </div>
                                 <div className="md:col-span-2">
@@ -164,15 +177,28 @@ const Details = () => {
                                 <div className="md:col-span-1">
                                     <label htmlFor="weight">Weight</label>
                                     <input type="number" name="weight" id="weight"
-                                           className="transition-all flex items-center h-10 border mt-1 rounded px-4
-                                           w-full bg-gray-50"
-                                           {...register("weight", {valueAsNumber: true})} />
+                                           className={errors.name?.type === 'required' ? "invalid transition-all flex items-center h-10 border mt-1 rounded px-4\n" +
+                                               "w-full bg-gray-50" : "transition-all flex items-center h-10 border mt-1 rounded px-4\n" +
+                                               "w-full bg-gray-50"}
+                                           {...register("weight", {
+                                               valueAsNumber: true,
+                                               required: {
+                                                   value: true,
+                                                   message: 'Name is required',
+                                               },
+                                           })} />
                                 </div>
                                 <div className="md:col-span-1">
                                     <label htmlFor="height">Height</label>
                                     <input type="number" name="height" id="height"
-                                           className="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                           {...register("height", {valueAsNumber: true})} />
+                                           className={errors.name?.type === 'required' ? "invalid transition-all flex items-center h-10 border mt-1 rounded px-4\n" +
+                                               "w-full bg-gray-50" : "transition-all flex items-center h-10 border mt-1 rounded px-4\n" +
+                                               "w-full bg-gray-50"}                                           {...register("height", {
+                                               valueAsNumber: true,
+                                               required: {
+                                                   value: true
+                                               },
+                                           })} />
                                 </div>
                                 <div className="md:col-span-3">
                                     <label htmlFor="coach">Coach</label>
@@ -338,7 +364,7 @@ const Details = () => {
                     <div className="flex-display">
                         <div className="flex-1"></div>
                         <button onClick={cancel}
-                            className="rounded-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 right
+                                className="rounded-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 right
                             mt-4 rounded">Cancel
                         </button>
                         <button

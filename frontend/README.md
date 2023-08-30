@@ -1,6 +1,11 @@
 # About the project
 This project shows an example of CRUD operations for a tennis player entity.
 
+* Home page
+![home page](public/home-page.png)
+* Form page
+![details page](public/details-page.png)
+
 ##### Technical explanation #####
 We have 2 routes here: 1 is for displaying the list of player, with some basic action, delete/edit each row from the list
 and a create new player button.
@@ -44,3 +49,5 @@ player.
 ### Who do I talk to? ###
 
 * alinbizau93@gmail.com
+
+

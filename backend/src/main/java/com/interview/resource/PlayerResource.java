@@ -22,8 +22,8 @@ public class PlayerResource {
     }
 
     @GetMapping("/{id}")
-    public PlayerDto getPlayer(@PathVariable Long id) throws PlayerServiceException {
-        return playerService.findPlayer(id);
+    public PlayerDto getById(@PathVariable Long id) throws PlayerServiceException {
+        return playerService.findById(id);
     }
 
     @PostMapping()

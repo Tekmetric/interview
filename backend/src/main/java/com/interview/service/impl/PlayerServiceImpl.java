@@ -52,12 +52,12 @@ public class PlayerServiceImpl implements PlayerService {
      * @throws PlayerServiceException - if player with specified id is not found
      */
     @Override
-    public PlayerDto findPlayer(Long id) throws PlayerServiceException {
-        Player playerOptional = playerRepository
+    public PlayerDto findById(Long id) throws PlayerServiceException {
+        Player player = playerRepository
             .findById(id).orElseThrow(() ->
-                new PlayerServiceException(String.format("Player with specific id %s not found", id)));
+                new PlayerServiceException(String.format("Player with id %s not found", id)));
 
-        return playerMapper.buildDto(playerOptional);
+        return playerMapper.buildDto(player);
     }
 
     /**

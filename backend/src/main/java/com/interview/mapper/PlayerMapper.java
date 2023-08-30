@@ -11,23 +11,23 @@ import org.mapstruct.Mappings;
 import java.util.List;
 
 @Mapper(componentModel = "spring",
-        uses = {RacquetMapper.class,
-                ScoreMapper.class,
-                StatsMapper.class,
-                TournamentMapper.class,
-                PlayerMapperResolver.class
-        },
-        builder = @Builder(disableBuilder = true))
+    uses = {RacquetMapper.class,
+        ScoreMapper.class,
+        StatsMapper.class,
+        TournamentMapper.class,
+        PlayerMapperResolver.class
+    },
+    builder = @Builder(disableBuilder = true))
 public interface PlayerMapper {
     @Mappings(value = {
-            @Mapping(target = "birthdate", dateFormat = "dd-MM-yyyy"),
-            @Mapping(target = "turnedPro", dateFormat = "dd-MM-yyyy"),
+        @Mapping(target = "birthdate", dateFormat = "dd-MM-yyyy"),
+        @Mapping(target = "turnedPro", dateFormat = "dd-MM-yyyy"),
     })
     PlayerDto buildDto(Player player);
 
     @Mappings(value = {
-            @Mapping(target = "birthdate", dateFormat = "dd-MM-yyyy"),
-            @Mapping(target = "turnedPro", dateFormat = "dd-MM-yyyy"),
+        @Mapping(target = "birthdate", dateFormat = "dd-MM-yyyy"),
+        @Mapping(target = "turnedPro", dateFormat = "dd-MM-yyyy"),
     })
     Player buildEntity(PlayerDto playerDto);
 

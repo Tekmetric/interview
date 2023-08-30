@@ -28,7 +28,7 @@ public class PlayerSpecification implements Specification<Player> {
      */
     @Override
     public Predicate toPredicate
-        (Root<Player> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+    (Root<Player> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
         if (searchCriteria.getOperation().equalsIgnoreCase(">")) {
             return builder.greaterThanOrEqualTo(

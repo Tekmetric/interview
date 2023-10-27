@@ -3,6 +3,7 @@ import {classNames} from "../../utils/Utils";
 import styles from './Pokedex.module.scss';
 import {ComponentFactory} from "../../components";
 import { Pokedex as P } from "../../models";
+import {Simulate} from "react-dom/test-utils";
 export interface PokedexProps {};
 
 const Card = React.lazy(() => ComponentFactory.CardAsync());
@@ -16,7 +17,7 @@ const Pokedex = () => {
     }
 
     useEffect(() => {
-        fetchPokemon();
+        fetchPokemon().catch(console.error);
     }, []);
 
     return (

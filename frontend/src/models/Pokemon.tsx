@@ -6,6 +6,12 @@ interface Stat {
     }
 }
 
+interface Type {
+    type: {
+        name: string,
+    }
+}
+
 export interface Pokemon {
     id: number;
     name: string;
@@ -17,4 +23,5 @@ export interface Pokemon {
         }
     }
     stats: Stat[],
+    types: Type[],
 }

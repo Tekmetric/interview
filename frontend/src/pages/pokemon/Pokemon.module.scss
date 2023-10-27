@@ -55,14 +55,29 @@
   width: 100%;
 }
 
+.types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  margin: var(--s2) 0;
+}
+
+.pill {
+  background-color: var(--primary100);
+  border-radius: var(--s3);
+  font-size: .75rem;
+  font-weight: 300;
+  padding: var(--s1) var(--s3);
+}
+
 .stat {
   display: flex;
   flex-direction: row;
   align-items: center;
+  font-weight: 700;
 
   .label {
-    font-weight: 700;
-    font-size: 1.2rem;
+    font-weight: 500;
     margin-right: var(--s3);
   }
 }

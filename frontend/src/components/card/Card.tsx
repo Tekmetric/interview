@@ -26,6 +26,11 @@ const Card = (props: CardProps) => {
                 <p className={classNames(styles.name)}>
                     {pokemon.name}
                 </p>
+                <div className={classNames(styles.types)}>
+                    {pokemon.types.map(t => (
+                        <span className={classNames(styles.pill)}>{t.type.name}</span>
+                    ))}
+                </div>
             </div>
         </Link>
     ) : null;

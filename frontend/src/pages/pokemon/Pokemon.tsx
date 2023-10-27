@@ -32,6 +32,11 @@ const Pokemon = (props: PokemonProps) => {
           <div className={classNames(styles.heroContent)}>
             <img className={styles.image} src={pokemonDetails.sprites.other.dream_world.front_default} alt={`${pokemon?.name}`} />
             <div className={classNames(styles.content)}>
+              <div className={classNames(styles.types)}>
+                {pokemonDetails.types.map(t => (
+                    <span className={classNames(styles.pill)}>{t.type.name}</span>
+                ))}
+              </div>
               <h1 className={styles.name}>{pokemonDetails.name}</h1>
               <div className={classNames(styles.statsContainer)}>
                 {pokemonDetails.stats.map(stat => (

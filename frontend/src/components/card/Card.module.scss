@@ -29,3 +29,18 @@
   font-weight: 900;
   text-transform: uppercase;
 }
+
+.types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  margin: var(--s2) 0;
+}
+
+.pill {
+  background-color: var(--primary100);
+  border-radius: var(--s3);
+  font-size: .75rem;
+  font-weight: 300;
+  padding: var(--s1) var(--s3);
+}

@@ -1,12 +1,14 @@
 .header {
   align-self: center;
+  background-color: var(--background100);
+  box-shadow: var(--shadow100);
   display: flex;
   height: var(--headerHeight);
   padding: var(--s3) var(--s4);
   position: sticky;
   top: 0;
   width: 100%;
-  box-shadow: var(--shadow100);
+  z-index: 1000;
 }
 
 .section {

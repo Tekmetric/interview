@@ -1,8 +1,7 @@
-import React, {Suspense, useEffect} from 'react';
+import React, {Suspense} from 'react';
 import {Header} from './components';
-import {Navigate, redirect, Route, Routes} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 import {PageFactory} from "./pages";
-import {classNames} from "./utils/Utils";
 
 const Pokedex = React.lazy(() => PageFactory.Pokedex());
 const Pokemon = React.lazy(() => PageFactory.Pokemon());

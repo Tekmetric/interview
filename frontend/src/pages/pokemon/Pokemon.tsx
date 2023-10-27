@@ -24,16 +24,14 @@ const Pokemon = (props: PokemonProps) => {
   const [pokemonDetails, setPokemonDetails] = useState<P | undefined>(pokemon);
   const {id} = useParams();
 
-  const fetchPokemon = async () => {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(data => data.json());
-    setPokemonDetails(response);
-  };
-
   useEffect(() => {
-    if (!pokemon && id) {
+      const fetchPokemon = async () => {
+          const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(data => data.json());
+          setPokemonDetails(response);
+      };
+
       fetchPokemon().catch(console.error);
-    }
-  }, []);
+  }, [id]);
 
   return (
       <div className={classNames(styles.container)}>

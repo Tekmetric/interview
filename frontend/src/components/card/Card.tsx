@@ -24,14 +24,16 @@ const Card = (props: CardProps) => {
     const [pokemon, setPokemon] = useState<Pokemon>();
     const [ inView, setInView ] = useState<boolean>(false);
 
-    const fetchPokemonDetails = async () => {
-      const response = await fetch(url).then(data => data.json());
-      setPokemon(response);
-    };
-
     useEffect(() => {
-        if (inView) fetchPokemonDetails();
-    }, [inView]);
+        const fetchPokemonDetails = async () => {
+            const response = await fetch(url).then(data => data.json());
+            setPokemon(response);
+        };
+
+        if (inView) {
+            fetchPokemonDetails().catch(console.error);
+        }
+    }, [inView, url]);
 
     return (
         <InView onChange={setInView} className={classNames(styles.container)}>

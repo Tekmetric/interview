@@ -16,14 +16,14 @@ const Pokedex = () => {
     const [pokedex, setPokedex] = useState<P[]>();
     const pageSize = process.env.REACT_APP_PAGE_SIZE ?? 20;
 
-    const fetchPokemon = async () => {
-        const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${pageSize}`).then(data => data.json());
-        setPokedex(response.results);
-    }
-
     useEffect(() => {
+        const fetchPokemon = async () => {
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${pageSize}`).then(data => data.json());
+            setPokedex(response.results);
+        }
+
         fetchPokemon().catch(console.error);
-    }, []);
+    }, [pageSize]);
 
     return (
         <div className={classNames(styles.container)}>

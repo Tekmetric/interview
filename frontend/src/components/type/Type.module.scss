@@ -1,10 +1,11 @@
 .pill {
   background-color: var(--primary100);
   border-radius: var(--s3);
-  font-size: .75rem;
+  font-size: .65rem;
   text-transform: uppercase;
-  font-weight: 700;
-  padding: var(--s1) var(--s3);
+  font-weight: 900;
+  width: fit-content;
+  padding: var(--s1) var(--s2);
   color: var(--white);
 }
 

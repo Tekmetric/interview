@@ -9,6 +9,7 @@ import Header from './header/Header';
  */
 const ComponentFactory = {
     CardAsync: () => import(/* webpackChunkName: "Card" */ './card/Card'),
+    TypeAsync: () => import(/* webpackChunkName: "Type" */ './type/Type'),
 }
 
 export {

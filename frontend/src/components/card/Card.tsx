@@ -1,8 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import {Link} from "react-router-dom";
 import {classNames} from "../../utils/Utils";
 import styles from './Card.module.scss';
 import {Pokemon} from "../../models";
+import {ComponentFactory} from "../index";
+
+const Type = React.lazy(() => ComponentFactory.TypeAsync());
+
 export interface CardProps {
     url: string;
 };
@@ -13,8 +17,8 @@ const Card = (props: CardProps) => {
     const fetchPokemonDetails = async () => {
       const response = await fetch(url).then(data => data.json());
       setPokemon(response);
-
     };
+
     useEffect(() => {
         fetchPokemonDetails();
     }, []);
@@ -27,9 +31,11 @@ const Card = (props: CardProps) => {
                     {pokemon.name}
                 </p>
                 <div className={classNames(styles.types)}>
-                    {pokemon.types.map(t => (
-                        <span className={classNames(styles.pill)}>{t.type.name}</span>
-                    ))}
+                    <Suspense>
+                        {pokemon.types.map(t => (
+                            <Type name={t.type.name}/>
+                        ))}
+                    </Suspense>
                 </div>
             </div>
         </Link>

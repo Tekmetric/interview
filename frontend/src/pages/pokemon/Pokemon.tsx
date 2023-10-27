@@ -1,8 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import {Pokemon as P} from "../../models";
 import {Link, useParams} from "react-router-dom";
 import {classNames} from "../../utils/Utils";
 import styles from './Pokemon.module.scss';
+import {ComponentFactory} from "../../components";
+
+const Type = React.lazy(() => ComponentFactory.TypeAsync());
+
 export interface PokemonProps {
   pokemon?: P;
 };
@@ -33,9 +37,11 @@ const Pokemon = (props: PokemonProps) => {
             <img className={styles.image} src={pokemonDetails.sprites.other.dream_world.front_default} alt={`${pokemon?.name}`} />
             <div className={classNames(styles.content)}>
               <div className={classNames(styles.types)}>
-                {pokemonDetails.types.map(t => (
-                    <span className={classNames(styles.pill)}>{t.type.name}</span>
-                ))}
+                <Suspense>
+                  {pokemonDetails.types.map(t => (
+                      <Type name={t.type.name} />
+                  ))}
+                </Suspense>
               </div>
               <h1 className={styles.name}>{pokemonDetails.name}</h1>
               <div className={classNames(styles.statsContainer)}>

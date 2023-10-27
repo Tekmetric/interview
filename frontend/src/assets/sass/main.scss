@@ -1,7 +1,12 @@
 @import "base/common";
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;700;900&display=swap');
 
 main {
   height: 100%;
-  min-width: 100vw;
-  width: 100vw;
+  max-width: 100%;
+  min-width: 100%;
+  overflow-x: hidden;
+  width: 100%;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
 }

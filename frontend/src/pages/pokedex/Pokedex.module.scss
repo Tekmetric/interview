@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  max-width: var(--maxContainerWidth);
+  width: 100%;
+  padding: var(--s8) var(--s5);
+  overflow-x: hidden;
+  font-size: 16px;
+  gap: var(--s6);
+};

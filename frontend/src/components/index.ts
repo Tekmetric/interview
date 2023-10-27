@@ -5,12 +5,13 @@
 import Header from './header/Header';
 
 /**
- * AsyncFactory is an object which exports functions that import components to be leverages by React Lazy & Suspense
+ * ComponentFactory is an object which exports functions that import components to be leverages by React Lazy & Suspense
  */
-const AsyncFactory = {
+const ComponentFactory = {
+    CardAsync: () => import(/* webpackChunkName: "Card" */ './card/Card'),
 }
 
 export {
-    AsyncFactory,
+    ComponentFactory,
     Header,
 };

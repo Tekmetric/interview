@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  height: 300px;
+  box-shadow: var(--shadow100);
+  border-radius: var(--s1);
+  border: 1px solid var(--content00);
+}
+
+.image {
+  align-items: center;
+  display: flex;
+  height: 200px;
+  justify-content: center;
+  object-fit: contain;
+  padding: var(--s2);
+  width: 100%;
+  background-color: var(--background200);
+}
+
+.content {
+  width: 100%;
+  padding: var(--s3) var(--s4);
+}
+
+.name {
+  font-size: 1.5rem;
+  font-weight: 700;
+}

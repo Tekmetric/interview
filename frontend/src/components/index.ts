@@ -3,7 +3,7 @@
  * Non Async / Lazy loaded Components
  */
 import Header from './header/Header';
-
+import InView from "./inview/InView";
 /**
  * ComponentFactory is an object which exports functions that import components to be leverages by React Lazy & Suspense
  */
@@ -15,4 +15,5 @@ const ComponentFactory = {
 export {
     ComponentFactory,
     Header,
+    InView
 };

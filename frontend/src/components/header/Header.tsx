@@ -3,6 +3,10 @@ import styles from './Header.module.scss';
 import {classNames} from "../../utils/Utils";
 export interface HeaderProps {};
 
+/**
+ * Header component to render on every page
+ * @constructor
+ */
 const Header = () => {
     return (
         <header className={classNames(styles.header)}>

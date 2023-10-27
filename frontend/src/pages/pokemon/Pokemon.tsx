@@ -8,9 +8,17 @@ import {ComponentFactory} from "../../components";
 const Type = React.lazy(() => ComponentFactory.TypeAsync());
 
 export interface PokemonProps {
+  /**
+   * Pokemon object
+   */
   pokemon?: P;
 };
 
+/**
+ * Pokemon page is the details page for a given Pokemon
+ * @param props
+ * @constructor
+ */
 const Pokemon = (props: PokemonProps) => {
   const {pokemon} = props;
   const [pokemonDetails, setPokemonDetails] = useState<P | undefined>(pokemon);

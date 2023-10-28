@@ -47,7 +47,7 @@ const Card = (props: CardProps) => {
                         <div className={classNames(styles.types)}>
                             <Suspense>
                                 {pokemon.types.map(t => (
-                                    <Type name={t.type.name}/>
+                                    <Type key={`${pokemon.name}-${t.type.name}`} name={t.type.name}/>
                                 ))}
                             </Suspense>
                         </div>

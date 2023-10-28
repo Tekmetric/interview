@@ -26,13 +26,15 @@ const Pokedex = () => {
     }, [pageSize]);
 
     return (
-        <div className={classNames(styles.container)}>
+        <ul className={classNames(styles.container)}>
             <Suspense>
-                {pokedex?.map((p: P) => (
-                    <Card key={p.name} url={p.url} />
+                {pokedex?.map((p: P, index: number) => (
+                    <li key={p.name}>
+                        <Card url={p.url} />
+                    </li>
                 ))}
             </Suspense>
-        </div>
+        </ul>
     )
 };
 

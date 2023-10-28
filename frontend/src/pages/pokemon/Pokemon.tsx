@@ -45,14 +45,14 @@ const Pokemon = (props: PokemonProps) => {
               <div className={classNames(styles.types)}>
                 <Suspense>
                   {pokemonDetails.types.map(t => (
-                      <Type name={t.type.name} />
+                      <Type key={`${pokemonDetails.name}-${t.type.name}`} name={t.type.name} />
                   ))}
                 </Suspense>
               </div>
               <h1 className={styles.name}>{pokemonDetails.name}</h1>
               <div className={classNames(styles.statsContainer)}>
                 {pokemonDetails.stats.map(stat => (
-                    <div className={classNames(styles.stat)}>
+                    <div key={`${pokemonDetails.name}-${stat.stat.name}`} className={classNames(styles.stat)}>
                       <p className={classNames(styles.label)}>{stat.stat.name}</p>
                       <span className={classNames(styles.amount)}>{stat.base_stat}</span>
                     </div>

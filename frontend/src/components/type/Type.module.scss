@@ -1,0 +1,85 @@
+.pill {
+  background-color: var(--primary100);
+  border-radius: var(--s3);
+  font-size: .65rem;
+  text-transform: uppercase;
+  font-weight: 900;
+  width: fit-content;
+  padding: var(--s1) var(--s2);
+  color: var(--white);
+}
+
+// https://www.pokemonaaah.net/artsyfartsy/colordex/ for color breakdown by type
+.fire {
+  background-color: #EA7A3C;
+}
+
+.water {
+  background-color: #539AE2;
+}
+
+.grass {
+  background-color: #71C558;
+}
+
+.bug {
+  background-color: #94BC4A;
+}
+
+.flying {
+  background-color: #7DA6DE;
+}
+
+.poison {
+  background-color: #B468B7;
+}
+
+.normal {
+  background-color: #AAB09F;
+}
+
+.dark {
+  background-color: #736C75;
+}
+
+.dragon {
+  background-color: #6A7BAF;
+}
+
+.electric {
+  background-color: #E5C531;
+}
+
+.fairy {
+  background-color: #E397D1;
+}
+
+.fighting {
+  background-color: #CB5F48;
+}
+
+.ghost {
+  background-color: #846AB6;
+}
+
+.ground {
+  background-color: #CC9F4F;
+}
+
+.ice {
+  background-color: #70CBD4;
+}
+
+.psychic {
+  background-color: #E5709B;
+}
+
+.rock {
+  background-color: #B2A061;
+}
+
+.steel {
+  background-color: #89A1B0;
+}
+
+

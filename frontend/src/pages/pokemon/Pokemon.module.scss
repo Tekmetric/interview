@@ -1,0 +1,95 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  margin: var(--s6) auto;
+  max-width: var(--maxContainerWidth);
+  padding: 0 var(--s4);
+  width: 100%;
+}
+
+.backLink {
+  background-color: var(--primary100);
+  border-radius: var(--s1);
+  border: 2px solid transparent;
+  font-size: .9rem;
+  font-weight: 500;
+  padding: var(--s2) var(--s3);
+  transition: background-color 0.25s, border 0.25s;
+  width: fit-content;
+
+  &:hover, &:focus {
+    background-color: var(--background100);
+    border: 2px solid var(--primary100);
+  }
+};
+
+.heroContent {
+  display: flex;
+  padding: var(--s5) 0;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.image {
+  width: 400px;
+  height: 400px;
+  object-fit: contain;
+
+  @media screen and (max-width: 768px) {
+    margin: 0 auto;
+    width: 50vw;
+    height: auto;
+  }
+}
+
+.content {
+  margin-left: var(--s6);
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+};
+
+.name {
+  font-size: 3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: var(--s5);
+}
+
+.statsContainer {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: var(--s4);
+  width: 100%;
+}
+
+.types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin: var(--s2) 0;
+}
+
+.pill {
+  background-color: var(--primary100);
+  border-radius: var(--s3);
+  font-size: .75rem;
+  font-weight: 300;
+  padding: var(--s1) var(--s3);
+}
+
+.stat {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-weight: 700;
+
+  .label {
+    font-weight: 500;
+    margin-right: var(--s3);
+  }
+}

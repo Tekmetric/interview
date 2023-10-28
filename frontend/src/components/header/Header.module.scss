@@ -1,0 +1,26 @@
+.header {
+  align-self: center;
+  background-color: var(--background100);
+  box-shadow: var(--shadow100);
+  display: flex;
+  height: var(--headerHeight);
+  padding: var(--s3) var(--s4);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.section {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  width: 100%;
+
+  img {
+    height: 50px;
+    path {
+      fill: var(--content100);
+    }
+  }
+}

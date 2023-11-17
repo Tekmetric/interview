@@ -22,7 +22,7 @@ export const AllowedGames = {
   'omega-ruby-alpha-sapphire': 'Omega Ruby & Alpha Sapphire',
   'sun-moon': 'Sun & Moon',
   'ultra-sun-ultra-moon': 'Ultra Sun & Ultra Moon',
-  'lets-go-pikachu-lets-go-eevee': "Let's Go Pikachu & Let's Go Eevee",
+  'lets-go-pikachu-lets-go-eevee': "Let's Go Pikachu & Eevee",
   'sword-shield': 'Sword & Shield',
   'brilliant-diamond-and-shining-pearl': 'Brilliant Diamond & Shining Pearl',
   'legends-arceus': 'Legends: Arceus',

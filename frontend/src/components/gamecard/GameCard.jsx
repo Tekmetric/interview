@@ -18,7 +18,7 @@ const GameCard = ({ name, slug, url }) => {
 
   return (
     <Link to={`/pokedex/${slug}/`} state={{ from: pokedexUrl }} className={styles.card}>
-      {name}
+      <span>{name}</span>
     </Link>
   );
 };

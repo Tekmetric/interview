@@ -13,10 +13,6 @@ const PokedexEntry = ({ entry }) => {
     if (entry && !pokemon) getEntryDetails(entry.pokemon_species.url);
   }, [entry]);
 
-  // useEffect(() => {
-  //   if (pokemon) console.log(pokemon);
-  // }, [pokemon]);
-
   return (
     <div className={styles.box}>
       {pokemon ? (

@@ -6,4 +6,9 @@
   display: flex;
   justify-content: center;
   width: 100px;
+
+  &:hover,
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+  }
 }

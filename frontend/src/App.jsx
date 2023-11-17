@@ -13,7 +13,7 @@ const App = () => {
       const response = await fetch('https://pokeapi.co/api/v2/version-group?limit=30').then(
         (data) => data.json()
       );
-      setGames(response.results);
+      setGames(response.results.reverse());
     };
 
     if (!games || games.length === 0) getGames().catch(console.error);

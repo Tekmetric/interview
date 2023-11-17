@@ -25,6 +25,15 @@
     left: 32px;
     right: 32px;
     position: absolute;
+
+    @media (max-width: 760px) {
+      left: 16px;
+      right: 16px;
+    }
+  }
+
+  @media (max-width: 760px) {
+    padding: 16px;
   }
 }
 
@@ -34,4 +43,8 @@
   gap: 16px;
   justify-content: center;
   padding: 48px;
+
+  @media (max-width: 760px) {
+    padding: 16px;
+  }
 }

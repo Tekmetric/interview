@@ -1,8 +1,16 @@
-@import "reset";
-@import "colors";
+@import 'reset';
+@import 'colors';
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&display=swap');
 
-main {
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+html,
+body {
+  background-color: var(--c-neutralDark);
+  color: var(--c-white);
+  font-family: 'Noto Sans JP', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 300;
   height: 100%;
-  width: 100%;
+}
+
+#root {
+  height: inherit;
 }

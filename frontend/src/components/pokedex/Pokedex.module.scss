@@ -1,0 +1,35 @@
+.container {
+  position: relative;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 32px 48px;
+}
+
+.menu {
+  align-items: center;
+  background-color: var(--c-neutralDark);
+  display: flex;
+  font-size: 22px;
+  font-weight: 400;
+  height: 60px;
+  left: 0;
+  padding: 8px 48px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  &::after {
+    background-color: var(--c-white);
+    bottom: 0;
+    content: '';
+    height: 1px;
+    left: 32px;
+    right: 32px;
+    position: absolute;
+  }
+}

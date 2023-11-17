@@ -1,27 +1,32 @@
-import React, { Component } from 'react';
-//import logo from './logo.svg';
- 
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { ComponentFactory } from './components';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <h2>Welcome to the interview app!</h2>
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
+const GameList = lazy(() => ComponentFactory.GameList());
 
-        <or>
-          <li>Fetch Data from a public API <a href="https://github.com/toddmotto/public-apis">Samples</a></li>
-          <li>Display data from API onto your page (Table, List, etc.)</li>
-          <li>Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)</li> 
-        </or>   
-       
-        </header>
+const App = () => {
+  const [games, setGames] = useState([])
+
+  useEffect(() => {
+    const getGames = async () => {
+      const response = await fetch('https://pokeapi.co/api/v2/version-group?limit=30').then(data => data.json());
+      setGames(response.results);
+    }
+
+    if (!games || games.length === 0) getGames().catch(console.error);
+  }, [])
+
+  return (
+    <main className="App">
+      <div>
+        <Suspense>
+          <Routes>
+            <Route path={"/"} element={<GameList games={games} />} />
+          </Routes>
+        </Suspense>
       </div>
-    );
-  }
-}
+    </main>
+  );
+};
 
 export default App;

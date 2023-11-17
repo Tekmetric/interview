@@ -24,7 +24,8 @@ export const AllowedGames = {
   'ultra-sun-ultra-moon': 'Ultra Sun & Ultra Moon',
   'lets-go-pikachu-lets-go-eevee': "Let's Go Pikachu & Eevee",
   'sword-shield': 'Sword & Shield',
-  'brilliant-diamond-and-shining-pearl': 'Brilliant Diamond & Shining Pearl',
+  // TODO: add below when pokedex is provided
+  // 'brilliant-diamond-and-shining-pearl': 'Brilliant Diamond & Shining Pearl',
   'legends-arceus': 'Legends: Arceus',
   'scarlet-violet': 'Scarlet & Violet',
 };

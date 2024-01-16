@@ -39,7 +39,7 @@ const MainView = () => {
       if (response) {
         setImageDetails(response);
         setIsLoading(false);
-        setAlertMessage(null);
+        setAlertMessage("");
         updateCache(date, response);
       }
       if (response && response.code && response.code > 200 && response.msg) {

@@ -62,6 +62,7 @@ const MainView = () => {
       const cachedResult = checkCache(date);
       if (cachedResult) {
         setImageDetails(cachedResult);
+        setAlertMessage("");
       } else {
         fetchImage();
       }

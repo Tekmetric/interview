@@ -1,0 +1,82 @@
+@host = http://localhost
+@port = 8080
+@email = fatihk@tekmetric.com
+@password = fk123321kf
+@path = api/v1/vehicles
+@authPath = api/v1/auth
+
+### 
+# Unauthenticated call
+GET {{host}}:{{port}}/{{path}}
+
+### 
+# Registration request
+# @name register
+POST {{host}}:{{port}}/{{authPath}}/register
+Content-Type: application/json
+
+{
+    "firstName": "Fatih",
+    "lastName": "Kaya",
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+### 
+# Login request
+# @name login
+POST {{host}}:{{port}}/{{authPath}}/login
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+###
+# Get the list of vehicles
+# @name getVehicles
+GET {{host}}:{{port}}/{{path}}?pageNumber=1&pageSize=5
+Authorization: Bearer {{login.response.body.token}}
+
+###
+# Create vehicle
+# @name createVehicle
+POST {{host}}:{{port}}/{{path}}
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+    "licensePlate": "IB367Y45",
+    "brand": "Volvo",
+    "model": "XC40 RB",
+    "registrationYear": 2022,
+    "cost": 680.0
+}
+
+###
+# Get a single vehicle
+# @name getVehicle
+GET {{host}}:{{port}}/{{path}}/{{createVehicle.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+###
+# Update vehicle
+# @name updateVehicle
+PUT {{host}}:{{port}}/{{path}}/{{createVehicle.response.body.id}}
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+    "licensePlate": "IB367Y45",
+    "brand": "Volvo",
+    "model": "XC90 RB",
+    "registrationYear": 2022,
+    "cost": 680.0
+}
+
+###
+# Delete vehicle
+# @name deleteVehicle
+DELETE {{host}}:{{port}}/{{path}}/{{createVehicle.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}

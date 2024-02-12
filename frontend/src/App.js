@@ -1,27 +1,21 @@
-import React, { Component } from 'react';
-//import logo from './logo.svg';
- 
+import React, { useState } from 'react';
+import ListView from './pages/ListView';
+import DetailView from './pages/DetailView';
+import ProvidePersons from './data/PersonsProvider';
 
-class App extends Component {
-  render() {
-    return (
+const App = () => {
+  const [id, setId] = useState();
+
+  return (
+    <ProvidePersons>
       <div className="App">
         <header className="App-header">
-          <h2>Welcome to the interview app!</h2>
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-
-        <or>
-          <li>Fetch Data from a public API <a href="https://github.com/toddmotto/public-apis">Samples</a></li>
-          <li>Display data from API onto your page (Table, List, etc.)</li>
-          <li>Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)</li> 
-        </or>   
-       
+          {!id && <ListView navigate={setId} />}
+          {id && <DetailView id={id} prev={() => setId(undefined)} />}
         </header>
       </div>
-    );
-  }
+    </ProvidePersons>
+  );
 }
 
 export default App;

@@ -2,14 +2,14 @@ import React from 'react';
 import { useAtom } from 'jotai';
 
 import { lightTheme } from '../state/atoms';
-import ReactComponent from '../interfaces/ReactChildrenProps';
+import { ReactComponent } from '../interfaces/components';
 
 const Footer: React.FC<ReactComponent> = () => {
     const [theme, _] = useAtom(lightTheme);
 
     return (
       <footer
-        className={`flex justify-around items-center text-center h-10 ${theme ? 'text-white' : 'text-black'} ${theme ? 'bg-main' : 'bg-lightGrey'}`}
+        className={`flex justify-around items-center text-center h-24 ${theme ? 'text-white' : 'text-black'} ${theme ? 'bg-main' : 'bg-lightGrey'}`}
       >
         @Copyright Alin Oltean 2024
       </footer>

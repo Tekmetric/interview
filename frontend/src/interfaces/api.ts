@@ -1,4 +1,4 @@
-export type ResultType = {
+export interface ManufacturersRespData {
   Count: number;
   Message: string;
   Results: {
@@ -11,4 +11,4 @@ export type ResultType = {
       Name: string;
     }[];
   }[];
-};
+}

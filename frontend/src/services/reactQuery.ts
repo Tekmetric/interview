@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-// Create wrappers in order to avoid passing queryKey and queryFn
+// Create wrappers in order to avoid passing queryKey and queryFn each time
 export function useRequestProcessor() {
   const queryClient = useQueryClient();
 

@@ -3,7 +3,8 @@ import { CircularProgress, Grid } from '@mui/material';
 import './App.css';
 import axiosClient from './services/axios';
 import { useRequestProcessor } from './services/reactQuery';
-import CardItem from './components/Card';
+import CardWrapper from './components/cards/CardWrapper';
+import ManufacturerCard from './components/cards/ManufacturerCard';
 import { ManufacturersRespData } from './interfaces/api';
 
 function App() {
@@ -28,17 +29,19 @@ function App() {
       <Grid container spacing={6} padding={4}>
         {data &&
           data.Results.map((el) => {
-            return  el.Mfr_CommonName && (
-              <Grid
-                key={el.Mfr_ID}
-                item
-                xs={6}
-                md={4}
-                lg={3}
-                justifySelf="center"
-              >
-                <CardItem cardData={el} />
-              </Grid>
+            return (
+              el.Mfr_CommonName && (
+                <Grid
+                  key={el.Mfr_ID}
+                  item
+                  xs={6}
+                  md={4}
+                  lg={3}
+                  justifySelf="center"
+                >
+                  <CardWrapper children={<ManufacturerCard cardData={el} />} />
+                </Grid>
+              )
             );
           })}
       </Grid>

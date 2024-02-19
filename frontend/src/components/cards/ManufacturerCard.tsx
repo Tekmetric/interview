@@ -1,12 +1,17 @@
 import React from 'react';
 
 import { CardData } from '../../interfaces/components';
+import { Typography } from '@mui/material';
 
 const ManufacturerCard: React.FC<CardData> = ({ cardData }) => {
   return (
     <>
-      <div>{cardData.Mfr_CommonName}</div>
-      <div>{cardData.Country}</div>
+      <Typography textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+        {cardData.Mfr_CommonName}
+      </Typography>
+      <Typography textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+        {cardData.Country}
+      </Typography>
     </>
   );
 };

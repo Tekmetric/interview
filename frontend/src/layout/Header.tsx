@@ -12,7 +12,7 @@ const Header: React.FC<ReactComponent> = () => {
 
     return (
       <header className={`flex justify-around items-center ${theme ? 'bg-main' : 'bg-lightGrey'}`} >
-        <img src="tekmetric.jpg" alt="logo" className="h-6" />
+        <img src="tekmetric.jpg" alt="logo" className="h-8" />
         <p>{theme}</p>
         <IconButton className="cursor-pointer hover:scale-110" onClick={() => setTheme(!theme)}>
           {theme ? <WbSunnyIcon className='text-white'/> : <ModeNightIcon className='text-black' />}

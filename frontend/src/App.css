@@ -13,4 +13,5 @@ html, body {
 
 header, footer, .card-data {
   transition: background 0.5s ease, color 0.5s ease;
+  height: 100%;
 }

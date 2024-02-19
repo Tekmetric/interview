@@ -1,20 +1,27 @@
 import React from 'react';
+import { Container } from '@mui/material';
 
 import Footer from './Footer';
 import Header from './Header';
-import { ReactComponent } from '../interfaces/components';
+import { PageComponent } from '../interfaces/components';
 
-const Page: React.FC<ReactComponent> = ({
+const Page: React.FC<PageComponent> = ({
   children,
   hideFooter = false,
   hideHeader = false
 }) => {
   return (
-    <section className="flex flex-1 flex-col font-roboto">
-      {!hideHeader && <Header />}
-      {children}
-      {!hideFooter && <Footer />}
-    </section>
+    <Container disableGutters className="flex flex-1 flex-col font-roboto">
+      <Container disableGutters component="section" sx={{ height: '5vh' }}>
+        {!hideHeader && <Header />}
+      </Container>
+      <Container disableGutters component="section" sx={{ minHeight: '90vh' }}>
+        {children}
+      </Container>
+      <Container disableGutters component="section" sx={{ height: '5vh' }}>
+        {!hideFooter && <Footer />}
+      </Container>
+    </Container>
   );
 };
 

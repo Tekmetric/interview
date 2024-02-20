@@ -5,9 +5,9 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import ModeNightIcon from '@mui/icons-material/ModeNight';
 
 import { lightTheme } from '../state/atoms';
-import { ReactComponent } from '../interfaces/components';
+import { ReactComponentI } from '../interfaces/components';
 
-const Header: React.FC<ReactComponent> = () => {
+const Header: React.FC<ReactComponentI> = () => {
     const [theme, setTheme] = useAtom(lightTheme);
 
     return (

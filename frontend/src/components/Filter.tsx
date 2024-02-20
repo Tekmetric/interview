@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { FilterComponent } from '../interfaces/components';
+import { FilterComponentI } from '../interfaces/components';
 import { Grid, TextField } from '@mui/material';
 
-const Filter: React.FC<FilterComponent> = ({ filters, setFilters }) => {
+const Filter: React.FC<FilterComponentI> = ({ filters, setFilters }) => {
   return (
     <Grid container className="flex flex-1 align-middle justify-center" spacing={2}>
       <Grid item>

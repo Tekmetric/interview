@@ -7,16 +7,16 @@ import CardWrapper from '../components/cards/CardWrapper';
 import ManufacturerCard from '../components/cards/ManufacturerCard';
 import Filter from '../components/Filter';
 import { ManufacturersRespData } from '../interfaces/api';
-import { Filters, ReactComponent } from '../interfaces/components';
+import { FiltersI, ReactComponentI } from '../interfaces/components';
 
-const itemsReducer = (state: Filters, newState: Partial<Filters>) => {
+const itemsReducer = (state: FiltersI, newState: Partial<FiltersI>) => {
   return {
     ...state,
     ...newState
   };
 };
 
-const filterData = (data: ManufacturersRespData, filters: Filters) => {
+const filterData = (data: ManufacturersRespData, filters: FiltersI) => {
   return data.Results.filter((el) => {
     if (!el.Country || !el.Mfr_CommonName) return false;
     if (
@@ -35,7 +35,7 @@ const filterData = (data: ManufacturersRespData, filters: Filters) => {
   });
 };
 
-const Home: React.FC<ReactComponent> = () => {
+const Home: React.FC<ReactComponentI> = () => {
   const { query } = useRequestProcessor();
 
   const [filters, setFilters] = useReducer(itemsReducer, {
@@ -44,10 +44,9 @@ const Home: React.FC<ReactComponent> = () => {
     tags: []
   });
 
-  console.log(filters);
 
   const { data, isLoading } = query<ManufacturersRespData>(
-    'manufacturers',
+    ['manufacturers'],
     () => axiosClient.get('/getallmanufacturers').then((res) => res.data),
     { enabled: true }
   );

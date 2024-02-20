@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { ReactComponent } from '../interfaces/components';
+import { ReactComponentI } from '../interfaces/components';
 
-const NotFound: React.FC<ReactComponent> = () => {
+const NotFound: React.FC<ReactComponentI> = () => {
     return (
       <div content-center>
         Sorry, this page does not exist

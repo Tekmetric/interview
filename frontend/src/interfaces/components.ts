@@ -1,27 +1,32 @@
 import { ReactElement } from 'react';
 import { ManufacturersRespData } from './api';
 
-export interface Filters {
-    name?: string;
-    country?: string;
-    tags?: string[]
+export interface FiltersI {
+  name?: string;
+  country?: string;
+  tags?: string[];
 }
 
-export interface ReactComponent {
+export interface ReactComponentI {
   children?: ReactElement;
-  props?: any
+  props?: any;
 }
 
-export interface PageComponent extends ReactComponent {
+export interface PageComponentI extends ReactComponentI {
   hideHeader?: boolean;
   hideFooter?: boolean;
 }
 
-export interface CardData {
+export interface CardDataI {
   cardData: ManufacturersRespData['Results'][0];
 }
 
-export interface FilterComponent extends ReactComponent {
-  filters: Filters;
-  setFilters: React.Dispatch<Filters>;
+export interface FilterComponentI extends ReactComponentI {
+  filters: FiltersI;
+  setFilters: React.Dispatch<FiltersI>;
+}
+
+export interface ModalI extends ReactComponentI {
+  onClose: () => void;
+  open: boolean;
 }

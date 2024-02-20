@@ -1,9 +1,9 @@
 import React from 'react';
 
 import './App.css';
-import { ReactComponent } from './interfaces/components';
+import { ReactComponentI } from './interfaces/components';
 
-const App: React.FC<ReactComponent> = ({ children }) => {
+const App: React.FC<ReactComponentI> = ({ children }) => {
   return <>{children}</>;
 };
 

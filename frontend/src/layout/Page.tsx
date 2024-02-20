@@ -3,9 +3,9 @@ import { Container } from '@mui/material';
 
 import Footer from './Footer';
 import Header from './Header';
-import { PageComponent } from '../interfaces/components';
+import { PageComponentI } from '../interfaces/components';
 
-const Page: React.FC<PageComponent> = ({
+const Page: React.FC<PageComponentI> = ({
   children,
   hideFooter = false,
   hideHeader = false

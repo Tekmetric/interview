@@ -2,10 +2,9 @@ import React from 'react';
 import { useAtom } from 'jotai';
 
 import { lightTheme } from '../state/atoms';
-import { ReactComponent } from '../interfaces/components';
-import { Height } from '@mui/icons-material';
+import { ReactComponentI } from '../interfaces/components';
 
-const Footer: React.FC<ReactComponent> = () => {
+const Footer: React.FC<ReactComponentI> = () => {
     const [theme, _] = useAtom(lightTheme);
 
     return (

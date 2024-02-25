@@ -10,7 +10,7 @@ const CardWrapper: React.FC<ReactComponentI> = ({ children }) => {
 
   return (
     <>
-      <Card className="cursor-pointer rounded-sm hover:scale-110 hover:ease-in-out duration-150">
+      <Card className="cursor-pointer rounded-sm hover:scale-110 hover:ease-in-out duration-150 h-32">
         <Box
           className={`flex flex-col card-data p-4 h-20 justify-center ${theme ? 'text-white' : 'text-black'} ${theme ? 'bg-main' : 'bg-lightGrey'}`}
         >

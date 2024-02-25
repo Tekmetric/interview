@@ -11,14 +11,14 @@ const Page: React.FC<PageComponentI> = ({
   hideHeader = false
 }) => {
   return (
-    <Container disableGutters className="flex flex-1 flex-col font-roboto">
-      <Container disableGutters component="section" sx={{ height: '5vh' }}>
+    <Container maxWidth={false} disableGutters className="flex flex-1 flex-col font-roboto">
+      <Container maxWidth={false} disableGutters sx={{ height: '5vh' }}>
         {!hideHeader && <Header />}
       </Container>
-      <Container disableGutters component="section" sx={{ minHeight: '90vh' }}>
+      <Container maxWidth={false} disableGutters sx={{ minHeight: '90vh' }}>
         {children}
       </Container>
-      <Container disableGutters component="section" sx={{ height: '5vh' }}>
+      <Container maxWidth={false} disableGutters sx={{ height: '5vh' }}>
         {!hideFooter && <Footer />}
       </Container>
     </Container>

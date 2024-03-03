@@ -14,15 +14,27 @@ const useMovies = (queryText: string, page: number): ContentContext => {
   const [response, setResponse] = useState<ContentContext>({ loading: false });
 
   useEffect(() => {
+    if (!queryText.length) {
+      setResponse({
+        data: response.data,
+        loading: false,
+      });
+      return;
+    }
     if (queryText.length < 3) {
       setResponse({
+        data: response.data,
         loading: false,
         error: 'Search text must be at least 3 characters',
       });
       return;
     }
     if (page < 1) {
-      setResponse({ loading: false, error: 'Page must be at least 1' });
+      setResponse({
+        loading: false,
+        error: 'Page must be at least 1',
+        data: response.data,
+      });
       return;
     }
     const movieURL = buildMovieAPIURL(queryText, page);
@@ -48,6 +60,7 @@ const useMovies = (queryText: string, page: number): ContentContext => {
         setResponse({
           loading: false,
           error: 'Something went wrong. Please try again later',
+          data: response.data,
         });
       });
   }, [queryText, page]);

@@ -19,20 +19,23 @@ export const sanitizeMovieData = (
   descriptionData: DescriptionAPIResponse,
   page: number,
 ): ContentData[] => {
-  return movieData.Search.map((item, index) => {
-    const realIndex =
-      ((process.env.REACT_APP_MOVIE_API_PAGE_SIZE as unknown as number) || 0) *
-        page +
-      index;
-    const years = sanitizeYear(item.Year);
-    return {
-      imdbID: item.imdbID,
-      posterURL: sanitizePoster(item.Poster),
-      name: item.Title,
-      description: descriptionData.articles[realIndex].description,
-      type: item.Type === 'movie' ? ContentType.MOVIE : ContentType.SERIES,
-      yearStart: years[0],
-      yearEnd: years[1],
-    };
-  });
+  return (
+    movieData?.Search.map((item, index) => {
+      const realIndex =
+        ((process.env.REACT_APP_MOVIE_API_PAGE_SIZE as unknown as number) ||
+          0) *
+          page +
+        index;
+      const years = sanitizeYear(item.Year);
+      return {
+        imdbID: item.imdbID,
+        posterURL: sanitizePoster(item.Poster),
+        name: item.Title,
+        description: descriptionData.articles?.[realIndex]?.description,
+        type: item.Type === 'movie' ? ContentType.MOVIE : ContentType.SERIES,
+        yearStart: years[0],
+        yearEnd: years[1],
+      };
+    }) ?? []
+  );
 };

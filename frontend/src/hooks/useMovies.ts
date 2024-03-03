@@ -1,0 +1,58 @@
+import { useState, useEffect } from 'react';
+import {
+  DescriptionAPIResponse,
+  MovieAPIResponse,
+  ContentContext,
+} from '../types/Response';
+import {
+  buildDescriptionAPIURL,
+  buildMovieAPIURL,
+} from '../utils/buildURLWithQueryParams';
+import { sanitizeMovieData } from '../utils/sanitizer';
+
+const useMovies = (queryText: string, page: number): ContentContext => {
+  const [response, setResponse] = useState<ContentContext>({ loading: false });
+
+  useEffect(() => {
+    if (queryText.length < 3) {
+      setResponse({
+        loading: false,
+        error: 'Search text must be at least 3 characters',
+      });
+      return;
+    }
+    if (page < 1) {
+      setResponse({ loading: false, error: 'Page must be at least 1' });
+      return;
+    }
+    const movieURL = buildMovieAPIURL(queryText, page);
+    const descriptionURL = buildDescriptionAPIURL(queryText);
+
+    const moviePromise = fetch(movieURL).then((resp) => resp.json());
+    const descriptionPromise = fetch(descriptionURL).then((resp) =>
+      resp.json(),
+    );
+
+    setResponse({ loading: true });
+    Promise.all([moviePromise, descriptionPromise])
+      .then(([movieData, descriptionData]) => {
+        const sanitizedContentData = sanitizeMovieData(
+          movieData as MovieAPIResponse,
+          descriptionData as DescriptionAPIResponse,
+          page,
+        );
+        setResponse({ loading: false, data: sanitizedContentData });
+      })
+      .catch((error) => {
+        console.warn(error);
+        setResponse({
+          loading: false,
+          error: 'Something went wrong. Please try again later',
+        });
+      });
+  }, [queryText, page]);
+
+  return response;
+};
+
+export default useMovies;

@@ -3,7 +3,18 @@ module.exports = {
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: false,
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        typewriter: "typewriter 7s steps(60) forwards"
+      },
+      keyframes: {
+        typewriter: {
+          to: {
+            left: "100%"
+          }
+        }
+      }
+    },
   },
   variants: {
     extend: {},

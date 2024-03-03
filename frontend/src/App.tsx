@@ -1,11 +1,8 @@
-import React from 'react';
-import { Button } from '@mui/material';
+import Header from './components/Header';
 
 const App = () => (
-  <div className="App">
-    <Button variant="contained" color="primary">
-      Hello, Material-UI!
-    </Button>
+  <div className="font-mono App">
+    <Header />
   </div>
 );
 

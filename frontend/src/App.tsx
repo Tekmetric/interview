@@ -1,5 +1,4 @@
-import Footer from './components/Footer';
-import Header from './components/Header';
+import { Header, Footer } from './components';
 
 const App = () => (
   <div className="font-mono App">

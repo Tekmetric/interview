@@ -20,7 +20,7 @@ export const sanitizeMovieData = (
   page: number,
 ): ContentData[] => {
   return (
-    movieData?.Search.map((item, index) => {
+    movieData?.Search?.map((item, index) => {
       const realIndex =
         ((process.env.REACT_APP_MOVIE_API_PAGE_SIZE as unknown as number) ||
           0) *

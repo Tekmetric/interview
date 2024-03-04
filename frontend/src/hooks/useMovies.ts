@@ -53,6 +53,15 @@ const useMovies = (queryText: string, page: number): ContentContext => {
           descriptionData as DescriptionAPIResponse,
           page,
         );
+        if (!sanitizedContentData.length) {
+          setResponse({
+            loading: false,
+            data: response.data,
+            error: 'Query returned no results. Try another one',
+          });
+          return;
+        }
+
         setResponse({ loading: false, data: sanitizedContentData });
       })
       .catch((error) => {

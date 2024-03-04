@@ -5,12 +5,16 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { ContentData } from '../types/ContentData';
 import Box from '@mui/material/Box';
+import { Divider } from '@mui/material';
 
 type Props = {
   content: ContentData;
 };
 
 const ContentCard = ({ content }: Props) => {
+  const yearDisplayText = content.yearEnd
+    ? `${content.yearStart}-${content.yearEnd}`
+    : content.yearStart;
   return (
     <Card
       variant="outlined"
@@ -22,8 +26,10 @@ const ContentCard = ({ content }: Props) => {
           <div className="line-clamp-2 font-mono font-medium mb-1.5 text-2xl">
             {content.name}
           </div>
-          <div className="line-clamp-2 font-mono mb-1.5">
-            {content.yearStart}
+          <div className="flex gap-3 line-clamp-1 mb-1.5">
+            <div className="font-mono">{yearDisplayText}</div>
+            <Divider orientation="vertical" flexItem />
+            <div className="font-mono">{content.type}</div>
           </div>
           <Typography
             variant="body2"

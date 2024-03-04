@@ -5,10 +5,5 @@ export type ContentData = {
   description?: string;
   yearStart: number;
   yearEnd?: number;
-  type: ContentType;
+  type: string;
 };
-
-export enum ContentType {
-  MOVIE,
-  SERIES,
-}

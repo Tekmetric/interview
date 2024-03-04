@@ -1,8 +1,9 @@
-import { ContentData, ContentType } from '../types/ContentData';
+import { ContentData } from '../types/ContentData';
 import { DescriptionAPIResponse, MovieAPIResponse } from '../types/Response';
 
 const sanitizeYear = (years: string): [number, number | undefined] => {
-  const yearRange = years.split('-');
+  const yearRange = years.split('–');
+  console.log(years, yearRange);
   if (yearRange.length === 2) {
     return [Number.parseInt(yearRange[0]), Number.parseInt(yearRange[1])];
   }
@@ -32,7 +33,7 @@ export const sanitizeMovieData = (
         posterURL: sanitizePoster(item.Poster),
         name: item.Title,
         description: descriptionData.articles?.[realIndex]?.description,
-        type: item.Type === 'movie' ? ContentType.MOVIE : ContentType.SERIES,
+        type: item.Type || 'unknown',
         yearStart: years[0],
         yearEnd: years[1],
       };

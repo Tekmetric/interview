@@ -24,14 +24,16 @@ export const sanitizeMovieData = (
       const realIndex =
         ((process.env.REACT_APP_MOVIE_API_PAGE_SIZE as unknown as number) ||
           0) *
-          page +
+          (page - 1) +
         index;
       const years = sanitizeYear(item.Year);
       return {
         imdbID: item.imdbID,
         posterURL: sanitizePoster(item.Poster),
         name: item.Title,
-        description: descriptionData.articles?.[realIndex]?.description,
+        description:
+          descriptionData.articles?.[realIndex]?.description ||
+          'This is a placeholder description',
         type: item.Type || 'unknown',
         yearStart: years[0],
         yearEnd: years[1],

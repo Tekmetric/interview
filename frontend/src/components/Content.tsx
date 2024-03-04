@@ -3,13 +3,14 @@ import { TextField } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import useMovies from '../hooks/useMovies';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
+import ContentCard from './Card';
 
 const Content = () => {
   const [queryText, setQueryText] = useState('Batman');
   const debouncedValue = useDebouncedValue(queryText);
   const { loading, error, data } = useMovies(debouncedValue, 1);
   return (
-    <main className="flex gap-y-8 flex-col items-center mt-8 overflow-scroll">
+    <main className="flex gap-y-8 flex-col items-center pt-8 px-4">
       <div className="flex flex-col gap-y-3">
         <h2 className="text-cyan-800 text-center text-xl">
           Search for any movie you like
@@ -26,11 +27,11 @@ const Content = () => {
           helperText={error}
         />
       </div>
-      <div className="flex flex-col items-center flex-1 min-h-96">
-        {loading && <CircularProgress />}
+      {loading && <CircularProgress />}
+      <div className="grid grid-cols-3 gap-4 items-center min-h-96 mb-6 max-w-100">
         {!loading &&
           data &&
-          data?.map((it) => <div key={it.imdbID}>{it.name}</div>)}
+          data?.map((it) => <ContentCard content={it} key={it.imdbID} />)}
       </div>
     </main>
   );

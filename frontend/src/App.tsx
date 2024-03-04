@@ -1,15 +1,23 @@
 import { Header, Footer, Content } from './components';
-import { SearchContextProvider, FavouritesContextProvider } from './state';
+import ShareModal from './components/ShareModal';
+import {
+  SearchContextProvider,
+  FavouritesContextProvider,
+  ShareDialogContextProvider,
+} from './state';
 
 const App = () => (
   <div className="font-mono App">
-    <Header />
-    <FavouritesContextProvider>
-      <SearchContextProvider>
-        <Content />
-      </SearchContextProvider>
-    </FavouritesContextProvider>
-    <Footer />
+    <ShareDialogContextProvider>
+      <Header />
+      <FavouritesContextProvider>
+        <SearchContextProvider>
+          <Content />
+        </SearchContextProvider>
+      </FavouritesContextProvider>
+      <Footer />
+      <ShareModal />
+    </ShareDialogContextProvider>
   </div>
 );
 

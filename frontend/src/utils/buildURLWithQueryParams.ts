@@ -28,4 +28,7 @@ export const buildDescriptionAPIURL = (queryText: string) =>
     q: queryText,
   }) ?? '';
 
+export const buildImdbURL = (imdbID: string) =>
+  `https://imdb.com/title/${imdbID}`;
+
 export default buildURLWithQueryParams;

@@ -8,6 +8,7 @@ import Box from '@mui/material/Box';
 import { Divider } from '@mui/material';
 import useFavourites from '../hooks/useFavourites';
 import { useCallback } from 'react';
+import useShareDialog from '../hooks/useShareDialog';
 
 type Props = {
   content: ContentData;
@@ -15,6 +16,7 @@ type Props = {
 
 const ContentCard = ({ content }: Props) => {
   const { isLiked, like, dislike } = useFavourites();
+  const { open } = useShareDialog();
   const yearDisplayText = content.yearEnd
     ? `${content.yearStart}-${content.yearEnd}`
     : content.yearStart;
@@ -58,7 +60,9 @@ const ContentCard = ({ content }: Props) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small">Share</Button>
+          <Button size="small" onClick={() => open(imdbID)}>
+            Share
+          </Button>
           <Button size="small" onClick={onClick}>
             {isLiked(imdbID) ? 'Liked' : 'Like'}
           </Button>

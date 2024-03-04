@@ -31,7 +31,7 @@ const Content = () => {
         />
       </div>
       {loading && <CircularProgress />}
-      <div className="grid grid-cols-3 gap-4 items-center min-h-96 mb-6 max-w-100">
+      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 items-center min-h-96 mb-6 max-w-100">
         {!loading &&
           data &&
           data?.map((it) => <ContentCard content={it} key={it.imdbID} />)}

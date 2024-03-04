@@ -34,7 +34,7 @@ const ContentCard = ({ content }: Props) => {
     <Card
       variant="outlined"
       className="flex flex-1 justify-between font-mono"
-      sx={{ height: '320px', width: '500px' }}
+      sx={{ height: '320px', maxWidth: '500px' }}
     >
       <div className="flex flex-col justify-between">
         <CardContent>
@@ -42,7 +42,7 @@ const ContentCard = ({ content }: Props) => {
             {content.name}
           </div>
           <div className="flex gap-3 line-clamp-1 mb-1.5">
-            <div className="font-mono">{yearDisplayText}</div>
+            <div className="font-mono line-clamp-1">{yearDisplayText}</div>
             <Divider orientation="vertical" flexItem />
             <div className="font-mono">{content.type}</div>
           </div>

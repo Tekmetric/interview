@@ -25,6 +25,7 @@ const Content = () => {
           error={!!error}
           onChange={(e) => setSearchQuery(e.target.value)}
           label="Search movie"
+          color="secondary"
           defaultValue={searchQuery}
           value={searchQuery}
           helperText={error}

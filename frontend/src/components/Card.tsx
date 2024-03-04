@@ -60,10 +60,10 @@ const ContentCard = ({ content }: Props) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small" onClick={() => open(imdbID)}>
+          <Button size="small" color="secondary" onClick={() => open(imdbID)}>
             Share
           </Button>
-          <Button size="small" onClick={onClick}>
+          <Button size="small" color="secondary" onClick={onClick}>
             {isLiked(imdbID) ? 'Liked' : 'Like'}
           </Button>
         </CardActions>

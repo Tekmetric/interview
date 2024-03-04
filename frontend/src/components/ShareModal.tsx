@@ -21,7 +21,7 @@ const ShareModal = () => {
           Copy the link to share the IMDb page of the movie!
         </Typography>
         <Button
-          color="primary"
+          color="secondary"
           onClick={() => {
             navigator.clipboard.writeText(buildImdbURL(activeImdbID ?? ''));
             close();

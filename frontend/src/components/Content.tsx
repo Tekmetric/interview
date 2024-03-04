@@ -1,15 +1,14 @@
-import { useState } from 'react';
 import { TextField, Pagination } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import useMovies from '../hooks/useMovies';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import ContentCard from './Card';
+import useSearch from '../hooks/useSearch';
 
 const Content = () => {
-  const [queryText, setQueryText] = useState('Batman');
-  const [page, setPage] = useState(1);
-  const debouncedValue = useDebouncedValue(queryText);
-  const { loading, error, data } = useMovies(debouncedValue, page);
+  const { searchQuery, currentPage, setPage, setSearchQuery } = useSearch();
+  const debouncedValue = useDebouncedValue(searchQuery);
+  const { loading, error, data } = useMovies(debouncedValue, currentPage);
 
   return (
     <main className="flex gap-y-8 flex-col items-center pt-8 px-4">
@@ -22,10 +21,10 @@ const Content = () => {
         </h4>
         <TextField
           error={!!error}
-          onChange={(e) => setQueryText(e.target.value)}
+          onChange={(e) => setSearchQuery(e.target.value)}
           label="Search movie"
-          defaultValue={queryText}
-          value={queryText}
+          defaultValue={searchQuery}
+          value={searchQuery}
           helperText={error}
         />
       </div>

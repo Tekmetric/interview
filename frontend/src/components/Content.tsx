@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TextField } from '@mui/material';
+import { TextField, Pagination } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import useMovies from '../hooks/useMovies';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
@@ -7,8 +7,10 @@ import ContentCard from './Card';
 
 const Content = () => {
   const [queryText, setQueryText] = useState('Batman');
+  const [page, setPage] = useState(1);
   const debouncedValue = useDebouncedValue(queryText);
-  const { loading, error, data } = useMovies(debouncedValue, 1);
+  const { loading, error, data } = useMovies(debouncedValue, page);
+
   return (
     <main className="flex gap-y-8 flex-col items-center pt-8 px-4">
       <div className="flex flex-col gap-y-3">
@@ -33,6 +35,14 @@ const Content = () => {
           data &&
           data?.map((it) => <ContentCard content={it} key={it.imdbID} />)}
       </div>
+      <Pagination
+        color="primary"
+        size="large"
+        count={5}
+        className="mb-4"
+        onChange={(_, page) => setPage(page)}
+        siblingCount={1}
+      />
     </main>
   );
 };

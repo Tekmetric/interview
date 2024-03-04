@@ -3,7 +3,6 @@ import { DescriptionAPIResponse, MovieAPIResponse } from '../types/Response';
 
 const sanitizeYear = (years: string): [number, number | undefined] => {
   const yearRange = years.split('–');
-  console.log(years, yearRange);
   if (yearRange.length === 2) {
     return [Number.parseInt(yearRange[0]), Number.parseInt(yearRange[1])];
   }

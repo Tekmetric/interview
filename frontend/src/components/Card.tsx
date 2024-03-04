@@ -6,15 +6,28 @@ import Typography from '@mui/material/Typography';
 import { ContentData } from '../types/ContentData';
 import Box from '@mui/material/Box';
 import { Divider } from '@mui/material';
+import useFavourites from '../hooks/useFavourites';
+import { useCallback } from 'react';
 
 type Props = {
   content: ContentData;
 };
 
 const ContentCard = ({ content }: Props) => {
+  const { isLiked, like, dislike } = useFavourites();
   const yearDisplayText = content.yearEnd
     ? `${content.yearStart}-${content.yearEnd}`
     : content.yearStart;
+
+  const imdbID = content.imdbID;
+  const onClick = useCallback(() => {
+    if (isLiked(imdbID)) {
+      dislike(imdbID);
+    } else {
+      like(imdbID);
+    }
+  }, [isLiked, like, imdbID, dislike]);
+
   return (
     <Card
       variant="outlined"
@@ -46,7 +59,9 @@ const ContentCard = ({ content }: Props) => {
         </CardContent>
         <CardActions>
           <Button size="small">Share</Button>
-          <Button size="small">Like</Button>
+          <Button size="small" onClick={onClick}>
+            {isLiked(imdbID) ? 'Liked' : 'Like'}
+          </Button>
         </CardActions>
       </div>
       <Box

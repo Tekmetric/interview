@@ -1,12 +1,14 @@
 import { Header, Footer, Content } from './components';
-import { SearchContextProvider } from './state/SearchContext';
+import { SearchContextProvider, FavouritesContextProvider } from './state';
 
 const App = () => (
   <div className="font-mono App">
     <Header />
-    <SearchContextProvider>
-      <Content />
-    </SearchContextProvider>
+    <FavouritesContextProvider>
+      <SearchContextProvider>
+        <Content />
+      </SearchContextProvider>
+    </FavouritesContextProvider>
     <Footer />
   </div>
 );

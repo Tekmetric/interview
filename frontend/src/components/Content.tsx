@@ -7,6 +7,7 @@ import {
   useDebouncedValue,
   useContent,
 } from '../hooks';
+import { MOVIE_API_PAGE_SIZE } from '../utils/constants';
 
 const Content = () => {
   const { searchQuery, currentPage, setPage, setSearchQuery } = useSearch();
@@ -15,12 +16,12 @@ const Content = () => {
   const { likes } = useFavourites();
 
   const totalResults = data?.totalResults ?? 0;
-  const pageSize = Number.parseInt(
-    process.env.REACT_APP_MOVIE_API_PAGE_SIZE ?? '0',
-  );
 
   const maxPage =
-    Math.min(Number.parseInt((totalResults / pageSize).toString()), 4) + 1;
+    Math.min(
+      Number.parseInt((totalResults / MOVIE_API_PAGE_SIZE).toString()),
+      4,
+    ) + 1;
 
   return (
     <main className="flex gap-y-8 flex-col items-center pt-8 px-4">

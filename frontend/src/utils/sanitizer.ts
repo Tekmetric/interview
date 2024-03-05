@@ -1,5 +1,6 @@
 import { ContentData } from '../types/ContentData';
 import { DescriptionAPIResponse, MovieAPIResponse } from '../types/Response';
+import { MOVIE_API_PAGE_SIZE } from './constants';
 
 const sanitizeYear = (years: string): [number, number | undefined] => {
   const yearRange = years.split('–');
@@ -21,11 +22,7 @@ export const sanitizeMovieData = (
 ): ContentData => {
   const hits =
     movieData?.Search?.map((item, index) => {
-      const realIndex =
-        ((process.env.REACT_APP_MOVIE_API_PAGE_SIZE as unknown as number) ||
-          0) *
-          (page - 1) +
-        index;
+      const realIndex = MOVIE_API_PAGE_SIZE * (page - 1) + index;
       const years = sanitizeYear(item.Year);
       return {
         imdbID: item.imdbID,

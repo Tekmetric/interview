@@ -1,0 +1,3 @@
+const MOVIE_API_PAGE_SIZE = 10;
+
+export { MOVIE_API_PAGE_SIZE };

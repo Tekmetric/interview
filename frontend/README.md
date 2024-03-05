@@ -44,7 +44,6 @@ Create a `.env.local` file in the `frontend/` folder and paste the following cre
 ```
 export REACT_APP_MOVIE_API_URL='https://www.omdbapi.com'
 export REACT_APP_MOVIE_API_KEY='f993c487'
-export REACT_APP_MOVIE_API_PAGE_SIZE=10
 export REACT_APP_DESCRIPTION_API_URL='https://newsapi.org/v2/everything'
 export REACT_APP_DESCRIPTION_API_KEY='f9d6154053654ac0880d06bcdd9442b5'
 ```

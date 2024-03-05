@@ -41,10 +41,6 @@ const mockDescriptionData: DescriptionAPIResponse = {
 };
 
 describe('Sanitizer test', () => {
-  beforeAll(() => {
-    process.env.REACT_APP_MOVIE_API_PAGE_SIZE = '10';
-  });
-
   const expected: ContentData = {
     totalResults: 3,
     hits: [

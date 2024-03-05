@@ -4,10 +4,7 @@ import {
   MovieAPIResponse,
   ContentContext,
 } from '../types/Response';
-import {
-  buildDescriptionAPIURL,
-  buildMovieAPIURL,
-} from '../utils/buildURLWithQueryParams';
+import { buildDescriptionAPIURL, buildMovieAPIURL } from '../utils/url';
 import { sanitizeMovieData } from '../utils/sanitizer';
 
 const useMovies = (queryText: string, page: number): ContentContext => {

@@ -1,6 +1,6 @@
 import { Button, Modal, Typography } from '@mui/material';
 import useShareDialog from '../hooks/useShareDialog';
-import { buildImdbURL } from '../utils/buildURLWithQueryParams';
+import { buildImdbURL } from '../utils/url';
 
 const style = {
   transform: 'translate(-50%, -50%)',

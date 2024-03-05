@@ -23,8 +23,8 @@ export const buildMovieAPIURL = (queryText: string, page: number) =>
   }) ?? '';
 
 export const buildDescriptionAPIURL = (queryText: string) =>
-  buildURLWithQueryParams(process.env.REACT_APP_TEXT_API_URL, {
-    apiKey: process.env.REACT_APP_TEXT_API_KEY,
+  buildURLWithQueryParams(process.env.REACT_APP_DESCRIPTION_API_URL, {
+    apiKey: process.env.REACT_APP_DESCRIPTION_API_KEY,
     q: queryText,
   }) ?? '';
 

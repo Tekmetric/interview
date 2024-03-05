@@ -18,8 +18,8 @@ export const sanitizeMovieData = (
   movieData: MovieAPIResponse,
   descriptionData: DescriptionAPIResponse,
   page: number,
-): ContentData[] => {
-  return (
+): ContentData => {
+  const hits =
     movieData?.Search?.map((item, index) => {
       const realIndex =
         ((process.env.REACT_APP_MOVIE_API_PAGE_SIZE as unknown as number) ||
@@ -38,6 +38,10 @@ export const sanitizeMovieData = (
         yearStart: years[0],
         yearEnd: years[1],
       };
-    }) ?? []
-  );
+    }) ?? [];
+
+  return {
+    hits,
+    totalResults: movieData.totalResults ?? 0,
+  };
 };

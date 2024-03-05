@@ -3,7 +3,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { ContentData } from '../types/ContentData';
+import { MovieSearchHit } from '../types/ContentData';
 import Box from '@mui/material/Box';
 import { Divider } from '@mui/material';
 import useFavourites from '../hooks/useFavourites';
@@ -11,7 +11,7 @@ import { useCallback } from 'react';
 import useShareDialog from '../hooks/useShareDialog';
 
 type Props = {
-  content: ContentData;
+  content: MovieSearchHit;
 };
 
 const ContentCard = ({ content }: Props) => {
@@ -72,9 +72,10 @@ const ContentCard = ({ content }: Props) => {
         component="img"
         sx={{
           height: '100%',
-          width: 240,
+          width: 'auto',
+          maxWidth: 240,
         }}
-        alt="Poster image"
+        alt="Poster"
         src={content.posterURL}
       />
     </Card>

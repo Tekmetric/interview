@@ -53,7 +53,7 @@ const useMovies = (queryText: string, page: number): ContentContext => {
           descriptionData as DescriptionAPIResponse,
           page,
         );
-        if (!sanitizedContentData.length) {
+        if (!sanitizedContentData.totalResults) {
           setResponse({
             loading: false,
             data: response.data,

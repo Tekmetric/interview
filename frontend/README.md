@@ -42,10 +42,10 @@ The project use yarn as package manager
 Create a `.env.local` file in the `frontend/` folder and paste the following credentials 
 
 ```
-export REACT_APP_MOVIE_API_URL='https://www.omdbapi.com'
-export REACT_APP_MOVIE_API_KEY='f993c487'
-export REACT_APP_DESCRIPTION_API_URL='https://newsapi.org/v2/everything'
-export REACT_APP_DESCRIPTION_API_KEY='f9d6154053654ac0880d06bcdd9442b5'
+REACT_APP_MOVIE_API_URL='https://www.omdbapi.com'
+REACT_APP_MOVIE_API_KEY='f993c487'
+REACT_APP_DESCRIPTION_API_URL='https://newsapi.org/v2/everything'
+REACT_APP_DESCRIPTION_API_KEY='f9d6154053654ac0880d06bcdd9442b5'
 ```
 The urls are needed as that, but if you want to create new credentials you are free to do so (or use those, otherwise).
 

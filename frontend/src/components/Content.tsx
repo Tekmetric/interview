@@ -45,15 +45,17 @@ const Content = () => {
           data &&
           data?.hits?.map((it) => <ContentCard content={it} key={it.imdbID} />)}
       </div>
-      <Pagination
-        color="primary"
-        size="large"
-        count={maxPage}
-        page={currentPage}
-        className="mb-4"
-        onChange={(_, page) => setPage(page)}
-        siblingCount={1}
-      />
+      {!!maxPage && (
+        <Pagination
+          color="primary"
+          size="large"
+          count={maxPage}
+          page={currentPage}
+          className="mb-4"
+          onChange={(_, page) => setPage(page)}
+          siblingCount={1}
+        />
+      )}
     </main>
   );
 };

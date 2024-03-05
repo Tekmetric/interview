@@ -6,10 +6,10 @@ import {
 
 describe('Url build functions tests', () => {
   beforeAll(() => {
-    process.env.REACT_APP_TEXT_API_KEY = 'text-api-key';
+    process.env.REACT_APP_DESCRIPTION_API_KEY = 'text-api-key';
     process.env.REACT_APP_MOVIE_API_KEY = 'movies-api-key';
     process.env.REACT_APP_MOVIE_API_URL = 'http://www.movies.com';
-    process.env.REACT_APP_TEXT_API_URL = 'http://www.text.com';
+    process.env.REACT_APP_DESCRIPTION_API_URL = 'http://www.text.com';
   });
 
   it('should return the imdb url', () => {

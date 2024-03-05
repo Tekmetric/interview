@@ -6,9 +6,8 @@ import Typography from '@mui/material/Typography';
 import { MovieSearchHit } from '../types/ContentData';
 import Box from '@mui/material/Box';
 import { Divider } from '@mui/material';
-import useFavourites from '../hooks/useFavourites';
+import { useFavourites, useShareDialog } from '../hooks';
 import { useCallback } from 'react';
-import useShareDialog from '../hooks/useShareDialog';
 
 type Props = {
   content: MovieSearchHit;

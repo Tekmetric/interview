@@ -1,5 +1,5 @@
 import { Button, Modal, Typography } from '@mui/material';
-import useShareDialog from '../hooks/useShareDialog';
+import { useShareDialog } from '../hooks';
 import { buildImdbURL } from '../utils/url';
 
 const style = {

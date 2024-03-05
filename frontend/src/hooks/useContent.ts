@@ -7,7 +7,7 @@ import {
 import { buildDescriptionAPIURL, buildMovieAPIURL } from '../utils/url';
 import { sanitizeMovieData } from '../utils/sanitizer';
 
-const useMovies = (queryText: string, page: number): ContentContext => {
+const useContent = (queryText: string, page: number): ContentContext => {
   const [response, setResponse] = useState<ContentContext>({ loading: false });
 
   useEffect(() => {
@@ -74,4 +74,4 @@ const useMovies = (queryText: string, page: number): ContentContext => {
   return response;
 };
 
-export default useMovies;
+export default useContent;

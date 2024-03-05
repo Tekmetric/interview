@@ -1,15 +1,17 @@
 import { TextField, Pagination } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import useMovies from '../hooks/useMovies';
-import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import ContentCard from './Card';
-import useSearch from '../hooks/useSearch';
-import useFavourites from '../hooks/useFavourites';
+import {
+  useFavourites,
+  useSearch,
+  useDebouncedValue,
+  useContent,
+} from '../hooks';
 
 const Content = () => {
   const { searchQuery, currentPage, setPage, setSearchQuery } = useSearch();
   const debouncedValue = useDebouncedValue(searchQuery);
-  const { loading, error, data } = useMovies(debouncedValue, currentPage);
+  const { loading, error, data } = useContent(debouncedValue, currentPage);
   const { likes } = useFavourites();
 
   const totalResults = data?.totalResults ?? 0;
@@ -45,7 +47,7 @@ const Content = () => {
           data &&
           data?.hits?.map((it) => <ContentCard content={it} key={it.imdbID} />)}
       </div>
-      {!!maxPage && (
+      {!!maxPage && maxPage > 1 && (
         <Pagination
           color="primary"
           size="large"

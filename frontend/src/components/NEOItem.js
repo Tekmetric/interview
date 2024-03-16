@@ -27,7 +27,7 @@ export default function NEOItem({ neo, units }) {
         key = "miles";
         unit = "mi";
       } else {
-        unit = "feet";
+        key = "feet";
         unit = "ft";
       }
     }

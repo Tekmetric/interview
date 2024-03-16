@@ -24,7 +24,6 @@ class App extends Component {
   }
   
   render() {
-    console.log(this.state.neoData)
     return (
       <div className="App">
         <header className="App-header">
@@ -34,7 +33,28 @@ class App extends Component {
         </header>
         <section>
           {/* date selection */}
-          {/* unit selection */}
+          <fieldset>
+            <legend>Units</legend>
+            <input
+              type="radio"
+              id="metric"
+              name="metric"
+              value="metric"
+              checked={this.state.units === "metric"}
+              onChange={() => this.setState({ units: "metric" })}
+            />
+            <label htmlFor="metric">Metric</label>
+
+            <input
+              type="radio"
+              id="imperial"
+              name="imperial"
+              value="imperial"
+              checked={this.state.units === "imperial"}
+              onChange={() => this.setState({ units: "imperial" })}
+            />
+            <label htmlFor="imperial">Imperial</label>
+          </fieldset>
         </section>
         <main>
           {this.state.neoData.map((neo) => (

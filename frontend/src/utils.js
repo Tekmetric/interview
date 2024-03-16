@@ -1,10 +1,16 @@
-const API_URL = "https://api.nasa.gov/neo/rest/v1/feed?api_key=DEMO_KEY";
+import { API_KEY } from "./key";
+
+const API_URL = `https://api.nasa.gov/neo/rest/v1/feed?api_key=${API_KEY}`;
 
 export async function fetchNEOs(date) {
   try {
     // include start and end date to limit to one day, otherwise it defaults to 7 days of data.
     const results = await fetch(`${API_URL}&start_date=${date}&end_date=${date}`);
     const resultsJson = await results.json();
+
+    if (resultsJson.error) {
+      throw new Error(resultsJson.error.message);
+    }
 
     return resultsJson.near_earth_objects[date];
   } catch (e) {

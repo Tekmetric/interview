@@ -42,7 +42,10 @@ export default function NEOItem({ neo, units }) {
 
   return (
     <div>
-      <h3>{neo.is_potentially_hazardous_asteroid && "⚠️"} {neo.name}</h3>
+      <h3>
+        {neo.is_potentially_hazardous_asteroid && "⚠️ "}
+        <a href={neo.nasa_jpl_url} target="_blank">{neo.name}</a>
+      </h3>
       <p>
         <strong>size</strong>:&nbsp;
         {estimatedDiameter.min} - {estimatedDiameter.max} {estimatedDiameter.unit}

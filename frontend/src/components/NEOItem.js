@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./NEOItem.css";
 
 export default function NEOItem({ neo, units }) {
   const [estimatedDiameter, setEstimatedDiameter] = useState({ min: "", max: "", unit: "" });
@@ -41,22 +42,22 @@ export default function NEOItem({ neo, units }) {
   }, [units]);
 
   return (
-    <div>
-      <h3>
-        {neo.is_potentially_hazardous_asteroid && "⚠️ "}
-        <a href={neo.nasa_jpl_url} target="_blank">{neo.name}</a>
+    <div className="item">
+      <h3 className="item-name">
+        <a href={neo.nasa_jpl_url} target="_blank" rel="noopener noreferrer">{neo.name}</a>
+        {neo.is_potentially_hazardous_asteroid && <span role="img" aria-label="warning sign"> ⚠️</span>}
       </h3>
-      <p>
-        <strong>size</strong>:&nbsp;
+      <p className="item-property">
+        <strong>diameter</strong>:&nbsp;
         {estimatedDiameter.min} - {estimatedDiameter.max} {estimatedDiameter.unit}
       </p>
-      <p>
+      <p className="item-property">
         <strong>closest distance</strong>:&nbsp;
         {units === "metric"
           ? `${Number(closeApproachData[0].miss_distance.kilometers).toLocaleString()} km`
           : `${Number(closeApproachData[0].miss_distance.miles).toLocaleString()} mi`}
       </p>
-      <p>
+      <p className="item-property">
         <strong>relative velocity</strong>:&nbsp;
         {units === "metric"
           ? `${Number(closeApproachData[0].relative_velocity.kilometers_per_hour).toLocaleString()} kph`

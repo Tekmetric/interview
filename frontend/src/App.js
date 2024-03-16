@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { fetchNEOs } from "./utils";
 import NEOList from "./components/NEOList";
+import Menu from "./components/Menu";
+import "./App.css";
 
 // Normally I would convert this to a function component for consistency,
 // but leaving it as a class to demonstrate I know how to use them as well. :^}
@@ -23,9 +25,12 @@ class App extends Component {
 
     this.updateData = this.updateData.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
+    this.handleUnitChange = this.handleUnitChange.bind(this);
+    this.resetDate = this.resetDate.bind(this);
   }
 
   async componentDidMount() {
+    // Could cache this first load of data for use with "reset to today"
     await this.updateData();
   }
 
@@ -52,57 +57,41 @@ class App extends Component {
     const date = e.target.value;
     this.setState({ date });
   }
+
+  handleUnitChange(e) {
+    const units = e.target.value;
+    this.setState({ units });
+  }
+
+  resetDate() {
+    this.setState({ date: this.today });
+  }
   
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1>NEO Viewer</h1>
-          <h2>View by date asteroids that have come within 1.3 AU* of Earth.</h2>
-          <p>*1 AU = 1 Astronomical Unit ≈ {this.state.units === "metric" ? "149,597,871 km" : "92,955,807 mi"}</p>
+      <div className="app">
+        <header className="header">
+          <h1 className="title">Near Earth Object (NEO) Viewer</h1>
+          <h2 className="subtitle">View by date asteroids that have come within 1.3 AU* of Earth.</h2>
+          <p className="definition">*1.3 AU = 1.3 Astronomical Unit ≈ {this.state.units === "metric" ? "194,477,232 km" : "120,842,549 mi"}</p>
         </header>
-        <section>
-          <label htmlFor="date">Date:</label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value={this.state.date}
-            max={this.today}
-            onChange={this.handleDateChange}
-          />
+        
+        <Menu
+          date={this.state.date}
+          today={this.today}
+          handleDateChange={this.handleDateChange}
+          units={this.state.units}
+          resetDate={this.resetDate}
+          handleUnitChange={this.handleUnitChange}
+        />
 
-          <fieldset>
-            <legend>Units</legend>
-            <input
-              type="radio"
-              id="metric"
-              name="metric"
-              value="metric"
-              checked={this.state.units === "metric"}
-              onChange={() => this.setState({ units: "metric" })}
-            />
-            <label htmlFor="metric">Metric</label>
-
-            <input
-              type="radio"
-              id="imperial"
-              name="imperial"
-              value="imperial"
-              checked={this.state.units === "imperial"}
-              onChange={() => this.setState({ units: "imperial" })}
-            />
-            <label htmlFor="imperial">Imperial</label>
-          </fieldset>
-        </section>
-        <main>
-          <NEOList
-            isLoading={this.state.isLoading}
-            error={this.state.error}
-            neoData={this.state.neoData}
-            units={this.state.units}
-          />
-        </main>
+        
+        <NEOList
+          isLoading={this.state.isLoading}
+          error={this.state.error}
+          neoData={this.state.neoData}
+          units={this.state.units}
+        />
       </div>
     );
   }

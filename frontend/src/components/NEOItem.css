@@ -1,0 +1,27 @@
+.item {
+  border-bottom: 1px dotted white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  width: 100%;
+}
+
+.item-name {
+  margin: 0.25rem 0;
+
+  & a {
+    color: lightblue;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    &:visited {
+      color: plum;
+    }
+  }
+}
+
+.item-property {
+  margin: 0;
+}

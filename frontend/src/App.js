@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { fetchNEOs } from "./utils";
+import { fetchNEOs } from "./api";
 import NEOList from "./components/NEOList";
 import Menu from "./components/Menu";
 import "./App.css";
@@ -21,7 +21,7 @@ class App extends Component {
       units: "metric",
       isLoading: true,
       error: "",
-    }
+    };
 
     this.updateData = this.updateData.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
@@ -30,7 +30,7 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    // Could cache this first load of data for use with "reset to today"
+    // Could cache this first load of data for use with "reset to today" button.
     await this.updateData();
   }
 
@@ -84,7 +84,6 @@ class App extends Component {
           resetDate={this.resetDate}
           handleUnitChange={this.handleUnitChange}
         />
-
         
         <NEOList
           isLoading={this.state.isLoading}

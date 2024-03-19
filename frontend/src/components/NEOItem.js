@@ -3,40 +3,70 @@ import "./NEOItem.css";
 
 export default function NEOItem({ neo, units }) {
   const [estimatedDiameter, setEstimatedDiameter] = useState({ min: "", max: "", unit: "" });
+  const [closeApproachDistance, setCloseApproachDistance] = useState({ value: "", unit: "" });
+  const [closeApproachVelocity, setCloseApproachVelocity] = useState({ value: "", unit: "" });
 
   const {
-    close_approach_data: closeApproachData,
+    close_approach_data,
     estimated_diameter,
   } = neo;
 
   useEffect(() => {
-    let key = "";
-    let unit = "";
+    let diameterKey = "";
+    let diameterUnit = "";
+
+    let distanceKey = "";
+    let distanceUnit = "";
+
+    let velocityKey = "";
+    let velocityUnit = "";
 
     if (units === "metric") {
       // use kilometers if asteroid is larger than 1km
       if (estimated_diameter.kilometers.estimated_diameter_max > 1) {
-        key = "kilometers";
-        unit = "km";
+        diameterKey = "kilometers";
+        diameterUnit = "km";
       } else {
-        key = "meters";
-        unit = "m";
+        diameterKey = "meters";
+        diameterUnit = "m";
       }
+
+      distanceKey = "kilometers";
+      distanceUnit = "km";
+
+      velocityKey = "kilometers_per_hour";
+      velocityUnit = "kph;"
     } else {
       // use miles if asteroid is larger than 1mi
       if (estimated_diameter.miles.estimated_diameter_max > 1) {
-        key = "miles";
-        unit = "mi";
+        diameterKey = "miles";
+        diameterUnit = "mi";
       } else {
-        key = "feet";
-        unit = "ft";
+        diameterKey = "feet";
+        diameterUnit = "ft";
       }
+
+      distanceKey = "miles";
+      distanceUnit = "mi";
+
+      velocityKey = "miles_per_hour";
+      velocityUnit = "mph";
     }
 
     setEstimatedDiameter({
-      min: estimated_diameter[key].estimated_diameter_min.toLocaleString(),
-      max: estimated_diameter[key].estimated_diameter_max.toLocaleString(),
-      unit,
+      min: estimated_diameter[diameterKey].estimated_diameter_min.toLocaleString(),
+      max: estimated_diameter[diameterKey].estimated_diameter_max.toLocaleString(),
+      unit: diameterUnit,
+    });
+
+    setCloseApproachDistance({
+      value: Number(close_approach_data[0].miss_distance[distanceKey]).toLocaleString(),
+      unit: distanceUnit,
+    });
+
+    setCloseApproachVelocity({
+      value: Number(close_approach_data[0].relative_velocity[velocityKey]).toLocaleString(),
+      unit: velocityUnit,
     });
 
   }, [units]);
@@ -53,15 +83,11 @@ export default function NEOItem({ neo, units }) {
       </p>
       <p className="item-property">
         <strong>closest distance</strong>:&nbsp;
-        {units === "metric"
-          ? `${Number(closeApproachData[0].miss_distance.kilometers).toLocaleString()} km`
-          : `${Number(closeApproachData[0].miss_distance.miles).toLocaleString()} mi`}
+        {closeApproachDistance.value} {closeApproachDistance.unit}
       </p>
       <p className="item-property">
         <strong>relative velocity</strong>:&nbsp;
-        {units === "metric"
-          ? `${Number(closeApproachData[0].relative_velocity.kilometers_per_hour).toLocaleString()} kph`
-          : `${Number(closeApproachData[0].relative_velocity.miles_per_hour).toLocaleString()} mph`}
+        {closeApproachVelocity.value} {closeApproachVelocity.unit}
       </p>
     </div>
   )

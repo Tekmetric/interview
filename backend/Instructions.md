@@ -1,4 +1,4 @@
-### Basic CRUD API with data store using Spring Boot and in memory H2 database
+:ballot_box_with_check: ### Basic CRUD API with data store using Spring Boot and in memory H2 database
 #### About
 This project exposes two API endpoints for managing Users and Tasks, covering basic CRUD operations.
 

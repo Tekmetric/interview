@@ -4,7 +4,7 @@
 This project exposes two API endpoints for managing Users and Tasks, covering basic CRUD operations.
 
 
-#### : electric_plug:Prerequisites
+#### :electric_plug: Prerequisites
 - Maven
 - Java 1.8 (or compatible)
 

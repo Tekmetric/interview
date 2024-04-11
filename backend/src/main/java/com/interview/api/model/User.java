@@ -1,4 +1,4 @@
-package com.interview.model;
+package com.interview.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -29,8 +30,10 @@ import java.util.List;
 @Entity
 @Table(name="users")
 public class User {
-    @Id @GeneratedValue
+
     //@JdbcTypeCode(Types.VARCHAR)
+    @Id
+    @GeneratedValue//(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
@@ -51,4 +54,11 @@ public class User {
 
     @OneToMany(mappedBy = "requester", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Task> requesterTasks;
+
+    public User (String username, String firstName, String lastName, String password) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+    }
 }

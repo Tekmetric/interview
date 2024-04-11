@@ -1,9 +1,9 @@
-package com.interview.controller;
+package com.interview.api.controller;
 
-import com.interview.dto.TaskDTO;
-import com.interview.service.TaskService;
-import com.interview.utils.CreateOperation;
-import com.interview.utils.UpdateOperation;
+import com.interview.api.dto.TaskDTO;
+import com.interview.api.service.TaskService;
+import com.interview.api.utils.CreateOperation;
+import com.interview.api.utils.UpdateOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,6 +40,7 @@ public class TaskController {
 
     @Operation(summary = "Create a new task", description = "Creates a new task with the provided information")
     @ApiResponse(responseCode = "201", description = "Task created successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid task data")
     @PostMapping
     ResponseEntity<TaskDTO> createTask(@Validated(CreateOperation.class) @RequestBody TaskDTO task) {
         return ResponseEntity.status(HttpStatus.CREATED).body(taskService.createTask(task));
@@ -47,6 +48,8 @@ public class TaskController {
 
     @Operation(summary = "Override an existing task", description = "Overrides an existing task with the provided information")
     @ApiResponse(responseCode = "200", description = "Task updated successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid task data")
+    @ApiResponse(responseCode = "404", description = "Task not found")
     @PutMapping
     ResponseEntity<TaskDTO> updateTask(@Validated(UpdateOperation.class) @RequestBody TaskDTO taskDTO) {
         return ResponseEntity.ok(taskService.updateTask(taskDTO));
@@ -54,6 +57,8 @@ public class TaskController {
 
     @Operation(summary = "Update a task", description = "Partially updates a task with the provided information")
     @ApiResponse(responseCode = "200", description = "Task updated successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid task data")
+    @ApiResponse(responseCode = "404", description = "Task not found")
     @PatchMapping
     ResponseEntity<TaskDTO> patchTask(@Validated(UpdateOperation.class) @RequestBody TaskDTO taskDTO) {
         return ResponseEntity.ok( taskService.patchTask(taskDTO));
@@ -79,6 +84,7 @@ public class TaskController {
 
     @Operation(summary = "Delete a task by ID", description = "Deletes a task by its ID")
     @ApiResponse(responseCode = "204", description = "Task deleted successfully")
+    @ApiResponse(responseCode = "404", description = "Task not found")
     @DeleteMapping("/{id}")
     ResponseEntity<String> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);

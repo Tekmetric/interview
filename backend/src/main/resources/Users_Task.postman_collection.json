@@ -1,0 +1,357 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Users  copy",
+		"_postman_id": "2fef667f-883b-0ca6-6f13-c8f17914676b",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/api/v1/users",
+			"request": {
+				"url": "http://localhost:8080/api/v1/users",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Cache-Control",
+						"value": "no-cache",
+						"description": ""
+					},
+					{
+						"key": "Postman-Token",
+						"value": "6e466317-00cb-7ac5-0c49-994d5e6fe50b",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"madalina\",\n  \"firstName\": \"Madalina\",\n  \"lastName\": \"Spataru\",\n  \"password\": \"nothashedjustfortesting\"\n}"
+				},
+				"description": "Generated from a curl request: \ncurl -X POST -H \\\"Content-Type: application/json\\\" -H \\\"Cache-Control: no-cache\\\" -H \\\"Postman-Token: 6e466317-00cb-7ac5-0c49-994d5e6fe50b\\\" -d '{\n  \\\"username\\\": \\\"madalina\\\",\n  \\\"firstName\\\": \\\"Madalina\\\",\n  \\\"lastName\\\": \\\"Spataru\\\",\n  \\\"password\\\": \\\"nothashedjustfortesting\\\"\n}' \\\"http://localhost:8080/api/v1/users\\\""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/users",
+			"request": {
+				"url": "http://localhost:8080/api/v1/users",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Cache-Control",
+						"value": "no-cache",
+						"description": ""
+					},
+					{
+						"key": "Postman-Token",
+						"value": "6e466317-00cb-7ac5-0c49-994d5e6fe50b",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"madalina\",\n  \"firstNames\": \"Madalina\",\n  \"lastName\": \"Spataru\",\n  \"password\": \"nothashedjustfortesting\"\n}"
+				},
+				"description": "Create user - Failed validation"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/users/?page=0&size=10&sortBy=firstName&sortDirection=asc",
+			"request": {
+				"url": "http://localhost:8080/api/v1/users/?page=0&size=10&sortBy=firstName&sortDirection=asc",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "Read list of items - Success"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/users",
+			"request": {
+				"url": "http://localhost:8080/api/v1/users",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"violet_platypus1\",\n  \"firstName\": \"Madalina\",\n  \"lastName\": \"Spataru\",\n  \"password\": \"nothashedjustfortesting\"\n}"
+				},
+				"description": "Update user: Bad request"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/users",
+			"request": {
+				"url": "http://localhost:8080/api/v1/users",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\" : \"1\",\n  \"username\": \"violet_platypus1\",\n  \"firstName\": \"Madalina\",\n  \"lastName\": \"Spataru\",\n  \"password\": \"nothashedjustfortesting\"\n}"
+				},
+				"description": "Update user: Success"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/users/1",
+			"request": {
+				"url": "http://localhost:8080/api/v1/users/85",
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "Delete - Not Found"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/users/orchid_kangarooi",
+			"request": {
+				"url": "http://localhost:8080/api/v1/users/orchid_kangarooi",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "Read individual item - Not found"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/users/?page=0&size=10&sortBy=fiame&sortDirection=asc",
+			"request": {
+				"url": "http://localhost:8080/api/v1/users/?page=0&size=10&sortBy=firstNam&sortDirection=asc",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "Read list of items - Failure unknown param"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks/?page=0&size=10&sortBy=title&sortDirection=asc",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks/?page=0&size=10&sortBy=title&sortDirection=asc",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "Task Read list of items - Success"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks/10",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks/10",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "Task Read single item - Success"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks/100",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks/100",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "Task Read single item - Not Found"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"description\": \"Description task\",\n\t\"title\":\"Title task\",\n\t\"assignee\":{\"id\":\"1\"}\n}"
+				},
+				"description": "Create - Success"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"description\": \"Description task\",\n\t\"title\":\"Short\"\n}"
+				},
+				"description": "Create - Fail validation"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks/111",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks/111",
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "Delete - Success"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks/66",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks/66",
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "Delete - Not Found"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"101\",\n\t\"description\": \"Description task Updated\",\n\t\"title\":\"Title task\"\n}"
+				},
+				"description": "Post - Success"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"101\",\n\t\"description\": \"Description task Updated\",\n\t\"title\":\"Title \"\n}"
+				},
+				"description": "Post - Fail validation"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks",
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"103\",\n\t\"description\": \"Description task Updated\"\n}"
+				},
+				"description": "Patch - Success"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/v1/tasks/search?title=Tas",
+			"request": {
+				"url": "http://localhost:8080/api/v1/tasks/search?title=Tas",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"103\",\n\t\"description\": \"Description task Updated\"\n}"
+				},
+				"description": "Read:search by title Success"
+			},
+			"response": []
+		}
+	]
+}

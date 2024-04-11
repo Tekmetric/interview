@@ -1,7 +1,7 @@
-package com.interview.mapper;
+package com.interview.api.mapper;
 
-import com.interview.dto.UserDTO;
-import com.interview.model.User;
+import com.interview.api.dto.UserDTO;
+import com.interview.api.model.User;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 

@@ -1,8 +1,8 @@
-package com.interview.dto;
+package com.interview.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.interview.utils.CreateOperation;
-import com.interview.utils.UpdateOperation;
+import com.interview.api.utils.CreateOperation;
+import com.interview.api.utils.UpdateOperation;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

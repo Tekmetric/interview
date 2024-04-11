@@ -1,4 +1,4 @@
-package com.interview.exception;
+package com.interview.api.exception;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,10 +50,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    @ExceptionHandler(ConstraintViolationException.class)
+   /* @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
-        return ResponseEntity.badRequest().body(ex.getCause());
-    }
+        return ResponseEntity.badRequest().body("Constraints violation");
+    }*/
 
     @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
     public ResponseEntity<Object> handleConstraintViolationException(HttpServerErrorException.InternalServerError ex) {

@@ -1,4 +1,4 @@
-package com.interview;
+package com.interview.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,5 +15,7 @@ public class Application {
         logger.info("App starting...");
         SpringApplication.run(Application.class, args);
         logger.info("App started");
+
+
     }
 }

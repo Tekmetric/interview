@@ -1,4 +1,4 @@
-package com.interview.utils;
+package com.interview.api.utils;
 
 /**
  * Simply used as Spring group Validator class.

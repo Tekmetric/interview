@@ -1,13 +1,12 @@
-package com.interview.service.impl;
+package com.interview.api.service.impl;
 
-import com.interview.dto.TaskDTO;
-import com.interview.exception.RecordNotFoundException;
-import com.interview.mapper.TaskMapper;
-import com.interview.model.Task;
-import com.interview.repository.TaskRepository;
-import com.interview.service.TaskService;
-import com.interview.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.interview.api.exception.RecordNotFoundException;
+import com.interview.api.mapper.TaskMapper;
+import com.interview.api.model.Task;
+import com.interview.api.repository.TaskRepository;
+import com.interview.api.service.TaskService;
+import com.interview.api.service.UserService;
+import com.interview.api.dto.TaskDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +18,12 @@ import java.util.List;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private TaskRepository taskRepository;
+
+    private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
 
-    public TaskServiceImpl() {
+    public TaskServiceImpl(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
         taskMapper = new TaskMapper();
     }
 
@@ -84,7 +82,6 @@ public class TaskServiceImpl implements TaskService {
         }
 
         return taskMapper.toTaskDTO(taskMapper.copyfrom(taskDTO, task));
-
     }
 
     @Override

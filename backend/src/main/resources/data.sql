@@ -1,8 +1,4 @@
-/*CREATE SCHEMA IF NOT EXISTS testdb;*/
-
-/*SET SCHEMA testdb;*/
-
-INSERT INTO users (first_name, last_name, username, password)
+/*INSERT INTO Users (first_name, last_name, username, password)
 VALUES
     ('Violet', 'Platypus', 'violet_platypus1', 'nIwGFDnp4nlQ'),
     ('Orchid', 'Kangaroo', 'orchid_kangaroo2', '0Yhs5BHvTbnu'),
@@ -305,7 +301,7 @@ VALUES
     ('Jade', 'Elephant', 'jade_elephant299', 'xnIIJa7iTITd'),
     ('Indigo', 'Hedgehog', 'indigo_hedgehog300', 'Aop5AmQvrTDu');
 
-INSERT INTO task (title, description, status, assignee_id, reporter_id)
+INSERT INTO Task (title, description, status, assignee_id, requester_id)
 VALUES
     ('Task 1', 'Description for task 1', 'OPEN', 132, 57),
     ('Task 2', 'Description for task 2', 'OPEN', 126, 85),
@@ -606,5 +602,6 @@ VALUES
     ('Task 297', 'Description for task 297', 'OPEN', 165, 284),
     ('Task 298', 'Description for task 298', 'IN_PROGRESS', 4, 226),
     ('Task 299', 'Description for task 299', 'IN_PROGRESS', 124, 110),
-    ('Task 300', 'Description for task 300', 'DONE', 3, 25);
+    ('Task 300', 'Description for task 300', 'DONE', 3, 25);*/
+
 

@@ -1,6 +1,6 @@
-package com.interview.service;
+package com.interview.api.service;
 
-import com.interview.dto.TaskDTO;
+import com.interview.api.dto.TaskDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import java.util.List;

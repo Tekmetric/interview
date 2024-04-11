@@ -1,4 +1,4 @@
-package com.interview.exception;
+package com.interview.api.exception;
 
 public class RecordNotFoundException extends RuntimeException {
     public RecordNotFoundException(String message) {

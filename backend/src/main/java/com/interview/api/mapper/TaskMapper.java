@@ -1,7 +1,7 @@
-package com.interview.mapper;
+package com.interview.api.mapper;
 
-import com.interview.dto.TaskDTO;
-import com.interview.model.Task;
+import com.interview.api.dto.TaskDTO;
+import com.interview.api.model.Task;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.slf4j.Logger;

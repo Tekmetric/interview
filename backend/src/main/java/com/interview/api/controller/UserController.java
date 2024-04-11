@@ -1,9 +1,9 @@
-package com.interview.controller;
+package com.interview.api.controller;
 
-import com.interview.dto.UserDTO;
-import com.interview.service.UserService;
-import com.interview.utils.CreateOperation;
-import com.interview.utils.UpdateOperation;
+import com.interview.api.dto.UserDTO;
+import com.interview.api.service.UserService;
+import com.interview.api.utils.CreateOperation;
+import com.interview.api.utils.UpdateOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +27,6 @@ import javax.validation.constraints.NotBlank;
 public class UserController {
 
     private final UserService userService;
-    static Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -34,12 +35,12 @@ public class UserController {
     @PostMapping
     @Operation(summary = "Create a new user", description = "Creates a new user with the provided information")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User created successfully",
+            @ApiResponse(responseCode = "201", description = "User created successfully",
                     content = @Content(schema = @Schema(implementation = UserDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid user data")
     })
-    public UserDTO createUser(@Validated(CreateOperation.class) @RequestBody UserDTO userDTO) {
-        return userService.createUser(userDTO);
+    public ResponseEntity<UserDTO> createUser(@Validated(CreateOperation.class) @RequestBody UserDTO userDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDTO));
     }
 
     @GetMapping("/{username}")
@@ -49,8 +50,8 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = UserDTO.class))),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public UserDTO getUser(@PathVariable("username") @NotBlank @Parameter(description = "Username of the user") String username) {
-        return userService.getUser(username);
+    public ResponseEntity<UserDTO> getUser(@PathVariable("username") @NotBlank @Parameter(description = "Username of the user") String username) {
+        return ResponseEntity.ok(userService.getUser(username));
     }
 
     @GetMapping
@@ -74,17 +75,19 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid user data"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public UserDTO updateUser(@Validated(UpdateOperation.class) @RequestBody UserDTO userDTO) {
-        return userService.updateUser(userDTO);
+    public ResponseEntity<UserDTO> updateUser(@Validated(UpdateOperation.class) @RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok().body(userService.updateUser(userDTO));
     }
 
-    @DeleteMapping("/{id}")
+
     @Operation(summary = "Delete a user", description = "Deletes a user by their id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public void deleteUser(@PathVariable("id") @NotBlank @Parameter(description = "Id of the user") Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") @NotBlank @Parameter(description = "Id of the user") Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("User successfully deleted ");
     }
 }

@@ -1,11 +1,11 @@
-package com.interview.service.impl;
+package com.interview.api.service.impl;
 
-import com.interview.dto.UserDTO;
-import com.interview.exception.RecordNotFoundException;
-import com.interview.mapper.UserMapper;
-import com.interview.model.User;
-import com.interview.repository.UserRepository;
-import com.interview.service.UserService;
+import com.interview.api.mapper.UserMapper;
+import com.interview.api.repository.UserRepository;
+import com.interview.api.dto.UserDTO;
+import com.interview.api.exception.RecordNotFoundException;
+import com.interview.api.model.User;
+import com.interview.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

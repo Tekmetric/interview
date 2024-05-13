@@ -2,7 +2,6 @@ package com.interview.bookstore.api;
 
 import com.interview.bookstore.api.dto.BookDTO;
 import com.interview.bookstore.api.dto.BookReviewDTO;
-import com.interview.bookstore.api.dto.DetailedBookDTO;
 import com.interview.bookstore.api.dto.NewBookDTO;
 import com.interview.bookstore.api.dto.NewBookReviewDTO;
 import com.interview.bookstore.api.dto.UpdateBookDTO;
@@ -13,6 +12,7 @@ import com.interview.bookstore.domain.exception.ResourceNotFoundException;
 import com.interview.bookstore.service.BookService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -78,12 +79,10 @@ public class BookController {
     }
 
     @PutMapping("/{bookId}")
-    public ResponseEntity<DetailedBookDTO> updateBook(@PathVariable Long bookId,
-                                                      @RequestBody @Valid UpdateBookDTO updateBook) {
+    @ResponseStatus(HttpStatus.OK)
+    public void updateBook(@PathVariable Long bookId, @RequestBody @Valid UpdateBookDTO updateBook) {
         var bookUpdate = BookMapper.toDomain(updateBook);
-        var updatedBook = bookService.update(bookId, bookUpdate);
-
-        return ResponseEntity.ok(BookMapper.toDetailedDTO(updatedBook));
+        bookService.update(bookId, bookUpdate);
     }
 
     @DeleteMapping("/{bookId}")

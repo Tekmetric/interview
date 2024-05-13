@@ -1,5 +1,6 @@
 package com.interview.bookstore.api.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -13,6 +14,8 @@ import java.time.LocalDate;
 @Getter
 public class NewBookDTO {
 
+    @NotNull
+    @NotBlank
     private String title;
 
     @NotNull

@@ -3,7 +3,7 @@ package com.interview.bookstore.service;
 import com.interview.bookstore.domain.Author;
 import com.interview.bookstore.domain.Book;
 import com.interview.bookstore.domain.BookReview;
-import com.interview.bookstore.domain.exception.DuplicateISBNException;
+import com.interview.bookstore.domain.exception.DuplicateFieldException;
 import com.interview.bookstore.domain.exception.ResourceNotFoundException;
 import com.interview.bookstore.persistence.BookRepository;
 import com.interview.bookstore.persistence.BookReviewRepository;
@@ -56,9 +56,11 @@ public class BookService {
     }
 
     public Book save(Long authorId, Book newBook) {
-        if (bookRepository.existsBookByBookDetailsIsbn(newBook.getBookDetails().getIsbn())) {
-            throw new DuplicateISBNException();
-        }
+        var newIsbn = newBook.getBookDetails().getIsbn();
+        bookRepository.findBookIdByIsbn(newIsbn)
+                .ifPresent(id -> {
+                    throw new DuplicateFieldException(Book.class, "ISBN");
+                });
 
         Optional<Author> author = authorService.findById(authorId);
         return author.map(a -> {
@@ -70,18 +72,17 @@ public class BookService {
         .orElseThrow(() -> new ResourceNotFoundException(Author.class, authorId));
     }
 
-    public Book update(Long bookId, Book updatedBook) {
+    public void update(Long bookId, Book updatedBook) {
        Optional<Book> retrievedBook = bookRepository.findById(bookId);
-       return retrievedBook.map(book -> {
-           book.setTitle(updatedBook.getTitle());
-           book.setPrice(updatedBook.getPrice());
-           var bookDetails = book.getBookDetails();
-           bookDetails.setDescription(updatedBook.getBookDetails().getDescription());
-           bookDetails.setPageCount(updatedBook.getBookDetails().getPageCount());
+       var book = retrievedBook.orElseThrow(() -> new ResourceNotFoundException(Book.class, bookId));
 
-           return bookRepository.save(book);
-       })
-       .orElseThrow(() -> new ResourceNotFoundException(Book.class, bookId));
+       book.setTitle(updatedBook.getTitle());
+       book.setPrice(updatedBook.getPrice());
+       var bookDetails = book.getBookDetails();
+       bookDetails.setDescription(updatedBook.getBookDetails().getDescription());
+       bookDetails.setPageCount(updatedBook.getBookDetails().getPageCount());
+
+       bookRepository.save(book);
     }
 
     public void delete(Long bookId) {

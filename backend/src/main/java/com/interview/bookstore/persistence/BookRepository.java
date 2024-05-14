@@ -30,6 +30,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
         select bd.id from BookDetails bd
         where bd.isbn = :isbn
     """)
-    Optional<Integer> findBookIdByIsbn(@Param("isbn") String isbn);
+    Optional<Long> findBookIdByIsbn(@Param("isbn") String isbn);
 
 }

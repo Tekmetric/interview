@@ -10,7 +10,6 @@ public class ServiceAppointmentDTO {
     @NotBlank(message = "Description is mandatory")
     private String description;
 
-    @NotBlank(message = "Service Date is mandatory")
     @Future(message = "Appointment date must be in the future")
     private Date appointmentDate;
 

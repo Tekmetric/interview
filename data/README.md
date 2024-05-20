@@ -8,7 +8,7 @@ This could be thought of as a step in a DAG. If you want to use local-stack to s
 
 ### Requirements
 - Create an account at api.data.gov to get an API key: https://api.data.gov/signup/
-Retrieve the API data in the script using your new API key
+- Retrieve the API data in the script using your new API key
     - Instructions on API key usage here: https://api.data.gov/docs/developer-manual/
 - Data should be saved in Parquet format
 - Recalls should be stored with 1 file for each year, named {year}.parquet

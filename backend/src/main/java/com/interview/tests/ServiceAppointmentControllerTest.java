@@ -13,7 +13,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
+import java.time.temporal.ChronoUnit;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -44,7 +47,7 @@ class ServiceAppointmentControllerTest {
 
         ServiceAppointmentDTO appointmentDTO = new ServiceAppointmentDTO();
         appointmentDTO.setDescription("Oil change");
-        appointmentDTO.setAppointmentDate(new Date());
+        appointmentDTO.setAppointmentDate( Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
         appointmentDTO.setCustomerId(1L);
 
         Mockito.when(serviceAppointmentService.createServiceAppointment(

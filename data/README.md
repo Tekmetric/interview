@@ -4,7 +4,7 @@ Your task is to build a python script to gather data from the US Government's ve
 
 The page for the API is here: https://catalog.data.gov/dataset/recalls-data
 
-This could be thought of as a step in a DAG. If you want to use local-stack to save data into a “local S3” that’s ok, otherwise pseudocode to represent the S3 upload is fine. Also acceptable is writing out files to the local filesystem in whatever directory structure you would use for S3.
+If you want to use local-stack to save data into a “local S3” that’s ok, otherwise pseudocode to represent the S3 upload is fine. Also acceptable is writing out files to the local filesystem in whatever directory structure you would use for S3.
 
 ### Requirements
 - Create an account at api.data.gov to get an API key: https://api.data.gov/signup/

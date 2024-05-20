@@ -14,6 +14,10 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    /**
+     * Security config that allows read requests to be performed with User role but write operations only with ADMIN Role
+     *
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http

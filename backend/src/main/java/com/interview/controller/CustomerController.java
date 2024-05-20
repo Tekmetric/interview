@@ -1,8 +1,6 @@
 package com.interview.controller;
 
-
 import com.interview.dto.CustomerDTO;
-import com.interview.repository.CustomerRepository;
 import com.interview.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +15,6 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
-    @Autowired
-    private CustomerRepository customerRepository;
 
     @PostMapping
     public CustomerDTO createCustomer(@Valid @RequestBody CustomerDTO customerDTO) {

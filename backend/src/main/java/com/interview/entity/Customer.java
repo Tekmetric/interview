@@ -22,8 +22,6 @@ public class Customer {
     @Email(message = "Email should be valid")
     private String email;
 
-    // Getters and setters
-
     public Long getId() {
         return id;
     }

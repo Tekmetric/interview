@@ -24,9 +24,7 @@ public class ServiceAppointmentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ServiceAppointmentDTO> getServiceAppointmentById(@PathVariable Long id) {
-        return serviceAppointmentService.getServiceAppointmentById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(serviceAppointmentService.getServiceAppointmentById(id));
     }
 
     @GetMapping

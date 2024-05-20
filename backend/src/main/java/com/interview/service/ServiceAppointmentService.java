@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,8 +37,9 @@ public class ServiceAppointmentService {
         return serviceAppointmentMapper.toDTO(serviceAppointmentRepository.save(serviceAppointment));
     }
 
-    public Optional<ServiceAppointmentDTO> getServiceAppointmentById(Long id) {
-        return serviceAppointmentRepository.findById(id).map(serviceAppointmentMapper::toDTO);
+    public ServiceAppointmentDTO getServiceAppointmentById(Long id) {
+        return serviceAppointmentRepository.findById(id).map(serviceAppointmentMapper::toDTO)
+                .orElseThrow(() -> new NoSuchElementException("Customer not found with id " + id));
     }
 
     public List<ServiceAppointmentDTO> getAllServiceAppointments() {

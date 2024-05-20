@@ -5,7 +5,7 @@
 #### Prerequisites
 
 - Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
+- Java 11 (or higher, update version in pom.xml if needed)
 
 #### Fork the repository and clone it locally
 

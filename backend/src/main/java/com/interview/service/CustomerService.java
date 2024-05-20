@@ -57,7 +57,7 @@ public class CustomerService {
      * Updates a customer by ID.
      *
      * @param id          the customer ID
-     * @param customerDTO the customer DTO
+     * @param customerDetails the customer DTO
      * @return the updated customer entity
      * @throws NoSuchElementException if the customer is not found
      */

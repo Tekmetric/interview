@@ -1,6 +1,5 @@
 package com.interview.mapper;
 
-
 import com.interview.dto.CustomerDTO;
 import com.interview.entity.Customer;
 import org.mapstruct.Mapper;

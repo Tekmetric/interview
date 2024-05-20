@@ -1,5 +1,6 @@
 package com.interview.dto;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
@@ -9,11 +10,11 @@ public class ServiceAppointmentDTO {
     @NotBlank(message = "Description is mandatory")
     private String description;
 
+    @NotBlank(message = "Service Date is mandatory")
+    @Future(message = "Appointment date must be in the future")
     private Date appointmentDate;
 
     private Long customerId;
-
-    // Getters and setters
 
     public Long getId() {
         return id;

@@ -1,6 +1,7 @@
 package com.interview.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
@@ -13,6 +14,8 @@ public class ServiceAppointment {
     @NotBlank(message = "Description is mandatory")
     private String description;
 
+    @NotBlank(message = "Service Date is mandatory")
+    @Future(message = "Appointment date must be in the future")
     @Temporal(TemporalType.TIMESTAMP)
     private Date appointmentDate;
 

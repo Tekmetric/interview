@@ -1,0 +1,216 @@
+{
+	"info": {
+		"_postman_id": "066d787f-edfc-4b6a-97f8-c40627dac586",
+		"name": "Book Store API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13434914"
+	},
+	"item": [
+		{
+			"name": "Get All Books",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_BASE_URL}}/books",
+					"host": [
+						"{{API_BASE_URL}}"
+					],
+					"path": [
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Book",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_BASE_URL}}/books/1",
+					"host": [
+						"{{API_BASE_URL}}"
+					],
+					"path": [
+						"books",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Detailed Book",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_BASE_URL}}/books/1?detailed=true",
+					"host": [
+						"{{API_BASE_URL}}"
+					],
+					"path": [
+						"books",
+						"1"
+					],
+					"query": [
+						{
+							"key": "detailed",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Book Reviews",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_BASE_URL}}/books/1/reviews",
+					"host": [
+						"{{API_BASE_URL}}"
+					],
+					"path": [
+						"books",
+						"1",
+						"reviews"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Book Review",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"score\": 5,\r\n    \"text\": \"Page-turning adventure, secret societies, a quest for truth.\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_BASE_URL}}/books/1/reviews",
+					"host": [
+						"{{API_BASE_URL}}"
+					],
+					"path": [
+						"books",
+						"1",
+						"reviews"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Book",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Inferno\",\r\n    \"authorId\": 1,\r\n    \"price\": 15,\r\n    \"isbn\": \"978-0552169585\",\r\n    \"description\": \"A mystery through Dante's Inferno, unveiling a perilous conspiracy with global consequences.\",\r\n    \"publicationDate\": \"2014-05-08\",\r\n    \"pageCount\": 624\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_BASE_URL}}/books",
+					"host": [
+						"{{API_BASE_URL}}"
+					],
+					"path": [
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Book",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"The Da Vinci's code\",\r\n    \"description\": \"A symbologist unravels cryptic codes, unlocking secrets that challenge history's narrative in a gripping thriller.\",\r\n    \"price\": 17,\r\n    \"pageCount\": 481\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{API_BASE_URL}}/books/1",
+					"host": [
+						"{{API_BASE_URL}}"
+					],
+					"path": [
+						"books",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Book",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{API_BASE_URL}}/books/1",
+					"host": [
+						"{{API_BASE_URL}}"
+					],
+					"path": [
+						"books",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "API_BASE_URL",
+			"value": "http://localhost:8080/api/v1",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,44 @@
+import { ContentData } from '../types/ContentData';
+import { DescriptionAPIResponse, MovieAPIResponse } from '../types/Response';
+import { MOVIE_API_PAGE_SIZE } from './constants';
+
+const sanitizeYear = (years: string): [number, number | undefined] => {
+  const yearRange = years.split('–');
+  if (yearRange.length === 2) {
+    return [Number.parseInt(yearRange[0]), Number.parseInt(yearRange[1])];
+  }
+  return [Number.parseInt(years), undefined];
+};
+
+const sanitizePoster = (posterURL: string): string | undefined => {
+  const isPosterImage = posterURL.endsWith('jpg') || posterURL.endsWith('.png');
+  return isPosterImage ? posterURL : undefined;
+};
+
+export const sanitizeMovieData = (
+  movieData: MovieAPIResponse,
+  descriptionData: DescriptionAPIResponse,
+  page: number,
+): ContentData => {
+  const hits =
+    movieData?.Search?.map((item, index) => {
+      const realIndex = MOVIE_API_PAGE_SIZE * (page - 1) + index;
+      const years = sanitizeYear(item.Year);
+      return {
+        imdbID: item.imdbID,
+        posterURL: sanitizePoster(item.Poster),
+        name: item.Title,
+        description:
+          descriptionData.articles?.[realIndex]?.description ||
+          'This is a placeholder description',
+        type: item.Type || 'unknown',
+        yearStart: years[0],
+        yearEnd: years[1],
+      };
+    }) ?? [];
+
+  return {
+    hits,
+    totalResults: movieData.totalResults ?? 0,
+  };
+};

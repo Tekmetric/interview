@@ -1,4 +1,4 @@
-package com.interview.resource;
+package com.interview.api.resource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

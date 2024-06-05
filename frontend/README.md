@@ -1,21 +1,30 @@
-# Tech Interview Project
+# React + TypeScript + Vite
 
-## Steps to get started:
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+Currently, two official plugins are available:
 
-#### Let's install the project locally
-`npm install`
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-#### Let's start the project locally
-`npm start`
+## Expanding the ESLint configuration
 
-### Goals
-1. Fetch Data from the backend Crud API you created or from a public API
-2. Display data from API onto your page (Table, List, etc.)
-3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
-4. Have fun
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+- Configure the top-level `parserOptions` property like this:
+
+```js
+export default {
+  // other rules...
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    project: ['./tsconfig.json', './tsconfig.node.json'],
+    tsconfigRootDir: __dirname,
+  },
+}
+```
+
+- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
+- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list

@@ -1,430 +1,353 @@
 {
   "posts": [
-    { "id": "1", "title": "Understanding JavaScript Closures", "views": 1500 },
-    { "id": "2", "title": "A Guide to Responsive Web Design", "views": 2200 },
-    { "id": "3", "title": "Introduction to TypeScript", "views": 1750 },
-    { "id": "4", "title": "Effective Debugging Techniques", "views": 1900 },
-    { "id": "5", "title": "Building Scalable Web Applications", "views": 2100 },
     {
-      "id": "6",
-      "title": "Exploring the New Features of ES2021",
-      "views": 1600
+      "id": "1",
+      "title": "Introduction to TypeScript",
+      "content": "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.",
+      "views": 120,
+      "authorId": "1"
     },
-    {
-      "id": "7",
-      "title": "CSS Grid Layout: A Comprehensive Guide",
-      "views": 2500
-    },
-    { "id": "8", "title": "Mastering Asynchronous JavaScript", "views": 2300 },
-    { "id": "9", "title": "Understanding Web Accessibility", "views": 1400 },
-    {
-      "id": "10",
-      "title": "An Overview of Web Security Best Practices",
-      "views": 1800
-    },
-    { "id": "11", "title": "Advanced JavaScript Patterns", "views": 1900 },
-    {
-      "id": "12",
-      "title": "Effective Use of the Flexbox Layout",
-      "views": 2200
-    },
-    { "id": "13", "title": "Modern Frontend Development Tools", "views": 2500 },
-    {
-      "id": "14",
-      "title": "Introduction to Functional Programming",
-      "views": 1300
-    },
-    { "id": "15", "title": "Writing Clean Code", "views": 2400 },
-    { "id": "16", "title": "Using React Hooks Effectively", "views": 3000 },
-    { "id": "17", "title": "A Guide to Node.js", "views": 2800 },
-    { "id": "18", "title": "Managing State in React", "views": 2700 },
-    { "id": "19", "title": "Web Performance Optimization", "views": 2600 },
-    { "id": "20", "title": "Testing JavaScript Applications", "views": 2900 },
-    { "id": "21", "title": "Getting Started with Vue.js", "views": 3100 },
-    { "id": "22", "title": "Building Progressive Web Apps", "views": 3200 },
-    { "id": "23", "title": "Understanding JavaScript Promises", "views": 2100 },
-    { "id": "24", "title": "GraphQL vs REST: A Comparison", "views": 2700 },
-    { "id": "25", "title": "Securing Your Web Applications", "views": 2500 },
-    { "id": "26", "title": "Introduction to WebAssembly", "views": 1800 },
-    { "id": "27", "title": "Learning SASS for Better CSS", "views": 2200 },
-    { "id": "28", "title": "Improving Web Accessibility", "views": 2300 },
-    { "id": "29", "title": "Understanding HTTP/2", "views": 2600 },
-    { "id": "30", "title": "Building Serverless Applications", "views": 3000 },
-    { "id": "31", "title": "State Management in Vue.js", "views": 2800 },
-    { "id": "32", "title": "Deep Dive into Redux", "views": 2900 },
-    { "id": "33", "title": "Using TypeScript with React", "views": 2700 },
-    { "id": "34", "title": "Advanced CSS Techniques", "views": 3100 },
-    {
-      "id": "35",
-      "title": "Implementing Authentication in Node.js",
-      "views": 3000
-    },
-    {
-      "id": "36",
-      "title": "Building Real-Time Web Applications",
-      "views": 3200
-    },
-    { "id": "37", "title": "Introduction to Docker", "views": 2400 },
-    { "id": "38", "title": "Optimizing Frontend Performance", "views": 2600 },
-    {
-      "id": "39",
-      "title": "Learning Python for Web Development",
-      "views": 2800
-    },
-    { "id": "40", "title": "Building RESTful APIs", "views": 3000 },
-    { "id": "41", "title": "JavaScript Design Patterns", "views": 3100 },
-    { "id": "42", "title": "WebSockets in Action", "views": 2700 },
-    { "id": "43", "title": "Understanding CSS Variables", "views": 2900 },
-    { "id": "44", "title": "A Guide to Webpack", "views": 3100 },
-    { "id": "45", "title": "Next.js for Server-Side Rendering", "views": 3200 },
-    { "id": "46", "title": "Getting Started with Angular", "views": 2800 },
-    { "id": "47", "title": "Introduction to GraphQL", "views": 2700 },
-    { "id": "48", "title": "Mastering Git and GitHub", "views": 2500 },
-    { "id": "49", "title": "Using CSS Modules", "views": 2600 },
-    { "id": "50", "title": "Responsive Images Techniques", "views": 2300 },
-    { "id": "51", "title": "Modern JavaScript Frameworks", "views": 2400 },
-    { "id": "52", "title": "Introduction to Microservices", "views": 2800 },
-    { "id": "53", "title": "Building Mobile-Friendly Websites", "views": 2900 },
-    { "id": "54", "title": "Introduction to Tailwind CSS", "views": 3100 },
-    { "id": "55", "title": "Understanding the DOM", "views": 3200 },
-    { "id": "56", "title": "Creating Animations with CSS", "views": 2500 },
-    { "id": "57", "title": "Data Fetching in React", "views": 2700 },
-    { "id": "58", "title": "Understanding REST APIs", "views": 2900 },
-    { "id": "59", "title": "Introduction to D3.js", "views": 3100 },
-    { "id": "60", "title": "Using Hooks in React", "views": 3000 },
-    { "id": "61", "title": "Introduction to Headless CMS", "views": 2800 },
-    { "id": "62", "title": "JavaScript Event Loop Explained", "views": 2700 },
-    {
-      "id": "63",
-      "title": "Introduction to Progressive Enhancement",
-      "views": 2500
-    },
-    { "id": "64", "title": "Building Interactive Dashboards", "views": 2400 },
-    { "id": "65", "title": "Web Components and Their Uses", "views": 2200 },
-    { "id": "66", "title": "Creating Server-Side APIs", "views": 2900 },
-    { "id": "67", "title": "Understanding Flexbox", "views": 2700 },
-    { "id": "68", "title": "Building Static Sites with Gatsby", "views": 2500 },
-    {
-      "id": "69",
-      "title": "Effective Use of JavaScript Modules",
-      "views": 2600
-    },
-    { "id": "70", "title": "Introduction to JAMstack", "views": 2800 },
-    { "id": "71", "title": "Handling Forms in React", "views": 2900 },
-    { "id": "72", "title": "Introduction to Python Django", "views": 3100 },
-    {
-      "id": "73",
-      "title": "Understanding the Event Delegation Pattern",
-      "views": 3200
-    },
-    { "id": "74", "title": "Getting Started with Svelte", "views": 3000 },
-    { "id": "75", "title": "Creating Responsive Layouts", "views": 2800 },
-    {
-      "id": "76",
-      "title": "Building Chat Applications with Socket.io",
-      "views": 2900
-    },
-    { "id": "77", "title": "A Guide to Responsive Typography", "views": 3100 },
-    {
-      "id": "78",
-      "title": "Building Desktop Apps with Electron",
-      "views": 3200
-    },
-    { "id": "79", "title": "Handling User Authentication", "views": 3000 },
-    {
-      "id": "80",
-      "title": "Understanding CSS Transitions and Animations",
-      "views": 2900
-    },
-    { "id": "81", "title": "Introduction to WebXR", "views": 2800 },
-    {
-      "id": "82",
-      "title": "Building GraphQL APIs with Node.js",
-      "views": 2600
-    },
-    { "id": "83", "title": "Understanding Modern CSS", "views": 2500 },
-    { "id": "84", "title": "Using Redux Toolkit", "views": 2400 },
-    { "id": "85", "title": "Building Custom Hooks in React", "views": 2700 },
-    { "id": "86", "title": "Introduction to Cloud Functions", "views": 2900 },
-    {
-      "id": "87",
-      "title": "Creating RESTful APIs with Express",
-      "views": 3000
-    },
-    { "id": "88", "title": "Optimizing Images for the Web", "views": 3200 },
-    { "id": "89", "title": "Understanding CSS Grid Layout", "views": 2500 },
-    {
-      "id": "90",
-      "title": "Introduction to Vue 3 Composition API",
-      "views": 2700
-    },
-    {
-      "id": "91",
-      "title": "Building Mobile Apps with React Native",
-      "views": 2900
-    },
-    { "id": "92", "title": "Using GraphQL with React", "views": 3000 },
-    {
-      "id": "93",
-      "title": "Introduction to Server-Side Rendering",
-      "views": 2800
-    },
-    { "id": "94", "title": "Using Tailwind CSS in React", "views": 2900 },
-    { "id": "95", "title": "Introduction to Three.js", "views": 3100 },
-    { "id": "96", "title": "Handling File Uploads in Node.js", "views": 3200 },
-    {
-      "id": "97",
-      "title": "Creating Web Animations with GreenSock",
-      "views": 3000
-    },
-    { "id": "98", "title": "Understanding JavaScript Proxies", "views": 3100 },
-    { "id": "99", "title": "Introduction to React Query", "views": 3200 },
-    {
-      "id": "100",
-      "title": "Creating Serverless Functions with AWS Lambda",
-      "views": 3400
-    }
-  ],
-  "comments": [
-    { "id": "1", "text": "Great explanation on closures!", "postId": "1" },
     {
       "id": "2",
-      "text": "Very helpful guide for responsive design.",
-      "postId": "2"
+      "title": "Understanding React Hooks",
+      "content": "React Hooks allow you to use state and other React features without writing a class.",
+      "views": 340,
+      "authorId": "2"
     },
-    { "id": "3", "text": "TypeScript looks promising!", "postId": "3" },
+    {
+      "id": "3",
+      "title": "A Guide to CSS Grid",
+      "content": "CSS Grid Layout is a two-dimensional layout system for the web.",
+      "views": 220,
+      "authorId": "3"
+    },
     {
       "id": "4",
-      "text": "Debugging techniques really improved my workflow.",
-      "postId": "4"
+      "title": "JavaScript ES6 Features",
+      "content": "ES6 brought significant improvements to the JavaScript language.",
+      "views": 180,
+      "authorId": "4"
     },
     {
       "id": "5",
-      "text": "Scalability is crucial for my projects, thanks for this post.",
-      "postId": "5"
+      "title": "Asynchronous Programming in JavaScript",
+      "content": "Learn how to handle asynchronous operations using Promises and async/await.",
+      "views": 410,
+      "authorId": "5"
     },
-    { "id": "6", "text": "ES2021 features are amazing!", "postId": "6" },
-    { "id": "7", "text": "CSS Grid layout is the future.", "postId": "7" },
+    {
+      "id": "6",
+      "title": "Mastering Flexbox",
+      "content": "CSS Flexbox makes it easier to design flexible and responsive layout structure.",
+      "views": 270,
+      "authorId": "1"
+    },
+    {
+      "id": "7",
+      "title": "Getting Started with Node.js",
+      "content": "Node.js allows you to run JavaScript on the server side.",
+      "views": 300,
+      "authorId": "2"
+    },
     {
       "id": "8",
-      "text": "Async JavaScript was a bit tricky, thanks for clarifying.",
-      "postId": "8"
+      "title": "GraphQL vs REST",
+      "content": "Understand the differences between GraphQL and REST APIs.",
+      "views": 210,
+      "authorId": "3"
     },
     {
       "id": "9",
-      "text": "Accessibility is so important, thanks for shedding light on this topic.",
-      "postId": "9"
+      "title": "Building RESTful APIs with Express",
+      "content": "Express is a minimal and flexible Node.js web application framework.",
+      "views": 150,
+      "authorId": "4"
     },
     {
       "id": "10",
-      "text": "Web security should be a priority for every developer.",
-      "postId": "10"
+      "title": "Handling State in React",
+      "content": "Explore different ways to manage state in React applications.",
+      "views": 190,
+      "authorId": "5"
     },
     {
       "id": "11",
-      "text": "Closures in JavaScript are still a bit confusing to me.",
-      "postId": "1"
+      "title": "Webpack Basics",
+      "content": "Webpack is a static module bundler for modern JavaScript applications.",
+      "views": 250,
+      "authorId": "1"
     },
     {
       "id": "12",
-      "text": "How do you approach mobile-first design?",
-      "postId": "2"
+      "title": "Deploying Applications with Docker",
+      "content": "Docker is a platform for developing, shipping, and running applications.",
+      "views": 340,
+      "authorId": "2"
     },
     {
       "id": "13",
-      "text": "What are some good resources for learning TypeScript?",
-      "postId": "3"
+      "title": "Understanding Vue.js Directives",
+      "content": "Directives are special tokens in the markup that tell the library to do something to a DOM element.",
+      "views": 130,
+      "authorId": "3"
     },
     {
       "id": "14",
-      "text": "Can you provide more debugging tools?",
-      "postId": "4"
+      "title": "Introduction to Angular",
+      "content": "Angular is a platform for building mobile and desktop web applications.",
+      "views": 220,
+      "authorId": "4"
     },
     {
       "id": "15",
-      "text": "How do you handle large-scale applications?",
-      "postId": "5"
+      "title": "Unit Testing with Jest",
+      "content": "Jest is a delightful JavaScript Testing Framework with a focus on simplicity.",
+      "views": 270,
+      "authorId": "5"
     },
     {
       "id": "16",
-      "text": "Which ES2021 feature do you find most useful?",
-      "postId": "6"
+      "title": "CSS Animations and Transitions",
+      "content": "Learn how to create smooth animations and transitions using CSS.",
+      "views": 330,
+      "authorId": "1"
     },
-    { "id": "17", "text": "Any tips for mastering CSS Grid?", "postId": "7" },
+    {
+      "id": "17",
+      "title": "Progressive Web Apps",
+      "content": "Progressive Web Apps use modern web capabilities to deliver an app-like experience.",
+      "views": 410,
+      "authorId": "2"
+    },
     {
       "id": "18",
-      "text": "What's the best way to handle promises?",
-      "postId": "8"
+      "title": "State Management with Redux",
+      "content": "Redux is a predictable state container for JavaScript apps.",
+      "views": 200,
+      "authorId": "3"
     },
     {
       "id": "19",
-      "text": "Do you have any examples of accessible web components?",
-      "postId": "9"
+      "title": "Authentication in Web Apps",
+      "content": "Learn about different methods for authenticating users in web applications.",
+      "views": 180,
+      "authorId": "4"
     },
     {
       "id": "20",
-      "text": "Can you share more web security practices?",
-      "postId": "10"
+      "title": "Building Mobile Apps with React Native",
+      "content": "React Native lets you build mobile apps using only JavaScript.",
+      "views": 320,
+      "authorId": "5"
+    }
+  ],
+  "comments": [
+    {
+      "id": "1",
+      "text": "Great introduction to TypeScript!",
+      "postId": "1",
+      "authorId": "2"
+    },
+    {
+      "id": "2",
+      "text": "Very informative. Thanks for sharing.",
+      "postId": "1",
+      "authorId": "3"
+    },
+    {
+      "id": "3",
+      "text": "This helped me understand hooks better.",
+      "postId": "2",
+      "authorId": "1"
+    },
+    {
+      "id": "4",
+      "text": "Can you provide more examples?",
+      "postId": "2",
+      "authorId": "5"
+    },
+    {
+      "id": "5",
+      "text": "CSS Grid is really powerful.",
+      "postId": "3",
+      "authorId": "4"
+    },
+    {
+      "id": "6",
+      "text": "Thanks for the detailed explanation!",
+      "postId": "3",
+      "authorId": "2"
+    },
+    {
+      "id": "7",
+      "text": "ES6 features are a game changer.",
+      "postId": "4",
+      "authorId": "3"
+    },
+    {
+      "id": "8",
+      "text": "Loved the examples you provided.",
+      "postId": "4",
+      "authorId": "1"
+    },
+    {
+      "id": "9",
+      "text": "Promises and async/await make async code much cleaner.",
+      "postId": "5",
+      "authorId": "2"
+    },
+    {
+      "id": "10",
+      "text": "Can you cover error handling in async code?",
+      "postId": "5",
+      "authorId": "4"
+    },
+    {
+      "id": "11",
+      "text": "Flexbox is a must-learn for responsive design.",
+      "postId": "6",
+      "authorId": "5"
+    },
+    {
+      "id": "12",
+      "text": "This is a great starting point for Node.js.",
+      "postId": "7",
+      "authorId": "3"
+    },
+    {
+      "id": "13",
+      "text": "GraphQL seems much more flexible than REST.",
+      "postId": "8",
+      "authorId": "1"
+    },
+    {
+      "id": "14",
+      "text": "Thanks for explaining the differences so clearly.",
+      "postId": "8",
+      "authorId": "4"
+    },
+    {
+      "id": "15",
+      "text": "Express makes building APIs so much easier.",
+      "postId": "9",
+      "authorId": "2"
+    },
+    {
+      "id": "16",
+      "text": "State management in React can be tricky.",
+      "postId": "10",
+      "authorId": "5"
+    },
+    {
+      "id": "17",
+      "text": "I learned a lot about handling state from this post.",
+      "postId": "10",
+      "authorId": "1"
+    },
+    {
+      "id": "18",
+      "text": "Webpack simplifies the bundling process.",
+      "postId": "11",
+      "authorId": "4"
+    },
+    {
+      "id": "19",
+      "text": "Docker is an essential tool for deployment.",
+      "postId": "12",
+      "authorId": "3"
+    },
+    {
+      "id": "20",
+      "text": "Thanks for the comprehensive guide on Docker.",
+      "postId": "12",
+      "authorId": "5"
     },
     {
       "id": "21",
-      "text": "This JavaScript pattern is really useful.",
-      "postId": "11"
+      "text": "Directives make Vue.js very powerful.",
+      "postId": "13",
+      "authorId": "2"
     },
     {
       "id": "22",
-      "text": "Flexbox makes layout so much easier.",
-      "postId": "12"
+      "text": "This is a great introduction to Angular.",
+      "postId": "14",
+      "authorId": "1"
     },
     {
       "id": "23",
-      "text": "Which frontend tools do you recommend?",
-      "postId": "13"
+      "text": "Jest makes testing so much easier.",
+      "postId": "15",
+      "authorId": "4"
     },
     {
       "id": "24",
-      "text": "Functional programming seems complex but useful.",
-      "postId": "14"
+      "text": "CSS animations can really enhance user experience.",
+      "postId": "16",
+      "authorId": "3"
     },
     {
       "id": "25",
-      "text": "Clean code principles are a game changer.",
-      "postId": "15"
+      "text": "I love working with PWAs.",
+      "postId": "17",
+      "authorId": "5"
     },
     {
       "id": "26",
-      "text": "React hooks simplified state management for me.",
-      "postId": "16"
+      "text": "Redux is great for complex state management.",
+      "postId": "18",
+      "authorId": "1"
     },
     {
       "id": "27",
-      "text": "Node.js is great for building fast APIs.",
-      "postId": "17"
+      "text": "Thanks for the insights on authentication.",
+      "postId": "19",
+      "authorId": "2"
     },
     {
       "id": "28",
-      "text": "Managing state in React can be challenging.",
-      "postId": "18"
+      "text": "React Native is amazing for cross-platform development.",
+      "postId": "20",
+      "authorId": "4"
     },
     {
       "id": "29",
-      "text": "Thanks for the web performance tips.",
-      "postId": "19"
+      "text": "This article made learning React Native much easier.",
+      "postId": "20",
+      "authorId": "3"
     },
     {
       "id": "30",
-      "text": "Testing my applications is much easier now.",
-      "postId": "20"
-    },
-    { "id": "31", "text": "Vue.js is so intuitive!", "postId": "21" },
-    { "id": "32", "text": "PWAs are the future of web apps.", "postId": "22" },
+      "text": "Great post on state management!",
+      "postId": "18",
+      "authorId": "5"
+    }
+  ],
+  "users": [
     {
-      "id": "33",
-      "text": "Promises are still a bit confusing for me.",
-      "postId": "23"
-    },
-    {
-      "id": "34",
-      "text": "GraphQL seems powerful, but complex.",
-      "postId": "24"
-    },
-    { "id": "35", "text": "How do you secure your APIs?", "postId": "25" },
-    {
-      "id": "36",
-      "text": "WebAssembly opens up new possibilities.",
-      "postId": "26"
+      "id": "1",
+      "username": "John Doe",
+      "avatarFile": "avatar-1"
     },
     {
-      "id": "37",
-      "text": "SASS makes writing CSS so much better.",
-      "postId": "27"
+      "id": "2",
+      "username": "Jane Smith",
+      "avatarFile": "avatar-2"
     },
     {
-      "id": "38",
-      "text": "Accessibility should be a priority for everyone.",
-      "postId": "28"
+      "id": "3",
+      "username": "Alice Jackson",
+      "avatarFile": "avatar-3"
     },
     {
-      "id": "39",
-      "text": "HTTP/2 is really improving my website speed.",
-      "postId": "29"
+      "id": "4",
+      "username": "Bob Roberts",
+      "avatarFile": "avatar-4"
     },
     {
-      "id": "40",
-      "text": "Serverless applications are really scalable.",
-      "postId": "30"
-    },
-    {
-      "id": "41",
-      "text": "State management in Vue.js is tricky.",
-      "postId": "31"
-    },
-    { "id": "42", "text": "Redux is quite powerful.", "postId": "32" },
-    {
-      "id": "43",
-      "text": "TypeScript with React is a great combination.",
-      "postId": "33"
-    },
-    {
-      "id": "44",
-      "text": "Advanced CSS techniques really make a difference.",
-      "postId": "34"
-    },
-    {
-      "id": "45",
-      "text": "Authentication in Node.js is crucial.",
-      "postId": "35"
-    },
-    {
-      "id": "46",
-      "text": "Real-time applications are awesome!",
-      "postId": "36"
-    },
-    {
-      "id": "47",
-      "text": "Docker simplified my development process.",
-      "postId": "37"
-    },
-    {
-      "id": "48",
-      "text": "Frontend performance optimization is key.",
-      "postId": "38"
-    },
-    {
-      "id": "49",
-      "text": "Python is versatile for web development.",
-      "postId": "39"
-    },
-    {
-      "id": "50",
-      "text": "Building RESTful APIs is essential.",
-      "postId": "40"
-    },
-    {
-      "id": "51",
-      "text": "Design patterns in JavaScript are interesting.",
-      "postId": "41"
-    },
-    {
-      "id": "52",
-      "text": "WebSockets are great for real-time communication.",
-      "postId": "42"
-    },
-    { "id": "53", "text": "CSS variables are really useful.", "postId": "43" },
-    {
-      "id": "54",
-      "text": "Webpack makes bundling so much easier.",
-      "postId": "44"
-    },
-    {
-      "id": "55",
-      "text": "Next.js is perfect for server-side rendering.",
-      "postId": "45"
-    },
-    {
-      "id": "56",
-      "text": "Angular has a steep learning curve.",
-      "postId": "46"
+      "id": "5",
+      "username": "Sam Davis",
+      "avatarFile": "avatar-5"
     }
   ]
 }

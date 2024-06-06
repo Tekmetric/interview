@@ -19,7 +19,7 @@ export const PostsPage = () => {
       <Typography variant="h4" mb={2}>
         Posts
       </Typography>
-      <Suspense fallback={<SkeletonList />}>
+      <Suspense fallback={<SkeletonList rows={6} />}>
         <PostsList />
       </Suspense>
     </Container>

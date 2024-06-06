@@ -7,8 +7,13 @@ export function useCommentInputState() {
     setValue(event.target.value);
   };
 
+  const reset = () => {
+    setValue("");
+  };
+
   return {
     value,
     handleChange,
+    reset,
   };
 }

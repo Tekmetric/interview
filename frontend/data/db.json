@@ -321,6 +321,18 @@
       "text": "Great post on state management!",
       "postId": "18",
       "authorId": "5"
+    },
+    {
+      "id": "c9f3",
+      "postId": "6",
+      "text": "tesme",
+      "authorId": "1"
+    },
+    {
+      "id": "7bad",
+      "postId": "6",
+      "text": "yoy",
+      "authorId": "1"
     }
   ],
   "users": [

@@ -31,7 +31,7 @@ export const CommentsList = ({ postId }: Props) => {
   });
 
   return (
-    <List dense>
+    <List>
       {data.map((comment) => {
         const author = users?.find((user) => user.id === comment.authorId);
         const avatarSrc = author ? getAvatarSrc(author.avatarFile) : undefined;

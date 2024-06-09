@@ -1,24 +1,28 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
- 
+import {BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import AddBookComponent from './components/AddBookComponent';
+import HeaderComponent from "./components/HeaderComponent";
+import FooterComponent from "./components/FooterComponent";
+import BookListComponent from "./components/BookListComponent";
+
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <h2>Welcome to the interview app!</h2>
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-
-        <or>
-          <li>Fetch Data from a public API <a href="https://github.com/toddmotto/public-apis">Samples</a></li>
-          <li>Display data from API onto your page (Table, List, etc.)</li>
-          <li>Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)</li> 
-        </or>   
-       
-        </header>
+      <div>
+        <Router>
+          <HeaderComponent />
+          <div className="container">
+            <Routes>
+              <Route exact path="/" Component = {BookListComponent}></Route>
+              <Route path="/books" Component = {BookListComponent}></Route>
+              <Route path="/add-book" Component = {AddBookComponent}></Route>
+              <Route path="/edit-book/:id" Component = {AddBookComponent}></Route>
+            </Routes>
+          </div>
+          <FooterComponent />
+        </Router>
       </div>
     );
   }

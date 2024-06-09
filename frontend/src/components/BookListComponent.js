@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import BookService from '../services/BookService';
 import {Link} from "react-router-dom";
 
-export default function AddBookComponent() {
+export default function BookListComponent() {
     const [books, setBooks] = useState([])
 
     useEffect(() => {
@@ -18,14 +18,14 @@ export default function AddBookComponent() {
     return (
         <div className="container">
             <h2 className="text-center">Tekmetrics Book Shop</h2>
-            <Link to="/add-book" className="btn btn-primary mb-2"></Link>
+            <Link to="/add-book" className="btn btn-primary mb-2">Add Book</Link>
             <table className="table table-bordered table-striped">
                 <thead>
-                <th>Book Id</th>
-                <th>Name</th>
-                <th>Author</th>
-                <th>Price</th>
-                <th>Action</th>
+                    <th>Book Id</th>
+                    <th>Name</th>
+                    <th>Author</th>
+                    <th>Price</th>
+                    <th>Action</th>
                 </thead>
                 <tbody>
                 {
@@ -36,6 +36,7 @@ export default function AddBookComponent() {
                                 <td>{book.name}</td>
                                 <td>{book.author}</td>
                                 <td>{book.price}</td>
+
                             </tr>
                     )
                 }

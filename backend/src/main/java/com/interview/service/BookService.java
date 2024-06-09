@@ -5,7 +5,10 @@ import com.interview.entity.Book;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,20 +21,17 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
-    public void createBook(Book book) {
-        bookRepository.save(book);
-        log.info("Book " + book.getName() + " is saved");
+    public ResponseEntity<Book> createBook(Book book) {
+        Book newBook = bookRepository.save(book);
+        log.info("Book " + newBook.getName() + " is saved");
+        return new ResponseEntity<>(newBook, HttpStatus.CREATED);
+
     }
 
     public Book getBookById(int id) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        Book book = null;
-        if (optionalBook.isPresent()) {
-            book = optionalBook.get();
-        } else {
-            throw new RuntimeException("Book not found for id: " + id);
-        }
-        return book;
+        Optional<Book> optionalBook = Optional.ofNullable(bookRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found " + id)));
+        return optionalBook.get();
     }
 
     public List<Book> getBooks() {

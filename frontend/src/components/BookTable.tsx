@@ -14,9 +14,10 @@ import { debounce } from '../utils/debounce';
 const API_URL = 'https://openlibrary.org/search.json';
 
 const fetchBooks = async (query: string, category: string, page: number) => {
+  const limit = 20;
   if (query) {
     // Fetch without caching for search queries
-    const searchQuery = `${API_URL}?q=${query}&page=${page}`;
+    const searchQuery = `${API_URL}?q=${query}&page=${page}&limit=${limit}`;
     const response = await fetch(searchQuery);
     if (!response.ok) throw new Error('Failed to fetch');
     const data = await response.json();
@@ -35,7 +36,7 @@ const fetchBooks = async (query: string, category: string, page: number) => {
     const cachedData = getCache<{ books: Book[], totalBooks: number }>(cacheKey);
     if (cachedData) return cachedData;
 
-    const categoryQuery = `${API_URL}?subject=${category}&page=${page}`;
+    const categoryQuery = `${API_URL}?subject=${category}&page=${page}&limit=${limit}`;
     const response = await fetch(categoryQuery);
     if (!response.ok) throw new Error('Failed to fetch');
 
@@ -147,11 +148,11 @@ const BookTable: React.FC = () => {
         >
           {books && books.length > 0 ? (
             <BookListTable books={books} onSelectBook={(book) => dispatch({ type: 'SET_SELECTED_BOOK', payload: book })} />
-          ) : (
-            <div>No books found</div>
+          ) : (isFetching ? (<Loading /> ):
+            (<div>No books found</div>)
           )}
+          {books?.length >0 && isFetching && (<Loading />)}
         </InfiniteScroll>
-        {loading && <Loading />}
         {selectedBook && (
           <BookDetailModal book={selectedBook} onClose={() => dispatch({ type: 'SET_SELECTED_BOOK', payload: null })} />
         )}

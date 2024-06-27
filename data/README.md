@@ -38,3 +38,34 @@ If you want to use local-stack to save data into a “local S3” that’s ok, o
 
 ### Submitting your coding exercise
 Once you have finished your script, please create a PR into Tekmetric/interview
+
+### Notes
+
+Makefile is provided to help you set up your environment and run the script.
+
+#### Setting up the environment
+
+To create your local Python virtual environment, run the following command:
+
+```sh
+make venv
+```
+
+#### Running tests
+
+To run the tests, run the following command:
+
+```sh
+make test
+```
+
+#### Running the script
+
+To run the data collection script run the following command:
+> note:: For configurations check `.env` file (api data download is public and doesn't need an API key)
+
+```sh
+make run
+```
+
+Output of the script should be found in the `s3_bucket` directory in parquet format.

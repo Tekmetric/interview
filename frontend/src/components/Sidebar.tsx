@@ -14,18 +14,26 @@ const Sidebar: React.FC<SidebarProps> = ({ categories, selectedCategory, onSelec
   }, [categories, selectedCategory, onSelectCategory]);
 
   return (
-    <div className="sidebar">
-      <ul className="category-list">
-        {categories.map((category) => (
-          <li 
-            key={category} 
-            className={`category-item ${selectedCategory === category ? 'selected' : ''}`}
-            onClick={() => onSelectCategory(category)}
-          >
-            {category}
-          </li>
-        ))}
-      </ul>
+    <div className="bg-gray-900 text-white h-full min-h-screen flex flex-col">
+      <div className="p-4">
+        <h1 className="text-2xl font-bold">Categories</h1>
+      </div>
+      <nav className="flex-1">
+        <ul>
+          {categories.map((category) => (
+            <li key={category}>
+              <button
+                onClick={() => onSelectCategory(category)}
+                className={`flex items-center w-full p-4 text-left hover:bg-gray-700 ${
+                  selectedCategory === category ? 'bg-blue-500' : ''
+                }`}
+              >
+                {category}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
   );
 };

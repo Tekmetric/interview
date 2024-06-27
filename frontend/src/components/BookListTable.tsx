@@ -1,5 +1,7 @@
 import React, { useState, memo, useCallback } from 'react';
 import { Book } from '../types';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface BookListTableProps {
   books: Book[];
@@ -51,12 +53,13 @@ const BookRow: React.FC<BookRowProps> = ({ book, onSelectBook }) => {
   return (
     <tr key={book.key} className="hover:bg-gray-100">
       <td className="py-2 px-4">
-        <img
+        <LazyLoadImage
           src={coverUrl}
           alt={book.title}
           className={`w-12 h-16 ${loaded ? 'opacity-100' : 'opacity-0'}`} // Smooth transition
           onLoad={handleImageLoad}
           onError={handleImageError}
+          effect="blur"
           key={coverUrl} // Add key to image element
         />
         {!loaded && (

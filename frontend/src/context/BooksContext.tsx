@@ -1,42 +1,43 @@
-import React, { createContext, useReducer, useContext, ReactNode, Dispatch } from 'react';
+import React, { createContext, useReducer, useContext, ReactNode } from 'react';
 import { Book } from '../types';
 
-const API_URL = 'https://openlibrary.org/search.json';
-
-interface BookState {
+interface BooksState {
   books: Book[];
-  loading: boolean;
-  error: any;
   query: string;
   page: number;
+  loading: boolean;
+  error: string | null;
   selectedBook: Book | null;
 }
 
-const initialState: BookState = {
+interface BooksAction {
+  type: string;
+  payload?: any;
+  error?: string;
+}
+
+const initialState: BooksState = {
   books: [],
-  loading: false,
-  error: null,
   query: '',
   page: 1,
+  loading: false,
+  error: null,
   selectedBook: null,
 };
 
-type BookAction =
-  | { type: 'FETCH_BOOKS_REQUEST' }
-  | { type: 'FETCH_BOOKS_SUCCESS'; payload: Book[] }
-  | { type: 'FETCH_BOOKS_FAILURE'; error: any }
-  | { type: 'SET_QUERY'; payload: string }
-  | { type: 'SET_PAGE'; payload: number }
-  | { type: 'SET_SELECTED_BOOK'; payload: Book | null };
+const BooksContext = createContext<{ state: BooksState; dispatch: React.Dispatch<BooksAction> }>({
+  state: initialState,
+  dispatch: () => null,
+});
 
-const booksReducer = (state: BookState, action: BookAction): BookState => {
+const booksReducer = (state: BooksState, action: BooksAction): BooksState => {
   switch (action.type) {
     case 'FETCH_BOOKS_REQUEST':
       return { ...state, loading: true, error: null };
     case 'FETCH_BOOKS_SUCCESS':
       return { ...state, loading: false, books: state.page === 1 ? action.payload : [...state.books, ...action.payload] };
     case 'FETCH_BOOKS_FAILURE':
-      return { ...state, loading: false, error: action.error };
+      return { ...state, loading: false, error: action.error! };
     case 'SET_QUERY':
       return { ...state, query: action.payload, page: 1, books: [] };
     case 'SET_PAGE':
@@ -48,17 +49,8 @@ const booksReducer = (state: BookState, action: BookAction): BookState => {
   }
 };
 
-const BooksContext = createContext<{
-  state: BookState;
-  dispatch: Dispatch<BookAction>;
-}>({
-  state: initialState,
-  dispatch: () => undefined,
-});
-
 export const BooksProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(booksReducer, initialState);
-
   return (
     <BooksContext.Provider value={{ state, dispatch }}>
       {children}

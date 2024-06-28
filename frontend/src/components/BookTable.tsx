@@ -6,56 +6,16 @@ import BookDetailModal from './BookDetailModal';
 import Loading from './Loading';
 import BookListTable from './BookListTable';
 import Sidebar from './Sidebar';
-import { notifySuccess, notifyError } from './Notification';
-import { Book } from '../types';
-import { getCache, setCache } from '../utils/cache';
+import { notifyError } from './Notification';
 import { debounce } from '../utils/debounce';
 import { FiSearch, FiX } from 'react-icons/fi';
+import { fetchBooks } from '../utils/api';
 
-const API_URL = 'https://openlibrary.org/search.json';
 
-const fetchBooks = async (query: string, category: string, page: number) => {
-  const limit = 20;
-  if (query) {
-    const searchQuery = `${API_URL}?q=${query}&page=${page}&limit=${limit}`;
-    const response = await fetch(searchQuery);
-    if (!response.ok) throw new Error('Failed to fetch');
-    const data = await response.json();
-    const books: Book[] = data.docs.map((doc: any) => ({
-      key: doc.key,
-      title: doc.title,
-      authors: doc.author_name ? doc.author_name.map((name: string) => ({ name })) : [],
-      first_publish_year: doc.first_publish_year,
-      description: doc.text ? doc.text.join(' ') : 'No description available',
-      cover_i: doc.cover_i,
-    }));
-    return { books, totalBooks: data.numFound };
-  } else {
-    const cacheKey = `${category}-${page}`;
-    const cachedData = getCache<{ books: Book[], totalBooks: number }>(cacheKey);
-    if (cachedData) return cachedData;
-
-    const categoryQuery = `${API_URL}?subject=${category}&page=${page}&limit=${limit}`;
-    const response = await fetch(categoryQuery);
-    if (!response.ok) throw new Error('Failed to fetch');
-
-    const data = await response.json();
-    const books: Book[] = data.docs.map((doc: any) => ({
-      key: doc.key,
-      title: doc.title,
-      authors: doc.author_name ? doc.author_name.map((name: string) => ({ name })) : [],
-      first_publish_year: doc.first_publish_year,
-      description: doc.text ? doc.text.join(' ') : 'No description available',
-      cover_i: doc.cover_i,
-    }));
-    setCache(cacheKey, { books, totalBooks: data.numFound });
-    return { books, totalBooks: data.numFound };
-  }
-};
 
 const BookTable: React.FC = () => {
   const { state, dispatch } = useBooks();
-  const { books, query, page, loading, error, selectedBook } = state;
+  const { books, query, page, error, selectedBook } = state;
   const [selectedCategory, setSelectedCategory] = useState<string>('Fiction');
   const [categories] = useState<string[]>(['Fiction', 'Science', 'History', 'Romance', 'Mystery']);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -70,7 +30,7 @@ const BookTable: React.FC = () => {
       enabled: false, // Disable automatic refetching
       onSuccess: (data) => {
         dispatch({ type: 'FETCH_BOOKS_SUCCESS', payload: data.books });
-        notifySuccess('Books fetched successfully');
+        //notifySuccess('Books fetched successfully'); //To many notifications as we are doing infinity scrolling and getting books on the go
       },
       onError: (error) => {
         dispatch({ type: 'FETCH_BOOKS_FAILURE', error: "Failed to fetch books!" });
@@ -82,7 +42,8 @@ const BookTable: React.FC = () => {
   const debouncedRefetch = useCallback(debounce(refetch, 500), [refetch]);
 
   const loadMoreBooks = () => {
-    if (books.length < (data?.totalBooks || 0)) {
+    console.log("Srija: this is the length if the books: ", books.length);
+    if (!isFetching && books.length < (data?.totalBooks || 0)) {
       dispatch({ type: 'SET_PAGE', payload: page + 1 });
       debouncedRefetch();
     }
@@ -126,16 +87,20 @@ const BookTable: React.FC = () => {
               name="query"
               value={query}
               onChange={(e) => dispatch({ type: 'SET_QUERY', payload: e.target.value })}
-              placeholder="Search for books"
+              placeholder="Search for books and hit enter to see results"
               className="px-4 py-2 border rounded w-full pl-10 pr-10"
             />
             {query ? (
-              <button type="button" onClick={handleClearSearch} className="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
-                <FiX />
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="absolute right-2 top-2"
+              >
+                <FiX className="w-6 h-6 text-gray-600" />
               </button>
             ) : (
-              <button type="submit" className="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
-                <FiSearch />
+              <button type="submit" className="absolute right-2 top-2">
+                <FiSearch className="w-6 h-6 text-gray-600" />
               </button>
             )}
           </form>
@@ -151,9 +116,9 @@ const BookTable: React.FC = () => {
             scrollableTarget="scrollableDiv"
           >
             {books && books.length > 0 ? (
-              <BookListTable books={books} onSelectBook={(book) => dispatch({ type: 'SET_SELECTED_BOOK', payload: book })} />
-            ) : (isFetching ? (<Loading /> ):
-              (<div>No books found</div>)
+              <BookListTable books={books} onSelectBook={(book: any) => dispatch({ type: 'SET_SELECTED_BOOK', payload: book })} />
+            ) : (isFetching ? (<Loading />) :
+              (<div></div>)
             )}
             {books?.length > 0 && isFetching && (<Loading />)}
           </InfiniteScroll>

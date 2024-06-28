@@ -13,7 +13,14 @@ const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <BooksProvider>
         <div className="App">
-          <h1 className="text-3xl font-bold mb-4 mt-4 text-center">The Book Bazaar</h1>
+          <div className='flex flex-row'>
+            <div className='w-1/3'>
+            <img src={`${process.env.PUBLIC_URL}/tekmetric.jpg`} alt="Tekmetric Logo" className="h-14 mr-4" />
+            </div>
+          
+          <h1 className="w-1/3 text-3xl font-bold mb-4 mt-4 text-center justify-center">The Book Bazaar</h1>
+          </div>
+  
           <BookTable />
           <ToastContainer />
         </div>

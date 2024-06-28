@@ -1,4 +1,8 @@
 export interface Book {
+    isbn: any;
+    publisher: any;
+    number_of_pages: any;
+    subjects: any;
     key: string;
     title: string;
     authors: { name: string }[];

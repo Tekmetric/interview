@@ -81,7 +81,7 @@ const BookTable: React.FC = () => {
       <Sidebar categories={categories} selectedCategory={selectedCategory} onSelectCategory={handleSelectCategory} />
       <div className="flex-1 p-4 bg-veryVeryLightGray">
         <div className="sticky top-0 bg-veryVeryLightGray z-10">
-          <form onSubmit={handleSearch} className="mb-4 relative">
+          <form onSubmit={handleSearch} className="mb-4 relative" role="form">
             <input
               type="text"
               name="query"

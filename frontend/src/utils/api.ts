@@ -6,7 +6,7 @@ const API_URL = 'https://www.googleapis.com/books/v1/volumes';
 export const fetchBooks = async (query: string, category: string, page: number) => {
   const limit = 30;
   const startIndex = (page - 1) * limit;
-  const apiKey = 'AIzaSyDFrJaEsdYgSv5MaObhEDZGb08YQxB_DUI';
+  const apiKey = '<GOOGLE_API_KEY>';
   let searchQuery = `${API_URL}?q=`;
 
   if (query) {

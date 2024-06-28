@@ -14,31 +14,39 @@ const BookListTable: React.FC<BookListTableProps> = ({ books, onSelectBook }) =>
   }, [onSelectBook]);
 
   return (
-    <table className="min-w-full bg-white">
-      <thead>
-        <tr>
-          <th className="py-2">Cover</th>
-          <th className="py-2">Book Name</th>
-          <th className="py-2">Author</th>
-          <th className="py-2">Date Written</th>
-          <th className="py-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {books.map((book) => (
-          <MemoizedBookRow key={book.key} book={book} onSelectBook={handleSelectBook} />
-        ))}
-      </tbody>
-    </table>
+    <div className="relative overflow-x-auto">
+      <table className="min-w-full bg-nearWhite rounded-lg overflow-hidden shadow-lg">
+        <thead className="bg-black text-white sticky top-0 z-10">
+          <tr>
+            <th className="py-2 px-4 text-left">Cover</th>
+            <th className="py-2 px-4 text-left">Title</th>
+            <th className="py-2 px-4 text-left">Author</th>
+            <th className="py-2 px-4 text-left">Published</th>
+            <th className="py-2 px-4 text-left"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {books.map((book, index) => (
+            <MemoizedBookRow
+              key={book.key}
+              book={book}
+              onSelectBook={handleSelectBook}
+              isAlternate={index % 2 === 0}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
 interface BookRowProps {
   book: Book;
   onSelectBook: (book: Book) => void;
+  isAlternate: boolean;
 }
 
-const BookRow: React.FC<BookRowProps> = ({ book, onSelectBook }) => {
+const BookRow: React.FC<BookRowProps> = ({ book, onSelectBook, isAlternate }) => {
   const [loaded, setLoaded] = useState(false);
   const coverUrl = book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg` : `${process.env.PUBLIC_URL}/default-image.jpg`;
 
@@ -51,7 +59,7 @@ const BookRow: React.FC<BookRowProps> = ({ book, onSelectBook }) => {
   };
 
   return (
-    <tr key={book.key} className="hover:bg-gray-100">
+    <tr key={book.key} className={`hover:bg-lighterGray ${isAlternate ? 'bg-nearWhite' : 'bg-white'}`}>
       <td className="py-2 px-4">
         <LazyLoadImage
           src={coverUrl}
@@ -76,9 +84,9 @@ const BookRow: React.FC<BookRowProps> = ({ book, onSelectBook }) => {
       <td className="py-2 px-4">
         <button
           onClick={() => onSelectBook(book)}
-          className="px-2 py-1 bg-blue-500 text-white rounded"
+          className="px-2 py-1 bg-tekOrange text-white rounded"
         >
-          View More
+          Details
         </button>
       </td>
     </tr>

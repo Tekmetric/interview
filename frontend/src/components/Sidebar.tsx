@@ -14,8 +14,8 @@ const Sidebar: React.FC<SidebarProps> = ({ categories, selectedCategory, onSelec
   }, [categories, selectedCategory, onSelectCategory]);
 
   return (
-    <div className="bg-gray-900 text-white h-full min-h-screen flex flex-col">
-      <div className="p-4">
+    <div className="bg-darkGray text-white h-full min-h-screen flex flex-col">
+      <div className="px-8 py-4">
         <h1 className="text-2xl font-bold">Categories</h1>
       </div>
       <nav className="flex-1">
@@ -24,8 +24,8 @@ const Sidebar: React.FC<SidebarProps> = ({ categories, selectedCategory, onSelec
             <li key={category}>
               <button
                 onClick={() => onSelectCategory(category)}
-                className={`flex items-center w-full p-4 text-left hover:bg-gray-700 ${
-                  selectedCategory === category ? 'bg-blue-500' : ''
+                className={`flex items-center w-full p-4 text-left hover:bg-gray ${
+                  selectedCategory === category ? 'bg-tekOrange' : ''
                 }`}
               >
                 {category}

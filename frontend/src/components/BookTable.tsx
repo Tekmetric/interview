@@ -10,13 +10,13 @@ import { notifySuccess, notifyError } from './Notification';
 import { Book } from '../types';
 import { getCache, setCache } from '../utils/cache';
 import { debounce } from '../utils/debounce';
+import { FiSearch, FiX } from 'react-icons/fi';
 
 const API_URL = 'https://openlibrary.org/search.json';
 
 const fetchBooks = async (query: string, category: string, page: number) => {
   const limit = 20;
   if (query) {
-    // Fetch without caching for search queries
     const searchQuery = `${API_URL}?q=${query}&page=${page}&limit=${limit}`;
     const response = await fetch(searchQuery);
     if (!response.ok) throw new Error('Failed to fetch');
@@ -31,7 +31,6 @@ const fetchBooks = async (query: string, category: string, page: number) => {
     }));
     return { books, totalBooks: data.numFound };
   } else {
-    // Use cache for category results
     const cacheKey = `${category}-${page}`;
     const cachedData = getCache<{ books: Book[], totalBooks: number }>(cacheKey);
     if (cachedData) return cachedData;
@@ -61,7 +60,6 @@ const BookTable: React.FC = () => {
   const [categories] = useState<string[]>(['Fiction', 'Science', 'History', 'Romance', 'Mystery']);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Effect to fetch books for the default category on initial load
   useEffect(() => {
     refetch();
   }, [dispatch]);
@@ -120,42 +118,49 @@ const BookTable: React.FC = () => {
   return (
     <div className="app-container flex">
       <Sidebar categories={categories} selectedCategory={selectedCategory} onSelectCategory={handleSelectCategory} />
-      <div className="book-table-container flex-1 p-4" id="scrollableDiv" ref={scrollRef} style={{ height: '80vh', overflowY: 'auto' }}>
-        <form onSubmit={handleSearch} className="mb-4">
-          <input
-            type="text"
-            name="query"
-            value={query}
-            onChange={(e) => dispatch({ type: 'SET_QUERY', payload: e.target.value })}
-            placeholder="Search for books"
-            className="px-2 py-1 border rounded"
-          />
-          <button type="submit" className="ml-2 px-2 py-1 bg-blue-500 text-white rounded">
-            Search
-          </button>
-          <button type="button" onClick={handleClearSearch} className="ml-2 px-2 py-1 bg-gray-500 text-white rounded">
-            Clear
-          </button>
-        </form>
-        {error && <div>Error: {String(error)}</div>}
-        <InfiniteScroll
-          dataLength={books.length}
-          next={loadMoreBooks}
-          hasMore={books.length < (data?.totalBooks || 0)}
-          loader={<Loading />}
-          className="overflow-hidden"
-          scrollableTarget="scrollableDiv"
-        >
-          {books && books.length > 0 ? (
-            <BookListTable books={books} onSelectBook={(book) => dispatch({ type: 'SET_SELECTED_BOOK', payload: book })} />
-          ) : (isFetching ? (<Loading /> ):
-            (<div>No books found</div>)
+      <div className="flex-1 p-4 bg-veryVeryLightGray">
+        <div className="sticky top-0 bg-veryVeryLightGray z-10">
+          <form onSubmit={handleSearch} className="mb-4 relative">
+            <input
+              type="text"
+              name="query"
+              value={query}
+              onChange={(e) => dispatch({ type: 'SET_QUERY', payload: e.target.value })}
+              placeholder="Search for books"
+              className="px-4 py-2 border rounded w-full pl-10 pr-10"
+            />
+            {query ? (
+              <button type="button" onClick={handleClearSearch} className="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
+                <FiX />
+              </button>
+            ) : (
+              <button type="submit" className="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
+                <FiSearch />
+              </button>
+            )}
+          </form>
+        </div>
+        <div className="book-table-container relative" id="scrollableDiv" ref={scrollRef} style={{ height: '80vh', overflowY: 'auto' }}>
+          {error && <div>Error: {String(error)}</div>}
+          <InfiniteScroll
+            dataLength={books.length}
+            next={loadMoreBooks}
+            hasMore={books.length < (data?.totalBooks || 0)}
+            loader={<Loading />}
+            className="overflow-hidden"
+            scrollableTarget="scrollableDiv"
+          >
+            {books && books.length > 0 ? (
+              <BookListTable books={books} onSelectBook={(book) => dispatch({ type: 'SET_SELECTED_BOOK', payload: book })} />
+            ) : (isFetching ? (<Loading /> ):
+              (<div>No books found</div>)
+            )}
+            {books?.length > 0 && isFetching && (<Loading />)}
+          </InfiniteScroll>
+          {selectedBook && (
+            <BookDetailModal book={selectedBook} onClose={() => dispatch({ type: 'SET_SELECTED_BOOK', payload: null })} />
           )}
-          {books?.length >0 && isFetching && (<Loading />)}
-        </InfiniteScroll>
-        {selectedBook && (
-          <BookDetailModal book={selectedBook} onClose={() => dispatch({ type: 'SET_SELECTED_BOOK', payload: null })} />
-        )}
+        </div>
       </div>
     </div>
   );

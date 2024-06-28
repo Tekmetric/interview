@@ -13,7 +13,7 @@ const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <BooksProvider>
         <div className="App">
-          <h1 className="text-3xl font-bold mb-4">Book List</h1>
+          <h1 className="text-3xl font-bold mb-4 mt-4 text-center">The Book Bazaar</h1>
           <BookTable />
           <ToastContainer />
         </div>

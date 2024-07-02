@@ -1,0 +1,34 @@
+.coin-list {
+    table {
+        width: 100%;
+        border-collapse: collapse;
+
+        .left {
+            text-align: left;
+        }
+        .right {
+            text-align: right;
+        }
+        .red {
+            color: #ff0000;
+        }
+        .green {
+            color: #00ff00;
+        }
+        th {
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+            background-color: #f5f5f5;
+        }
+        tr {
+            &.selected {
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            &:hover {
+                background-color: #f5f5f5;
+                cursor: pointer;
+            }
+        }
+    }
+}

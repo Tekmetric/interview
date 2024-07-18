@@ -2,3 +2,22 @@ frontend/node_modules
 backend/.idea/*
 backend/*.iml
 backend/target/**
+
+# Ignore virtual environments
+venv/
+.env
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore other common files
+*.log
+*.sqlite3

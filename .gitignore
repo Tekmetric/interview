@@ -19,4 +19,5 @@ Thumbs.db
 frontend/node_modules
 backend/.idea/*
 backend/*.iml
-backend/target/**
+
+backend/target/**.DS_Store

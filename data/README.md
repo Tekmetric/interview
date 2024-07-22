@@ -1,6 +1,6 @@
 # Python Coding Exercise
 
-Your task is to build a python script to gather data from the US Government's vehicle recall data API, and save that data into S3. 
+Your task is to build a python script to gather data from the US Government's vehicle recall data API, and save that data into S3.
 
 The page for the API is here: https://catalog.data.gov/dataset/recalls-data
 

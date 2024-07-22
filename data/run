@@ -1,0 +1,25 @@
+#!/bin/env bash
+
+command="$1"
+
+if [ -z "$(which poetry)" ]; then
+    echo "You need poetry to run this project."
+    echo "After you have installed poetry, run poetry install"
+    exit 1
+fi
+
+if [ "$command" == "test" ]; then
+    shift
+    cd src
+    if [ "$1" == "--loop" ]; then
+        shift
+	echo "Running tests in a loop"
+	find . -name \*.py | entr poetry run python -m pytest -s "$@"
+    else
+	echo "Running tests"
+        poetry run python -m pytest -s "$@"
+    fi
+elif [ "$command" == "collect" ]; then
+    cd src
+    poetry run python main.py
+fi

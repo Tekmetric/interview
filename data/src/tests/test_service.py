@@ -34,21 +34,13 @@ class TestRecallsService:
         assert set((2023, 2024)) == set(process_results.data_by_year['year'].values)
         assert (
             set(('SUSPENSION', 'STEERING'))
-            == set(process_results.recalls_per_component_per_year.keys())
+            == set(process_results.recalls_per_component_per_year.index.values)
         )
         assert (
             set(('Porsche Cars North America, Inc.', 'Auto Pro USA, Inc.'))
-            == set(process_results.recalls_per_manufacturer_per_year.keys())
+            == set(process_results.recalls_per_manufacturer_per_year.index.values)
         )
         assert (
             set(('Equipment', 'Vehicle'))
             == set([type_ for _, type_ in process_results.type_of_recalls_per_manufacturer.index])
         )
-
-    def test_process_and_save_recalls(self, storage: S3Storage, data_gov, mocker, monkeypatch):
-        mocker.patch('service.')
-        save_mock = mocker.MagicMock()
-        monkeypatch.setattr(storage, 'save', save_mock)
-
-        service = RecallsService(storage, data_gov)
-        service.process_and_save_recalls()

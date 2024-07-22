@@ -39,9 +39,10 @@ class RecallsService:
         'completion_rate',
     ]
 
-    def __init__(self, storage: StorageABC, data_dot_gov_client: DataDotGovClient):
+    def __init__(self, storage: StorageABC, data_dot_gov_client: DataDotGovClient, use_cache=False):
         self.storage = storage
         self.data_dot_gov_client = data_dot_gov_client
+        self._use_cache = use_cache
 
     def pick_only_interesting_fields(self, recalls_df: pd.DataFrame) -> pd.DataFrame:
         summary = recalls_df[self.INTERESTING_FIELDS]
@@ -66,7 +67,8 @@ class RecallsService:
         return group_sizes
 
     def process_recalls(self) -> RecallsResult:
-        full_data_df = self.data_dot_gov_client.get_resource(self.data_dot_gov_client.Resource.RECALLS, use_cache=False)
+        full_data_df = self.data_dot_gov_client.get_resource(
+            self.data_dot_gov_client.Resource.RECALLS, use_cache=self._use_cache)
         data_df = self.pick_only_interesting_fields(full_data_df)
 
         by_year = self.get_grouped_by_year(data_df)

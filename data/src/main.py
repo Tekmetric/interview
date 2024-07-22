@@ -8,8 +8,8 @@ def run():
     data_gov_client = DataDotGovClient(settings.data_dot_gov_api_key)
     storage = S3Storage()
 
-    service = RecallsService(storage, data_gov_client, verbose=True)
-    service.process_and_save_recalls()
+    service = RecallsService(storage, data_gov_client)
+    service.process_and_save_recalls(verbose=True)
 
 
 if __name__ == '__main__':

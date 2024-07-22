@@ -21,5 +21,9 @@ if [ "$command" == "test" ]; then
     fi
 elif [ "$command" == "collect" ]; then
     cd src
+    if [ -f .env ]; then
+        source .env
+    fi
+
     poetry run python main.py
 fi

@@ -66,40 +66,42 @@ class RecallsService:
         return group_sizes
 
     def process_recalls(self) -> RecallsResult:
-        full_data_df = self.data_dot_gov_client.get_resource(self.data_dot_gov_client.Resource.RECALLS)
+        full_data_df = self.data_dot_gov_client.get_resource(self.data_dot_gov_client.Resource.RECALLS, use_cache=False)
         data_df = self.pick_only_interesting_fields(full_data_df)
 
         by_year = self.get_grouped_by_year(data_df)
         data_by_year = {}
-        recalls_per_manufacturer_per_year = pd.Series()
-        recalls_per_component_per_year = pd.Series()
+        recalls_per_manufacturer_per_year_frames = []
+        recalls_per_component_per_year_frames = []
 
         for year, _ in by_year:
             this_year_data = by_year.get_group(year)
             data_by_year[year] = this_year_data
 
-            manufacturer_recalls_this_year = self.agg_on_axis(this_year_data, 'manufacturer')
-            recalls_per_manufacturer_per_year = pd.concat((
-                recalls_per_manufacturer_per_year,
-                manufacturer_recalls_this_year
-            ))
+            manufacturer_recalls_this_year = (
+                self.agg_on_axis(this_year_data, 'manufacturer')
+                .to_frame('manufacturer_recalls')
+                .assign(year=year)
+            )
+            recalls_per_manufacturer_per_year_frames.append(manufacturer_recalls_this_year)
 
-            component_recalls_this_year = self.agg_on_axis(this_year_data, 'component')
-            recalls_per_component_per_year = pd.concat((
-                recalls_per_component_per_year,
-                component_recalls_this_year
-            ))
+            component_recalls_this_year = (
+                self.agg_on_axis(this_year_data, 'component')
+                .to_frame('component_recalls')
+                .assign(year=year)
+            )
+            recalls_per_component_per_year_frames.append(component_recalls_this_year)
 
         type_of_recalls_per_manufacturer = data_df.groupby(['manufacturer', 'recall_type']).size()
 
         return RecallsResult(
             data_by_year=pd.DataFrame({'year': data_by_year.keys(), 'recalls': data_by_year.values()}),
-            recalls_per_manufacturer_per_year=recalls_per_manufacturer_per_year,
-            recalls_per_component_per_year=recalls_per_component_per_year,
+            recalls_per_manufacturer_per_year=pd.concat(recalls_per_manufacturer_per_year_frames),
+            recalls_per_component_per_year=pd.concat(recalls_per_component_per_year_frames),
             type_of_recalls_per_manufacturer=type_of_recalls_per_manufacturer
         )
 
-    def process_and_save_recalls(self):
+    def process_and_save_recalls(self, verbose=False):
         recalls_results = self.process_recalls()
 
         for _, row in recalls_results.data_by_year.iterrows():
@@ -108,16 +110,28 @@ class RecallsService:
                 row['recalls'].to_parquet()
             )
 
+        if verbose:
+            print('===== Manufacturer recalls summary =====')
+            print(recalls_results.recalls_per_manufacturer_per_year.head())
+            print()
         self.storage.save(
             'manufacturer_recalls.parquet',
-            recalls_results.recalls_per_manufacturer_per_year.to_frame('manufacturer_recalls').to_parquet()
+            recalls_results.recalls_per_manufacturer_per_year.to_parquet()
         )
 
+        if verbose:
+            print('===== Component recalls summary =====')
+            print(recalls_results.recalls_per_component_per_year.head())
+            print()
         self.storage.save(
             'component_recalls.parquet',
-            recalls_results.recalls_per_component_per_year.to_frame('component_recalls').to_parquet()
+            recalls_results.recalls_per_component_per_year.to_parquet()
         )
 
+        if verbose:
+            print('===== Recall types per manufacturer summary =====')
+            print(recalls_results.type_of_recalls_per_manufacturer.head())
+            print()
         self.storage.save(
             'recall_types_per_manufacturer.parquet',
             recalls_results.type_of_recalls_per_manufacturer.to_frame('recall_types_per_manufacturer').to_parquet()

@@ -1,6 +1,7 @@
-package com.interview.resource;
+package com.interview.controller;
 
-import com.interview.model.Car;
+import com.interview.model.request.CarRequest;
+import com.interview.model.response.CarResponse;
 import com.interview.service.CarService;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -24,22 +25,20 @@ public class CarInventoryController {
   private CarService carService;
 
   @PostMapping("/save")
-  public ResponseEntity addCar(@RequestBody Car car) {
+  public ResponseEntity addCar(@RequestBody CarRequest car) {
     carService.saveCar(car);
     return new ResponseEntity(HttpStatus.CREATED);
   }
 
   @GetMapping("/license/{license}")
-  public ResponseEntity<Car> getCar(@PathVariable("license") String license) {
-    Car car = carService.findCar(license);
-    if (car == null) {
-      return new ResponseEntity(HttpStatus.NOT_FOUND);
-    }
+  public ResponseEntity<CarResponse> getCar(@PathVariable("license") String license) {
+    CarResponse car = carService.findCar(license);
+    if (car == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
     return new ResponseEntity<>(car, HttpStatus.OK);
   }
 
   @GetMapping
-  public ResponseEntity<List<Car>> getCars() {
+  public ResponseEntity<List<CarResponse>> getCars() {
     return new ResponseEntity<>(carService.findCars(), HttpStatus.OK);
   }
 
@@ -51,14 +50,9 @@ public class CarInventoryController {
   }
 
   @PutMapping("/update/license/{license}")
-  public ResponseEntity updateCar(@PathVariable("license") String license, @RequestBody Car car) {
-    Car originalCar = carService.findCar(license);
-    if (originalCar == null) {
-      return new ResponseEntity(HttpStatus.NOT_FOUND);
-    }
-
-    Car newCar = carService.updateCar(originalCar, car);
-
+  public ResponseEntity<CarResponse> updateCar(@PathVariable("license") String license, @RequestBody CarRequest car) {
+    CarResponse newCar = carService.updateCar(license, car);
+    if (newCar == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
     return new ResponseEntity(newCar, HttpStatus.OK);
   }
 }

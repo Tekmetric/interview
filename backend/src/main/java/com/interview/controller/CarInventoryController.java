@@ -5,6 +5,7 @@ import com.interview.model.response.CarResponse;
 import com.interview.service.CarService;
 import java.util.List;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class CarInventoryController {
   private CarService carService;
 
   @PostMapping("/save")
-  public ResponseEntity addCar(@RequestBody CarRequest car) {
+  public ResponseEntity addCar(@Valid @RequestBody CarRequest car) {
     carService.saveCar(car);
     return new ResponseEntity(HttpStatus.CREATED);
   }
@@ -50,7 +51,7 @@ public class CarInventoryController {
   }
 
   @PutMapping("/update/license/{license}")
-  public ResponseEntity<CarResponse> updateCar(@PathVariable("license") String license, @RequestBody CarRequest car) {
+  public ResponseEntity<CarResponse> updateCar(@PathVariable("license") String license, @Valid @RequestBody CarRequest car) {
     CarResponse newCar = carService.updateCar(license, car);
     if (newCar == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
     return new ResponseEntity(newCar, HttpStatus.OK);

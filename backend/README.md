@@ -27,7 +27,7 @@
 4. Demo API functionality using API client tool
 
 ### Considerations
-This is an open ended exercise for you to showcase what you know! While not required, consider aspects of code maintainability, modularity, error handling, input validation, and security. We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important for a well designed API. 
+This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important such as modularity, error handling, input validation, and security.
 
 #### H2 Configuration
 - Console: http://localhost:8080/h2-console 

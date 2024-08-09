@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "data"
+version = "0.1.0"
+description = "Collect, process and store data from data.gov"
+authors = ["candale <candale.andrei@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.*"
+pydantic = "^2.8.2"
+pandas = "^2.2.2"
+pydantic-settings = "^2.3.4"
+requests = "^2.32.3"
+pyarrow = "^17.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-mock = "*"
+pudb = "^2024.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

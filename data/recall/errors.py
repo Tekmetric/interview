@@ -1,0 +1,2 @@
+class DataFetcherError(Exception):
+    pass

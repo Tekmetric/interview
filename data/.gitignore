@@ -1,0 +1,4 @@
+.venv
+.pytest_cache
+.idea
+recall_cache.sqlite

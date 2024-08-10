@@ -1,6 +1,28 @@
+## Recall data
+
+Script that gathers data from the US Government's vehicle recall data API, and save that data into S3.
+
+### Development
+
+1. Make sure you have `poetry` installed (https://python-poetry.org/).
+2. Install project dependencies by running `make install`
+3. For automatic code formatting, run `make lint`
+
+### Run the script
+
+- Without caching `make run`
+- With caching `USE_CACHE=1 make run`
+
+### Run the tests
+
+- `make tests`
+
+
+------------------------------------------------------------------------------------------------------------------------
+
 # Python Coding Exercise
 
-Your task is to build a python script to gather data from the US Government's vehicle recall data API, and save that data into S3. 
+Your task is to build a python script to gather data from the US Government's vehicle recall data API, and save that data into S3.
 
 The page for the API is here: https://catalog.data.gov/dataset/recalls-data
 

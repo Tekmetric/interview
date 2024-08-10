@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "recall"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+lxml = "^5.2.2"
+requests = "^2.32.3"
+pandas = "^2.2.2"
+requests-cache = "^1.2.1"
+pyarrow = "^17.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.8.0"
+pytest = "^8.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+force_single_line = true
+
+
+[tool.poetry.scripts]
+recall-data = "recall.main:main"

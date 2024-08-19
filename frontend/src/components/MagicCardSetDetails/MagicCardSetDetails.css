@@ -1,0 +1,23 @@
+.magicCardSetDetails {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.magicCardSetDetails .image {
+  height: 400px;
+}
+
+.magicCardSetDetails .name {
+  margin: 8px 0 0;
+  padding: 0;
+}
+.magicCardSetDetails .year {
+  margin: 8px 0 0;
+  padding: 0;
+}
+.magicCardSetDetails .cardCount {
+  margin: 8px 0 0;
+  padding: 0;
+}

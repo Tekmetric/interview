@@ -1,0 +1,26 @@
+.app .pageWrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.app .pageWrapper .title {
+  text-align: center;
+}
+.app .content {
+  display: flex;
+  flex-direction: row;
+}
+.app .leftSide {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+  align-items: center;
+}
+.app .rightSide {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+  align-items: center;
+}

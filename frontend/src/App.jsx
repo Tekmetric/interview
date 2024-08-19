@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { MagicCardSetDetails } from './components/MagicCardSetDetails/MagicCardSetDetails';
 import { useBootstrap } from './hooks/useBootstrap';
 import { useGetBooster } from './hooks/useGetBooster';
+import { MagicCard } from './components/MagicCard/MagicCard';
+import { MagicCardSetDetails } from './components/MagicCardSetDetails/MagicCardSetDetails';
+import { MagicCardFan } from './components/MagicCardFan/MagicCardFan';
 import { dollarize } from './lib/currency';
 
 import './App.css';
@@ -31,6 +33,7 @@ const App = () => {
     generatedCardSetCode,
     cards,
     getBoosterStatus,
+    error,
     generateBooster,
   } = useGetBooster();
   const { isBootstrapping, bootstrapError, cardSets } = useBootstrap();
@@ -121,6 +124,19 @@ const App = () => {
             )}
             {Array.isArray(cards) && cards.length > 0 && (
               <div className="totalPrice">Booster Value: {boosterValue}</div>
+            )}
+            {Array.isArray(cards) && !error && (
+              <div className="cardsContainer">
+                <MagicCardFan>
+                  {cards.map((card, index) => (
+                    <MagicCard
+                      key={index}
+                      imgUrl={card.imgUrl}
+                      name={card.name}
+                    />
+                  ))}
+                </MagicCardFan>
+              </div>
             )}
           </div>
           <div className="rightSide">

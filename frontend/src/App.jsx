@@ -2,13 +2,37 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { MagicCardSetDetails } from './components/MagicCardSetDetails/MagicCardSetDetails';
 import { useBootstrap } from './hooks/useBootstrap';
 import { useGetBooster } from './hooks/useGetBooster';
+import { dollarize } from './lib/currency';
 
 import './App.css';
+
+/**
+ * Given a set of cards, gets the sum for all cards that have a value;
+ * ignores any cards that have an unknown value.
+ * @param {{amount:number}} cards
+ * @returns {number}
+ */
+const getBoosterValue = cards => {
+  let sum = 0;
+  if (Array.isArray(cards) && cards.length > 0) {
+    for (let card of cards) {
+      if (card.price !== null) {
+        sum += card.price;
+      }
+    }
+  }
+  return sum;
+};
 
 const App = () => {
   const cardSetRef = useRef(null);
   const [cardSetCode, setCardSetCode] = useState('');
-  const { getBoosterStatus, generateBooster } = useGetBooster();
+  const {
+    generatedCardSetCode,
+    cards,
+    getBoosterStatus,
+    generateBooster,
+  } = useGetBooster();
   const { isBootstrapping, bootstrapError, cardSets } = useBootstrap();
   const isGeneratingBooster = getBoosterStatus !== '';
   const selectedCardSet = useMemo(
@@ -59,6 +83,12 @@ const App = () => {
     return <div>Error: {bootstrapError.message}</div>;
   }
 
+  const boosterValue = dollarize(getBoosterValue(cards));
+  const generatedCardSet =
+    generatedCardSetCode && Array.isArray(cardSets)
+      ? cardSets.find(cardSet => cardSet.code === generatedCardSetCode)
+      : undefined;
+
   return (
     <div className="app">
       <main className="pageWrapper">
@@ -84,6 +114,14 @@ const App = () => {
             <button disabled={getBoosterStatus} onClick={handleGetBooster}>
               Generate Booster
             </button>
+            {generatedCardSet && (
+              <div className="generatedCardSetName">
+                Generated Set: {generatedCardSet.name}
+              </div>
+            )}
+            {Array.isArray(cards) && cards.length > 0 && (
+              <div className="totalPrice">Booster Value: {boosterValue}</div>
+            )}
           </div>
           <div className="rightSide">
             {selectedCardSet && (

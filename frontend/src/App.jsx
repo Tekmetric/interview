@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useBootstrap } from './hooks/useBootstrap';
 import { useGetBooster } from './hooks/useGetBooster';
 import { MagicCard } from './components/MagicCard/MagicCard';
+import { MagicCardDetails } from './components/MagicCardDetails/MagicCardDetails';
 import { MagicCardSetDetails } from './components/MagicCardSetDetails/MagicCardSetDetails';
 import { MagicCardFan } from './components/MagicCardFan/MagicCardFan';
 import { dollarize } from './lib/currency';
@@ -29,6 +30,7 @@ const getBoosterValue = cards => {
 const App = () => {
   const cardSetRef = useRef(null);
   const [cardSetCode, setCardSetCode] = useState('');
+  const [selectedCardIndex, setSelectedCardIndex] = useState(undefined);
   const {
     generatedCardSetCode,
     cards,
@@ -67,6 +69,7 @@ const App = () => {
   );
 
   const handleGetBooster = () => {
+    setSelectedCardIndex(undefined);
     generateBooster(cardSetCode);
   };
 
@@ -78,6 +81,10 @@ const App = () => {
     }
   };
 
+  const handleCardClick = cardIndex => {
+    setSelectedCardIndex(cardIndex);
+  };
+
   if (isBootstrapping) {
     return <div>Bootstrapping the app...</div>;
   }
@@ -87,6 +94,10 @@ const App = () => {
   }
 
   const boosterValue = dollarize(getBoosterValue(cards));
+  const selectedCard =
+    selectedCardIndex !== undefined && cards[selectedCardIndex]
+      ? cards[selectedCardIndex]
+      : undefined;
   const generatedCardSet =
     generatedCardSetCode && Array.isArray(cardSets)
       ? cardSets.find(cardSet => cardSet.code === generatedCardSetCode)
@@ -133,10 +144,19 @@ const App = () => {
                       key={index}
                       imgUrl={card.imgUrl}
                       name={card.name}
+                      onClick={() => handleCardClick(index)}
                     />
                   ))}
                 </MagicCardFan>
               </div>
+            )}
+            {selectedCard !== undefined && (
+              <MagicCardDetails
+                name={selectedCard.name}
+                type={selectedCard.type}
+                rarity={selectedCard.rarity}
+                price={selectedCard.price}
+              />
             )}
           </div>
           <div className="rightSide">

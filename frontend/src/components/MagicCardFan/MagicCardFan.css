@@ -1,0 +1,21 @@
+/* MagicCardFan.css */
+.magicCardFan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  perspective: 1000px;
+}
+
+.magicCardFan > * {
+  position: absolute;
+  transform-origin: bottom center;
+  transition: transform 0.3s ease;
+  --total-cards: 5; /* Default value, overridden by JS */
+  --index: 0;
+  --rotation: calc(
+    (var(--index) - (var(--total-cards) - 1) / 2) * 15deg /
+      (var(--total-cards) / 2)
+  );
+  transform: rotate(var(--rotation));
+}

@@ -1,13 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { MagicCardSetDetails } from './components/MagicCardSetDetails/MagicCardSetDetails';
 import { useBootstrap } from './hooks/useBootstrap';
+import { useGetBooster } from './hooks/useGetBooster';
 
 import './App.css';
 
 const App = () => {
   const cardSetRef = useRef(null);
   const [cardSetCode, setCardSetCode] = useState('');
+  const { getBoosterStatus, generateBooster } = useGetBooster();
   const { isBootstrapping, bootstrapError, cardSets } = useBootstrap();
+  const isGeneratingBooster = getBoosterStatus !== '';
   const selectedCardSet = useMemo(
     () => {
       if (!Array.isArray(cardSets) || !cardSetCode) {
@@ -36,6 +39,10 @@ const App = () => {
     [isBootstrapping, bootstrapError],
   );
 
+  const handleGetBooster = () => {
+    generateBooster(cardSetCode);
+  };
+
   const handleCardSetChange = e => {
     const newCardSetCode = e.target.value;
     if (newCardSetCode !== cardSetCode) {
@@ -63,6 +70,7 @@ const App = () => {
               <select
                 id="cardSet"
                 ref={cardSetRef}
+                disabled={isGeneratingBooster}
                 onChange={handleCardSetChange}
                 value={cardSetCode}
               >
@@ -73,6 +81,9 @@ const App = () => {
                 ))}
               </select>
             </div>
+            <button disabled={getBoosterStatus} onClick={handleGetBooster}>
+              Generate Booster
+            </button>
           </div>
           <div className="rightSide">
             {selectedCardSet && (

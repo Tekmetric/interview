@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { MagicCardSetDetails } from './components/MagicCardSetDetails/MagicCardSetDetails';
 import { useBootstrap } from './hooks/useBootstrap';
 
 import './App.css';
@@ -7,6 +8,15 @@ const App = () => {
   const cardSetRef = useRef(null);
   const [cardSetCode, setCardSetCode] = useState('');
   const { isBootstrapping, bootstrapError, cardSets } = useBootstrap();
+  const selectedCardSet = useMemo(
+    () => {
+      if (!Array.isArray(cardSets) || !cardSetCode) {
+        return null;
+      }
+      return cardSets.find(cardSet => cardSet.code === cardSetCode);
+    },
+    [cardSets, cardSetCode],
+  );
 
   useEffect(
     () => {
@@ -64,7 +74,16 @@ const App = () => {
               </select>
             </div>
           </div>
-          <div className="rightSide" />
+          <div className="rightSide">
+            {selectedCardSet && (
+              <MagicCardSetDetails
+                name={selectedCardSet.name}
+                imgUrl={selectedCardSet.imgUrl}
+                cardCount={selectedCardSet.cardCount}
+                year={selectedCardSet.year}
+              />
+            )}
+          </div>
         </div>
       </main>
     </div>

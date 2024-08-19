@@ -1,0 +1,23 @@
+.status {
+  max-width: 1024px;
+  border: 2px solid black;
+  border-top-width: 0;
+  border-radius: 0 0 8px 8px;
+  margin: 0;
+  padding: 4px 6px;
+  cursor: pointer;
+  background-color: gray;
+  opacity: 0.9;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.status:hover {
+  opacity: 0.8;
+}
+
+.status.error {
+  border-color: red;
+}

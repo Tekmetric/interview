@@ -6,6 +6,7 @@ import { MagicCardDetails } from './components/MagicCardDetails/MagicCardDetails
 import { MagicCardSetDetails } from './components/MagicCardSetDetails/MagicCardSetDetails';
 import { MagicCardFan } from './components/MagicCardFan/MagicCardFan';
 import { MagicCardLarge } from './components/MagicCardLarge/MagicCardLarge';
+import { Status } from './components/Status/Status';
 import { dollarize } from './lib/currency';
 
 import './App.css';
@@ -31,12 +32,14 @@ const getBoosterValue = cards => {
 const App = () => {
   const cardSetRef = useRef(null);
   const [cardSetCode, setCardSetCode] = useState('');
+  const [isStatusExpanded, setIsStatusExpanded] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(undefined);
   const {
     generatedCardSetCode,
     cards,
     getBoosterStatus,
     error,
+    cacheSize,
     generateBooster,
   } = useGetBooster();
   const { isBootstrapping, bootstrapError, cardSets } = useBootstrap();
@@ -86,6 +89,10 @@ const App = () => {
     setSelectedCardIndex(cardIndex);
   };
 
+  const toggleStatus = () => {
+    setIsStatusExpanded(!isStatusExpanded);
+  };
+
   if (isBootstrapping) {
     return <div>Bootstrapping the app...</div>;
   }
@@ -106,6 +113,15 @@ const App = () => {
 
   return (
     <div className="app">
+      <header>
+        <Status
+          isExpanded={isStatusExpanded}
+          cacheSize={cacheSize}
+          getBoosterStatus={getBoosterStatus}
+          fetchError={error}
+          onClick={toggleStatus}
+        />
+      </header>
       <main className="pageWrapper">
         <h1 className="title">Magic The Gathering Booster Pack Generator</h1>
         <div className="content">

@@ -5,6 +5,7 @@ import { MagicCard } from './components/MagicCard/MagicCard';
 import { MagicCardDetails } from './components/MagicCardDetails/MagicCardDetails';
 import { MagicCardSetDetails } from './components/MagicCardSetDetails/MagicCardSetDetails';
 import { MagicCardFan } from './components/MagicCardFan/MagicCardFan';
+import { MagicCardLarge } from './components/MagicCardLarge/MagicCardLarge';
 import { dollarize } from './lib/currency';
 
 import './App.css';
@@ -160,7 +161,14 @@ const App = () => {
             )}
           </div>
           <div className="rightSide">
-            {selectedCardSet && (
+            {selectedCard && (
+              <MagicCardLarge
+                name={selectedCard.name}
+                imgUrl={selectedCard.imgUrl}
+              />
+            )}
+
+            {!selectedCard && selectedCardSet && (
               <MagicCardSetDetails
                 name={selectedCardSet.name}
                 imgUrl={selectedCardSet.imgUrl}

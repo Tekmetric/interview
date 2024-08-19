@@ -1,0 +1,8 @@
+.magicCardLarge {
+  /* images are 745x1040; reduce by 50% */
+  width: 372.5px;
+  height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

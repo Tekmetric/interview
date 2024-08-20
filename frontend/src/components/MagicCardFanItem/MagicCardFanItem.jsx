@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './MagicCard.css';
+import './MagicCardFanItem.css';
 
 /**
  * @typedef MagicCardProps
@@ -12,7 +12,12 @@ import './MagicCard.css';
  * @param {MagicCardProps} props
  * @returns {React.ReactElement}
  */
-const MagicCard = ({ imgUrl, name, onClick = undefined, style = {} }) => {
+const MagicCardFanItem = ({
+  imgUrl,
+  name,
+  onClick = undefined,
+  style = {},
+}) => {
   return (
     <img
       src={imgUrl}
@@ -24,4 +29,4 @@ const MagicCard = ({ imgUrl, name, onClick = undefined, style = {} }) => {
   );
 };
 
-export { MagicCard };
+export { MagicCardFanItem };

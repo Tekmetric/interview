@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useBootstrap } from './hooks/useBootstrap';
 import { useGetBooster } from './hooks/useGetBooster';
-import { MagicCard } from './components/MagicCard/MagicCard';
 import { MagicCardDetails } from './components/MagicCardDetails/MagicCardDetails';
 import { MagicCardSetDetails } from './components/MagicCardSetDetails/MagicCardSetDetails';
 import { MagicCardFan } from './components/MagicCardFan/MagicCardFan';
@@ -157,7 +156,7 @@ const App = () => {
               <div className="cardsContainer">
                 <MagicCardFan>
                   {cards.map((card, index) => (
-                    <MagicCard
+                    <MagicCardFanItem
                       key={index}
                       imgUrl={card.imgUrl}
                       name={card.name}

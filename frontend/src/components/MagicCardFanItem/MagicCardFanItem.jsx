@@ -3,21 +3,22 @@ import React from 'react';
 import './MagicCardFanItem.css';
 
 /**
- * @typedef MagicCardProps
+ * @typedef MagicCardType
+ * @property {string} id
  * @property {string} name
  * @property {string} imgUrl
- * @property {Function} onClick
+ *
+ * @typedef MagicCardFanItemProps
+ * @property {MagicCardType} card
+ * @property {Function} [onClick]
  * @property {React.StyleHTMLAttributes} [style]
  *
- * @param {MagicCardProps} props
+ * @param {MagicCardFanItemProps} props
  * @returns {React.ReactElement}
  */
-const MagicCardFanItem = ({
-  imgUrl,
-  name,
-  onClick = undefined,
-  style = {},
-}) => {
+const MagicCardFanItem = ({ card, onClick = undefined, style = {} }) => {
+  const { name, imgUrl } = card;
+
   return (
     <img
       src={imgUrl}

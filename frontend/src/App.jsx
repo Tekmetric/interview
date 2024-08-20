@@ -154,16 +154,7 @@ const App = () => {
             )}
             {Array.isArray(cards) && !error && (
               <div className="cardsContainer">
-                <MagicCardFan>
-                  {cards.map((card, index) => (
-                    <MagicCardFanItem
-                      key={index}
-                      imgUrl={card.imgUrl}
-                      name={card.name}
-                      onClick={() => handleCardClick(index)}
-                    />
-                  ))}
-                </MagicCardFan>
+                <MagicCardFan cards={cards} handleCardClick={handleCardClick} />
               </div>
             )}
             {selectedCard !== undefined && (

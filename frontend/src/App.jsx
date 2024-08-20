@@ -103,7 +103,15 @@ const App = () => {
   }
 
   if (bootstrapError) {
-    return <div>Error: {bootstrapError.message}</div>;
+    return (
+      <div className="app">
+        <main className="pageWrapper">
+          <div className="content">
+            <div>Error: {bootstrapError.message}</div>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   const boosterValue = dollarize(getBoosterValue(cards));

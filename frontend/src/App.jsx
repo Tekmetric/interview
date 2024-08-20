@@ -139,25 +139,27 @@ const App = () => {
         <h1 className="title">Magic The Gathering Booster Pack Generator</h1>
         <div className="content">
           <div className="leftSide">
-            <div>
-              <label htmlFor="cardSet">Set: </label>
-              <select
-                id="cardSet"
-                ref={cardSetRef}
-                disabled={isGeneratingBooster}
-                onChange={handleCardSetChange}
-                value={cardSetCode}
-              >
-                {cardSets.map(cardSet => (
-                  <option key={cardSet.code} value={cardSet.code}>
-                    {cardSet.name}
-                  </option>
-                ))}
-              </select>
+            <div className="controls">
+              <div>
+                <label htmlFor="cardSet">Set: </label>
+                <select
+                  id="cardSet"
+                  ref={cardSetRef}
+                  disabled={isGeneratingBooster}
+                  onChange={handleCardSetChange}
+                  value={cardSetCode}
+                >
+                  {cardSets.map(cardSet => (
+                    <option key={cardSet.code} value={cardSet.code}>
+                      {cardSet.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button disabled={getBoosterStatus} onClick={handleGetBooster}>
+                Generate Booster
+              </button>
             </div>
-            <button disabled={getBoosterStatus} onClick={handleGetBooster}>
-              Generate Booster
-            </button>
             {generatedCardSet && (
               <div className="generatedCardSetName">
                 Generated Set: {generatedCardSet.name}

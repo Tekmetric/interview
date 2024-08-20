@@ -5,6 +5,7 @@ import { MagicCardDetails } from './components/MagicCardDetails/MagicCardDetails
 import { MagicCardSetDetails } from './components/MagicCardSetDetails/MagicCardSetDetails';
 import { MagicCardFan } from './components/MagicCardFan/MagicCardFan';
 import { MagicCardLarge } from './components/MagicCardLarge/MagicCardLarge';
+import { Spinner } from './components/Spinner/Spinner';
 import { Status } from './components/Status/Status';
 import { dollarize } from './lib/currency';
 
@@ -93,7 +94,12 @@ const App = () => {
   };
 
   if (isBootstrapping) {
-    return <div>Bootstrapping the app...</div>;
+    return (
+      <div className="bootstrapping">
+        <Spinner />
+        Fetching card set data...
+      </div>
+    );
   }
 
   if (bootstrapError) {

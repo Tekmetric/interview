@@ -162,7 +162,13 @@ const App = () => {
             </div>
             {generatedCardSet && (
               <div className="generatedCardSetName">
-                Generated Set: {generatedCardSet.name}
+                Generated Set:
+                <img
+                  className="generatedCardSetIcon"
+                  src={generatedCardSet.imgUrl}
+                  alt={generatedCardSet.name}
+                />
+                {generatedCardSet.name}
               </div>
             )}
             {Array.isArray(cards) && cards.length > 0 && (

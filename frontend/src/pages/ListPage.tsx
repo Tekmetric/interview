@@ -3,6 +3,7 @@ import EventList from "../components/EventList";
 import { Box } from "@mui/material";
 import { send } from "../utils/send";
 import { EventData, EventDataResponse } from "../typings/eventData";
+import { useDeleteEventMutation } from "../utils/hooks.ts/eventData";
 
 type PaginatedEventDataResult = {
   count: number;
@@ -11,6 +12,7 @@ type PaginatedEventDataResult = {
 
 function ListPage() {
   const [events, setEvents] = useState<EventData[]>([]);
+  const deleteEventMutatio = useDeleteEventMutation();
 
   useEffect(() => {
     send<PaginatedEventDataResult>("GET", "/api/events/").then(
@@ -28,12 +30,9 @@ function ListPage() {
     );
   }, []);
 
-  const handleDelete = (eventId: number) => {
-    return send("DELETE", `/api/events/${eventId}/`).then(() => {
-      setEvents((prevEvents) =>
-        prevEvents.filter((event) => event.id !== eventId)
-      );
-    });
+  const handleDelete = async (id: number) => {
+    deleteEventMutatio.mutate(id);
+    setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
   };
 
   return (

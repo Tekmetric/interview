@@ -15,7 +15,7 @@ type JsonObject = { [key: string]: JsonValue };
 type JsonArray = Array<JsonValue>;
 
 export async function send<T extends JsonValue>(
-  method: "GET" | "POST" | "PUT" | "DELETE",
+  method: "GET" | "POST" | "PATCH" | "DELETE",
   pathname: string,
   body?: JsonObject,
   params?: URLSearchParams

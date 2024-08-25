@@ -19,7 +19,7 @@ public class ShopServiceImpl implements ShopService {
   public ShopDTO findById(long id) {
     return shopRepository.findById(id)
                          .map(ShopDTO::fromShop)
-                         .orElseThrow(IllegalArgumentException::new);
+                         .orElseThrow(() -> new IllegalArgumentException("Invalid id"));
   }
 
   @Override
@@ -35,7 +35,7 @@ public class ShopServiceImpl implements ShopService {
   @Override
   public ShopDTO updateShop(long id, ShopDTO updatedShopDTO) {
     Shop dbShop = shopRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("No shop with the requested id"));
+            .orElseThrow(() -> new IllegalArgumentException("Invalid id"));
 
     Shop updatedShop = updateShop(dbShop, updatedShopDTO);
 
@@ -45,13 +45,13 @@ public class ShopServiceImpl implements ShopService {
   @Override
   public void deleteShop(long id) {
     Shop dbShop = shopRepository.findById(id)
-                                .orElseThrow(() -> new IllegalArgumentException("No shop with the requested id"));
+                                .orElseThrow(() -> new IllegalArgumentException("Invalid id"));
     shopRepository.delete(dbShop);
   }
 
   private Shop updateShop(Shop shop, ShopDTO updatedShopDTO) {
     if (shop.getId() != updatedShopDTO.getId()) {
-      throw new IllegalArgumentException("No shop with the requested id");
+      throw new IllegalArgumentException("Invalid id");
     }
     shop.setName(updatedShopDTO.getName());
     shop.setAddress(updatedShopDTO.getAddress());

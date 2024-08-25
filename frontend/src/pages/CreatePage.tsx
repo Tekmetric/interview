@@ -3,7 +3,7 @@ import EventForm from "../components/EventForm";
 import { useFormik } from "formik";
 import { validationSchema } from "../typings/eventFormSchema";
 import { EventData } from "../typings/eventData";
-import { useCreateEventMutation } from "../utils/hooks.ts/eventData";
+import { useCreateEventMutation } from "../utils/hooks/eventData";
 
 function CreatePage() {
   const createEventMutation = useCreateEventMutation();

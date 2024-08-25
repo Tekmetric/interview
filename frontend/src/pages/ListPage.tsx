@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import EventList from "../components/EventList";
 import { Box, Button, TextField } from "@mui/material";
 import { EventDataResponse } from "../typings/eventData";
-import { useDeleteEventMutation } from "../utils/hooks.ts/eventData";
+import { useDeleteEventMutation } from "../utils/hooks/eventData";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { send } from "../utils/send";
 

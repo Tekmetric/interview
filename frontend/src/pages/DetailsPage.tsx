@@ -5,10 +5,7 @@ import { CircularProgress } from "@mui/material";
 import { EventData } from "../typings/eventData";
 import { useFormik } from "formik";
 import { validationSchema } from "../typings/eventFormSchema";
-import {
-  useGetEvent,
-  useUpdateEventMutation,
-} from "../utils/hooks.ts/eventData";
+import { useGetEvent, useUpdateEventMutation } from "../utils/hooks/eventData";
 
 const DEFAULT_INITIAL_VALUES: EventData = {
   id: null,

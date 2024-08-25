@@ -1,6 +1,8 @@
 import React from "react";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../utils/api/auth";
+import { useQueryClient } from "@tanstack/react-query";
 
 // const navBarStyles = css`
 //   flexgrow: 1;
@@ -17,6 +19,8 @@ import { Link } from "react-router-dom";
 // });
 
 function NavBar() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   return (
     <AppBar position="static">
       <Toolbar>
@@ -29,6 +33,17 @@ function NavBar() {
         <Link to="/create">
           <Button color="inherit">Create Event</Button>
         </Link>
+        <Button
+          color="inherit"
+          onClick={() => {
+            logout().then(() => {
+              queryClient.invalidateQueries({ queryKey: ["auth-status"] });
+              navigate("/login");
+            });
+          }}
+        >
+          Logout
+        </Button>
       </Toolbar>
     </AppBar>
   );

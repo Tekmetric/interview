@@ -17,7 +17,7 @@ export function useCreateEventMutation() {
   return useMutation({
     mutationFn: createEvent,
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: ["events"] });
       navigate("/");
     },
   });
@@ -29,7 +29,7 @@ export function useUpdateEventMutation() {
   return useMutation({
     mutationFn: updateEvent,
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: ["events"] });
       navigate("/");
     },
   });
@@ -42,7 +42,7 @@ export function useDeleteEventMutation() {
       return send("DELETE", `/api/events/${id}/`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: ["events"] });
     },
   });
 }

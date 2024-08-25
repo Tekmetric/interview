@@ -1,0 +1,115 @@
+{
+	"info": {
+		"_postman_id": "e9103e31-7ac0-4aac-85bd-906544b23793",
+		"name": "Tekmetric Shop Demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get all shops",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/shop",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"shop"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove shop",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/shop/{{shopId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"shop",
+						"{{shopId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get shop by id Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/shop/{{shopId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"shop",
+						"{{shopId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create shop",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Tech One Automotive\",\r\n    \"address\": \"8601 Burnet Rd, Austin, TX 78757, United States\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/shop",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"shop"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update shop data",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": {{shopId}},\r\n    \"name\": \"Tech Two Automotive\",\r\n    \"address\": \"1068 Burnet Rd, Austin, TX 78757, United States\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/shop/{{shopId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"shop",
+						"{{shopId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

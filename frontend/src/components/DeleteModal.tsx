@@ -21,7 +21,7 @@ const ModalBox = styled(Box)`
   border-radius: 8px;
 `;
 
-const ButtonContainer = styled.div`
+const ButtonsContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-top: 16px;
@@ -38,7 +38,7 @@ function DeleteModal({ open, onClose, onConfirm }: DeleteModalProps) {
           Are you sure you want to delete this event? This action cannot be
           undone.
         </Typography>
-        <ButtonContainer>
+        <ButtonsContainer>
           <Button
             onClick={onClose}
             variant="outlined"
@@ -50,7 +50,7 @@ function DeleteModal({ open, onClose, onConfirm }: DeleteModalProps) {
           <Button onClick={onConfirm} variant="contained" color="error">
             Delete
           </Button>
-        </ButtonContainer>
+        </ButtonsContainer>
       </ModalBox>
     </Modal>
   );

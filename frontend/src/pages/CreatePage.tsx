@@ -2,6 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import EventForm from "../components/EventForm";
 import { send } from "../utils/send";
+import { useFormik } from "formik";
+import { validationSchema } from "../typings/eventFormSchema";
+import { EventData } from "../typings/eventData";
 
 function CreatePage() {
   const navigate = useNavigate();
@@ -12,7 +15,6 @@ function CreatePage() {
     description: string;
     evetImageUrl?: string;
   }) => {
-    // Save the event data
     send("POST", "/api/events/", {
       title: data.title,
       event_datetime: new Date(data.eventDatetime).toISOString(),
@@ -21,7 +23,20 @@ function CreatePage() {
     }).then(() => navigate("/"));
   };
 
-  return <EventForm onSubmit={handleCreate} />;
+  const formik = useFormik<EventData>({
+    initialValues: {
+      id: null,
+      title: "",
+      eventDatetime: "",
+      description: "",
+      eventImageUrl: "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      handleCreate(values);
+    },
+  });
+  return <EventForm formik={formik} />;
 }
 
 export default CreatePage;

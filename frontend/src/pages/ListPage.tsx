@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import EventList from "../components/EventList";
 import { Box } from "@mui/material";
 import { send } from "../utils/send";
-import { EventData, EventDataResponse } from "../typings/event_data";
+import { EventData, EventDataResponse } from "../typings/eventData";
 
 type PaginatedEventDataResult = {
   count: number;

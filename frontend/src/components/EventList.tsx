@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Paper, Typography, Button } from "@mui/material";
 import { Link } from "react-router-dom";
-import { EventData } from "../typings/event_data";
+import { EventData } from "../typings/eventData";
 import styled from "@emotion/styled";
 import DeleteModal from "./DeleteModal";
 

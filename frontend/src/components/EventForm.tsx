@@ -1,15 +1,10 @@
-import React, { useState } from "react";
-import { Box, TextField, Button } from "@mui/material";
-import { EventData } from "../typings/event_data";
+import React from "react";
+import { TextField, Button } from "@mui/material";
+import { FormikProps } from "formik";
+import { EventData } from "../typings/eventData";
 
 interface EventFormProps {
-  initialData?: EventData;
-  onSubmit: (data: {
-    title: string;
-    eventDatetime: string;
-    description: string;
-    eventImageUrl?: string;
-  }) => void;
+  formik: FormikProps<EventData>;
 }
 
 // const formStyles = css`
@@ -20,79 +15,52 @@ interface EventFormProps {
 //   margin: 0 auto,
 // `;
 
-function convertToLocaleDatetime(isoDatetime: string) {
-  if (isoDatetime.length === 0) {
-    return isoDatetime;
-  }
-  const date = new Date(isoDatetime);
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  // Format the date to the desired string
-  const localDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-  return localDateTime;
-}
-
-function EventForm({
-  initialData = {
-    id: null,
-    title: "",
-    eventDatetime: "",
-    description: "",
-    eventImageUrl: "",
-  },
-  onSubmit,
-}: EventFormProps) {
-  const [title, setTitle] = useState(initialData.title);
-  const [eventDatetime, setEventDatetime] = useState(
-    convertToLocaleDatetime(initialData.eventDatetime)
-  );
-  const [description, setDescription] = useState(initialData.description);
-  const [eventImageUrl, setEventImageUrl] = useState(initialData.eventImageUrl);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({ title, eventDatetime, description, eventImageUrl });
-  };
-
+function EventForm({ formik }: EventFormProps) {
   return (
-    <Box component="form" onSubmit={handleSubmit}>
+    <form onSubmit={formik.handleSubmit}>
       <TextField
+        id="title"
+        name="title"
         label="Event Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        value={formik.values.title}
+        onChange={formik.handleChange}
+        error={formik.touched.title && !!formik.errors.title}
         required
       />
       <TextField
+        id="eventDatetime"
+        name="eventDatetime"
         type="datetime-local"
         label="Event Date"
         InputLabelProps={{ shrink: true }}
-        value={eventDatetime}
-        onChange={(e) => setEventDatetime(e.target.value)}
+        value={formik.values.eventDatetime}
+        onChange={formik.handleChange}
+        error={formik.touched.eventDatetime && !!formik.errors.eventDatetime}
         required
       />
       <TextField
+        id="description"
+        name="description"
         label="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        value={formik.values.description}
+        onChange={formik.handleChange}
+        error={formik.touched.description && !!formik.errors.description}
         multiline
         rows={4}
         required
       />
       <TextField
+        id="eventImageUrl"
+        name="eventImageUrl"
         label="Event Image URL"
-        value={eventImageUrl}
-        onChange={(e) => setEventImageUrl(e.target.value)}
+        value={formik.values.eventImageUrl}
+        onChange={formik.handleChange}
+        error={formik.touched.eventImageUrl && !!formik.errors.eventImageUrl}
       />
       <Button variant="contained" type="submit">
         Submit
       </Button>
-    </Box>
+    </form>
   );
 }
 

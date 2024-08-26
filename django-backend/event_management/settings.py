@@ -61,11 +61,13 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "events.middleware.DisableCSRFCheckMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "events.middleware.AuthorizationHeaderSessionMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -163,17 +165,5 @@ else:
 SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_NAME = "tek-events-session-id"
-
-if ENVIRONMENT == "production":
-    CSRF_COOKIE_DOMAIN = os.environ.get("CSRF_COOKIE_DOMAIN")
-else:
-    CSRF_COOKIE_DOMAIN = os.environ.get("localhost")
-
-CSRF_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SECURE = True
-
-SESSION_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SECURE = True
-
 
 django_heroku.settings(locals())

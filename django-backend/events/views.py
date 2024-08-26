@@ -11,10 +11,6 @@ from .models import Event
 from .serializers import EventSerializer
 
 
-from rest_framework.permissions import BasePermission
-
-
-
 class EventPagination(PageNumberPagination):
     page_size = 2
     page_size_query_param = 'page_size'
@@ -58,17 +54,14 @@ class LoginView(APIView):
 
         if user is not None:
             login(request, user)
-            return JsonResponse({'message': 'Login successful'})
+            session_key = request.session.session_key
+            return JsonResponse({'message': 'Login successful', 'sessionToken': session_key})
         return JsonResponse({'error': 'Invalid credentials'}, status=HTTPStatus.BAD_REQUEST)
 
 class LogoutView(APIView):
     def post(self, request):
         logout(request)
         return JsonResponse({'message': 'Logout successful'})
-
-import logging
-
-logger = logging.getLogger(__name__)
 
 class IsAuthenticatedView(APIView):
     def get(self, request):

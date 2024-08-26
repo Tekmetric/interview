@@ -1,0 +1,35 @@
+###
+GET http://localhost:8080/api/cars
+
+### create car
+POST http://localhost:8080/api/cars
+Authorization: Basic testuser testpass
+Content-Type: application/json
+
+{
+  "name": "AlfaRomeo"
+}
+
+### create same car
+POST http://localhost:8080/api/cars
+Authorization: Basic testuser testpass
+Content-Type: application/json
+
+{
+  "name": "AlfaRomeo"
+}
+
+###
+PUT http://localhost:8080/api/cars/1
+Authorization: Basic testuser testpass
+Content-Type: application/json
+
+{
+  "name": "AlfaRomeo2"
+}
+
+###
+DELETE http://localhost:8080/api/cars/1
+
+###
+DELETE http://localhost:8080/api/cars/2

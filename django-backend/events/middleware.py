@@ -6,7 +6,7 @@ class AuthorizationHeaderSessionMiddleware(SessionMiddleware):
     def process_request(self, request):
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         if auth_header:
-            session_key = auth_header.split(' ')[1]  # Remove 'Bearer' prefix
+            session_key = auth_header.split(' ')[1] 
             request.COOKIES[settings.SESSION_COOKIE_NAME] = session_key
 
         super().process_request(request)

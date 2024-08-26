@@ -1,15 +1,30 @@
-import { useQuery } from "@tanstack/react-query";
-import { AuthResponse } from "../../typings/auth";
-import { isAuthenticated } from "../api/auth";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+// counterintuiviely, the token is stored in localStorage
+export const SESSION_TOKEN_NAME = "session-token";
 
 export const useAuth = () => {
-  return useQuery<AuthResponse, Error>({
-    queryKey: ["auth-status"],
-    queryFn: async () => isAuthenticated(),
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    retry: false,
-  });
+  const [isAuthenticationLoaded, setIsAuthenticationLoaded] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem(SESSION_TOKEN_NAME);
+
+    if (token) {
+      setIsAuthenticationLoaded(true);
+    } else {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  const setToken = (token: string) => {
+    localStorage.setItem(SESSION_TOKEN_NAME, token);
+  };
+
+  const resetAuth = () => {
+    localStorage.removeItem(SESSION_TOKEN_NAME);
+  };
+
+  return { isAuthenticationLoaded, setToken, resetAuth };
 };

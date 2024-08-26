@@ -1,5 +1,4 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
 import { useAuth } from "../utils/hooks/auth";
 import { CircularProgress } from "@mui/material";
 
@@ -8,14 +7,10 @@ interface AuthRequiredProps {
 }
 
 export function AuthRequired({ children }: AuthRequiredProps) {
-  const { data, isLoading, isError } = useAuth();
+  const { isAuthenticationLoaded } = useAuth();
 
-  if (isLoading) {
+  if (!isAuthenticationLoaded) {
     return <CircularProgress />;
-  }
-
-  if (isError || !data?.authenticated) {
-    return <Navigate to="/login" />;
   }
 
   return <>{children}</>;

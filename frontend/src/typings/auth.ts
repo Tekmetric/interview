@@ -3,6 +3,6 @@ export type LoginForm = {
   password: string;
 };
 
-export type AuthResponse = {
-  authenticated: boolean;
+export type LoginResponse = {
+  sessionToken: string;
 };

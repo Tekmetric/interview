@@ -2,7 +2,7 @@ import React from "react";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../utils/api/auth";
-import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../utils/hooks/auth";
 
 // const navBarStyles = css`
 //   flexgrow: 1;
@@ -20,7 +20,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 function NavBar() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { resetAuth } = useAuth();
   return (
     <AppBar position="static">
       <Toolbar>
@@ -37,7 +37,7 @@ function NavBar() {
           color="inherit"
           onClick={() => {
             logout().then(() => {
-              queryClient.invalidateQueries({ queryKey: ["auth-status"] });
+              resetAuth();
               navigate("/login");
             });
           }}

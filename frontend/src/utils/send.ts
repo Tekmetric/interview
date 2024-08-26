@@ -1,8 +1,5 @@
-import Cookies from "universal-cookie";
-
-const cookies = new Cookies();
-
-const BACKEND_URL = process.env.DJANGO_API_SERVER || "http://localhost:8000";
+const BACKEND_URL =
+  process.env.REACT_APP_DJANGO_API_SERVER || "http://localhost:8000";
 
 export function buildUrl(pathname: string, params?: URLSearchParams) {
   const url = new URL(pathname, BACKEND_URL);
@@ -34,7 +31,7 @@ export async function send<T extends JsonValue>(
     headers: {
       accept: "application/json",
       ...(contentType && { "Content-Type": "application/json" }),
-      "X-CSRFToken": cookies.get("csrftoken"),
+      Authorization: `Bearer ${localStorage.getItem("session-token")}`,
     },
     body: encodedBody || undefined,
     credentials: "include",

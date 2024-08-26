@@ -4,11 +4,11 @@ import { TextField, Button, Box } from "@mui/material";
 import { validationSchema } from "../typings/loginFormSchema";
 import { login } from "../utils/api/auth";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../utils/hooks/auth";
 
 function LoginPage() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { setToken } = useAuth();
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -16,8 +16,8 @@ function LoginPage() {
     },
     validationSchema,
     onSubmit: (values) => {
-      login(values).then(() => {
-        queryClient.invalidateQueries({ queryKey: ["auth-status"] });
+      login(values).then((response) => {
+        setToken(response.sessionToken);
         navigate("/");
       });
     },

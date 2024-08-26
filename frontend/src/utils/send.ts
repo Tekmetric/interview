@@ -2,8 +2,10 @@ import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
+const BACKEND_URL = process.env.DJANGO_API_SERVER || "http://localhost:8000";
+
 export function buildUrl(pathname: string, params?: URLSearchParams) {
-  const url = new URL(pathname, "http://localhost:8000");
+  const url = new URL(pathname, BACKEND_URL);
   if (params) {
     url.search = params.toString();
   }

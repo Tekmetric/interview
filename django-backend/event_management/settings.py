@@ -40,8 +40,9 @@ ALLOWED_HOSTS: List[str] = ["*"]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://eventmaster-ecru.vercel.app"
 ]
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "https://eventmaster-ecru.vercel.app"]
 CORS_ALLOW_CREDENTIALS = True
 
 
@@ -154,10 +155,25 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+if ENVIRONMENT == "production":
+    SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN")
+else:
+    SESSION_COOKIE_DOMAIN = os.environ.get("localhost")
 
-SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN", "localhost")
 SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_NAME = "tek-events-session-id"
+
+if ENVIRONMENT == "production":
+    CSRF_COOKIE_DOMAIN = os.environ.get("CSRF_COOKIE_DOMAIN")
+else:
+    CSRF_COOKIE_DOMAIN = os.environ.get("localhost")
+
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+
 
 django_heroku.settings(locals())

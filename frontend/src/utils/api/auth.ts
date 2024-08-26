@@ -12,6 +12,7 @@ export async function logout() {
 }
 
 export async function isAuthenticated(): Promise<AuthResponse> {
+  // Don't want to redirect to login if authentication fails
   return fetch(buildUrl("/api/is-authenticated/", undefined), {
     method: "GET",
     credentials: "include",

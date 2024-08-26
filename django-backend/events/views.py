@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from .models import Event
 from .serializers import EventSerializer
 
+
 from rest_framework.permissions import BasePermission
 
 
@@ -49,10 +50,6 @@ class EventRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EventSerializer
     permission_classes = [IsAuthenticated]
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
@@ -68,6 +65,10 @@ class LogoutView(APIView):
     def post(self, request):
         logout(request)
         return JsonResponse({'message': 'Logout successful'})
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 class IsAuthenticatedView(APIView):
     def get(self, request):

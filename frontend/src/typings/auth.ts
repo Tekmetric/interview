@@ -4,5 +4,5 @@ export type LoginForm = {
 };
 
 export type AuthResponse = {
-  is_authenticated: boolean;
+  authenticated: boolean;
 };

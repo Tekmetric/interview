@@ -14,7 +14,7 @@ export function AuthRequired({ children }: AuthRequiredProps) {
     return <CircularProgress />;
   }
 
-  if (isError || !data?.is_authenticated) {
+  if (isError || !data?.authenticated) {
     return <Navigate to="/login" />;
   }
 

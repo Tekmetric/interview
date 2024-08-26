@@ -2,7 +2,7 @@ import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
-function buildUrl(pathname: string, params?: URLSearchParams) {
+export function buildUrl(pathname: string, params?: URLSearchParams) {
   const url = new URL(pathname, "http://localhost:8000");
   if (params) {
     url.search = params.toString();

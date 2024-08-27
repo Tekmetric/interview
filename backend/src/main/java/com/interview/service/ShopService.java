@@ -1,21 +1,21 @@
 package com.interview.service;
 
-import com.interview.api.dto.ShopDTO;
+import com.interview.api.dto.*;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ShopService {
 
-  ShopDTO findById(long id);
+  DetailViewShopDTO findById(long id);
 
-  List<ShopDTO> getAll(Pageable pageable);
+  List<ListViewShopDTO> getAll(Pageable pageable);
 
-  List<ShopDTO> getAllActive(Pageable pageable);
+  List<ListViewShopDTO> getAllActive(Pageable pageable);
 
-  long createShop(ShopDTO shop);
+  long createShop(CreateShopDTO shop);
 
-  ShopDTO updateShop(long id, ShopDTO shop);
+  DetailViewShopDTO updateShop(long id, UpdateShopDTO shop);
 
   void deleteShop(long id);
 

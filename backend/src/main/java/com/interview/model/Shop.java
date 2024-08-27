@@ -23,7 +23,10 @@ public class Shop {
   @GeneratedValue(strategy = IDENTITY)
   private Long id;
   private String name;
+  private String description;
   private String address;
+  private String phoneNo;
+  private String email;
   private boolean active;
 
 }

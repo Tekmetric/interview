@@ -79,7 +79,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Tech One Automotive\",\r\n    \"address\": \"8601 Burnet Rd, Austin, TX 78757, United States\"\r\n}",
+					"raw": "{\r\n    \"name\": \"Tech One Automotive\",\r\n    \"description\": \"Tech One Automotive is a family-owned and operated full-service car repair shop in Austin, TX. Since 1999, our mission has been to provide fast, reliable, and top-quality auto services to drivers in the area.\",\r\n    \"address\": \"8601 Burnet Rd, Austin, TX 78757, United States\",\r\n    \"phoneNo\": \"+1 012 345 6789\",\r\n    \"email\": \"sample@email.com\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -105,7 +105,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"id\": {{shopId}},\r\n    \"name\": \"Tech One Automotive\",\r\n    \"address\": \"8601 Burnet Rd, Austin, TX 78757, United States\"\r\n}",
+					"raw": "{\r\n    \"id\": {{shopId}},\r\n    \"name\": \"Tech Two Automotive\",\r\n    \"description\": \"Tech Three Automotive is a family-owned and operated full-service car repair shop in Austin, TX. Since 1999, our mission has been to provide fast, reliable, and top-quality auto services to drivers in the area.\",\r\n    \"address\": \"8601 Burnet Rd, Austin, TX 78757, United States\",\r\n    \"phoneNo\": \"+1 012 345 6789\",\r\n    \"email\": \"techfour@automotive.com\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

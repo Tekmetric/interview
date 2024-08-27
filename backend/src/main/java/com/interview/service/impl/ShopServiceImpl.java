@@ -1,6 +1,6 @@
 package com.interview.service.impl;
 
-import com.interview.api.dto.ShopDTO;
+import com.interview.api.dto.*;
 import com.interview.exception.ServiceException;
 import com.interview.model.Shop;
 import com.interview.repository.ShopRepository;
@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.interview.exception.ExceptionReason.BAD_REQUEST;
 import static com.interview.exception.ExceptionReason.NOT_FOUND;
@@ -22,35 +21,35 @@ public class ShopServiceImpl implements ShopService {
   private final ShopRepository shopRepository;
 
   @Override
-  public ShopDTO findById(long id) {
+  public DetailViewShopDTO findById(long id) {
     return shopRepository.findByIdAndActiveTrue(id)
-                         .map(ShopDTO::fromShop)
+                         .map(DetailViewShopDTO::fromShop)
                          .orElseThrow(() -> new ServiceException("Invalid id", NOT_FOUND));
   }
 
   @Override
-  public List<ShopDTO> getAll(Pageable pageable) {
-    return shopRepository.findAll(pageable).stream().map(ShopDTO::fromShop).collect(Collectors.toList());
+  public List<ListViewShopDTO> getAll(Pageable pageable) {
+    return shopRepository.findAll(pageable).stream().map(ListViewShopDTO::fromShop).toList();
   }
 
   @Override
-  public List<ShopDTO> getAllActive(Pageable pageable) {
-    return shopRepository.findByActiveTrue(pageable).stream().map(ShopDTO::fromShop).collect(Collectors.toList());
+  public List<ListViewShopDTO> getAllActive(Pageable pageable) {
+    return shopRepository.findByActiveTrue(pageable).stream().map(ListViewShopDTO::fromShop).toList();
   }
 
   @Override
-  public long createShop(ShopDTO shop) {
-    return shopRepository.saveAndFlush(shop.toShop()).getId();
+  public long createShop(CreateShopDTO dto) {
+    return shopRepository.saveAndFlush(dto.toShop()).getId();
   }
 
   @Override
-  public ShopDTO updateShop(long id, ShopDTO updatedShopDTO) {
+  public DetailViewShopDTO updateShop(long id, UpdateShopDTO dto) {
     Shop dbShop = shopRepository.findById(id)
             .orElseThrow(() -> new ServiceException("Invalid id", NOT_FOUND));
 
-    Shop updatedShop = updateShop(dbShop, updatedShopDTO);
+    Shop updatedShop = updateShop(dbShop, dto);
 
-    return ShopDTO.fromShop(shopRepository.saveAndFlush(updatedShop));
+    return DetailViewShopDTO.fromShop(shopRepository.saveAndFlush(updatedShop));
   }
 
   @Override
@@ -61,12 +60,16 @@ public class ShopServiceImpl implements ShopService {
     shopRepository.saveAndFlush(dbShop);
   }
 
-  private Shop updateShop(Shop shop, ShopDTO updatedShopDTO) {
+  private Shop updateShop(Shop shop, UpdateShopDTO updatedShopDTO) {
     if (shop.getId() != updatedShopDTO.getId()) {
       throw new ServiceException("Invalid id", BAD_REQUEST);
     }
     shop.setName(updatedShopDTO.getName());
+    shop.setDescription(updatedShopDTO.getDescription());
     shop.setAddress(updatedShopDTO.getAddress());
+    shop.setPhoneNo(updatedShopDTO.getPhoneNo());
+    shop.setEmail(updatedShopDTO.getEmail());
+
     return shop;
   }
 

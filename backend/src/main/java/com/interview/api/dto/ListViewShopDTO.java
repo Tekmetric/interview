@@ -7,17 +7,14 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ShopDTO {
+public class ListViewShopDTO {
 
   private final long id;
   private final String name;
   private final String address;
 
-  public static ShopDTO fromShop(Shop shop) {
-    return new ShopDTO(shop.getId(), shop.getName(), shop.getAddress());
+  public static ListViewShopDTO fromShop(Shop shop) {
+    return new ListViewShopDTO(shop.getId(), shop.getName(), shop.getAddress());
   }
 
-  public Shop toShop() {
-    return new Shop(this.id, this.name, this.address, true);
-  }
 }

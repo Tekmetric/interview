@@ -43,9 +43,14 @@ public class ShopResource {
     return shopService.findById(id);
   }
 
-  @GetMapping(produces = APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/all", produces = APPLICATION_JSON_VALUE)
   public List<ShopDTO> getAll() {
     return shopService.getAll();
+  }
+
+  @GetMapping(produces = APPLICATION_JSON_VALUE)
+  public List<ShopDTO> getAllActive() {
+    return shopService.getAllActive();
   }
 
   @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

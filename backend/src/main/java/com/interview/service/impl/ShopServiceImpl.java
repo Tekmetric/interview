@@ -22,7 +22,7 @@ public class ShopServiceImpl implements ShopService {
 
   @Override
   public ShopDTO findById(long id) {
-    return shopRepository.findById(id)
+    return shopRepository.findByIdAndActiveTrue(id)
                          .map(ShopDTO::fromShop)
                          .orElseThrow(() -> new ServiceException("Invalid id", NOT_FOUND));
   }
@@ -30,6 +30,11 @@ public class ShopServiceImpl implements ShopService {
   @Override
   public List<ShopDTO> getAll() {
     return shopRepository.findAll().stream().map(ShopDTO::fromShop).collect(Collectors.toList());
+  }
+
+  @Override
+  public List<ShopDTO> getAllActive() {
+    return shopRepository.findByActiveTrue().stream().map(ShopDTO::fromShop).collect(Collectors.toList());
   }
 
   @Override
@@ -51,7 +56,8 @@ public class ShopServiceImpl implements ShopService {
   public void deleteShop(long id) {
     Shop dbShop = shopRepository.findById(id)
                                 .orElseThrow(() -> new ServiceException("Invalid id", NOT_FOUND));
-    shopRepository.delete(dbShop);
+    dbShop.setActive(false);
+    shopRepository.saveAndFlush(dbShop);
   }
 
   private Shop updateShop(Shop shop, ShopDTO updatedShopDTO) {

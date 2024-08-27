@@ -41,7 +41,7 @@
 			"response": []
 		},
 		{
-			"name": "Get shop by id Copy",
+			"name": "Get shop by Id",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -91,7 +91,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"id\": {{shopId}},\r\n    \"name\": \"Tech Two Automotive\",\r\n    \"address\": \"1068 Burnet Rd, Austin, TX 78757, United States\"\r\n}",
+					"raw": "{\r\n    \"id\": {{shopId}},\r\n    \"name\": \"Tech One Automotive\",\r\n    \"address\": \"8601 Burnet Rd, Austin, TX 78757, United States\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -106,6 +106,23 @@
 					"path": [
 						"shop",
 						"{{shopId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all active shops",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/shop",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"shop"
 					]
 				}
 			},

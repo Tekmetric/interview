@@ -24,6 +24,7 @@ public class Shop {
   private Long id;
   private String name;
   private String address;
+  private boolean active;
 
 }
 

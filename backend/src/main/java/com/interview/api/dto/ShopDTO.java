@@ -18,6 +18,6 @@ public class ShopDTO {
   }
 
   public Shop toShop() {
-    return new Shop(this.id, this.name, this.address);
+    return new Shop(this.id, this.name, this.address, true);
   }
 }

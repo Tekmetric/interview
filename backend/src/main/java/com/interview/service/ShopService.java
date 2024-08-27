@@ -9,6 +9,8 @@ public interface ShopService {
 
   List<ShopDTO> getAll();
 
+  List<ShopDTO> getAllActive();
+
   long createShop(ShopDTO shop);
 
   ShopDTO updateShop(long id, ShopDTO shop);

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import styled from "@emotion/styled";
 import LoginImage from "../assets/images/LoginImage.jpg";
+import posthog from "posthog-js";
 
 const PageContainer = styled(Box)`
   display: flex;
@@ -64,6 +65,7 @@ function LoginPage() {
     },
     validationSchema,
     onSubmit: (values) => {
+      posthog.capture("LoginButtonClicked");
       login(values).then((response) => {
         setToken(response.sessionToken);
         navigate("/");

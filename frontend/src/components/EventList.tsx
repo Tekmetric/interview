@@ -6,6 +6,7 @@ import styled from "@emotion/styled";
 import DeleteModal from "./DeleteModal";
 import { formatDatetime } from "../utils/datetime";
 import EventIcon from "@mui/icons-material/Event";
+import posthog from "posthog-js";
 
 interface EventListProps {
   events: EventData[];
@@ -87,6 +88,7 @@ function EventList({ events, onDelete }: EventListProps) {
                 </Button>
                 <Button
                   onClick={() => {
+                    posthog.capture("DeleteButtonClicked");
                     setDeleteId(event.id);
                     setShowDeleteModal(true);
                   }}

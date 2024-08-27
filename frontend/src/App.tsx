@@ -3,7 +3,6 @@ import AppRoutes from "./AppRoutes";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./utils/theme";
-//import logo from './logo.svg';
 
 function App() {
   return (

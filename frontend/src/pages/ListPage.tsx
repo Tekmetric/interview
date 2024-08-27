@@ -5,6 +5,7 @@ import { useDeleteEventMutation } from "../utils/hooks/eventData";
 import styled from "@emotion/styled";
 import Filters from "../components/Filters";
 import { usePaginatedEvents } from "../utils/hooks/paginatedEvents";
+import posthog from "posthog-js";
 
 const EventListContainer = styled(Box)`
   display: flex;
@@ -21,7 +22,7 @@ const PageContainer = styled(Box)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto;
+  margin: 0 auto 32px;
 `;
 
 const ShowMoreContainer = styled(Box)`
@@ -68,7 +69,10 @@ function ListPage() {
             <Button
               variant="contained"
               color="secondary"
-              onClick={() => fetchNextPage()}
+              onClick={() => {
+                posthog.capture("ShowMoreButtonClicked");
+                fetchNextPage();
+              }}
             >
               <Typography variant="button" style={{ color: "white" }}>
                 Show More

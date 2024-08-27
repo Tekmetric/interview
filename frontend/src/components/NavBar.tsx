@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../utils/api/auth";
 import { useAuth } from "../contexts/AuthContext";
 import styled from "@emotion/styled";
+import posthog from "posthog-js";
 
 const AppBarStyled = styled(AppBar)`
   display: flex;
@@ -33,6 +34,7 @@ function NavBar() {
           color="inherit"
           onClick={() => {
             logout().then(() => {
+              posthog.capture("LogoutButtonClicked");
               resetAuth();
               navigate("/login");
             });

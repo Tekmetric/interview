@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import { validationSchema } from "../typings/eventFormSchema";
 import { useGetEvent, useUpdateEventMutation } from "../utils/hooks/eventData";
 import styled from "@emotion/styled";
+import posthog from "posthog-js";
 
 const DEFAULT_INITIAL_VALUES: EventData = {
   title: "",
@@ -36,6 +37,7 @@ function DetailsPage() {
     validationSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
+      posthog.capture("SubmittedEditForm");
       updateEventMutation.mutate(values);
     },
   });

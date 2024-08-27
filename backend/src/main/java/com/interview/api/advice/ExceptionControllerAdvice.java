@@ -1,20 +1,25 @@
 package com.interview.api.advice;
 
+import com.interview.exception.ServiceException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
-public class ExceptionControllerAdvice {
+@RestControllerAdvice
+public class ExceptionControllerAdvice /*extends ResponseEntityExceptionHandler */{
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> illegalArgumentException(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<String> serviceException(ServiceException ex) {
+        return ResponseEntity
+                .status(HttpUtils.fromExceptionReason(ex.getReason()))
+                .body(ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> exception() {
-        return ResponseEntity.internalServerError().body("Something went wrong. Please try again later");
+        return ResponseEntity
+                .internalServerError()
+                .body("Something went wrong. Please try again later");
     }
 
 }

@@ -1,13 +1,18 @@
 package com.interview.service.impl;
 
 import com.interview.api.dto.ShopDTO;
+import com.interview.exception.ServiceException;
 import com.interview.model.Shop;
 import com.interview.repository.ShopRepository;
 import com.interview.service.ShopService;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.interview.exception.ExceptionReason.BAD_REQUEST;
+import static com.interview.exception.ExceptionReason.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +24,7 @@ public class ShopServiceImpl implements ShopService {
   public ShopDTO findById(long id) {
     return shopRepository.findById(id)
                          .map(ShopDTO::fromShop)
-                         .orElseThrow(() -> new IllegalArgumentException("Invalid id"));
+                         .orElseThrow(() -> new ServiceException("Invalid id", NOT_FOUND));
   }
 
   @Override
@@ -35,7 +40,7 @@ public class ShopServiceImpl implements ShopService {
   @Override
   public ShopDTO updateShop(long id, ShopDTO updatedShopDTO) {
     Shop dbShop = shopRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid id"));
+            .orElseThrow(() -> new ServiceException("Invalid id", NOT_FOUND));
 
     Shop updatedShop = updateShop(dbShop, updatedShopDTO);
 
@@ -45,13 +50,13 @@ public class ShopServiceImpl implements ShopService {
   @Override
   public void deleteShop(long id) {
     Shop dbShop = shopRepository.findById(id)
-                                .orElseThrow(() -> new IllegalArgumentException("Invalid id"));
+                                .orElseThrow(() -> new ServiceException("Invalid id", NOT_FOUND));
     shopRepository.delete(dbShop);
   }
 
   private Shop updateShop(Shop shop, ShopDTO updatedShopDTO) {
     if (shop.getId() != updatedShopDTO.getId()) {
-      throw new IllegalArgumentException("Invalid id");
+      throw new ServiceException("Invalid id", BAD_REQUEST);
     }
     shop.setName(updatedShopDTO.getName());
     shop.setAddress(updatedShopDTO.getAddress());

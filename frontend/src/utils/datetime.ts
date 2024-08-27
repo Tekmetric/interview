@@ -10,8 +10,19 @@ export function convertToLocaleDatetime(isoDatetime: string) {
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
 
-  // Format the date to the desired string
   const localDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
 
   return localDateTime;
+}
+
+export function formatDatetime(isoDatetime: string) {
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  }).format(new Date(isoDatetime));
+  return formattedDate;
 }

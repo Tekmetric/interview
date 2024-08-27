@@ -13,7 +13,7 @@ type JsonValue = boolean | number | string | null | JsonArray | JsonObject;
 type JsonObject = { [key: string]: JsonValue };
 type JsonArray = Array<JsonValue>;
 
-export async function send<T extends JsonValue>(
+export async function request<T extends JsonValue>(
   method: "GET" | "POST" | "PATCH" | "DELETE",
   pathname: string,
   body?: JsonObject,

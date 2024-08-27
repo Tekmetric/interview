@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { EventData } from "../../typings/eventData";
 import { createEvent, getEvent, updateEvent } from "../api/eventData";
 import { useNavigate } from "react-router-dom";
-import { send } from "../send";
+import { request } from "../request";
 
 export function useGetEvent(id: number) {
   return useQuery<EventData>({
@@ -39,7 +39,7 @@ export function useDeleteEventMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => {
-      return send("DELETE", `/api/events/${id}/`);
+      return request("DELETE", `/api/events/${id}/`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });

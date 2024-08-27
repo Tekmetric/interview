@@ -1,38 +1,34 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { AppBar, Toolbar, Button } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../utils/api/auth";
-import { useAuth } from "../utils/hooks/auth";
+import { useAuth } from "../contexts/AuthContext";
+import styled from "@emotion/styled";
 
-// const navBarStyles = css`
-//   flexgrow: 1;
-// `;
-
-// const titleStyles = css({
-//   flexGrow: 1,
-//   textDecoration: "none",
-//   color: "inherit",
-// });
-
-// const buttonStyles = css({
-//   textTransform: "none",
-// });
+const AppBarStyled = styled(AppBar)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: #454140;
+`;
 
 function NavBar() {
   const navigate = useNavigate();
-  const { resetAuth } = useAuth();
+  const { isAuthenticated, resetAuth } = useAuth();
+
+  if (isAuthenticated === false) {
+    return null;
+  }
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Link to="/">
-          <Typography variant="h6">Event Management</Typography>
-        </Link>
-        <Link to="/">
-          <Button color="inherit">Events</Button>
-        </Link>
-        <Link to="/create">
-          <Button color="inherit">Create Event</Button>
-        </Link>
+    <AppBarStyled position="static">
+      <Toolbar style={{ gap: "8px" }}>
+        <Button component={Link} to="/" color="inherit">
+          Events
+        </Button>
+        <Button component={Link} to="/create" color="inherit">
+          Create Event
+        </Button>
         <Button
           color="inherit"
           onClick={() => {
@@ -45,7 +41,7 @@ function NavBar() {
           Logout
         </Button>
       </Toolbar>
-    </AppBar>
+    </AppBarStyled>
   );
 }
 

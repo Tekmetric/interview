@@ -1,5 +1,5 @@
 import { LoginResponse, LoginForm } from "../../typings/auth";
-import { buildUrl, send } from "../send";
+import { buildUrl, request } from "../request";
 
 export async function login(data: LoginForm): Promise<LoginResponse> {
   const requestInit: RequestInit = {
@@ -17,5 +17,5 @@ export async function login(data: LoginForm): Promise<LoginResponse> {
 }
 
 export async function logout() {
-  return send("POST", "/api/logout/");
+  return request("POST", "/api/logout/");
 }

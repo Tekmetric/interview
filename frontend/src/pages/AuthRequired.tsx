@@ -1,16 +1,16 @@
 import React from "react";
-import { useAuth } from "../utils/hooks/auth";
-import { CircularProgress } from "@mui/material";
+import { useAuth } from "../contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
 interface AuthRequiredProps {
   children: React.ReactNode;
 }
 
 export function AuthRequired({ children }: AuthRequiredProps) {
-  const { isAuthenticationLoaded } = useAuth();
+  const { isAuthenticated } = useAuth();
 
-  if (!isAuthenticationLoaded) {
-    return <CircularProgress />;
+  if (isAuthenticated === false) {
+    return <Navigate to="/login" />;
   }
 
   return <>{children}</>;

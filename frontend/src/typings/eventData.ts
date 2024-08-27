@@ -7,7 +7,7 @@ export type EventDataResponse = {
 };
 
 export type EventData = {
-  id: number | null;
+  id?: number;
   title: string;
   eventDatetime: string;
   description: string;

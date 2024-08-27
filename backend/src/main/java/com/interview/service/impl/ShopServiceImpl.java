@@ -6,6 +6,7 @@ import com.interview.model.Shop;
 import com.interview.repository.ShopRepository;
 import com.interview.service.ShopService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,13 +29,13 @@ public class ShopServiceImpl implements ShopService {
   }
 
   @Override
-  public List<ShopDTO> getAll() {
-    return shopRepository.findAll().stream().map(ShopDTO::fromShop).collect(Collectors.toList());
+  public List<ShopDTO> getAll(Pageable pageable) {
+    return shopRepository.findAll(pageable).stream().map(ShopDTO::fromShop).collect(Collectors.toList());
   }
 
   @Override
-  public List<ShopDTO> getAllActive() {
-    return shopRepository.findByActiveTrue().stream().map(ShopDTO::fromShop).collect(Collectors.toList());
+  public List<ShopDTO> getAllActive(Pageable pageable) {
+    return shopRepository.findByActiveTrue(pageable).stream().map(ShopDTO::fromShop).collect(Collectors.toList());
   }
 
   @Override

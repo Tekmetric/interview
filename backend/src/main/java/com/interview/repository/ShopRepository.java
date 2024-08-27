@@ -1,6 +1,7 @@
 package com.interview.repository;
 
 import com.interview.model.Shop;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,6 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
 
     Optional<Shop> findByIdAndActiveTrue(Long id);
 
-    List<Shop> findByActiveTrue();
+    List<Shop> findByActiveTrue(Pageable pageable);
 
 }

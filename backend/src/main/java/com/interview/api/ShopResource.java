@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,13 +46,13 @@ public class ShopResource {
   }
 
   @GetMapping(value = "/all", produces = APPLICATION_JSON_VALUE)
-  public List<ShopDTO> getAll() {
-    return shopService.getAll();
+  public List<ShopDTO> getAll(@PageableDefault(size = 5, sort = "name") final Pageable pageable) {
+    return shopService.getAll(pageable);
   }
 
   @GetMapping(produces = APPLICATION_JSON_VALUE)
-  public List<ShopDTO> getAllActive() {
-    return shopService.getAllActive();
+  public List<ShopDTO> getAllActive(@PageableDefault(size = 5, sort = "name") final Pageable pageable) {
+    return shopService.getAllActive(pageable);
   }
 
   @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

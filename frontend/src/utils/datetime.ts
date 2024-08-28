@@ -26,3 +26,7 @@ export function formatDatetime(isoDatetime: string) {
   }).format(new Date(isoDatetime));
   return formattedDate;
 }
+
+export function getCurrentDatetimeLocal() {
+  return new Date().toISOString().slice(0, 16);
+}

@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { Box, Button, TextField, Typography } from "@mui/material";
+import { getCurrentDatetimeLocal } from "../utils/datetime";
 
 const FilterContainer = styled(Box)`
   width: 100%;
@@ -33,6 +34,7 @@ export default function Filters({
         name="filterStartDate"
         type="datetime-local"
         label="Filter Start Date"
+        inputProps={{ min: getCurrentDatetimeLocal() }}
         InputLabelProps={{ shrink: true }}
         value={filterStartDate}
         onChange={(e) => setFilterStartDate(e.target.value)}
@@ -43,6 +45,7 @@ export default function Filters({
         name="filterEndDate"
         type="datetime-local"
         label="Filter End Date"
+        inputProps={{ min: filterStartDate || getCurrentDatetimeLocal() }}
         InputLabelProps={{ shrink: true }}
         value={filterEndDate}
         onChange={(e) => setFilterEndDate(e.target.value)}

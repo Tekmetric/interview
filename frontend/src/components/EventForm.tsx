@@ -3,6 +3,7 @@ import { TextField, Button, Box } from "@mui/material";
 import { FormikProps } from "formik";
 import { EventData } from "../typings/eventData";
 import styled from "@emotion/styled";
+import { getCurrentDatetimeLocal } from "../utils/datetime";
 
 interface EventFormProps {
   formik: FormikProps<EventData>;
@@ -38,6 +39,7 @@ function EventForm({ formik }: EventFormProps) {
           name="eventDatetime"
           type="datetime-local"
           label="Event Date"
+          inputProps={{ min: getCurrentDatetimeLocal() }}
           InputLabelProps={{ shrink: true }}
           value={formik.values.eventDatetime}
           onChange={formik.handleChange}

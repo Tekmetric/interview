@@ -36,6 +36,7 @@ const EventDetails = styled(Box)`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-width: 400px;
 `;
 
 const ImageContainer = styled(Box)`
@@ -57,6 +58,14 @@ const ImageContainer = styled(Box)`
 function EventList({ events, onDelete }: EventListProps) {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState<number | undefined>(undefined);
+
+  if (events.length === 0) {
+    return (
+      <Typography variant="h5" align="center" sx={{ marginTop: "20px" }}>
+        ...No events found at this time
+      </Typography>
+    );
+  }
 
   return (
     <ListContainer>

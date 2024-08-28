@@ -1,43 +1,19 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { request } from "../request";
-import { EventDataResponse } from "../../typings/eventData";
-
-type PaginatedEventDataResult = {
-  count: number;
-  next: string; // URL
-  results: EventDataResponse[];
-};
-
-async function fetchEvents({
-  pageParam = 1,
-  filterStartDate,
-  filterEndDate,
-}: {
-  pageParam?: number | undefined | unknown;
-  filterStartDate?: string | undefined;
-  filterEndDate?: string | undefined;
-}): Promise<PaginatedEventDataResult> {
-  const params = new URLSearchParams();
-  if (pageParam) params.append("page", pageParam.toString());
-  if (filterStartDate) params.append("start_date", filterStartDate);
-  if (filterEndDate) params.append("end_date", filterEndDate);
-
-  return request<PaginatedEventDataResult>(
-    "GET",
-    "/api/events/",
-    undefined,
-    params
-  );
-}
+import { fetchEvents, PaginatedEventDataResult } from "../api/eventData";
 
 export function usePaginatedEvents(
   filterStartDate: string | undefined,
   filterEndDate: string | undefined
 ) {
-  const { data, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery<
-    PaginatedEventDataResult,
-    Error
-  >({
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isLoading,
+    isFetching,
+    isRefetching,
+  } = useInfiniteQuery<PaginatedEventDataResult, Error>({
     queryKey: ["events"],
     queryFn: ({ pageParam }: { pageParam: number | undefined | unknown }) =>
       fetchEvents({ pageParam, filterStartDate, filterEndDate }),
@@ -48,6 +24,13 @@ export function usePaginatedEvents(
       const nextPageUrl = new URL(lastPage.next);
       return parseInt(nextPageUrl.searchParams.get("page")!);
     },
+    enabled: !(
+      !!filterStartDate &&
+      !!filterEndDate &&
+      filterEndDate < filterStartDate
+    ),
+    staleTime: 1000 * 60 * 5, // 10 minutes
+    refetchOnWindowFocus: false,
     initialPageParam: 1,
   });
 
@@ -62,5 +45,13 @@ export function usePaginatedEvents(
       }))
     ) || [];
 
-  return { events, fetchNextPage, hasNextPage, refetch };
+  return {
+    events,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isLoading,
+    isFetching,
+    isRefetching,
+  };
 }

@@ -1,10 +1,12 @@
-import React, { Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { Home } from './routes/Home';
 import { NotFound404 } from './routes/NotFound';
 
 // lazy loading of route components to be added here
-
+const Dashboard = lazy(() => {
+  return import('./routes/Dashboard').then(({ Dashboard }) => ({ default: Dashboard }));
+});
 
 const router = createBrowserRouter([
   {
@@ -20,6 +22,14 @@ const router = createBrowserRouter([
           </Suspense>
         )
       },
+      {
+        path: '/dashboard',
+        element: (
+          <Suspense>
+            <Dashboard />
+          </Suspense>
+        )
+      }
     ]
   }
 ]);

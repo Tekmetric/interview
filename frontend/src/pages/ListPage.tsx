@@ -12,10 +12,12 @@ const EventListContainer = styled(Box)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 700px;
+  width: 100%;
+  max-width: 700px;
   padding-top: 24px;
   @media (max-width: 400px) {
-    width: 400px;
+    max-width: 400px;
+    width: 100%:
   }
 `;
 

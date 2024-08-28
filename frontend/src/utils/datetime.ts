@@ -18,7 +18,7 @@ export function convertToLocaleDatetime(isoDatetime: string) {
 export function formatDatetime(isoDatetime: string) {
   const formattedDate = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "numeric",

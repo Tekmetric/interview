@@ -24,10 +24,24 @@ function NavBar() {
   return (
     <AppBarStyled position="static">
       <Toolbar style={{ gap: "8px" }}>
-        <Button component={Link} to="/" color="inherit">
+        <Button
+          component={Link}
+          to="/"
+          color="inherit"
+          onClick={() => {
+            posthog.capture("HomeButtonClicked");
+          }}
+        >
           Events
         </Button>
-        <Button component={Link} to="/create" color="inherit">
+        <Button
+          component={Link}
+          to="/create"
+          color="inherit"
+          onClick={() => {
+            posthog.capture("CreateEventButtonClicked");
+          }}
+        >
           Create Event
         </Button>
         <Button

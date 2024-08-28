@@ -55,6 +55,11 @@ export default function Filters({
         variant="contained"
         onClick={handleFilterChange}
         color="secondary"
+        disabled={
+          !!filterStartDate &&
+          !!filterEndDate &&
+          filterStartDate > filterEndDate
+        }
       >
         <Typography variant="button" style={{ color: "white" }}>
           Apply

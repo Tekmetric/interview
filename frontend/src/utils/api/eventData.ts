@@ -62,8 +62,10 @@ export async function fetchEvents({
   const params = new URLSearchParams();
   await sleep(3000);
   if (pageParam) params.append("page", pageParam.toString());
-  if (filterStartDate) params.append("start_date", filterStartDate);
-  if (filterEndDate) params.append("end_date", filterEndDate);
+  if (filterStartDate)
+    params.append("start_date", new Date(filterStartDate).toISOString());
+  if (filterEndDate)
+    params.append("end_date", new Date(filterEndDate).toISOString());
 
   return request<PaginatedEventDataResult>(
     "GET",

@@ -36,10 +36,22 @@ export const Dashboard = () => {
       <FormControl sx={{ m: 1, width: 300 }}>
         <InputLabel id="select-country">Select Country</InputLabel>
         <Select
-          labelId="select-country"
           value={selectedCountry?.name || ""}
           onChange={handleChange}
-          input={<OutlinedInput label="Select Country" />}
+          label="Select Country"
+          input={
+            <OutlinedInput
+              label="Select Country"
+              value={selectedCountry?.name || ""}
+            />
+          }
+          renderValue={(selected) => {
+            if (selected.length === 0) {
+              return <em>Select Country</em>;
+            }
+
+            return selected;
+          }}
         >
           {countries.map(({ countryCode, name }) => (
             <MenuItem key={countryCode} value={countryCode}>

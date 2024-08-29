@@ -46,7 +46,7 @@ export const CountryInfo: React.FC<CountryInfoProps> = ({ country }) => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, margin: '20px 0 ' }}>
       {isLoading ? (
         <Loading />
       ) : (

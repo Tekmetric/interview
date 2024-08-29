@@ -11,13 +11,23 @@ export interface CountryDetails {
   borders: CountryDetails[] | null
 }
 
-export interface HolidaysInfo {
+export interface HolidayInfo {
   date: string;
   localName: string;
   name: string;
   countryCode: string;
+  fixed: boolean;
   global: boolean;
-  counties: string[]
-  launchYear: number;
-  types: string[];
+  counties: string[] | null
+  launchYear: number | null;
+  types: HolidayTypes[];
+}
+
+enum HolidayTypes {
+  Public = 'Public',
+  Bank = 'Bank',
+  School = 'School',
+  Authorities = 'Authorities',
+  Optional = 'Optional',
+  Observance = 'Observance'
 }

@@ -4,7 +4,7 @@ import { Header } from "../components/Header";
 import { Alert, Card } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 
-export function NotFound404() {
+export const NotFound404 = () => {
   return (
     <Layout.Root
       sx={{

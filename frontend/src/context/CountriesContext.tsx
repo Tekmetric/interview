@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 import { useQueryClient } from "react-query";
 import { Country } from "../interfaces/country";
+import { AlertTypes, useAlert } from "./AlertContext";
 
 interface CountriesContextProps {
   countries: Country[];
@@ -15,10 +16,12 @@ export const CountriesContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [countries, setCountries] = useState<Country[]>([]);
+  const { setAlert } = useAlert();
   const queryClient = useQueryClient();
 
   useEffect(() => {
     getCountries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getCountries = async () => {
@@ -36,7 +39,7 @@ export const CountriesContextProvider: React.FC<{
       );
       setCountries(countries);
     } catch (error) {
-      console.log(`Get countries failed. Error: ${JSON.stringify(error)}`);
+      setAlert(`Get list of all available countries failed`, AlertTypes.ERROR);
     }
   };
 

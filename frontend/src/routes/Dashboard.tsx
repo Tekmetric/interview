@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Divider,
   FormControl,
   InputLabel,
   MenuItem,
@@ -12,6 +13,7 @@ import { MainContent } from "../components/Layout";
 import { useCountries } from "../context/CountriesContext";
 import { Country } from "../interfaces/country";
 import { CountryInfo } from "../components/countryComponents/CountryInfo";
+import { CountryHolidays } from "../components/countryComponents/CountryHolidays";
 
 export const Dashboard = () => {
   const { countries } = useCountries();
@@ -20,7 +22,6 @@ export const Dashboard = () => {
   );
 
   const handleChange = (event: SelectChangeEvent) => {
-    console.log(event.target);
     const {
       target: { value },
     } = event;
@@ -48,7 +49,11 @@ export const Dashboard = () => {
         </Select>
       </FormControl>
       {selectedCountry && (
-        <CountryInfo countryCode={selectedCountry.countryCode} />
+        <>
+          <CountryInfo country={selectedCountry} />
+          <Divider />
+          <CountryHolidays country={selectedCountry} />
+        </>
       )}
     </MainContent>
   );

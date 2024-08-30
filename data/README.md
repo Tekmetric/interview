@@ -12,25 +12,24 @@ To save our data, we'll write it out to the local filesystem as if we're saving 
 - Data should be saved in Parquet format
 - Use the Browse API to request data
     - There are over 1800 pages of near Earth objects, so we'll limit ourselves to gathering the first 200 near earth objects
-- Recalls should be stored with 1 file for each year, named {year}.parquet
-    - We want to save the following columns in our file(s):
-        - id
-        - neo_reference_id
-        - name
-        - name_limited
-        - designation
-        - nasa_jpl_url
-        - absolute_magnitude_h
-        - is_potentially_hazardous_asteroid
-        - minimum estimated diameter in meters
-        - maximum estimated diameter in meters
-        - **closest** approach miss distance in kilometers
-        - **closest** approach date
-        - **closest** approach relative velocity in kilometers per second
-        - first observation date
-        - last observation date
-        - observations used
-        - orbital period
+- We want to save the following columns in our file(s):
+    - id
+    - neo_reference_id
+    - name
+    - name_limited
+    - designation
+    - nasa_jpl_url
+    - absolute_magnitude_h
+    - is_potentially_hazardous_asteroid
+    - minimum estimated diameter in meters
+    - maximum estimated diameter in meters
+    - **closest** approach miss distance in kilometers
+    - **closest** approach date
+    - **closest** approach relative velocity in kilometers per second
+    - first observation date
+    - last observation date
+    - observations used
+    - orbital period
 - Store the following aggregations:
     - The total number of times our 200 near earth objects approached closer than 0.2 astronomical units (found as miss_distance.astronomical)
     - The number of close approaches recorded in each year present in the data

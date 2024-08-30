@@ -1,0 +1,21 @@
+{
+  "translation": {
+    "app.title": "Gestionnaire de tâches",
+    "app.translation.language.en": "Anglais",
+    "app.translation.language.fr": "Français",
+    "app.translation.button.LanguageSelector": "Changer la langue de l'application",
+    "app.translation.task.status.ReadyForWork": "Prêt pour le travail",
+    "app.translation.task.status.InProgress": "En cours",
+    "app.translation.task.status.Completed": "Terminé",
+    "app.translation.task.DueDate": "Date d'échéance",
+    "app.translation.task.Created": "Créé",
+    "app.translation.header.SearchPlaceholder": "Recherche par titre",
+    "app.translation.header.ariaLabel.SwitchToDarkMode": "Passer en mode sombre",
+    "app.translation.header.ariaLabel.SwitchToLightMode": "Passer en mode clair",
+    "app.translation.tasks.NoResultsFound": "Aucun résultat trouvé.",
+    "app.translation.HelloMessage": "Bonjour, tekmetric !",
+    "app.translation.button.Home": "Accueil",
+    "app.translation.button.ViewTasks": "Voir les tâches",
+    "app.translation.title.TaskList": "Mes tâches"
+  }
+}

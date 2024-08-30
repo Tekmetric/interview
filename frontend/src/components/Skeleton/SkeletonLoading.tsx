@@ -20,7 +20,7 @@ const SkeletonLoading = (): JSX.Element => (
     {Array.from(new Array(10)).map((_i, idx) => (
       <Grid xs={12} sm={6} md={3} key={idx}>
         <Card sx={{ padding: '16px 16px 24px 16px', gap: '16px' }}>
-          <Skeleton sx={{ height: '32px' }} />
+          <Skeleton sx={{ height: '2rem' }} />
           <Skeleton variant="rectangular" height={150} />
           <Box sx={{ pt: 0.5 }}>
             <Skeleton width="40%" />

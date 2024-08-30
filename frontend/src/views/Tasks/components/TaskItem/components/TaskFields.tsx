@@ -41,11 +41,7 @@ const TaskFields: FunctionComponent<TaskItemContentProps> = ({ title, descriptio
           sx={{ fontWeight: 'bold' }}
         />
       </Box>
-      <Box
-        sx={{
-          height: '100px',
-        }}
-      >
+      <Box sx={{ height: '6.25rem' }}>
         <Typography
           variant="body2"
           color="text.secondary"

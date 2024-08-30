@@ -1,0 +1,21 @@
+{
+  "translation": {
+    "app.title": "Task Manager",
+    "app.translation.language.en": "English",
+    "app.translation.language.fr": "French",
+    "app.translation.button.LanguageSelector": "Change app language",
+    "app.translation.task.status.ReadyForWork": "Ready For Work",
+    "app.translation.task.status.InProgress": "In Progress",
+    "app.translation.task.status.Completed": "Completed",
+    "app.translation.task.DueDate": "Due Date",
+    "app.translation.task.Created": "Created",
+    "app.translation.header.SearchPlaceholder": "Search by title...",
+    "app.translation.header.ariaLabel.SwitchToDarkMode": "Switch to dark mode",
+    "app.translation.header.ariaLabel.SwitchToLightMode": "Switch to light mode",
+    "app.translation.tasks.NoResultsFound": "No results found.",
+    "app.translation.HelloMessage": "Hello, tekmetric!",
+    "app.translation.button.Home": "Home",
+    "app.translation.button.ViewTasks": "View Tasks",
+    "app.translation.title.TaskList": "My tasks"
+  }
+}

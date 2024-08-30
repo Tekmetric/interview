@@ -1,0 +1,244 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Design",
+      "description": "Create a responsive design for the homepage. Use the latest design trends and best practices.",
+      "status": "in-progress",
+      "dueDate": "02/09/2024",
+      "creationDate": "01/09/2024"
+    },
+    {
+      "id": "2",
+      "title": "Implement Authentication",
+      "description": "Set up user authentication using OAuth2. Grab the user's email address and profile picture from the OAuth2 provider.",
+      "status": "ready-for-work",
+      "dueDate": "17/09/2024",
+      "creationDate": "01/09/2024"
+    },
+    {
+      "id": "3",
+      "title": "Database Schema Design",
+      "description": "Design the database schema for the new project. Define the tables, columns, and relationships. Add indexes and constraints for performance and data integrity.",
+      "status": "completed",
+      "dueDate": "12/09/2024",
+      "creationDate": "01/09/2024"
+    },
+    {
+      "id": "4",
+      "title": "API Integration",
+      "description": "Integrate the third-party API for payment processing. Handle payment failures and retries. Implement webhooks for asynchronous processing.",
+      "status": "in-progress",
+      "dueDate": "03/09/2024",
+      "creationDate": "05/09/2024"
+    },
+    {
+      "id": "5",
+      "title": "Write Unit Tests",
+      "description": "Create unit tests for the user service module. Test the CRUD operations and error handling scenarios.",
+      "status": "ready-for-work",
+      "dueDate": "18/09/2024",
+      "creationDate": "06/09/2024"
+    },
+    {
+      "id": "6",
+      "title": "Bug Fixing",
+      "description": "Fix critical bugs in the user interface.",
+      "status": "in-progress",
+      "dueDate": "22/09/2024",
+      "creationDate": "07/09/2024"
+    },
+    {
+      "id": "7",
+      "title": "Code Review",
+      "description": "Perform a code review for the latest feature branch.",
+      "status": "completed",
+      "dueDate": "14/09/2024",
+      "creationDate": "08/09/2024"
+    },
+    {
+      "id": "8",
+      "title": "Optimize Database Queries",
+      "description": "Improve the performance of database queries.",
+      "status": "ready-for-work",
+      "dueDate": "25/09/2024",
+      "creationDate": "09/09/2024"
+    },
+    {
+      "id": "9",
+      "title": "Content Update",
+      "description": "Update website content as per the new guidelines.",
+      "status": "completed",
+      "dueDate": "13/09/2024",
+      "creationDate": "10/09/2024"
+    },
+    {
+      "id": "10",
+      "title": "Prepare Deployment",
+      "description": "Prepare the project for production deployment.",
+      "status": "in-progress",
+      "dueDate": "23/09/2024",
+      "creationDate": "11/09/2024"
+    },
+    {
+      "id": "11",
+      "title": "Design About Page",
+      "description": "Create the design layout for the About page.",
+      "status": "ready-for-work",
+      "dueDate": "16/09/2024",
+      "creationDate": "01/09/2024"
+    },
+    {
+      "id": "12",
+      "title": "Implement User Profiles",
+      "description": "Develop user profile features and settings.",
+      "status": "in-progress",
+      "dueDate": "19/09/2024",
+      "creationDate": "01/09/2024"
+    },
+    {
+      "id": "13",
+      "title": "Security Audit",
+      "description": "Perform a security audit on the application.",
+      "status": "completed",
+      "dueDate": "12/09/2024",
+      "creationDate": "01/09/2024"
+    },
+    {
+      "id": "14",
+      "title": "API Documentation",
+      "description": "Document all the API endpoints for developers. Include request and response examples. Provide code snippets for common use cases.",
+      "status": "in-progress",
+      "dueDate": "20/09/2024",
+      "creationDate": "05/09/2024"
+    },
+    {
+      "id": "15",
+      "title": "Setup CI/CD",
+      "description": "Configure continuous integration and deployment pipelines.",
+      "status": "ready-for-work",
+      "dueDate": "18/09/2024",
+      "creationDate": "06/09/2024"
+    },
+    {
+      "id": "16",
+      "title": "Frontend Refactoring",
+      "description": "Refactor the frontend codebase for better maintainability.",
+      "status": "in-progress",
+      "dueDate": "22/09/2024",
+      "creationDate": "07/09/2024"
+    },
+    {
+      "id": "17",
+      "title": "Code Documentation",
+      "description": "Document the codebase for better understanding.",
+      "status": "completed",
+      "dueDate": "14/09/2024",
+      "creationDate": "08/09/2024"
+    },
+    {
+      "id": "18",
+      "title": "Optimize Images",
+      "description": "Compress and optimize images for faster load times.",
+      "status": "ready-for-work",
+      "dueDate": "25/09/2024",
+      "creationDate": "09/09/2024"
+    },
+    {
+      "id": "19",
+      "title": "Add Analytics",
+      "description": "Integrate analytics to track user behavior.",
+      "status": "completed",
+      "dueDate": "13/09/2024",
+      "creationDate": "10/09/2024"
+    },
+    {
+      "id": "20",
+      "title": "Database Backup",
+      "description": "Setup automated database backup procedures.",
+      "status": "in-progress",
+      "dueDate": "23/09/2024",
+      "creationDate": "11/09/2024"
+    },
+    {
+      "id": "21",
+      "title": "Design Contact Page",
+      "description": "Create a layout design for the Contact page.",
+      "status": "ready-for-work",
+      "dueDate": "16/09/2024",
+      "creationDate": "01/09/2024"
+    },
+    {
+      "id": "22",
+      "title": "Implement Notifications",
+      "description": "Add push notification support for the app.",
+      "status": "in-progress",
+      "dueDate": "19/09/2024",
+      "creationDate": "01/09/2024"
+    },
+    {
+      "id": "23",
+      "title": "Accessibility Audit",
+      "description": "Ensure the app meets accessibility standards.",
+      "status": "completed",
+      "dueDate": "12/09/2024",
+      "creationDate": "01/09/2024"
+    },
+    {
+      "id": "24",
+      "title": "Setup Testing Framework",
+      "description": "Integrate a testing framework for unit tests.",
+      "status": "in-progress",
+      "dueDate": "20/09/2024",
+      "creationDate": "05/09/2024"
+    },
+    {
+      "id": "25",
+      "title": "Server Configuration",
+      "description": "Configure the server for optimal performance.",
+      "status": "ready-for-work",
+      "dueDate": "18/09/2024",
+      "creationDate": "06/09/2024"
+    },
+    {
+      "id": "26",
+      "title": "UI/UX Review",
+      "description": "Conduct a UI/UX review to improve user experience.",
+      "status": "in-progress",
+      "dueDate": "22/09/2024",
+      "creationDate": "07/09/2024"
+    },
+    {
+      "id": "27",
+      "title": "Technical Documentation",
+      "description": "Document the technical architecture of the app.",
+      "status": "completed",
+      "dueDate": "14/09/2024",
+      "creationDate": "08/09/2024"
+    },
+    {
+      "id": "28",
+      "title": "Video Optimization",
+      "description": "Optimize video files for faster streaming.",
+      "status": "ready-for-work",
+      "dueDate": "25/09/2024",
+      "creationDate": "09/09/2024"
+    },
+    {
+      "id": "29",
+      "title": "SEO Optimization",
+      "description": "Improve the app's SEO to increase visibility.",
+      "status": "completed",
+      "dueDate": "13/09/2024",
+      "creationDate": "10/09/2024"
+    },
+    {
+      "id": "30",
+      "title": "Data Migration",
+      "description": "Migrate the database to a new server.",
+      "status": "completed",
+      "dueDate": "13/09/2024",
+      "creationDate": "10/09/2024"
+    }
+  ]
+}

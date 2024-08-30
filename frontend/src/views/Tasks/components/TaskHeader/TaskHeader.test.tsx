@@ -22,7 +22,7 @@ describe('TaskHeader', () => {
   });
 
   it('should render the title and search', () => {
-    render(<TaskHeader searchValue="123" onSearchChange={vi.fn()} />);
+    render(<TaskHeader searchValue="" onSearchChange={vi.fn()} />);
     expect(screen.getByTestId('search-input')).toBeInTheDocument();
     expect(screen.getByTestId('tasks-title')).toBeInTheDocument();
   });
@@ -36,7 +36,7 @@ describe('TaskHeader', () => {
 
   it('should call onSearchChange when input value changes', () => {
     const handleSearchChange = vi.fn();
-    render(<TaskHeader searchValue="123" onSearchChange={handleSearchChange} />);
+    render(<TaskHeader searchValue="" onSearchChange={handleSearchChange} />);
     const inputElement = screen.getByPlaceholderText('app.translation.header.SearchPlaceholder');
     fireEvent.change(inputElement, { target: { value: 'New Task' } });
     expect(handleSearchChange).toHaveBeenCalledWith('New Task');

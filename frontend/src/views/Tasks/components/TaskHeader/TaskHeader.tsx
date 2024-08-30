@@ -25,7 +25,6 @@ const TaskHeader: FunctionComponent<TaskHeaderProps> = ({ searchValue, onSearchC
         title={translate('app.translation.title.TaskList')}
         data-testid="tasks-title"
         sx={{
-          // flex: '0 0 auto',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',

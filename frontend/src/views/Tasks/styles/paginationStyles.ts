@@ -4,8 +4,7 @@ const paginationStyles = {
   flex: '0 0 auto',
   width: '100%',
   overflow: 'hidden',
-  paddingTop: '1rem',
-  paddingBottom: '1rem',
+  padding: '16px 0 16px 0',
 };
 
 export default paginationStyles;

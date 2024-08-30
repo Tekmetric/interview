@@ -14,7 +14,7 @@ const TaskList: FunctionComponent<TaskListProps> = ({ tasks }) => {
 
   if (!tasks.length) {
     return (
-      <Box padding="2rem">
+      <Box padding="32px">
         <Typography>{translate('app.translation.tasks.NoResultsFound')}</Typography>
       </Box>
     );

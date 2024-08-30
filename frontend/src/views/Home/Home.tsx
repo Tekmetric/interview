@@ -17,8 +17,8 @@ const Home: FunctionComponent = () => {
       alignItems="center"
       height="100vh"
       textAlign="center"
-      gap="2rem"
-      padding="2rem"
+      gap="32px"
+      padding="32px"
     >
       <Typography
         variant="h4"
@@ -26,7 +26,7 @@ const Home: FunctionComponent = () => {
         sx={{
           animation: `${fadeInDown} 1.5s ease-in-out`,
           display: 'flex',
-          gap: '0.5rem',
+          gap: '8px',
           alignItems: 'center',
         }}
       >
@@ -43,7 +43,7 @@ const Home: FunctionComponent = () => {
         aria-label={translate('app.translation.button.ViewTasks')}
         sx={{
           animation: `${pulse} 1.5s infinite`,
-          padding: '0.75rem 2rem',
+          padding: '12px 32px',
         }}
       >
         {translate('app.translation.button.ViewTasks')}

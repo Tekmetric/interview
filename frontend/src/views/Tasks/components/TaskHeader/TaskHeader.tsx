@@ -17,7 +17,7 @@ const TaskHeader: FunctionComponent<TaskHeaderProps> = ({ searchValue, onSearchC
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 2,
-        gap: '1rem',
+        gap: '16px',
       }}
     >
       <Typography

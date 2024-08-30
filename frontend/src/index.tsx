@@ -17,11 +17,9 @@ posthog.init(process.env.REACT_APP_POSTHOG_KEY!, {
 const queryClient = new QueryClient();
 
 root.render(
-  <React.StrictMode>
+  <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
+      <App />
     </AuthProvider>
-  </React.StrictMode>
+  </QueryClientProvider>
 );

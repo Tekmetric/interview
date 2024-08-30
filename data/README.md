@@ -1,40 +1,40 @@
 # Python Coding Exercise
 
-Your task is to build a python script to gather data from the US Government's vehicle recall data API, and save that data into S3. 
+Your task is to build a python script to gather data from NASA's Near Earth Object Web Service API, and save that data. We'll also perform some aggregations to make reporting on Near Earth Objects simpler for our theoretical website.
 
-The page for the API is here: https://catalog.data.gov/dataset/recalls-data
+The page for the API is here: https://api.nasa.gov
 
-If you want to use local-stack to save data into a “local S3” that’s ok, otherwise pseudocode to represent the S3 upload is fine. Also acceptable is writing out files to the local filesystem in whatever directory structure you would use for S3.
+To save our data, we'll write it out to the local filesystem as if we're saving it to an S3 Data Lake. This will save having to mess with AWS credentials. Your files should be saved in the same data directory in which this README resides, in whatever folder structure you would use to save the data in S3.
 
 ### Requirements
-- Create an account at api.data.gov to get an API key: https://api.data.gov/signup/
-- Retrieve the API data in the script using your new API key
+- Create an account at [api.nasa.gov](https://api.nasa.gov) to get an API key
+- Find the docs for the Near Earth Object Web Service (below the signup on the same page)
     - Instructions on API key usage here: https://api.data.gov/docs/developer-manual/
 - Data should be saved in Parquet format
+- Use the Browse API to request data
+    - There are over 1800 pages of near Earth objects, so we'll limit ourselves to gathering the first 200 near earth objects
 - Recalls should be stored with 1 file for each year, named {year}.parquet
-    - We want to save the following columns in our files in S3:
-        - Id
-        - created_at
-        - updated_at
-        - report_received_date
-        - nhtsa_id
-        - recall_link (stored as a string of just the link)
-        - manufacturer
-        - subject
-        - component
-        - mfr_campaign_number
-        - recall_type
-        - potentially_affected
-        - defect_summary
-        - consequence_summary
-        - corrective_action
-        - fire_risk_when_parked
-        - do_not_drive
-        - completion_rate
+    - We want to save the following columns in our file(s):
+        - id
+        - neo_reference_id
+        - name
+        - name_limited
+        - designation
+        - nasa_jpl_url
+        - absolute_magnitude_h
+        - is_potentially_hazardous_asteroid
+        - minimum estimated diameter in meters
+        - maximum estimated diameter in meters
+        - **closest** approach miss distance in kilometers
+        - **closest** approach date
+        - **closest** approach relative velocity in kilometers per second
+        - first observation date
+        - last observation date
+        - observations used
+        - orbital period
 - Store the following aggregations:
-    - Number of recalls per manufacturer per year
-    - Number of recalls per component per year
-    - Number of recalls per type per manufacturer
+    - The total number of times our 200 near earth objects approached closer than 0.2 astronomical units (found as miss_distance.astronomical)
+    - The number of close approaches recorded in each year present in the data
 
 ### Submitting your coding exercise
-Once you have finished your script, please create a PR into Tekmetric/interview
+Once you have finished your script, please create a PR into Tekmetric/interview. Don't forget to update the gitignore if that is required!

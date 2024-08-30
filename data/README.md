@@ -9,7 +9,6 @@ To save our data, we'll write it out to the local filesystem as if we're saving 
 ### Requirements
 - Create an account at [api.nasa.gov](https://api.nasa.gov) to get an API key
 - Find the docs for the Near Earth Object Web Service (below the signup on the same page)
-    - Instructions on API key usage here: https://api.data.gov/docs/developer-manual/
 - Data should be saved in Parquet format
 - Use the Browse API to request data
     - There are over 1800 pages of near Earth objects, so we'll limit ourselves to gathering the first 200 near earth objects

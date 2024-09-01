@@ -36,3 +36,22 @@ To save our data, we'll write it out to the local filesystem as if we're saving 
 
 ### Submitting your coding exercise
 Once you have finished your script, please create a PR into Tekmetric/interview. Don't forget to update the gitignore if that is required!
+
+## in the data folder I created 4 folders :
+file : to save all the json and parquet files 
+jobs : all the python scripts to run in the pipeline or airflow 
+modules : class and modules to use for the python scripts 
+sql : all the sql queries for spark to run 
+
+## I have an .env in jobs folder , if you need to run this code you can add .env file in jobs folder and the file should looks like this 
+NASA_API_KEY=replace_to_your_api_key
+NASA_NEO_URL=https://api.nasa.gov/neo/rest/v1/neo/browse
+SQL_ALL_DATA=../sql/all_data.sql
+SQL_CLOSEST_DATA=../sql/closest_data.sql
+CLOSER_APPROACH_SQL=../sql/closer_approach.sql
+APPROACH_COUNT_YEAR_SQL=../sql/approach_count_year.sql
+JSON_FILE_NAME=../file/neo_data.json
+PARQUET_FILE_PATH_FLAT=../file/neo_data_flat.parquet
+CLOSEST_DATA_PARQUET_PATH=../file/neo_data_closest.parquet
+CLOSER_APPROACH_PARQUET_PATH=../file/closer_approach.parquet
+APPROACH_COUNT_YEAR_PARQUET_PATH=../file/approach_count_year.parquet

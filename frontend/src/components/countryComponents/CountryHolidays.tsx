@@ -17,6 +17,7 @@ import { Loading } from "../common/Loading";
 import { AlertTypes, useAlert } from "../../context/AlertContext";
 import { HolidayEntry } from "./HolidayEntry";
 import { YearNavigation } from "./YearNavigation";
+import { nanoid } from "nanoid";
 
 interface CountryHolidaysProps {
   country: Country;
@@ -69,31 +70,28 @@ export const CountryHolidays: React.FC<CountryHolidaysProps> = ({
                   <TableHead>
                     <TableRow>
                       <TableCell>
-                        <strong>Date</strong>
+                        <Box sx={{ fontWeight: "bold" }}>Date</Box>
                       </TableCell>
                       <TableCell align="right">
-                        <strong>Local name</strong>
+                        <Box sx={{ fontWeight: "bold" }}>Local name</Box>
                       </TableCell>
                       <TableCell align="right">
-                        <strong>Name</strong>
+                        <Box sx={{ fontWeight: "bold" }}>Name</Box>
                       </TableCell>
                       <TableCell align="right">
-                        <strong>Holiday Type</strong>
-                      </TableCell>                      
-                      <TableCell align="right">
-                        <strong>Global</strong>
+                        <Box sx={{ fontWeight: "bold" }}>Holiday Type</Box>
                       </TableCell>
                       <TableCell align="right">
-                        <strong>Counties</strong>
-                      </TableCell>                      
+                        <Box sx={{ fontWeight: "bold" }}>Global</Box>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Box sx={{ fontWeight: "bold" }}>Counties</Box>
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {holidaysQuery?.data?.map((holiday: HolidayInfo) => (
-                      <HolidayEntry
-                        holiday={holiday}
-                        key={`${holiday?.date}-${holiday?.name}`}
-                      />
+                      <HolidayEntry holiday={holiday} key={nanoid()}/>
                     ))}
                   </TableBody>
                 </Table>

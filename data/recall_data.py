@@ -3,6 +3,8 @@ import datetime
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 
+API_KEY = 'Put your API key here'
+
 # Create Spark Session
 spark = (SparkSession
          .builder
@@ -45,7 +47,7 @@ def ingestion():
 
     while len(near_earth_objects) < 200:
         if link is None:
-            link = 'https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=API_KEY'
+            link = f'https://api.nasa.gov/neo/rest/v1/neo/browse?api_key={API_KEY}'
         else:
             link = get_data_from_api(link).get('links').get('next')
 

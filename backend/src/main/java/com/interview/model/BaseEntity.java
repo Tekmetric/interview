@@ -1,41 +1,43 @@
 package com.interview.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
+@MappedSuperclass
 public class BaseEntity {
 
     @Id
-    @GeneratedValue
-    private long id;
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private long createdAtMs;
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 
-    private long updatedAtMs;
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public long getCreatedAtMs() {
-        return createdAtMs;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public long getUpdatedAtMs() {
-        return updatedAtMs;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     @PrePersist
     protected void beforeCreate() {
-        long ms = System.currentTimeMillis();
-        this.createdAtMs = ms;
-        this.updatedAtMs = ms;
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
     }
 
     @PreUpdate
     protected void beforeUpdate() {
-        this.updatedAtMs = System.currentTimeMillis();
+        this.updatedAt = LocalDateTime.now();
     }
 }

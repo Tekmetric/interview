@@ -1,24 +1,13 @@
-package com.interview.model;
+package com.interview.dto;
 
-import com.interview.dto.TeamDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+public class TeamDto extends BaseDto {
 
-@Entity
-@Table(name="TEAMS")
-public class Team extends BaseEntity {
-
-    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
     private String city;
 
-    @Column(nullable = false)
     private int numWins;
 
-    @Column(nullable = false)
     private int numLosses;
 
     public String getName() {
@@ -51,15 +40,5 @@ public class Team extends BaseEntity {
 
     public void setNumLosses(int numLosses) {
         this.numLosses = numLosses;
-    }
-
-    public TeamDto toDto() {
-        TeamDto retVal = new TeamDto();
-        retVal.setId(getId());
-        retVal.setName(getName());
-        retVal.setCity(getCity());
-        retVal.setNumWins(getNumWins());
-        retVal.setNumLosses(getNumLosses());
-        return retVal;
     }
 }

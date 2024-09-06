@@ -45,7 +45,7 @@ def ingestion():
 
     while len(near_earth_objects) < 200:
         if link is None:
-            link = 'https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=4CrOFIQXs85aqh9OEqezOJhE4ZdaMiwU15S7WrRF'
+            link = 'https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=API_KEY'
         else:
             link = get_data_from_api(link).get('links').get('next')
 

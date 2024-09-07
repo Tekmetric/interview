@@ -31,7 +31,7 @@ public class TeamControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void canGetAllTeams() throws Exception {
+    public void getsAllTeams() throws Exception {
         MvcResult result = mockMvc.perform(get("/v1/teams").contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -42,7 +42,35 @@ public class TeamControllerTest {
         assertEquals(5, teams.size());
     }
 
+    @Test
+    public void getsTeamById() throws Exception {
+        MvcResult result = mockMvc.perform(get("/v1/teams/1").contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
 
+        assertTeamDtoFields(toTeamDto(result),1L, "Red Sox", "Boston", 1, 2);
+    }
+
+    @Test
+    public void throwsNotFoundForInvalidId() throws Exception {
+        MvcResult result = mockMvc.perform(get("/v1/teams/99").contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    private void assertTeamDtoFields(TeamDto actual, Long id, String name, String city, int numWins, int numLosses) {
+        assertEquals(id, actual.getId());
+        assertEquals(name, actual.getName());
+        assertEquals(city, actual.getCity());
+        assertEquals(numWins, actual.getNumWins());
+        assertEquals(numLosses, actual.getNumLosses());
+    }
+
+    private TeamDto toTeamDto(MvcResult result) throws JsonProcessingException, UnsupportedEncodingException {
+        return objectMapper.readValue(result.getResponse().getContentAsString(), TeamDto.class);
+    }
     private List<TeamDto> toTeamDtoList(MvcResult result) throws JsonProcessingException, UnsupportedEncodingException {
         return objectMapper.readerForListOf(TeamDto.class).readValue(result.getResponse().getContentAsString());
     }

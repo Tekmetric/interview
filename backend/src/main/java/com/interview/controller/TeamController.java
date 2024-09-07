@@ -2,6 +2,7 @@ package com.interview.controller;
 
 import com.interview.dto.TeamDto;
 import com.interview.service.TeamService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class TeamController {
     }
 
     @PostMapping("")
-    private TeamDto create(@RequestBody TeamDto teamDto) {
+    private TeamDto create(@Valid @RequestBody TeamDto teamDto) {
         return teamService.create(teamDto);
     }
 }

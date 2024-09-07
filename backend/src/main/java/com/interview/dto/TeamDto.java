@@ -1,14 +1,21 @@
 package com.interview.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class TeamDto extends BaseDto {
 
+    @NotBlank
     private String name;
 
+    @NotBlank
     private String city;
 
-    private int numWins;
+    @NotNull
+    private Integer numWins;
 
-    private int numLosses;
+    @NotNull
+    private Integer numLosses;
 
     public String getName() {
         return name;

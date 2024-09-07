@@ -83,6 +83,14 @@ public class TeamControllerTest {
         assertTeamDtoFields(toTeamDto(result),6L, "Nationals", "Washington", 11, 12);
     }
 
+    @Test
+    @Order(5)
+    public void validatesCreateRequestBody() throws Exception {
+        mockMvc.perform(post("/v1/teams").contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
     private void assertTeamDtoFields(TeamDto actual, Long id, String name, String city, int numWins, int numLosses) {
         assertEquals(id, actual.getId());
         assertEquals(name, actual.getName());

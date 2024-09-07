@@ -1,6 +1,5 @@
 package com.interview.model;
 
-import com.interview.dto.TeamDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -51,15 +50,5 @@ public class Team extends BaseEntity {
 
     public void setNumLosses(int numLosses) {
         this.numLosses = numLosses;
-    }
-
-    public TeamDto toDto() {
-        TeamDto retVal = new TeamDto();
-        retVal.setId(getId());
-        retVal.setName(getName());
-        retVal.setCity(getCity());
-        retVal.setNumWins(getNumWins());
-        retVal.setNumLosses(getNumLosses());
-        return retVal;
     }
 }

@@ -32,4 +32,8 @@ public class TeamService {
         Team saved = teamRepository.save(toSave);
         return teamMapper.toTeamDto(saved);
     }
+
+    public void deleteById(Long id) {
+        teamRepository.deleteById(id);
+    }
 }

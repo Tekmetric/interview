@@ -17,8 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,7 +58,7 @@ public class TeamControllerTest {
 
     @Test
     @Order(3)
-    public void throwsNotFoundForInvalidId() throws Exception {
+    public void checksThatTeamExistsBeforeGettingById() throws Exception {
         MvcResult result = mockMvc.perform(get("/v1/teams/99").contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -85,10 +84,35 @@ public class TeamControllerTest {
 
     @Test
     @Order(5)
-    public void validatesCreateRequestBody() throws Exception {
+    public void validatesCreateTeamRequestBody() throws Exception {
         mockMvc.perform(post("/v1/teams").contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(6)
+    public void deletesTeams() throws Exception {
+        mockMvc.perform(get("/v1/teams/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(delete("/v1/teams/1").contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/v1/teams/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(7)
+    public void deletesTeamsEvenIfTheyDoNotExist() throws Exception {
+        mockMvc.perform(get("/v1/teams/99").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(delete("/v1/teams/99").contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     private void assertTeamDtoFields(TeamDto actual, Long id, String name, String city, int numWins, int numLosses) {

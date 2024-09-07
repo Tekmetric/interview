@@ -38,4 +38,9 @@ public class TeamController {
     private TeamDto create(@Valid @RequestBody TeamDto teamDto) {
         return teamService.create(teamDto);
     }
+
+    @DeleteMapping("/{id}")
+    private void deleteById(@PathVariable("id") Long id) {
+        teamService.deleteById(id);
+    }
 }

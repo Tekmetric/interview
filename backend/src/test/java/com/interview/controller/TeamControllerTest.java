@@ -43,11 +43,11 @@ public class TeamControllerTest {
         List<TeamDto> teams = toTeamDtoList(result);
 
         assertEquals(5, teams.size());
-        assertTeamDtoFields(teams.get(0),1L, "Red Sox", "Boston", 1, 2);
-        assertTeamDtoFields(teams.get(1),2L, "Yankees", "New York City", 3, 4);
-        assertTeamDtoFields(teams.get(2),3L, "Orioles", "Baltimore", 5, 6);
-        assertTeamDtoFields(teams.get(3),4L, "Rays", "Tampa Bay", 7, 8);
-        assertTeamDtoFields(teams.get(4),5L, "Blue Jays", "Toronto", 9, 10);
+        assertTeamDtoFields(teams.get(0), 1L, "Red Sox", "Boston", 1, 2);
+        assertTeamDtoFields(teams.get(1), 2L, "Yankees", "New York City", 3, 4);
+        assertTeamDtoFields(teams.get(2), 3L, "Orioles", "Baltimore", 5, 6);
+        assertTeamDtoFields(teams.get(3), 4L, "Rays", "Tampa Bay", 7, 8);
+        assertTeamDtoFields(teams.get(4), 5L, "Blue Jays", "Toronto", 9, 10);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class TeamControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        assertTeamDtoFields(toTeamDto(result),1L, "Red Sox", "Boston", 1, 2);
+        assertTeamDtoFields(toTeamDto(result), 1L, "Red Sox", "Boston", 1, 2);
     }
 
     @Test

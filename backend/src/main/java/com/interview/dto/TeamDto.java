@@ -33,19 +33,19 @@ public class TeamDto extends BaseDto {
         this.city = city;
     }
 
-    public int getNumWins() {
+    public Integer getNumWins() {
         return numWins;
     }
 
-    public void setNumWins(int numWins) {
+    public void setNumWins(Integer numWins) {
         this.numWins = numWins;
     }
 
-    public int getNumLosses() {
+    public Integer getNumLosses() {
         return numLosses;
     }
 
-    public void setNumLosses(int numLosses) {
+    public void setNumLosses(Integer numLosses) {
         this.numLosses = numLosses;
     }
 }

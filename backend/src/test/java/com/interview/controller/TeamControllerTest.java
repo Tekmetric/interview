@@ -35,7 +35,7 @@ public class TeamControllerTest {
     @Test
     @Order(1)
     public void getsAllTeams() throws Exception {
-        MvcResult result = mockMvc.perform(get("/v1/teams").contentType(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(get("/v1/teams"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -43,12 +43,17 @@ public class TeamControllerTest {
         List<TeamDto> teams = toTeamDtoList(result);
 
         assertEquals(5, teams.size());
+        assertTeamDtoFields(teams.get(0),1L, "Red Sox", "Boston", 1, 2);
+        assertTeamDtoFields(teams.get(1),2L, "Yankees", "New York City", 3, 4);
+        assertTeamDtoFields(teams.get(2),3L, "Orioles", "Baltimore", 5, 6);
+        assertTeamDtoFields(teams.get(3),4L, "Rays", "Tampa Bay", 7, 8);
+        assertTeamDtoFields(teams.get(4),5L, "Blue Jays", "Toronto", 9, 10);
     }
 
     @Test
     @Order(2)
     public void getsTeamById() throws Exception {
-        MvcResult result = mockMvc.perform(get("/v1/teams/1").contentType(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(get("/v1/teams/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -59,7 +64,7 @@ public class TeamControllerTest {
     @Test
     @Order(3)
     public void checksThatTeamExistsBeforeGettingById() throws Exception {
-        MvcResult result = mockMvc.perform(get("/v1/teams/99").contentType(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(get("/v1/teams/99"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andReturn();
@@ -93,26 +98,67 @@ public class TeamControllerTest {
     @Test
     @Order(6)
     public void deletesTeams() throws Exception {
-        mockMvc.perform(get("/v1/teams/1").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/v1/teams/1"))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(delete("/v1/teams/1").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/v1/teams/1"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/v1/teams/1").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/v1/teams/1"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @Order(7)
     public void deletesTeamsEvenIfTheyDoNotExist() throws Exception {
-        mockMvc.perform(get("/v1/teams/99").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/v1/teams/99"))
                 .andExpect(status().isNotFound());
 
-        mockMvc.perform(delete("/v1/teams/99").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/v1/teams/99"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @Order(8)
+    public void updatesTeamFields() throws Exception {
+        TeamDto team = new TeamDto();
+        team.setNumWins(100);
+
+        MvcResult before = mockMvc.perform(get("/v1/teams/2"))
+                .andExpect(status().isOk())
+                .andReturn();
+        TeamDto beforeDto = toTeamDto(before);
+
+        mockMvc.perform(patch("/v1/teams/2").contentType(MediaType.APPLICATION_JSON).content(toJsonString(team)))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        MvcResult after = mockMvc.perform(get("/v1/teams/2"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertTeamDtoFields(
+                toTeamDto(after),
+                beforeDto.getId(),
+                beforeDto.getName(),
+                beforeDto.getCity(),
+                100,
+                beforeDto.getNumLosses()
+        );
+    }
+
+    @Test
+    @Order(9)
+    public void checksThatTeamExistsBeforeUpdatingById() throws Exception {
+        TeamDto team = new TeamDto();
+        team.setNumWins(100);
+
+        mockMvc.perform(patch("/v1/teams/99").contentType(MediaType.APPLICATION_JSON).content(toJsonString(team)))
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 
     private void assertTeamDtoFields(TeamDto actual, Long id, String name, String city, int numWins, int numLosses) {

@@ -28,7 +28,7 @@ public class TeamController {
         Optional<TeamDto> retVal = teamService.getById(id);
 
         if(retVal.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No team with id %s found", id));
+            throwTeamNotFound(id);
         }
 
         return retVal.get();
@@ -40,7 +40,21 @@ public class TeamController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     private void deleteById(@PathVariable("id") Long id) {
         teamService.deleteById(id);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    private void patchById(@PathVariable("id") Long id, @RequestBody TeamDto partialDto) {
+        boolean success = teamService.patchById(id, partialDto);
+        if(!success) {
+            throwTeamNotFound(id);
+        }
+    }
+
+    private void throwTeamNotFound(Long id) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No team with id %s found", id));
     }
 }

@@ -72,7 +72,7 @@ public class TeamControllerTest {
 
     @Test
     @Order(4)
-    public void createsTeams() throws Exception {
+    public void createsTeam() throws Exception {
         TeamDto team = new TeamDto();
         team.setName("Nationals");
         team.setCity("Washington");
@@ -84,7 +84,7 @@ public class TeamControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        assertTeamDtoFields(toTeamDto(result),6L, "Nationals", "Washington", 11, 12);
+        assertTeamDtoFields(toTeamDto(result), 6L, "Nationals", "Washington", 11, 12);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class TeamControllerTest {
 
     @Test
     @Order(6)
-    public void deletesTeams() throws Exception {
+    public void deletesTeamById() throws Exception {
         mockMvc.perform(get("/v1/teams/1"))
                 .andExpect(status().isOk());
 
@@ -111,7 +111,7 @@ public class TeamControllerTest {
 
     @Test
     @Order(7)
-    public void deletesTeamsEvenIfTheyDoNotExist() throws Exception {
+    public void deletesTeamEvenIfItDoesNotExist() throws Exception {
         mockMvc.perform(get("/v1/teams/99"))
                 .andExpect(status().isNotFound());
 
@@ -122,7 +122,7 @@ public class TeamControllerTest {
 
     @Test
     @Order(8)
-    public void updatesTeamFields() throws Exception {
+    public void updatesTeamById() throws Exception {
         TeamDto team = new TeamDto();
         team.setNumWins(100);
 

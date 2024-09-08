@@ -26,7 +26,6 @@ public class TeamController {
     @GetMapping("/{id}")
     private TeamDto getById(@PathVariable("id") Long id) {
         Optional<TeamDto> retVal = teamService.getById(id);
-
         if(retVal.isEmpty()) {
             throwTeamNotFound(id);
         }

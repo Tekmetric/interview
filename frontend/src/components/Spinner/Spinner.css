@@ -1,0 +1,40 @@
+.spinner {
+  display: flex;
+  margin: 8px;
+}
+
+.ring {
+  display: flex;
+  width: 18px;
+  height: 18px;
+  border: 3px solid #ffffff;
+  border-top-color: #276ef1;
+  border-radius: 18px;
+  transform: scale(1);
+  animation: ringSpin 0.65s linear infinite;
+}
+
+@keyframes ringSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/**
+ * Giving a width & margin of 0 removes the spinner
+ * from the horizontal flow while maintaining
+ * a minimum height in the vertical flow.
+ */
+.spinner.hidden {
+  visibility: hidden;
+  width: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.spinner.hidden::after {
+  animation: none;
+}

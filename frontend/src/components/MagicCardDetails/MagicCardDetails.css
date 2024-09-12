@@ -1,0 +1,19 @@
+.magicCardDetails {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 8px;
+  margin-top: 20px;
+  padding: 8px;
+}
+
+.magicCardDetails .name {
+  margin: 0;
+}
+.magicCardDetails .type {
+  margin: 8px 0 0;
+}
+.magicCardDetails .rarityAndPrice {
+  margin: 6px 0 0;
+}

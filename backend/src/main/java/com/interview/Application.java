@@ -1,6 +1,9 @@
 package com.interview;
 
+import com.interview.entities.TeeTime;
+import com.interview.resources.TeeTimeResource;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +23,5 @@ public class Application {
         public ModelMapper modelMapper() {
             return new ModelMapper();
         }
-
     }
 }

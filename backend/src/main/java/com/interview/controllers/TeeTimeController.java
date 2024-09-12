@@ -5,6 +5,7 @@ import com.interview.resources.TeeTimeResource;
 import com.interview.services.TeeTimeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("/tee-times")
+@RequestMapping("/api/tee-times")
 public class TeeTimeController {
     private final TeeTimeService teeTimeService;
     private final ModelMapper modelMapper;
@@ -43,15 +44,14 @@ public class TeeTimeController {
     
     @PutMapping("/{id}")
     public TeeTimeResource updateTeeTime(@PathVariable final Long id,
-                                         @RequestBody final TeeTimeResource TeeTimeResource) {
+                                         @RequestBody final TeeTimeResource teeTimeResource) {
         final TeeTime existingTeeTime = findTeeTimeById(id);
-        final TeeTime updateTeeTime = modelMapper.map(TeeTimeResource, TeeTime.class);
-        modelMapper.map(updateTeeTime, existingTeeTime);
+        modelMapper.map(teeTimeResource, existingTeeTime);
+        existingTeeTime.setId(id);
         return modelMapper.map(teeTimeService.updateTeeTime(existingTeeTime), TeeTimeResource.class);
     }
     
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTeeTime(@PathVariable final Long id) {
         findTeeTimeById(id);
         teeTimeService.deleteTeeTime(id);

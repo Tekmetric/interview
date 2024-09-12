@@ -1,11 +1,7 @@
 package com.interview.services;
 
-import com.interview.controllers.TeeTimeController;
 import com.interview.entities.TeeTime;
 import com.interview.repositories.TeeTimeRepository;
-import javassist.NotFoundException;
-import javassist.tools.web.BadHttpRequest;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,11 +9,9 @@ import java.util.List;
 @Service
 public class TeeTimeService {
     private final TeeTimeRepository teeTimeRepository;
-    private final ModelMapper modelMapper;
 
-    public TeeTimeService(final TeeTimeRepository teeTimeRepository, final ModelMapper modelMapper) {
+    public TeeTimeService(final TeeTimeRepository teeTimeRepository) {
         this.teeTimeRepository = teeTimeRepository;
-        this.modelMapper = modelMapper;
     }
 
     public List<TeeTime> getAllTeeTimes() {

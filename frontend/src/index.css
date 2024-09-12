@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
   padding: 0;
@@ -11,4 +15,33 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.blade {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  height: 100px;
+  background-color: #2c6b2f;
+  transform-origin: bottom;
+  border-radius: 2px;
+  animation: sway 2s infinite alternate;
+}
+
+.blade.sm {
+  height: 50px;
+}
+
+@keyframes sway {
+  0% {
+    transform: rotate(-5deg);
+  }
+
+  50% {
+    transform: rotate(5deg);
+  }
+
+  100% {
+    transform: rotate(-5deg);
+  }
 }

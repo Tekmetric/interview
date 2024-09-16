@@ -1,8 +1,5 @@
-package com.interview.config;
+package com.interview.resource.exception;
 
-import com.interview.resource.exception.BadRequestException;
-import com.interview.resource.exception.EntityNotFoundException;
-import com.interview.resource.exception.ErrorConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

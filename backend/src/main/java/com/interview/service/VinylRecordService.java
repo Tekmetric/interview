@@ -9,7 +9,6 @@ import com.interview.service.dto.VinylRecordDTO;
 import com.interview.service.dto.VinylRecordPayloadDTO;
 import com.interview.service.dto.VinylRecordPresentationDTO;
 import com.interview.service.mapper.VinylRecordDTOMapper;
-import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,10 @@ import java.util.List;
 
 import static com.interview.repository.specification.VinylRecordSpecification.byArtist;
 import static com.interview.repository.specification.VinylRecordSpecification.byTitle;
-import static com.interview.resource.exception.ErrorConstants.*;
+import static com.interview.resource.exception.ErrorConstants.ERR_ARTISTS_NOT_FOUND;
+import static com.interview.resource.exception.ErrorConstants.ERR_ENTITY_NOT_FOUND;
+import static com.interview.resource.exception.ErrorConstants.ERR_INVALID_RECORD_ID;
+import static com.interview.resource.exception.ErrorConstants.ERR_RECORD_ALREADY_EXISTS;
 
 @Service
 @Transactional

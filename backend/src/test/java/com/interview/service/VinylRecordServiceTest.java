@@ -5,8 +5,6 @@ import com.interview.domain.VinylRecord;
 import com.interview.repository.VinylRecordRepository;
 import com.interview.resource.exception.BadRequestException;
 import com.interview.resource.exception.ErrorConstants;
-import com.interview.service.ArtistService;
-import com.interview.service.VinylRecordService;
 import com.interview.service.dto.VinylRecordPayloadDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +18,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -57,36 +61,6 @@ class VinylRecordServiceTest {
 
     }
 
-//    @Test
-//    void whenTitleIsBlank_thenThrowBadRequestException() {
-//        invalidVinylRecordDTO.setArtistIds(TEST_ARTIST_IDS);
-//
-//        var exception = assertThrows(BadRequestException.class,
-//                () -> vinylRecordService.createNewVinylRecord(invalidVinylRecordDTO));
-//
-//        assertEquals(ErrorConstants.ERR_VR_TITLE_IS_REQUIRED, exception.getMessage());
-//    }
-//
-//    @Test
-//    void whenArtistIdsAreNull_thenThrowBadRequestException() {
-//        invalidVinylRecordDTO.setTitle(TEST_ALBUM_NAME);
-//
-//        var exception = assertThrows(BadRequestException.class,
-//                () -> vinylRecordService.createNewVinylRecord(invalidVinylRecordDTO));
-//
-//        assertEquals(ErrorConstants.ERR_ARTISTS_ARE_REQUIRED, exception.getMessage());
-//    }
-//
-//    @Test
-//    void whenArtistIdsAreEmpty_thenThrowBadRequestException() {
-//        invalidVinylRecordDTO.setTitle(TEST_ALBUM_NAME);
-//        invalidVinylRecordDTO.setArtistIds(Collections.emptyList());
-//
-//        BadRequestException exception = assertThrows(BadRequestException.class,
-//                () -> vinylRecordService.createNewVinylRecord(invalidVinylRecordDTO));
-//
-//        assertEquals(ErrorConstants.ERR_ARTISTS_ARE_REQUIRED, exception.getMessage());
-//    }
 
     @Test
     void whenRecordAlreadyExists_thenThrowBadRequestException() {

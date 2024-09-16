@@ -1,0 +1,23 @@
+global:
+  scrape_interval:   15s # By default, scrape targets every 15 seconds.
+
+  external_labels:
+    monitor: 'vinylApp-monitoring'
+
+scrape_configs:
+  - job_name: 'vinyl-app'
+
+    scrape_interval: 15s
+    metrics_path: '/actuator/prometheus'
+
+    static_configs:
+      - targets: ['vinyl-app:8080']
+        labels:
+          application: "vinyl-app"
+
+  - job_name: 'prometheus'
+
+    scrape_interval: 5s
+
+    static_configs:
+      - targets: ['localhost:9090']

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material';
 import { Themes } from '../../types/Theme';
 import SideBar from '../SideBar/SideBar';
@@ -9,10 +9,20 @@ import TopBar from '../TopBar/TopBar';
 import { DrawerHeader } from '../SideBar/Sidebar.style';
 import { getTheme } from '../../themes/theme.helper';
 import { defaultTheme } from '../../constants/theme.constants';
+import { Routes } from '../../constants/routes.constants';
 
 export default function AppLayout() {
   const [selectedTheme, setSelectedTheme] = React.useState<Themes>(defaultTheme);
   const [isSideBarExpanded, setIsSideBarExpanded] = React.useState(false);
+
+  // const session = useAppSelector(state => state.session);
+  const navigate = useNavigate();
+
+  // React.useEffect(() => {
+  //   if (session.isAuthenticated) {
+  //     navigate(Routes.login);
+  //   }
+  // }, [session.isAuthenticated]);
 
   return (
     <ThemeProvider theme={getTheme(selectedTheme)}>

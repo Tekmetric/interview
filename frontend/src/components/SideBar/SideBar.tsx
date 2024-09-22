@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '@mui/material/styles';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
@@ -8,15 +7,17 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { menuItems } from '../../constants/menu.constants';
 import { useNavigate } from 'react-router-dom';
-import RedPandaLogo from "../../assets/panda-logo.png";
-import { Drawer, DrawerHeader, DrawerItems, ListItemIcon, ListItemText } from './Sidebar.style';
+import { DevLogo, Drawer, DrawerHeader, DrawerItems, ListItemIcon, ListItemText } from './Sidebar.style';
 import { ISideBarMenuItem } from './SideBar.interface';
 import { Typography } from '@mui/material';
 import { IDrawerProps } from '../../types/IDrawerProps';
+import RedPandaLogo from "../../assets/panda-logo.png";
+import RedPandaDevLogo from "../../assets/panda-studios.png";
+import { useAppSelector } from '../../store/hooks/hooks';
+import { getTheme } from '../../themes/theme.helper';
 
 export default function SideBar({ open, setOpen }: IDrawerProps) {
-  const theme = useTheme();
-
+  const session = useAppSelector(state => state.session);
   const navigate = useNavigate();
 
   const handleDrawerOpen = () => {
@@ -41,7 +42,7 @@ export default function SideBar({ open, setOpen }: IDrawerProps) {
         </Typography>
 
         <IconButton onClick={handleDrawerClose}>
-          {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          {getTheme(session.theme).direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton>
       </DrawerHeader>
 
@@ -86,6 +87,15 @@ export default function SideBar({ open, setOpen }: IDrawerProps) {
           </ListItem>
         ))}
       </DrawerItems>
+
+      {open && (
+        <DevLogo>
+          <img src={RedPandaDevLogo} height={32} />
+          <Typography variant='caption'>
+            &#169; RP Studios!
+          </Typography>
+        </DevLogo>
+      )}
     </Drawer>
   );
 }

@@ -7,6 +7,7 @@ import {
   ListItemIcon as MuiListItemIcon,
   ListItemText as MuiListItemText
 } from "@mui/material";
+import { orange } from "@mui/material/colors";
 
 export const drawerWidth = 240;
 
@@ -80,5 +81,13 @@ export const ListItemIcon = styled(MuiListItemIcon)(({ theme }) => ({
 
 export const ListItemText = styled(MuiListItemText)(({ theme }) => ({
   color: theme.palette.primary.main
- }));
+}));
  
+export const DevLogo = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+  color: orange[500],
+  padding: theme.spacing(2, 1)
+}));

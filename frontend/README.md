@@ -6,10 +6,10 @@
 - https://github.com/Tekmetric/interview.git
 
 #### Let's install the project locally
-`npm install`
+`yarn install`
 
 #### Let's start the project locally
-`npm start`
+`yarn dev`
 
 ### Goals
 1. Fetch Data from the backend Crud API you created or from a public API

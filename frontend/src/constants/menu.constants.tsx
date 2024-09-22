@@ -1,11 +1,14 @@
 import HomeIcon from '@mui/icons-material/Home';
-import ListIcon from '@mui/icons-material/List';
+import GpsIcon from '@mui/icons-material/GpsFixed';
+import PetsIcon from '@mui/icons-material/Pets';
 import LocationIcon from '@mui/icons-material/LocationOn';
 import { ISideBarMenuItem } from '../components/SideBar/SideBar.interface';
+import { Routes } from './routes.constants';
 
 export enum MenuTabs {
   Home, 
-  List,
+  Sightings,
+  Pandas,
   Locations
 }
 
@@ -13,14 +16,14 @@ export const homeMenuItem: ISideBarMenuItem = {
   key: MenuTabs.Home,
   icon: <HomeIcon />,
   text: "Home",
-  href: "/"
+  href: Routes.home,
 };
 
 export const listMenuItem: ISideBarMenuItem = {
-  key: MenuTabs.List,
-  icon: <ListIcon />,
-  text: "Entities",
-  href: "/list"
+  key: MenuTabs.Sightings,
+  icon: <GpsIcon />,
+  text: "Sightings",
+  href: Routes.sightings
 };
 
 
@@ -32,9 +35,15 @@ export const menuItems: ISideBarMenuItem[] = [
     ...listMenuItem
   },
   {
+    key: MenuTabs.Pandas,
+    icon: <PetsIcon />,
+    text: "Pandas",
+    href: Routes.pandas
+  },
+  {
     key: MenuTabs.Locations,
     icon: <LocationIcon />,
     text: "Locations",
-    href: "/locations"
+    href: Routes.locations
   }
 ];

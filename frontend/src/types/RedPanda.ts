@@ -9,6 +9,6 @@ export type RedPanda = {
   hasTracker: boolean;
   colour: string;
   species: RedPandaSpecies;
-  name?: string;
-  age?: number;
+  name: string | undefined;
+  age: number | undefined;
 }

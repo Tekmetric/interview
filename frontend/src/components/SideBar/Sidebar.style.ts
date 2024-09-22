@@ -1,4 +1,12 @@
-import { CSSObject, styled, Theme, Drawer as MuiDrawer, List } from "@mui/material";
+import { 
+  CSSObject,
+  styled,
+  Theme,
+  Drawer as MuiDrawer,
+  List,
+  ListItemIcon as MuiListItemIcon,
+  ListItemText as MuiListItemText
+} from "@mui/material";
 
 export const drawerWidth = 240;
 
@@ -65,3 +73,12 @@ export const DrawerItems = styled(List)(() => ({
   alignItems: 'center',
   flexGrow: 1
 }));
+
+export const ListItemIcon = styled(MuiListItemIcon)(({ theme }) => ({
+ color: theme.palette.primary.main
+}));
+
+export const ListItemText = styled(MuiListItemText)(({ theme }) => ({
+  color: theme.palette.primary.main
+ }));
+ 

@@ -1,16 +1,17 @@
 import * as React from 'react';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import RedPandaLogo from "../../assets/panda-logo.png";
 import { Avatar, Box } from '@mui/material';
 import AccountIcon from '@mui/icons-material/AccountCircle';
-import { grey, orange } from '@mui/material/colors';
-import { AppBar } from './TopBar.style';
+import { orange } from '@mui/material/colors';
+import { AppBar, Toolbar } from './TopBar.style';
+import UserMenu from '../UserMenu/UserMenu';
 import { ITopBarProps } from './TopBar.interface';
+import { getTheme } from '../../themes/theme.helper';
 
-export default function TopBar({ open, setOpen } : ITopBarProps) {
-  const [showUserMenu, setShowUserMenu] = React.useState<boolean>(false);
+export default function TopBar({ open, setOpen, setTheme, theme } : ITopBarProps) {
+  const [showUserMenu, setShowUserMenu] = React.useState<boolean>(true);
 
   return (
     <AppBar position="fixed" open={open}>
@@ -37,11 +38,13 @@ export default function TopBar({ open, setOpen } : ITopBarProps) {
         </Box>
 
         <Box sx={{ flexGrow: 0 }}>
-          <Avatar sx={{ bgcolor: orange[500], color: grey[900] }}>
+          <Avatar sx={{ bgcolor: getTheme(theme).palette.background.paper, color: orange[600] }} onMouseEnter={() => setShowUserMenu(true)}>
             <AccountIcon />
           </Avatar>
         </Box>
       </Toolbar>
+
+      <UserMenu open={showUserMenu} setOpen={setShowUserMenu} setTheme={setTheme} theme={theme} />
     </AppBar>
   );
 }

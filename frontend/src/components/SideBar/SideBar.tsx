@@ -4,18 +4,17 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { menuItems } from '../../constants/menu.constants';
 import { useNavigate } from 'react-router-dom';
 import RedPandaLogo from "../../assets/panda-logo.png";
-import { Drawer, DrawerHeader, DrawerItems } from './Sidebar.style';
-import { ISideBarMenuItem, ISideBarProps } from './SideBar.interface';
+import { Drawer, DrawerHeader, DrawerItems, ListItemIcon, ListItemText } from './Sidebar.style';
+import { ISideBarMenuItem } from './SideBar.interface';
 import { Typography } from '@mui/material';
+import { IDrawerProps } from '../../types/IDrawerProps';
 
-export default function SideBar({ open, setOpen }: ISideBarProps) {
+export default function SideBar({ open, setOpen }: IDrawerProps) {
   const theme = useTheme();
 
   const navigate = useNavigate();
@@ -52,6 +51,7 @@ export default function SideBar({ open, setOpen }: ISideBarProps) {
         {menuItems.map((item) => (
           <ListItem key={item.key} disablePadding sx={{ display: 'block' }}>
             <ListItemButton
+              color='primary'
               onClick={() => handleMenuItemSelection(item)}
               sx={[
                 {
@@ -62,6 +62,7 @@ export default function SideBar({ open, setOpen }: ISideBarProps) {
               ]}
             >
               <ListItemIcon
+                color='primary'
                 sx={[
                   {
                     minWidth: 0,
@@ -73,6 +74,7 @@ export default function SideBar({ open, setOpen }: ISideBarProps) {
                 {item.icon}
               </ListItemIcon>
               <ListItemText
+                color='primary'
                 primary={item.text}
                 sx={[
                   {

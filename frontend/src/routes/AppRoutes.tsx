@@ -13,6 +13,7 @@ import RedPandaPage from "./panda/RedPandaPage";
 import RedPandaList from "./panda/RedPandaList";
 import AddPanda from "./panda/AddPanda";
 import EditPanda from "./panda/EditPanda";
+import PandaDetail from "./panda/PandaDetail";
 
 const AppRoutes: React.FC = () => {
   const router = createBrowserRouter([
@@ -57,6 +58,10 @@ const AppRoutes: React.FC = () => {
             {
               path: Routes.pandas,
               element: <RedPandaList />,
+            },
+            {
+              path: Routes.pandaDetail,
+              element: <PandaDetail />,
             },
             {
               path: Routes.addPanda,

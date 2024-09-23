@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { AuthProvider, AppProvider, SignInPage } from '@toolpad/core';
 import { getTheme } from '../../themes/theme.helper';
 import { Themes } from '../../types/Theme';

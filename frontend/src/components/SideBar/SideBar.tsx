@@ -92,7 +92,7 @@ export default function SideBar({ open, setOpen }: IDrawerProps) {
         <DevLogo>
           <img src={RedPandaDevLogo} height={32} />
           <Typography variant='caption'>
-            &#169; RP Studios!
+            &#169; RPC Studios!
           </Typography>
         </DevLogo>
       )}

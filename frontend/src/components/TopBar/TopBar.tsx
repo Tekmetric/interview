@@ -9,9 +9,17 @@ import { AppBar, Toolbar } from './TopBar.style';
 import UserMenu from '../UserMenu/UserMenu';
 import { ITopBarProps } from './TopBar.interface';
 import { getTheme } from '../../themes/theme.helper';
+import { useNavigate } from 'react-router-dom';
+import { Routes } from '../../constants/routes.constants';
 
 export default function TopBar({ open, setOpen, setTheme, theme } : ITopBarProps) {
-  const [showUserMenu, setShowUserMenu] = React.useState<boolean>(true);
+  const [showUserMenu, setShowUserMenu] = React.useState<boolean>(false);
+  const navigate = useNavigate();
+
+  const handleLogoClick = () => {
+    navigate(Routes.home);
+    setOpen(false);
+  };
 
   return (
     <AppBar position="fixed" open={open}>
@@ -19,7 +27,7 @@ export default function TopBar({ open, setOpen, setTheme, theme } : ITopBarProps
         <IconButton
           color="inherit"
           aria-label="open drawer"
-          onClick={() => setOpen(false)}
+          onClick={handleLogoClick}
           edge="start"
           sx={[
             {
@@ -38,7 +46,10 @@ export default function TopBar({ open, setOpen, setTheme, theme } : ITopBarProps
         </Box>
 
         <Box sx={{ flexGrow: 0 }}>
-          <Avatar sx={{ bgcolor: getTheme(theme).palette.background.paper, color: orange[600] }} onMouseEnter={() => setShowUserMenu(true)}>
+          <Avatar
+            sx={{ bgcolor: getTheme(theme).palette.background.paper, color: orange[600] }}
+            onMouseEnter={() => setShowUserMenu(true)}
+          >
             <AccountIcon />
           </Avatar>
         </Box>

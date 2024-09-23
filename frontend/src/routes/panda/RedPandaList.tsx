@@ -2,51 +2,32 @@ import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import Table from "../../components/Table/Table";
 import { RedPanda, RedPandaSpecies } from "../../types/RedPanda";
 import { useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Grid2, Typography } from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
-import { redPandaColours } from "../../constants/panda.constants";
+import { useNavigate } from "react-router-dom";
+import { Routes } from "../../constants/routes.constants";
+import { pandaMock } from "../../service/RedPandaService";
 
 export default function RedPandaList() {
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(5);
 
-  const rows: RedPanda[] = [
-    {
-      id: 'test0',
-      age: 10,
-      colour: redPandaColours[0],
-      hasTracker: true,
-      name: "Kylo",
-      species: RedPandaSpecies.Himalayan
-    },
-    {
-      id: 'test1',
-      age: 3,
-      colour: redPandaColours[1],
-      hasTracker: false,
-      name: "Snitzel",
-      species: RedPandaSpecies.Chinese
-    },
-    {
-      id: 'test2',
-      age: 3,
-      colour: redPandaColours[2],
-      hasTracker: true,
-      name: "Tofu",
-      species: RedPandaSpecies.Chinese
-    },
-    {
-      id: 'test3',
-      age: 4,
-      colour: redPandaColours[3],
-      hasTracker: false,
-      name: "Pixel",
-      species: RedPandaSpecies.Chinese
-    }
-  ];
+  const navigate = useNavigate();
+
+  const rows = pandaMock;
 
   const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Name', minWidth: 160 },
+    { 
+      field: 'name',
+      headerName: 'Name',
+      flex: 1,
+      renderCell: (params) => (
+        <Button onClick={() => navigate(`${Routes.pandas}/${params.row.id}`)}>
+          {params.row.name}
+        </Button>
+      ),
+    },
     {
       field: 'age',
       headerName: 'Age',
@@ -57,7 +38,7 @@ export default function RedPandaList() {
       field: 'species',
       headerName: 'Species',
       sortable: false,
-      minWidth: 160,
+      flex: 1,
       valueGetter: (_, row: RedPanda) => row.species === RedPandaSpecies.Chinese ? "Chinese" : "Himalayan",
     },
     {
@@ -65,7 +46,7 @@ export default function RedPandaList() {
       headerName: 'Has tracker',
       sortable: false,
       type: "custom",
-      minWidth: 90,
+      width: 120,
       renderCell: (params) => params.row.hasTracker  ? <CheckIcon /> : "",
     },
     {
@@ -73,24 +54,33 @@ export default function RedPandaList() {
       headerName: 'Colour',
       sortable: false,
       type: "custom",
-      minWidth: 90,
+      width: 90,
       renderCell: (params: GridRenderCellParams) => <Box sx={{ width: '100%', height: "100%", background: params.row.colour }} />
     },
   ];
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%'}}>
-      <Typography variant="h6">Red pandas</Typography>
+    <Grid2 container spacing={4}>
+      <Grid2 size={10}>
+        <Typography variant="h6">Red pandas</Typography>
+      </Grid2>
+      <Grid2 size={2}>
+        <Button variant="contained" color="secondary" startIcon={<AddIcon />}>
+          Red panda
+        </Button>
+      </Grid2>
     
-      <Table
-        rows={rows}
-        columns={columns}
-        paginationModel={{ page: page, pageSize: pageSize }}
-        onPaginationModelChange={(model) => {
-          setPage(model.page);
-          setPageSize(model.pageSize);
-        }}
-      />
-    </Box>
+      <Grid2 size={12}>
+        <Table
+          rows={rows}
+          columns={columns}
+          paginationModel={{ page: page, pageSize: pageSize }}
+          onPaginationModelChange={(model) => {
+            setPage(model.page);
+            setPageSize(model.pageSize);
+          }}
+        />
+      </Grid2>
+    </Grid2>
   );
 }

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import RedPanda from "../../assets/panda-menu.png";
 import { Avatar, FormControlLabel, Slide, Typography } from '@mui/material';
 import { AvatarContainer, FlexColumnContainer, FlexRowContainer, MaterialUISwitch, Paper, RPImage, UserMenuPopover } from './UserMenu.style';

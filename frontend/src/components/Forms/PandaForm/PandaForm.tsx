@@ -1,16 +1,17 @@
 import React from "react";
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormLabel, Grid2, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, Grid2, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { RedPanda, RedPandaSpecies, RedPandaSpeciesLabels } from "../../../types/RedPanda";
+import { RedPanda, RedPandaSpecies } from "../../../types/RedPanda";
 import { IPandaFormProps } from "./PandaForm.interface";
 import { redPandaColours } from "../../../constants/panda.constants";
 import { PandaValidator } from "../validators/Panda.validator";
-import { ColourPickerIcon, ColourPickerIconChecked } from "./PandaForm.style";
 import ConfirmationDialog from "../../ConfirmationDialog/ConfirmationDialog";
 import { RedPandaService } from "../../../service/RedPandaService";
-import ChinesePanda from "../../../assets/redpanda-landing.png";
-import HimalayanPanda from "../../../assets/redpanda-landing-himalayan.png";
-import Tracker from "../../../assets/tracker.png";
+import NameInput from "./NameInput";
+import AgeInput from "./AgeInput";
+import SpeciesInput from "./SpeciesInput";
+import ColourInput from "./ColourInput";
+import PandaAvatar from "./PandaAvatar";
 
 export default function PandaForm(props: IPandaFormProps) {
   const [name, setName] = useState<string | undefined>(props.panda?.name || "");
@@ -31,31 +32,8 @@ export default function PandaForm(props: IPandaFormProps) {
     setEditedPanda(buildPanda());
   }, [name, age, colour, species, hasTracker]);
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-  }
-
-  const handleAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      setAge(parseInt(event.target.value, 10));
-    } catch {
-      setAge(0);
-    }
-  }
-
-  const handleSpeciesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = (event.target as HTMLInputElement).value === RedPandaSpecies.Himalayan.toString()
-      ? RedPandaSpecies.Himalayan
-      : RedPandaSpecies.Chinese;
-    setSpecies(value);
-  };
-
   const handleTrackerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setHasTracker(event.target.checked);
-  };
-
-  const handleColourChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setColour(event.target.value);
   };
 
   const resetState = (panda: RedPanda | undefined) => {
@@ -103,73 +81,24 @@ export default function PandaForm(props: IPandaFormProps) {
 
           <Grid2 container spacing={4}>
             <Grid2 size={12} flexGrow={1}>
-              <TextField
-                required
-                id="outlined-required"
-                label="Name"
-                value={name}
-                onChange={handleNameChange}
-                error={name ? !PandaValidator.isNameValid(name).isValid : false}
-                helperText={name && PandaValidator.isNameValid(name).errorMessage}
-                fullWidth
-              />
+              <NameInput value={name} onChange={setName} />
             </Grid2>
             <Grid2 size={12} flexGrow={1}>
-              <TextField
-                required
-                id="outlined-required"
-                label="Age"
-                type="number"
-                value={age || ""}
-                onChange={handleAgeChange}
-                error={age ? !PandaValidator.isAgeValid(age).isValid : false}
-                helperText={age && PandaValidator.isAgeValid(age).errorMessage}
-                fullWidth
+              <AgeInput value={age} onChange={setAge}/>
+            </Grid2>
+            <Grid2 size={12}>
+              <SpeciesInput value={species} onChange={setSpecies} />
+            </Grid2>
+
+            <Grid2 size={12}>
+              <FormControlLabel
+                control={<Checkbox checked={hasTracker} onChange={handleTrackerChange} />}
+                label="Has tracker"
               />
             </Grid2>
-            <Grid2 size={12}>
-              <FormControl>
-                <FormLabel id="panda-species">Species</FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby="panda-species"
-                  name="panda-species-radio-buttons-group"
-                  value={species}
-                  onChange={handleSpeciesChange}
-                >
-                  <FormControlLabel value={RedPandaSpecies.Himalayan.toString()} control={<Radio />} label={RedPandaSpeciesLabels[RedPandaSpecies.Himalayan]} /> 
-                  <FormControlLabel value={RedPandaSpecies.Chinese.toString()} control={<Radio />} label={RedPandaSpeciesLabels[RedPandaSpecies.Chinese]} />
-                </RadioGroup>
-              </FormControl>
-            </Grid2>
 
             <Grid2 size={12}>
-              <FormControlLabel control={<Checkbox checked={hasTracker} onChange={handleTrackerChange} />} label="Has tracker" />
-            </Grid2>
-
-            <Grid2 size={12}>
-              <FormControl>
-                <FormLabel id="panda-Colour">Colour</FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby="panda-Colour"
-                  name="panda-Colour-radio-buttons-group"
-                  value={colour}
-                  onChange={handleColourChange}
-                >
-                  {
-                    redPandaColours.map(colour => (
-                      <Radio
-                        key={colour}
-                        value={colour}
-                        checkedIcon={<ColourPickerIconChecked />}
-                        icon={<ColourPickerIcon />}
-                        sx={{ backgroundColor: colour, margin: 1 }}
-                      />
-                    ))
-                  }
-                </RadioGroup>
-              </FormControl>
+              <ColourInput value={colour} onChange={setColour} />
             </Grid2>
 
             <Grid2 container spacing={2}>
@@ -177,7 +106,8 @@ export default function PandaForm(props: IPandaFormProps) {
                 <Button
                   color="primary"
                   variant="contained"
-                  disabled={!PandaValidator.isDirty(RedPandaService.initFromPanda(props.panda), editedPanda) || !PandaValidator.isValid(editedPanda)}
+                  disabled={!PandaValidator.isDirty(RedPandaService.initFromPanda(props.panda), editedPanda) 
+                    || !PandaValidator.isValid(editedPanda)}
                   onClick={handleSave}
                   fullWidth
                 >
@@ -209,16 +139,7 @@ export default function PandaForm(props: IPandaFormProps) {
       </Grid2>
 
       <Grid2 size={{ sm : 12, md: 7 }}>
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", flexGrow: 1, height: "100%" }}>
-          <Box sx={{ position: "relative" }}>
-            <img src={species === RedPandaSpecies.Chinese ? ChinesePanda : HimalayanPanda} height={300} />
-            {hasTracker && (
-              <Box sx={{ position: "absolute", top: 120, left: 130 }}>
-                <img src={Tracker} height={24} />
-              </Box>
-            )}
-          </Box>
-        </Box>
+        <PandaAvatar hasTracker={hasTracker} species={species} />
       </Grid2>
     </Grid2>
   );

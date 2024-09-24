@@ -187,7 +187,8 @@ export default function SightingForm(props: ISightingFormProps) {
                 <Button
                   color="primary"
                   variant="contained"
-                  disabled={!SightingValidator.isDirty(SightingService.buildSighting(panda?.id, undefined, dateTime?.toISOString()), sighting) || !SightingValidator.isValid(sighting)}
+                  disabled={!SightingValidator.isDirty(SightingService.buildSighting(panda?.id, undefined, dateTime?.toISOString()), sighting)
+                    || !SightingValidator.isValid(sighting)}
                   onClick={handleSave}
                   fullWidth
                 >

@@ -1,21 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Grid2, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from "react-router-dom";
-import { pandaMock } from "../../../service/RedPandaService";
+import { RedPandaService } from "../../../service/RedPandaService";
 import { Routes } from "../../../constants/routes.constants";
 import { getColumns } from "./RedPandaList.helper";
 import { RedPanda } from "../../../types/RedPanda";
 import Table from "../../../components/Table/Table";
+import { enqueueSnackbar } from "notistack";
+import ConfirmationDialog from "../../../components/ConfirmationDialog/ConfirmationDialog";
 
 export default function RedPandaList() {
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(5);
-  const [rows, setRows] = useState<RedPanda[]>(pandaMock);
+  const [rows, setRows] = useState<RedPanda[]>([]);
+
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [selectedPanda, setSelectedPanda] = useState<RedPanda>();
 
   const navigate = useNavigate();
 
-  const handleDelete = (pandaId: string) => { }
+  useEffect(() => {
+    fetchPandas();
+  }, []);
+
+  const fetchPandas = async () => {
+    const pandas = await RedPandaService.fetchPandas();
+    setRows(pandas);
+  }
+
+  const deletePanda = async () => { 
+    if (!selectedPanda) {
+      return;
+    }
+
+    const response = await RedPandaService.deleteById(selectedPanda.id);
+
+    if(response) {
+      enqueueSnackbar("Red panda successfully deleted.", { variant: "success" });
+      fetchPandas();
+    } else {
+      enqueueSnackbar("An error occurred while deleting this red panda. Please try again.", { variant: "error" });
+    }
+    
+    setShowConfirmDelete(false);
+  } 
+
+  const handleDelete = (panda: RedPanda) => {
+    setSelectedPanda(panda);
+    setShowConfirmDelete(true);
+  }
+
+  const handleDiscardDelete = () => {
+    setSelectedPanda(undefined);
+    setShowConfirmDelete(false);
+  }
 
   const columns = getColumns(navigate, handleDelete);
  
@@ -46,6 +85,14 @@ export default function RedPandaList() {
           }}
         />
       </Grid2>
+
+      <ConfirmationDialog 
+        open={showConfirmDelete && !!selectedPanda}
+        message={`Are you sure you want to delete ${selectedPanda?.name}?`}
+        onConfirm={deletePanda}
+        onDiscard={handleDiscardDelete}
+        title={"Warning"}
+      />
     </Grid2>
   );
 }

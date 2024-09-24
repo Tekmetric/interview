@@ -12,7 +12,7 @@ export const RedPandaSpeciesLabels = {
 export type RedPanda = {
   id: string;
   hasTracker: boolean;
-  colour: string;
+  color: string;
   species: RedPandaSpecies;
   name: string;
   age: number | undefined;

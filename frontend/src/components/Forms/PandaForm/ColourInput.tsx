@@ -20,13 +20,13 @@ export default function ColourInput({ value, onChange }: IColourInputProps) {
         onChange={handleColourChange}
       >
         {
-          redPandaColours.map(colour => (
+          redPandaColours.map(color => (
             <Radio
-              key={colour}
-              value={colour}
+              key={color}
+              value={color}
               checkedIcon={<ColourPickerIconChecked />}
               icon={<ColourPickerIcon />}
-              sx={{ backgroundColor: colour, margin: 1 }}
+              sx={{ backgroundColor: color, margin: 1 }}
             />
           ))
         }

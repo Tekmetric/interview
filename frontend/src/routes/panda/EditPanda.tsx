@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PandaForm from "../../components/Forms/PandaForm/PandaForm";
 import { useEffect, useState } from "react";
 import { RedPanda } from "../../types/RedPanda";
-import { pandaMock } from "../../service/RedPandaService";
+import { RedPandaService } from "../../service/RedPandaService";
 import { Routes } from "../../constants/routes.constants";
 import { useSnackbar } from "notistack";
 
@@ -14,12 +14,28 @@ export default function EditPanda() {
   const [panda, setPanda] = useState<RedPanda>();
 
   useEffect(() => {
-    setPanda(pandaMock.find(panda => panda.id === id));
+    getPandaById();
   }, [id]);
 
-  const handleSave = () => {
-    enqueueSnackbar("Red panda successfully created.", { variant: "success" });
-    navigate(Routes.pandas);
+  
+  const getPandaById = async () => {
+    if (!id) {
+      return;
+    }
+
+    const panda = await RedPandaService.getById(id);
+    setPanda(panda);
+  }
+
+  const handleSave = async (panda: RedPanda) => {
+    const response = await RedPandaService.editPanda(panda);
+    
+    if (response) {
+      enqueueSnackbar("Red panda successfully updated.", { variant: "success" });
+      navigate(Routes.pandas);
+    } else {
+      enqueueSnackbar("An error occurred while updating this red panda. Please try again.", { variant: "error" });
+    }
   }
 
   const handleDiscard = () => {

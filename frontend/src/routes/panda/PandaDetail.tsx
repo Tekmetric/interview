@@ -1,9 +1,9 @@
 import { Box, Grid2, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { pandaMock } from "../../service/RedPandaService";
 import { RedPanda, RedPandaSpeciesLabels } from "../../types/RedPanda";
 import RedPandaImage from "../../assets/panda-tree.png";
+import { RedPandaService } from "../../service/RedPandaService";
 
 export default function PandaDetail() {
   const { id } = useParams();
@@ -11,8 +11,17 @@ export default function PandaDetail() {
   const [panda, setPanda] = useState<RedPanda>();
 
   useEffect(() => {
-    setPanda(pandaMock.find(panda => panda.id === id));
+    getPandaById();
   }, []);
+
+  const getPandaById = async () => {
+    if (!id) {
+      return;
+    }
+
+    const panda = await RedPandaService.getById(id);
+    setPanda(panda);
+  }
 
   return (
     <Grid2 container spacing={4}>
@@ -75,7 +84,7 @@ export default function PandaDetail() {
               </Typography>
             </Grid2>
             <Grid2 size={8}>
-              <Box sx={{ width: '100%', height: "100%", background: panda.colour }} />
+              <Box sx={{ width: '100%', height: "100%", background: panda.color }} />
             </Grid2>
 
             <Grid2 size={4}>

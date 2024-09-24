@@ -11,7 +11,6 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { pandaMock } from "../../../service/RedPandaService";
 import { RedPanda } from "../../../types/RedPanda";
 import { DEFAULT_CENTER_POINT } from "../../../constants/map.constants";
 import { MapService } from "../../../service/MapService";
@@ -144,7 +143,7 @@ export default function SightingForm(props: ISightingFormProps) {
                   value={panda}
                   onChange={(_, newValue) => {
                     if (typeof newValue === 'string') {
-                      setPanda(pandaMock.find(panda => panda.name === newValue));
+                      setPanda(props.pandas.find(panda => panda.name === newValue));
                       return;
                     }
                     newValue && setPanda(newValue as RedPanda);
@@ -156,7 +155,7 @@ export default function SightingForm(props: ISightingFormProps) {
                   clearOnBlur
                   handleHomeEndKeys
                   id="red-panda-select"
-                  options={pandaMock}
+                  options={props.pandas}
                   getOptionLabel={(option) => {
                     // Value selected with enter, right from the input
                     if (typeof option === 'string') {

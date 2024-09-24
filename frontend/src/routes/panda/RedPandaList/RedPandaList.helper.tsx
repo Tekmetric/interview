@@ -9,7 +9,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 export const getColumns = (
   navigate: NavigateFunction,
-  handleDelete: (pandaId: string) => void
+  handleDelete: (panda: RedPanda) => void
 ): GridColDef[] => [
   { 
     field: 'name',
@@ -43,13 +43,13 @@ export const getColumns = (
     renderCell: (params) => params.row.hasTracker  ? <CheckIcon /> : "",
   },
   {
-    field: 'colour',
+    field: 'color',
     headerName: 'Colour',
     sortable: false,
     type: "custom",
     width: 90,
     renderCell: (params: GridRenderCellParams) => (
-      <Box sx={{ width: '100%', height: "100%", background: params.row.colour }} />
+      <Box sx={{ width: '100%', height: "100%", background: params.row.color }} />
     )
   },
   {
@@ -63,7 +63,7 @@ export const getColumns = (
         <IconButton color="info" onClick={() => navigate(`${Routes.pandas}/edit/${params.row.id}`)}>
           <EditIcon />
         </IconButton>
-        <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
+        <IconButton color="error" onClick={() => handleDelete(params.row)}>
           <DeleteIcon />
         </IconButton>
       </>

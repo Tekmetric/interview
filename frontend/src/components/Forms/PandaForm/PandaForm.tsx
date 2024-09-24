@@ -16,7 +16,7 @@ import PandaAvatar from "./PandaAvatar";
 export default function PandaForm(props: IPandaFormProps) {
   const [name, setName] = useState<string | undefined>(props.panda?.name || "");
   const [age, setAge] = useState<number | undefined>(props.panda?.age);
-  const [colour, setColour] = useState<string>(props.panda?.colour || redPandaColours[0]);
+  const [color, setColour] = useState<string>(props.panda?.color || redPandaColours[0]);
   const [hasTracker, setHasTracker] = useState<boolean>(props.panda?.hasTracker || false);
   const [species, setSpecies] = useState<RedPandaSpecies>(props.panda?.species || RedPandaSpecies.Himalayan);
 
@@ -30,7 +30,7 @@ export default function PandaForm(props: IPandaFormProps) {
 
   useEffect(() => {
     setEditedPanda(buildPanda());
-  }, [name, age, colour, species, hasTracker]);
+  }, [name, age, color, species, hasTracker]);
 
   const handleTrackerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setHasTracker(event.target.checked);
@@ -39,13 +39,13 @@ export default function PandaForm(props: IPandaFormProps) {
   const resetState = (panda: RedPanda | undefined) => {
     setName(panda?.name || "");
     setAge(panda?.age);
-    setColour(panda?.colour || redPandaColours[0]);
+    setColour(panda?.color || redPandaColours[0]);
     setHasTracker(panda?.hasTracker || false);
     setSpecies(panda?.species || RedPandaSpecies.Himalayan);
     setEditedPanda(RedPandaService.initFromPanda(props.panda));
   }
 
-  const buildPanda = () => RedPandaService.buildPanda(props.panda?.id, name, age, species, hasTracker, colour);
+  const buildPanda = () => RedPandaService.buildPanda(props.panda?.id, name, age, species, hasTracker, color);
 
   const handleSave = () => {
     if (!PandaValidator.isValid(editedPanda)) {
@@ -98,7 +98,7 @@ export default function PandaForm(props: IPandaFormProps) {
             </Grid2>
 
             <Grid2 size={12}>
-              <ColourInput value={colour} onChange={setColour} />
+              <ColourInput value={color} onChange={setColour} />
             </Grid2>
 
             <Grid2 container spacing={2}>

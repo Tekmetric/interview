@@ -11,7 +11,7 @@ export const sightingsMock: Sighting[] = [
     panda: {
       id: 'test0',
       age: 10,
-      colour: redPandaColours[0],
+      color: redPandaColours[0],
       hasTracker: true,
       name: "Kylo",
       species: RedPandaSpecies.Himalayan
@@ -24,7 +24,7 @@ export const sightingsMock: Sighting[] = [
     panda: {
       id: 'test1',
       age: 3,
-      colour: redPandaColours[1],
+      color: redPandaColours[1],
       hasTracker: false,
       name: "Snitzel",
       species: RedPandaSpecies.Chinese
@@ -37,7 +37,7 @@ export const sightingsMock: Sighting[] = [
     panda: {
       id: 'test2',
       age: 3,
-      colour: redPandaColours[2],
+      color: redPandaColours[2],
       hasTracker: true,
       name: "Tofu",
       species: RedPandaSpecies.Chinese
@@ -50,7 +50,7 @@ export const sightingsMock: Sighting[] = [
     panda: {
       id: 'test3',
       age: 4,
-      colour: redPandaColours[3],
+      color: redPandaColours[3],
       hasTracker: false,
       name: "Pixel",
       species: RedPandaSpecies.Chinese

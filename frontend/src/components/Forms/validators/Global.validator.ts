@@ -1,6 +1,6 @@
 import { ValidationMessage } from "./Validator.interface";
 
-let nameRegex = /^[A-Z][a-zA-Z]+$/;
+let nameRegex = /^[A-Z][a-zA-Z/-]+$/;
 
 const isNameValid = (name: string): ValidationMessage => {
   if (!name) {
@@ -10,12 +10,21 @@ const isNameValid = (name: string): ValidationMessage => {
     return { isValid: false, errorMessage: "Name must be at least 3 characters long" };
   }
   if (!nameRegex.test(name)) {
-    return { isValid: false, errorMessage: "Name must contain only letters, and start with a capital letter" };
+    return { isValid: false, errorMessage: "Name must contain only letters and start with a capital letter" };
+  }
+
+  return { isValid: true };
+}
+
+const isDateTimeValid = (dateTime: string | undefined): ValidationMessage => {
+  if (!dateTime) {
+    return { isValid: false, errorMessage: "Date is required" };
   }
 
   return { isValid: true };
 }
 
 export const GlobalValidator = {
-  isNameValid
+  isNameValid,
+  isDateTimeValid
 }

@@ -80,14 +80,18 @@ export default function PandaForm(props: IPandaFormProps) {
     setShowDiscardChangesDialog(false);
   }
 
-  const handleDiscard = () => {
+  const onDiscardChangesConfirmed = () => {
     resetState(props.panda);
     setShowDiscardChangesDialog(false);
     navigate(Routes.pandas);
   }
 
-  const handleShowConfirmationDialog = () => {
-    setShowDiscardChangesDialog(true);
+  const handleDiscard = () => {
+    if (PandaValidator.isDirty(RedPandaService.initFromPanda(props.panda), editedPanda)) {
+      setShowDiscardChangesDialog(true);
+    } else {
+      onDiscardChangesConfirmed();
+    }
   }
 
   return (
@@ -159,6 +163,7 @@ export default function PandaForm(props: IPandaFormProps) {
                   {
                     redPandaColours.map(colour => (
                       <Radio
+                        key={colour}
                         value={colour}
                         checkedIcon={<ColourPickerIconChecked />}
                         icon={<ColourPickerIcon />}
@@ -187,8 +192,7 @@ export default function PandaForm(props: IPandaFormProps) {
                 <Button
                   color="warning"
                   variant="outlined"
-                  disabled={!PandaValidator.isDirty(RedPandaService.initFromPanda(props.panda), editedPanda)}
-                  onClick={handleShowConfirmationDialog}
+                  onClick={handleDiscard}
                   fullWidth
                 >
                   Discard
@@ -200,7 +204,7 @@ export default function PandaForm(props: IPandaFormProps) {
           <ConfirmationDialog 
             open={showDiscardChangesDialog}
             message={"You have unsaved changes that you are about to lose. Are you sure you want to continue?"}
-            onConfirm={handleDiscard}
+            onConfirm={onDiscardChangesConfirmed}
             onDiscard={() => setShowDiscardChangesDialog(false)}
             title={"Warning"}
           />

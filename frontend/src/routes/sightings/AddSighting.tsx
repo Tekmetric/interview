@@ -1,3 +1,9 @@
+import SightingForm from "../../components/Forms/SightingForm/SightingForm";
+
 export default function AddSighting() {
-  return <div>Add sighting</div>;
+  return <SightingForm
+    onSave={() => alert("TODO")}
+    pandas={[]}
+    selectedPandaId={undefined}
+  />;
 }

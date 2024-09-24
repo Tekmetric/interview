@@ -11,6 +11,7 @@ import RPMap from "../../components/RPMap/RPMap";
 import { Location } from "../../types/Location";
 import { useNavigate } from "react-router-dom";
 import { Routes } from "../../constants/routes.constants";
+import { MapService } from "../../service/MapService";
 
 export default function SightingsList() {
   const [page, setPage] = useState<number>(0);
@@ -91,7 +92,7 @@ export default function SightingsList() {
       type: "custom",
       renderCell: (params) => (
         <Button onClick={() => setSelectedLocation(params.row.location)}>
-          {`${params.row.location.lat}° N,  ${params.row.location.lon}° E`}
+          {MapService.formatLocationForDisplay(params.row.location)}
         </Button>
       ),
     },

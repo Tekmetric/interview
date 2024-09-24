@@ -17,6 +17,7 @@ import { pandaMock } from "../../../service/RedPandaService";
 import { RedPanda, RedPandaSpecies } from "../../../types/RedPanda";
 import { redPandaColours } from "../../../constants/panda.constants";
 import { DEFAULT_CENTER_POINT } from "../../../constants/map.constants";
+import { MapService } from "../../../service/MapService";
 
 export default function SightingForm(props: ISightingFormProps) {
   const [dateTime, setDateTime] = useState<Dayjs | null>(dayjs(new Date().toISOString()));
@@ -42,10 +43,6 @@ export default function SightingForm(props: ISightingFormProps) {
     setSighting(buildSighting());
   }, [panda, location, dateTime]);
 
-  const handleLocationChange = () => {
-
-  }
-
   const resetState = () => {
     setLocation(undefined);
     setDateTime(dayjs(new Date().toISOString()));
@@ -59,6 +56,7 @@ export default function SightingForm(props: ISightingFormProps) {
       return;
     }
     
+    console.log(sighting);
     props.onSave(sighting);
     setShowDiscardChangesDialog(false);
   }
@@ -90,7 +88,7 @@ export default function SightingForm(props: ISightingFormProps) {
     if (useCurrent) {
       handleUseCurrentLocation();
     } else {
-      setLocation({ lon: DEFAULT_CENTER_POINT[0], lat: DEFAULT_CENTER_POINT[1] });
+      setLocation(undefined);
     }
   }
 
@@ -123,9 +121,14 @@ export default function SightingForm(props: ISightingFormProps) {
                 label="Use current location"
               />
 
-              {!useCurrentLocation && <Typography>
-                  Please select location on the map
-                </Typography>
+              {!useCurrentLocation && <>
+                  <Typography>
+                    {location ? "Your selected location is: " : "Please select location on the map"}
+                  </Typography>
+                  <Typography color="warning">
+                    {location ? MapService.formatLocationForDisplay(location) : ""}
+                  </Typography>
+                </>
               }         
             </Grid2>
 
@@ -209,7 +212,12 @@ export default function SightingForm(props: ISightingFormProps) {
 
       <Grid2 size={{ sm : 12, md: 7, lg: 8 }}>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", flexGrow: 1, height: "100%" }}>
-          <RPMap assets={location ? [location] : []} centerPoint={location} />
+          <RPMap
+            assets={location ? [location] : []}
+            centerPoint={location || { lon: DEFAULT_CENTER_POINT[0], lat: DEFAULT_CENTER_POINT[1] }}
+            onSelectLocation={setLocation}
+            withSelectLocation
+          />
         </Box>
       </Grid2>
     </Grid2>

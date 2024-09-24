@@ -1,5 +1,5 @@
 import OlMap from "ol/Map";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { IRPMapProps } from "./RPMap.interface";
 import { MapService } from "../../service/MapService";
 import { MapHost } from "./RPMap.style";
@@ -18,7 +18,7 @@ export default function RPMap (props: IRPMapProps) {
       return
     }
 
-    const map = MapService.buildMap(mapElement.current!);
+    const map = MapService.buildMap(mapElement.current!, props.withSelectLocation);
     setMap(map);
     mapRef.current = map;
   }, []);
@@ -35,6 +35,29 @@ export default function RPMap (props: IRPMapProps) {
   useEffect(() => {
     MapService.handleCenterMapOnPoint(map, props.centerPoint);
   }, [map, props.centerPoint]);
+
+  useEffect(() => {
+    const unregister = MapService.registerLocationClickEvent(
+      map, 
+      handleMapClick
+    );
+
+    return () => unregister();
+  }, [map, props.withSelectLocation, props.onSelectLocation]);
+  
+  const handleMapClick = useCallback(
+    (event: any) => {
+      const clickedLocation = mapRef.current?.getCoordinateFromPixel(
+        event.pixel
+      );
+
+      if (clickedLocation) {
+        const location = MapService.mapCoordinateToLocation(clickedLocation);
+        props.onSelectLocation?.(location);
+      }
+    },
+    [map, props.onSelectLocation]
+  );
 
   return (
     <MapHost

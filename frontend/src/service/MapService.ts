@@ -71,29 +71,34 @@ const buildAttribution = () => new Attribution({
 
 const buildBaseLayer = () => new TileLayer({ source: new BASE_LAYER_SOURCE() });
 
-const buildMap = (target: HTMLDivElement) => {
+const buildMap = (target: HTMLDivElement, withSelectLocation?: boolean) => {
   const mapLayers: BaseLayer[] = [buildBaseLayer()];
-    const attributions = buildAttribution();
+  const attributions = buildAttribution();
 
-    const transformedCenterPoint = transform(
-      DEFAULT_CENTER_POINT,
-      ASSETS_PROJECTION,
-      DEFAULT_MAP_PROJECTION
-    );
+  const transformedCenterPoint = transform(
+    DEFAULT_CENTER_POINT,
+    ASSETS_PROJECTION,
+    DEFAULT_MAP_PROJECTION
+  );
 
-    return new OlMap({
-      target: target,
-      layers: mapLayers,
-      view: new View({
-        projection: DEFAULT_MAP_PROJECTION,
-        center: transformedCenterPoint,
-        zoom: DEFAULT_ZOOM_FACTOR,
-      }),
-      controls: [attributions],
-      interactions: defaults({
-        doubleClickZoom: false,
-      }),
-    });
+  if (withSelectLocation) {
+    const selectedLocationLayer = buildPointVectorLayerFromFeatures([]);
+    mapLayers.push(selectedLocationLayer);
+  }
+
+  return new OlMap({
+    target: target,
+    layers: mapLayers,
+    view: new View({
+      projection: DEFAULT_MAP_PROJECTION,
+      center: transformedCenterPoint,
+      zoom: DEFAULT_ZOOM_FACTOR,
+    }),
+    controls: [attributions],
+    interactions: defaults({
+      doubleClickZoom: false,
+    }),
+  });
 };
 
 export const handleCenterMapOnPoint = (
@@ -120,8 +125,47 @@ export const handleCenterMapOnPoint = (
   }
 };
 
+const transformCoordinateFromMapProjection = (coordinate: Coordinate) => transform(
+  coordinate,
+  DEFAULT_MAP_PROJECTION,
+  ASSETS_PROJECTION
+);
+
+const mapCoordinateToLocation = (coordinate: Coordinate) => {
+  const transformedCoordinate = transform(
+    coordinate,
+    DEFAULT_MAP_PROJECTION,
+    ASSETS_PROJECTION
+  );
+
+  return { lon: transformedCoordinate[0], lat: transformedCoordinate[1] };
+};
+
+
+const registerLocationClickEvent = (
+  map: OlMap | undefined,
+  onAssetsClick: (targetLocation: Location) => void | undefined,
+): (() => void) => {
+  if (map) {
+    map.on("click", onAssetsClick);
+
+    return () => {
+      map.un("click", onAssetsClick);
+    };
+  }
+
+  return () => {};
+};
+
+const formatLocationForDisplay = (location: Location): string => {
+  return `${Math.abs(location.lat)}°${location.lat > 0 ? "N" : "S"}, ${Math.abs(location.lon)}°${location.lon > 0 ? "E" : "W"}`;
+}
+
 export const MapService = {
   mapDatasetAssetsToLayers,
   buildMap,
-  handleCenterMapOnPoint
+  handleCenterMapOnPoint,
+  registerLocationClickEvent,
+  mapCoordinateToLocation,
+  formatLocationForDisplay
 }

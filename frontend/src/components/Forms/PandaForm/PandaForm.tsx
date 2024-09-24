@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { Routes } from "../../../constants/routes.constants";
 import ChinesePanda from "../../../assets/redpanda-landing.png";
 import HimalayanPanda from "../../../assets/redpanda-landing-himalayan.png";
+import Tracker from "../../../assets/tracker.png";
 
 export default function PandaForm(props: IPandaFormProps) {
   const [name, setName] = useState<string | undefined>(props.panda?.name || "");
@@ -213,7 +214,14 @@ export default function PandaForm(props: IPandaFormProps) {
 
       <Grid2 size={{ sm : 12, md: 7, lg: 8 }}>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", flexGrow: 1, height: "100%" }}>
-          <img src={species === RedPandaSpecies.Chinese ? ChinesePanda : HimalayanPanda} height={300} />
+          <Box sx={{ position: "relative" }}>
+            <img src={species === RedPandaSpecies.Chinese ? ChinesePanda : HimalayanPanda} height={300} />
+            {hasTracker && (
+              <Box sx={{ position: "absolute", top: 120, left: 130 }}>
+                <img src={Tracker} height={24} />
+              </Box>
+            )}
+          </Box>
         </Box>
       </Grid2>
     </Grid2>

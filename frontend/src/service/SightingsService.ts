@@ -1,73 +1,42 @@
-import { redPandaColours } from "../constants/panda.constants";
+import { createSighting, fetchAllSightings } from "../api/sightings.api";
 import { Location } from "../types/Location";
-import { RedPandaSpecies } from "../types/RedPanda";
-import { Sighting, SightingDTO } from "../types/Sighting";
-
-export const sightingsMock: Sighting[] = [
-  {
-    id: 'test0',
-    dateTime: new Date().toISOString(),
-    location: { lat: 28.3974, lon: 83.1258 },
-    panda: {
-      id: 'test0',
-      age: 10,
-      color: redPandaColours[0],
-      hasTracker: true,
-      name: "Kylo",
-      species: RedPandaSpecies.Himalayan
-    },
-  },
-  {
-    id: 'test1',
-    dateTime: new Date().toISOString(),
-    location: {lat: 28.0, lon: 84.1258},
-    panda: {
-      id: 'test1',
-      age: 3,
-      color: redPandaColours[1],
-      hasTracker: false,
-      name: "Snitzel",
-      species: RedPandaSpecies.Chinese
-      }
-  },
-  {
-    id: 'test2',
-    dateTime: new Date().toISOString(),
-    location: {lat: 27.3974, lon: 82.1258},
-    panda: {
-      id: 'test2',
-      age: 3,
-      color: redPandaColours[2],
-      hasTracker: true,
-      name: "Tofu",
-      species: RedPandaSpecies.Chinese
-    }
-  },
-  {
-    id: 'test3',
-    dateTime: new Date().toISOString(),
-    location: {lat: 29.3974, lon: 85.1258},
-    panda: {
-      id: 'test3',
-      age: 4,
-      color: redPandaColours[3],
-      hasTracker: false,
-      name: "Pixel",
-      species: RedPandaSpecies.Chinese
-    }
-  }
-];
+import { RedPanda } from "../types/RedPanda";
+import { Sighting, AddSightingDTO, SightingDTO } from "../types/Sighting";
 
 const buildSighting = (
   pandaId: string | undefined,
   location: Location | undefined,
   dateTime: string | undefined
-): SightingDTO => ({
+): AddSightingDTO => ({
   pandaId: pandaId || "", 
-  location, 
+  location,
   dateTime
 });
 
+export const fetchSightings = async (pandas: RedPanda[]): Promise<Sighting[]> => {
+  try {
+    const response = await fetchAllSightings();
+    return response.data.map((sighting: SightingDTO) => ({
+      ...sighting,
+      location: { latitude: sighting.locationLat, longitude: sighting.locationLon },
+      panda: pandas.find(panda => panda.id === sighting.pandaId)
+    })).filter((sighting: Sighting) => !!sighting.panda);
+  } catch {
+    return [];
+  }
+}
+
+export const addSighting = async (sighting: AddSightingDTO) => {
+  try {
+    const response = await createSighting(sighting);
+    return response;
+  } catch {
+    return undefined;
+  }
+}
+
 export const SightingService = {
-  buildSighting
+  buildSighting,
+  fetchSightings,
+  addSighting
 }

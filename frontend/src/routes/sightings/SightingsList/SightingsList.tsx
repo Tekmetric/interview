@@ -1,5 +1,5 @@
 import Table from "../../../components/Table/Table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Grid2, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import { Sighting } from "../../../types/Sighting";
@@ -8,15 +8,30 @@ import { Location } from "../../../types/Location";
 import { useNavigate } from "react-router-dom";
 import { Routes } from "../../../constants/routes.constants";
 import { getColumns } from "./SightingsList.helper";
-import { sightingsMock } from "../../../service/SightingsService";
+import { SightingService } from "../../../service/SightingsService";
+import { RedPanda } from "../../../types/RedPanda";
+import { RedPandaService } from "../../../service/RedPandaService";
 
 export default function SightingsList() {
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(5);
   const [selectedLocation, setSelectedLocation] = useState<Location>();
-  const [rows, setRows] = useState<Sighting[]>(sightingsMock);
+
+  const [rows, setRows] = useState<Sighting[]>([]);
+  const [pandas, setPandas] = useState<RedPanda[]>([]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchSightings();
+  }, []);
+
+  const fetchSightings = async () => {
+    const pandas = await RedPandaService.fetchPandas();
+    const sightings = await SightingService.fetchSightings(pandas);
+    setRows(sightings);
+    setPandas(pandas);
+  }
 
   const columns = getColumns(navigate, setSelectedLocation);
 

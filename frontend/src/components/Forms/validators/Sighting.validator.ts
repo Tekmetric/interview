@@ -1,5 +1,5 @@
 import { Location } from "../../../types/Location";
-import { Sighting, SightingDTO } from "../../../types/Sighting";
+import { AddSightingDTO, SightingDTO } from "../../../types/Sighting";
 import { GlobalValidator } from "./Global.validator";
 import { ISightingValidator, ValidationMessage } from "./Validator.interface";
 import { isEqual } from "lodash";
@@ -11,11 +11,11 @@ const isLocationValid = (location: Location | undefined): ValidationMessage => {
     return { isValid: false, errorMessage: "Location is required" };
   }
 
-  if (location.lat > 90 || location.lat < -90) {
+  if (location.latitude > 90 || location.latitude < -90) {
     return { isValid: false, errorMessage: "Latitude must be between -90 and 90 degrees" };
   }
 
-  if (location.lon > 180 || location.lon < -180) {
+  if (location.longitude > 180 || location.longitude < -180) {
     return { isValid: false, errorMessage: "Longitude must be between -180 and 180 degrees" };
   }
 
@@ -32,7 +32,7 @@ const isRedPandaValid = (pandaId: string | undefined): ValidationMessage => {
 
 const isDirty = (initialValue: SightingDTO, currentValue: SightingDTO) => !isEqual(initialValue, currentValue);
 
-const isValid = (sighting: SightingDTO) => (
+const isValid = (sighting: AddSightingDTO) => (
   isDateTimeValid(sighting.dateTime).isValid
   && isLocationValid(sighting.location).isValid
   && isRedPandaValid(sighting.pandaId).isValid

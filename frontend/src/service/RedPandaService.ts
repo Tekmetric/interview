@@ -48,7 +48,6 @@ export const fetchPandas = async (): Promise<RedPanda[]> => {
 export const getById = async (id: string): Promise<RedPanda | undefined> => {
   try {
     const response = await getPandaById(id);
-    debugger;
     return response.data;
   } catch {
     return undefined;
@@ -58,7 +57,6 @@ export const getById = async (id: string): Promise<RedPanda | undefined> => {
 export const addPanda = async (panda: RedPanda) => {
   try {
     const response = await createPanda(panda);
-    debugger;
     return response;
   } catch {
     return undefined;
@@ -68,7 +66,6 @@ export const addPanda = async (panda: RedPanda) => {
 export const editPanda = async (panda: RedPanda) => {
   try {
     const response = await updatePanda(panda);
-    debugger;
     return response;
   } catch {
     return undefined;
@@ -78,7 +75,6 @@ export const editPanda = async (panda: RedPanda) => {
 export const deleteById = async (pandaId: string) => {
   try {
     const response = await deletePanda(pandaId);
-    debugger;
     return response;
   } catch {
     return undefined;

@@ -35,7 +35,7 @@ const mapPositionalAssetToFeature = (location: Location) => {
   const feature = new Feature({
     geometry: new Point(
       transform(
-        [location.lon, location.lat],
+        [location.longitude, location.latitude],
         ASSETS_PROJECTION,
         DEFAULT_MAP_PROJECTION
       )
@@ -109,7 +109,7 @@ export const handleCenterMapOnPoint = (
   try {
     if (centerPoint && map) {
       const transformedCoordinate: Coordinate = transform(
-        [centerPoint.lon, centerPoint.lat],
+        [centerPoint.longitude, centerPoint.latitude],
         ASSETS_PROJECTION,
         DEFAULT_MAP_PROJECTION
       );
@@ -138,7 +138,7 @@ const mapCoordinateToLocation = (coordinate: Coordinate) => {
     ASSETS_PROJECTION
   );
 
-  return { lon: transformedCoordinate[0], lat: transformedCoordinate[1] };
+  return { longitude: transformedCoordinate[0], latitude: transformedCoordinate[1] };
 };
 
 
@@ -158,7 +158,7 @@ const registerLocationClickEvent = (
 };
 
 const formatLocationForDisplay = (location: Location): string => {
-  return `${Math.abs(location.lat)}°${location.lat > 0 ? "N" : "S"}, ${Math.abs(location.lon)}°${location.lon > 0 ? "E" : "W"}`;
+  return `${Math.abs(location.latitude)}°${location.latitude > 0 ? "N" : "S"}, ${Math.abs(location.longitude)}°${location.longitude > 0 ? "E" : "W"}`;
 }
 
 export const MapService = {

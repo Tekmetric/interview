@@ -5,7 +5,7 @@ import { ISightingFormProps } from "./SightingForm.interface";
 import RPMap from "../../RPMap/RPMap";
 import { Location } from "../../../types/Location";
 import { SightingService } from "../../../service/SightingsService";
-import { SightingDTO } from "../../../types/Sighting";
+import { AddSightingDTO } from "../../../types/Sighting";
 import { SightingValidator } from "../validators/Sighting.validator";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
@@ -25,7 +25,7 @@ export default function SightingForm(props: ISightingFormProps) {
 
   const [useCurrentLocation, setUseCurrentLocation] = useState(true);
 
-  const [sighting, setSighting] = useState<SightingDTO>(SightingService.buildSighting(panda?.id, location, dateTime?.toISOString()));
+  const [sighting, setSighting] = useState<AddSightingDTO>(SightingService.buildSighting(panda?.id, location, dateTime?.toISOString()));
 
   const [showDiscardChangesDialog, setShowDiscardChangesDialog] = useState(false);
   const [openAddPanda, setOpenAddPanda] = useState(false);
@@ -77,7 +77,7 @@ export default function SightingForm(props: ISightingFormProps) {
   const handleUseCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition((position) => {
       const crd = position.coords;
-      setLocation({ lat: crd.latitude, lon: crd.longitude });
+      setLocation({ latitude: crd.latitude, longitude: crd.longitude });
     });
   }
 
@@ -222,7 +222,7 @@ export default function SightingForm(props: ISightingFormProps) {
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", flexGrow: 1, height: "100%" }}>
           <RPMap
             assets={location ? [location] : []}
-            centerPoint={location || { lon: DEFAULT_CENTER_POINT[0], lat: DEFAULT_CENTER_POINT[1] }}
+            centerPoint={location || { longitude: DEFAULT_CENTER_POINT[0], latitude: DEFAULT_CENTER_POINT[1] }}
             onSelectLocation={setLocation}
             withSelectLocation
           />

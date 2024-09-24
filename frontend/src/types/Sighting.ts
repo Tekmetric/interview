@@ -8,9 +8,17 @@ export type Sighting = {
   panda: RedPanda;
 }
 
-export type SightingDTO = {
+export type AddSightingDTO = {
   dateTime: string | undefined;
   location: Location | undefined;
+  pandaId: string;
+}
+
+export type SightingDTO = {
+  id: string;
+  dateTime: string | undefined;
+  locationLat: number | null;
+  locationLon: number | null;
   pandaId: string;
 }
 

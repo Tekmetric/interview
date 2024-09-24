@@ -15,15 +15,6 @@ export default function AppLayout() {
   const [selectedTheme, setSelectedTheme] = React.useState<Themes>(defaultTheme);
   const [isSideBarExpanded, setIsSideBarExpanded] = React.useState(false);
 
-  // const session = useAppSelector(state => state.session);
-  // const navigate = useNavigate();
-
-  // React.useEffect(() => {
-  //   if (session.isAuthenticated) {
-  //     navigate(Routes.login);
-  //   }
-  // }, [session.isAuthenticated]);
-
   return (
     <ThemeProvider theme={getTheme(selectedTheme)}>
       <CssBaseline />

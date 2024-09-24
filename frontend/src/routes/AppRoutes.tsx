@@ -13,6 +13,7 @@ import RedPandaList from "./panda/RedPandaList";
 import AddPanda from "./panda/AddPanda";
 import EditPanda from "./panda/EditPanda";
 import PandaDetail from "./panda/PandaDetail";
+import AuthenticatedRoute from "./AuthenticatedRoute";
 
 const AppRoutes: React.FC = () => {
   const router = createBrowserRouter([
@@ -22,7 +23,7 @@ const AppRoutes: React.FC = () => {
     },
     {
       path: Routes.home,
-      element: <AppLayout />,
+      element: <AuthenticatedRoute><AppLayout /></AuthenticatedRoute>,
       children: [
         {
           path: Routes.home,

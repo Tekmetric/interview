@@ -4,4 +4,6 @@ import { SightingDTO } from "../../../types/Sighting";
 export interface ISightingFormProps {
   pandas: RedPanda[];
   onSave: (sighting: SightingDTO) => void;
+  onSavePanda: (panda: RedPanda) => void;
+  onDiscard: () => void;
 }

@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, Checkbox, FormControlLabel, Grid2, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Checkbox, FormControlLabel, Grid2, IconButton, Modal, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import ConfirmationDialog from "../../ConfirmationDialog/ConfirmationDialog";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +17,9 @@ import { pandaMock } from "../../../service/RedPandaService";
 import { RedPanda } from "../../../types/RedPanda";
 import { DEFAULT_CENTER_POINT } from "../../../constants/map.constants";
 import { MapService } from "../../../service/MapService";
+import AddIcon from "@mui/icons-material/Add";
+import PandaForm from "../PandaForm/PandaForm";
+import { StyledModalContainer } from "../../Modal/ModalContainer";
 
 export default function SightingForm(props: ISightingFormProps) {
   const [dateTime, setDateTime] = useState<Dayjs | null>(dayjs(new Date().toISOString()));
@@ -28,6 +31,8 @@ export default function SightingForm(props: ISightingFormProps) {
   const [sighting, setSighting] = useState<SightingDTO>(SightingService.buildSighting(panda?.id, location, dateTime?.toISOString()));
 
   const [showDiscardChangesDialog, setShowDiscardChangesDialog] = useState(false);
+  const [openAddPanda, setOpenAddPanda] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,7 +68,7 @@ export default function SightingForm(props: ISightingFormProps) {
   const onDiscardChangesConfirmed = () => {
     resetState();
     setShowDiscardChangesDialog(false);
-    navigate(Routes.sightings);
+    props.onDiscard();
   }
 
   const handleDiscard = () => {
@@ -91,7 +96,13 @@ export default function SightingForm(props: ISightingFormProps) {
     }
   }
 
+  const handleSavePanda = (panda: RedPanda) => {
+    props.onSavePanda(panda);
+    setOpenAddPanda(false);
+  } 
+
   return (
+    <>
     <Grid2 container spacing={4}>
       <Grid2 container size={{ sm : 12, md: 5, lg: 4 }}>        
         <Grid2 container spacing={4}>
@@ -132,44 +143,46 @@ export default function SightingForm(props: ISightingFormProps) {
             </Grid2>
 
             <Grid2 size={12}>
-              <Autocomplete
-                value={panda}
-                onChange={(_, newValue) => {
-                  if (typeof newValue === 'string') {
-                    setPanda(pandaMock.find(panda => panda.name === newValue));
-                    return;
-                  }
-                  newValue && setPanda(newValue as RedPanda);
-                }}
-                filterOptions={(options, params) => {
-                  return options.filter((option) => option.name.includes(params.inputValue));
-                }}
-                selectOnFocus
-                clearOnBlur
-                handleHomeEndKeys
-                id="red-panda-select"
-                options={pandaMock}
-                getOptionLabel={(option) => {
-                  // Value selected with enter, right from the input
-                  if (typeof option === 'string') {
-                    return option;
-                  }
-                  return option.name;
-                }}
-                renderOption={(props, option) => {
-                  const { key, ...optionProps } = props;
-                  return (
-                    <li key={key} {...optionProps}>
-                      {option.name}
-                    </li>
-                  );
-                }}
-                sx={{ width: 300 }}
-                freeSolo
-                renderInput={(params) => (
-                  <TextField {...params} label="Red panda" />
-                )}
-              />
+              <Box sx={{ display: "flex" }}>
+                <Autocomplete
+                  value={panda}
+                  onChange={(_, newValue) => {
+                    if (typeof newValue === 'string') {
+                      setPanda(pandaMock.find(panda => panda.name === newValue));
+                      return;
+                    }
+                    newValue && setPanda(newValue as RedPanda);
+                  }}
+                  filterOptions={(options, params) => {
+                    return options.filter((option) => option.name.includes(params.inputValue));
+                  }}
+                  selectOnFocus
+                  clearOnBlur
+                  handleHomeEndKeys
+                  id="red-panda-select"
+                  options={pandaMock}
+                  getOptionLabel={(option) => {
+                    // Value selected with enter, right from the input
+                    if (typeof option === 'string') {
+                      return option;
+                    }
+                    return option.name;
+                  }}
+                  renderOption={(props, option) => {
+                    const { key, ...optionProps } = props;
+                    return (
+                      <li key={key} {...optionProps}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  sx={{ width: 300 }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Red panda" />
+                  )}
+                />
+                <Button color="primary" variant="contained" startIcon={<AddIcon />} onClick={() => setOpenAddPanda(true)}>panda</Button>
+              </Box>
             </Grid2>
 
 
@@ -220,5 +233,12 @@ export default function SightingForm(props: ISightingFormProps) {
         </Box>
       </Grid2>
     </Grid2>
+
+    <Modal open={openAddPanda}>
+      <StyledModalContainer>
+        <PandaForm onSave={handleSavePanda} onDiscard={() => setOpenAddPanda(false)} />
+      </StyledModalContainer>
+    </Modal>
+    </>
   );
 }

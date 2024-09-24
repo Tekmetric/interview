@@ -16,8 +16,18 @@ export default function AddSighting() {
     navigate(Routes.sightings);
   }
 
+  const handleSavePanda = () => {
+    enqueueSnackbar("Panda successfully created. You can now find it listed.", { variant: "success" });
+  }
+
+  const handleDiscard = () => {
+    navigate(Routes.sightings);
+  }
+
   return <SightingForm
     onSave={handleSave}
     pandas={pandas}
+    onDiscard={handleDiscard}
+    onSavePanda={handleSavePanda}
   />;
 }

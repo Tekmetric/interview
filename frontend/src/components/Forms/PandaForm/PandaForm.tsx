@@ -7,8 +7,6 @@ import { PandaValidator } from "../validators/Panda.validator";
 import { ColourPickerIcon, ColourPickerIconChecked } from "./PandaForm.style";
 import ConfirmationDialog from "../../ConfirmationDialog/ConfirmationDialog";
 import { RedPandaService } from "../../../service/RedPandaService";
-import { useNavigate } from "react-router-dom";
-import { Routes } from "../../../constants/routes.constants";
 import ChinesePanda from "../../../assets/redpanda-landing.png";
 import HimalayanPanda from "../../../assets/redpanda-landing-himalayan.png";
 import Tracker from "../../../assets/tracker.png";
@@ -23,8 +21,6 @@ export default function PandaForm(props: IPandaFormProps) {
   const [editedPanda, setEditedPanda] = useState<RedPanda>(RedPandaService.initFromPanda(props.panda));
 
   const [showDiscardChangesDialog, setShowDiscardChangesDialog] = useState(false);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     resetState(props.panda);
@@ -83,7 +79,7 @@ export default function PandaForm(props: IPandaFormProps) {
   const onDiscardChangesConfirmed = () => {
     resetState(props.panda);
     setShowDiscardChangesDialog(false);
-    navigate(Routes.pandas);
+    props.onDiscard();
   }
 
   const handleDiscard = () => {
@@ -96,7 +92,7 @@ export default function PandaForm(props: IPandaFormProps) {
 
   return (
     <Grid2 container spacing={4}>
-      <Grid2 container size={{ sm : 12, md: 5, lg: 4 }}>        
+      <Grid2 container size={{ sm : 12, md: 5 }}>        
         <Grid2 container spacing={4}>
           <Grid2 size={12}>
             <Typography variant="h6">
@@ -211,7 +207,7 @@ export default function PandaForm(props: IPandaFormProps) {
         </Grid2>
       </Grid2>
 
-      <Grid2 size={{ sm : 12, md: 7, lg: 8 }}>
+      <Grid2 size={{ sm : 12, md: 7 }}>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", flexGrow: 1, height: "100%" }}>
           <Box sx={{ position: "relative" }}>
             <img src={species === RedPandaSpecies.Chinese ? ChinesePanda : HimalayanPanda} height={300} />

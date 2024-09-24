@@ -12,7 +12,11 @@ export default function AddPanda() {
     navigate(Routes.pandas);
   }
 
+  const handleDiscard = () => {
+    navigate(Routes.pandas);
+  }
+
   return (
-    <PandaForm onSave={handleSave} />
+    <PandaForm onSave={handleSave} onDiscard={handleDiscard} />
   );
 }

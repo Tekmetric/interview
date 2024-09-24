@@ -22,7 +22,11 @@ export default function EditPanda() {
     navigate(Routes.pandas);
   }
 
+  const handleDiscard = () => {
+    navigate(Routes.pandas);
+  }
+
   return (
-    <PandaForm panda={panda} onSave={handleSave}/>
+    <PandaForm panda={panda} onSave={handleSave} onDiscard={handleDiscard} />
   );
 }

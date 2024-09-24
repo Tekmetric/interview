@@ -1,8 +1,6 @@
-import { Autocomplete, Box, Button, Checkbox, FormControlLabel, Grid2, IconButton, Modal, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Checkbox, FormControlLabel, Grid2, Modal, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import ConfirmationDialog from "../../ConfirmationDialog/ConfirmationDialog";
-import { useNavigate } from "react-router-dom";
-import { Routes } from "../../../constants/routes.constants";
 import { ISightingFormProps } from "./SightingForm.interface";
 import RPMap from "../../RPMap/RPMap";
 import { Location } from "../../../types/Location";
@@ -32,8 +30,6 @@ export default function SightingForm(props: ISightingFormProps) {
 
   const [showDiscardChangesDialog, setShowDiscardChangesDialog] = useState(false);
   const [openAddPanda, setOpenAddPanda] = useState(false);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     handleUseCurrentLocation();

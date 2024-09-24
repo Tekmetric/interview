@@ -2,7 +2,7 @@ import { Box, Grid2, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { pandaMock } from "../../service/RedPandaService";
-import { RedPanda, RedPandaSpecies, RedPandaSpeciesLabels } from "../../types/RedPanda";
+import { RedPanda, RedPandaSpeciesLabels } from "../../types/RedPanda";
 import RedPandaImage from "../../assets/panda-tree.png";
 
 export default function PandaDetail() {

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Routes } from "../constants/routes.constants";
 
 export default function AuthenticatedRoute (props: PropsWithChildren) {
-  const isAuthenticated = false; // TODO: wire in when login is functional const session = useAppSelector(state => state.session);
+  const isAuthenticated = true; // TODO: wire in when login is functional const session = useAppSelector(state => state.session);
 
   const navigate = useNavigate();
 

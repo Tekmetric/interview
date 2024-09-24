@@ -9,7 +9,8 @@ export const UserMenuPopover = styled('div')(() => ({
   top: 0,
   right: 0,
   minHeight: 300,
-  width: '100vw',
+  width: '100%',
+  flexWrap: "wrap"
 }));
 
 export const Paper = styled(MuiPaper)(() => ({
@@ -89,6 +90,7 @@ export const FlexRowContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-evenly',
   width: '100%',
+  flexWrap: "wrap-reverse",
   padding: theme.spacing(0, 7),
 }));
 

@@ -6,14 +6,14 @@ import { Routes } from "../constants/routes.constants";
 import HomePage from "./home/HomePage";
 import LocationsPage from "./locations/LocationsPage";
 import SightingsPage from "./sightings/SightingsPage";
-import SightingsList from "./sightings/SightingsList";
+import SightingsList from "./sightings/SightingsList/SightingsList";
 import AddSighting from "./sightings/AddSighting";
 import RedPandaPage from "./panda/RedPandaPage";
-import RedPandaList from "./panda/RedPandaList";
 import AddPanda from "./panda/AddPanda";
 import EditPanda from "./panda/EditPanda";
 import PandaDetail from "./panda/PandaDetail";
 import AuthenticatedRoute from "./AuthenticatedRoute";
+import RedPandaList from "./panda/RedPandaList/RedPandaList";
 
 const AppRoutes: React.FC = () => {
   const router = createBrowserRouter([

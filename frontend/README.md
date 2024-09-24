@@ -1,14 +1,12 @@
-# Tech Interview Project
+# Tech Interview Project  - Red Panda project - Node js backend
 
 ## Steps to get started:
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
 
-#### Let's install the project locally
+### Let's install the project locally
 `yarn install`
 
-#### Let's start the project locally
+### Let's start the project locally
 `yarn dev`
 
 #### Let's run unit tests locally
@@ -32,4 +30,4 @@ I wanted to also integrate Redux, but it's currently a work in progress.
 I have written some UI unit test examples, but again, due to time constraints, I did not manage to test all the components.
 
 ### I also built a basic nodejs backed
-Please find it in the /backend_node folder
+Please find it in the /pandaAPI folder

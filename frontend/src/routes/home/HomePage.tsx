@@ -17,7 +17,7 @@ export default function HomePage() {
           Welcome to Red Panda Tracker!
         </Typography>
         <Typography variant="h6">
-          An app for logging your red panda sightings and tracking pandas wearing a GPS tracker.
+          An app for logging your red panda sightings and monitoring pandas wearing a GPS tracker.
         </Typography>
 
         <Box sx={{ display: 'flex', justifyContent: "center", alignItems: "center", margin: 4 }}>

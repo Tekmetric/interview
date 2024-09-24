@@ -1,7 +1,12 @@
 
 export enum RedPandaSpecies {
   Himalayan,
-  Chinese
+  Chinese,
+}
+
+export const RedPandaSpeciesLabels = {
+  [RedPandaSpecies.Himalayan]: "Hymalayan",
+  [RedPandaSpecies.Chinese]: "Chinese",
 }
 
 export type RedPanda = {
@@ -9,6 +14,6 @@ export type RedPanda = {
   hasTracker: boolean;
   colour: string;
   species: RedPandaSpecies;
-  name: string | undefined;
+  name: string;
   age: number | undefined;
 }

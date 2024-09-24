@@ -2,7 +2,7 @@ import { Box, Grid2, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { pandaMock } from "../../service/RedPandaService";
-import { RedPanda, RedPandaSpecies } from "../../types/RedPanda";
+import { RedPanda, RedPandaSpecies, RedPandaSpeciesLabels } from "../../types/RedPanda";
 import RedPandaImage from "../../assets/panda-tree.png";
 
 export default function PandaDetail() {
@@ -24,7 +24,7 @@ export default function PandaDetail() {
             </Typography>
           </Grid2>
 
-          <Grid2 container spacing={2} size={7}>
+          <Grid2 container spacing={2} size={{ sm: 12, md: 7 }}>
             <Grid2 size={4}>
               <Typography>
                 Name
@@ -54,7 +54,7 @@ export default function PandaDetail() {
             </Grid2>
             <Grid2 size={8}>
               <Typography>
-                {panda.species === RedPandaSpecies.Chinese ? "Chinese" : "Himalayan"}
+                {RedPandaSpeciesLabels[panda.species]}
               </Typography>
             </Grid2>
             
@@ -90,7 +90,7 @@ export default function PandaDetail() {
             </Grid2>
           </Grid2>
 
-          <Grid2 size={4}>
+          <Grid2 size={{ sm: 12, md: 4 }}>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <img src={RedPandaImage} height={400} />
             </Box>

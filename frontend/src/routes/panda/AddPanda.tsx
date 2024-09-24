@@ -1,3 +1,7 @@
+import PandaForm from "../../components/Forms/PandaForm/PandaForm";
+
 export default function AddPanda() {
-  return <div>Add panda</div>;
+  return (
+    <PandaForm onSave={() => alert("TODO")} />
+  );
 }

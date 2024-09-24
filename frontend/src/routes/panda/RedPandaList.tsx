@@ -1,13 +1,15 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import Table from "../../components/Table/Table";
-import { RedPanda, RedPandaSpecies } from "../../types/RedPanda";
+import { RedPanda, RedPandaSpeciesLabels } from "../../types/RedPanda";
 import { useState } from "react";
-import { Box, Button, Grid2, Typography } from "@mui/material";
+import { Box, Button, Grid2, IconButton, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
 import { useNavigate } from "react-router-dom";
 import { Routes } from "../../constants/routes.constants";
 import { pandaMock } from "../../service/RedPandaService";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function RedPandaList() {
   const [page, setPage] = useState<number>(0);
@@ -39,7 +41,7 @@ export default function RedPandaList() {
       headerName: 'Species',
       sortable: false,
       flex: 1,
-      valueGetter: (_, row: RedPanda) => row.species === RedPandaSpecies.Chinese ? "Chinese" : "Himalayan",
+      valueGetter: (_, row: RedPanda) => RedPandaSpeciesLabels[row.species],
     },
     {
       field: 'hastracker',
@@ -57,6 +59,19 @@ export default function RedPandaList() {
       width: 90,
       renderCell: (params: GridRenderCellParams) => <Box sx={{ width: '100%', height: "100%", background: params.row.colour }} />
     },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      sortable: false,
+      type: "custom",
+      width: 120,
+      renderCell: (params: GridRenderCellParams) => (
+        <>
+          <IconButton color="info" onClick={() => navigate(`${Routes.pandas}/edit/${params.row.id}`)}><EditIcon /></IconButton>
+          <IconButton color="error" onClick={() => alert("TODO: delete")}><DeleteIcon /></IconButton>
+        </>
+      )
+    },
   ];
 
   return (
@@ -65,7 +80,12 @@ export default function RedPandaList() {
         <Typography variant="h6">Red pandas</Typography>
       </Grid2>
       <Grid2 size={2}>
-        <Button variant="contained" color="secondary" startIcon={<AddIcon />}>
+        <Button
+          variant="contained"
+          color="secondary"
+          startIcon={<AddIcon />}
+          onClick={() => navigate(Routes.addPanda)}
+        >
           Red panda
         </Button>
       </Grid2>

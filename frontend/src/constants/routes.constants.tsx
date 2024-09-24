@@ -8,5 +8,4 @@ export enum Routes {
   pandaDetail = "/pandas/:id",
   editPanda = "/pandas/edit/:id",
   addSighting = "/sightings/add",
-  editSighting = "/sightings/edit/:id"
 }

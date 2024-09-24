@@ -8,7 +8,6 @@ import LocationsPage from "./locations/LocationsPage";
 import SightingsPage from "./sightings/SightingsPage";
 import SightingsList from "./sightings/SightingsList";
 import AddSighting from "./sightings/AddSighting";
-import EditSighting from "./sightings/EditSighting";
 import RedPandaPage from "./panda/RedPandaPage";
 import RedPandaList from "./panda/RedPandaList";
 import AddPanda from "./panda/AddPanda";
@@ -44,10 +43,6 @@ const AppRoutes: React.FC = () => {
             {
               path: Routes.addSighting,
               element: <AddSighting />,
-            },
-            {
-              path: Routes.editSighting,
-              element: <EditSighting />,
             },
           ]
         },

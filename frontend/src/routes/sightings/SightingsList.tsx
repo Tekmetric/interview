@@ -138,7 +138,12 @@ export default function SightingsList() {
         <Typography variant="h6">Sightings</Typography>
       </Grid2>
       <Grid2 size={2}>
-        <Button variant="contained" color="secondary" startIcon={<AddIcon />}>
+        <Button
+          variant="contained"
+          color="secondary"
+          startIcon={<AddIcon />}
+          onClick={() => navigate(Routes.addSighting)}
+        >
           Sighting
         </Button>
       </Grid2>

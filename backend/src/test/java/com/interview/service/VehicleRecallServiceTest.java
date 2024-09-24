@@ -94,7 +94,7 @@ class VehicleRecallServiceTest {
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> vehicleRecallService.createRecall(invalidRecall));
 
-        assertTrue(exception.getMessage().contains("Manufacturer is required"));
+        assertTrue(exception.getMessage().contains("Make is required"));
         assertTrue(exception.getMessage().contains("Model is required"));
         assertTrue(exception.getMessage().contains("Recall description is required"));
         assertTrue(exception.getMessage().contains("Recall date is required"));
@@ -176,11 +176,7 @@ class VehicleRecallServiceTest {
 
     @Test
     void validateRecallTooLongManufacturerNameShouldThrowValidationException() {
-        StringBuilder longNameBuilder = new StringBuilder();
-        for (int i = 0; i < 256; i++) {
-            longNameBuilder.append("A");
-        }
-        String longName = longNameBuilder.toString();
+        String longName = "A".repeat(256);
         VehicleRecall invalidRecall = new VehicleRecall(longName, "Corolla", 2020, "Issue", LocalDate.now());
 
         ValidationException exception = assertThrows(ValidationException.class,

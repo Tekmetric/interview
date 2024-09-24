@@ -61,7 +61,7 @@ public class VehicleRecallService {
 
         // Basic validations
         if (vehicleRecall.getMake() == null || vehicleRecall.getMake().trim().isEmpty()) {
-            validationErrors.add("Manufacturer is required");
+            validationErrors.add("Make is required");
         }
         if (vehicleRecall.getModel() == null || vehicleRecall.getModel().trim().isEmpty()) {
             validationErrors.add("Model is required");

@@ -26,6 +26,17 @@ export const fetchSightings = async (pandas: RedPanda[]): Promise<Sighting[]> =>
   }
 }
 
+export const fetchLocations = async (): Promise<Location[]> => {
+  try {
+    const response = await fetchAllSightings();
+    return response.data.map((sighting: SightingDTO) => ({
+      latitude: sighting.locationLat, longitude: sighting.locationLon
+    })).filter((location: Location) => location.latitude && location.longitude);
+  } catch {
+    return [];
+  }
+}
+
 export const addSighting = async (sighting: AddSightingDTO) => {
   try {
     const response = await createSighting(sighting);
@@ -38,5 +49,6 @@ export const addSighting = async (sighting: AddSightingDTO) => {
 export const SightingService = {
   buildSighting,
   fetchSightings,
-  addSighting
+  addSighting,
+  fetchLocations
 }

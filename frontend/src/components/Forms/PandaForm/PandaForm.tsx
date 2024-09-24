@@ -1,3 +1,4 @@
+import React from "react";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormLabel, Grid2, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { RedPanda, RedPandaSpecies, RedPandaSpeciesLabels } from "../../../types/RedPanda";

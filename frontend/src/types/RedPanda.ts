@@ -5,7 +5,7 @@ export enum RedPandaSpecies {
 }
 
 export const RedPandaSpeciesLabels = {
-  [RedPandaSpecies.Himalayan]: "Hymalayan",
+  [RedPandaSpecies.Himalayan]: "Himalayan",
   [RedPandaSpecies.Chinese]: "Chinese",
 }
 

@@ -1,3 +1,4 @@
+import React from "react";
 import { Box, Typography } from "@mui/material";
 import PandaBinoculars from "../../assets/panda-binocular.png";
 import { useNavigate } from "react-router-dom";

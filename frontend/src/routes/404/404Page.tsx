@@ -3,7 +3,7 @@ import SleepyPanda from "../../assets/panda-sleep.png";
 
 export default function Fallback404Page () {
   return (
-    <Box sx={{ display: 'flex', justifyContent: "space-evenly", alignItems: "center", width: '100vw'}}>
+    <Box sx={{ display: 'flex', justifyContent: "space-evenly", alignItems: "center", width: '100vw', height: "100%"}}>
       <img src={SleepyPanda} />
 
       <Box sx={{ display: 'flex', justifyContent: "center", alignItems: "center", flexDirection: "column"}}>

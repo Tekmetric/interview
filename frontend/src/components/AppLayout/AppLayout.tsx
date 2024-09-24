@@ -9,6 +9,7 @@ import TopBar from '../TopBar/TopBar';
 import { DrawerHeader } from '../SideBar/Sidebar.style';
 import { getTheme } from '../../themes/theme.helper';
 import { defaultTheme } from '../../constants/theme.constants';
+import { SnackbarProvider } from 'notistack';
 
 export default function AppLayout() {
   const [selectedTheme, setSelectedTheme] = React.useState<Themes>(defaultTheme);
@@ -36,7 +37,9 @@ export default function AppLayout() {
           <DrawerHeader />
 
           <Box sx={{ flexGrow: 1, p: 5, width: "100%", height: "100%" }}>
-            <Outlet />
+            <SnackbarProvider>
+              <Outlet />
+            </SnackbarProvider>
           </Box>
         </Box>
       </Box>

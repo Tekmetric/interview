@@ -14,8 +14,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { pandaMock } from "../../../service/RedPandaService";
-import { RedPanda, RedPandaSpecies } from "../../../types/RedPanda";
-import { redPandaColours } from "../../../constants/panda.constants";
+import { RedPanda } from "../../../types/RedPanda";
 import { DEFAULT_CENTER_POINT } from "../../../constants/map.constants";
 import { MapService } from "../../../service/MapService";
 

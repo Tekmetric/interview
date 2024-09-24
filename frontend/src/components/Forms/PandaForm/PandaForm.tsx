@@ -78,7 +78,6 @@ export default function PandaForm(props: IPandaFormProps) {
     }
     
     props.onSave(editedPanda);
-    setShowDiscardChangesDialog(false);
   }
 
   const onDiscardChangesConfirmed = () => {

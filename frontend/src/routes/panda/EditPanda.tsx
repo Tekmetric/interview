@@ -1,22 +1,28 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PandaForm from "../../components/Forms/PandaForm/PandaForm";
 import { useEffect, useState } from "react";
 import { RedPanda } from "../../types/RedPanda";
 import { pandaMock } from "../../service/RedPandaService";
-import { Box, Grid2 } from "@mui/material";
-import RedPandaImg from "../../assets/panda-bamboo.png";
+import { Routes } from "../../constants/routes.constants";
+import { useSnackbar } from "notistack";
 
 export default function EditPanda() {
   const { id }  = useParams();
+  const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+
   const [panda, setPanda] = useState<RedPanda>();
 
   useEffect(() => {
     setPanda(pandaMock.find(panda => panda.id === id));
   }, [id]);
 
-  console.log(id, panda);
+  const handleSave = () => {
+    enqueueSnackbar("Red panda successfully created.", { variant: "success" });
+    navigate(Routes.pandas);
+  }
 
   return (
-    <PandaForm panda={panda} onSave={(panda) => setPanda(panda)}/>
+    <PandaForm panda={panda} onSave={handleSave}/>
   );
 }

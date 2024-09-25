@@ -94,7 +94,7 @@ export const FlexRowContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 7),
 }));
 
-export const AvatarContainer = styled('div')(({ theme }) => ({
+export const AvatarContainer = styled('div')(() => ({
   display: 'flex',
   flexDirection: "row",
   alignItems: 'center',

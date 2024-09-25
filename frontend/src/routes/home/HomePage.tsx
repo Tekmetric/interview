@@ -6,7 +6,7 @@ import { Routes } from "../../constants/routes.constants";
 import { PrimaryGradientButton, SecondaryGradientButton } from "./HomePage.styles";
 import NavigateIcon from "@mui/icons-material/NavigateNext";
 
-export default function HomePage() {
+const HomePage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -40,3 +40,5 @@ export default function HomePage() {
     </Box>
   );
 }
+
+export default HomePage;

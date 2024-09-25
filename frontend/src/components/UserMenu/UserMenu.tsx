@@ -7,8 +7,10 @@ import AccountIcon from '@mui/icons-material/AccountCircle';
 import { Themes } from '../../types/Theme';
 import { orange } from '@mui/material/colors';
 import { getTheme } from '../../themes/theme.helper';
+import { useAppSelector } from '../../store/hooks/hooks';
 
-export default function UserMenu({ open, setOpen, setTheme, theme} : IUserMenuProps) {
+const UserMenu: React.FC<IUserMenuProps> = ({ open, setOpen, setTheme, theme}) => {
+  const session = useAppSelector(state => state.session);
 
   return (
     <UserMenuPopover sx={{ display: open ? 'flex' : 'none' }} onMouseLeave={() => setOpen(false)}>
@@ -34,10 +36,10 @@ export default function UserMenu({ open, setOpen, setTheme, theme} : IUserMenuPr
             <FlexColumnContainer>
               <AvatarContainer>
                   <Typography variant="h6" noWrap component="div">
-                    Hi, [username] !
+                    Hi, {session.username}!
                   </Typography>
 
-                  <Avatar sx={{ bgcolor: getTheme(theme).palette.background.paper, color: orange[600] }}>
+                  <Avatar sx={{ bgcolor: getTheme(theme).palette.background.paper, color: orange[600], marginLeft: 2 }}>
                     <AccountIcon />
                   </Avatar>
               </AvatarContainer>
@@ -68,3 +70,5 @@ export default function UserMenu({ open, setOpen, setTheme, theme} : IUserMenuPr
     </UserMenuPopover>
   );
 }
+
+export default UserMenu;

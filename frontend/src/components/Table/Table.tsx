@@ -5,7 +5,7 @@ import { ITableProps } from './Table.interface';
 
 const pageSizeOptions = [5, 10, 15];
 
-export default function Table(props: ITableProps) {
+const Table:  React.FC<ITableProps> = (props) => {
   return (
     <Paper sx={{ height: 400, width: '100%' }}>
       <DataGrid
@@ -16,3 +16,5 @@ export default function Table(props: ITableProps) {
     </Paper>
   );
 }
+
+export default Table;

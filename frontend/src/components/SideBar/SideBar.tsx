@@ -16,7 +16,7 @@ import RedPandaDevLogo from "../../assets/panda-studios.png";
 import { useAppSelector } from '../../store/hooks/hooks';
 import { getTheme } from '../../themes/theme.helper';
 
-export default function SideBar({ open, setOpen }: IDrawerProps) {
+const SideBar: React.FC<IDrawerProps> = ({ open, setOpen }) => {
   const session = useAppSelector(state => state.session);
   const navigate = useNavigate();
 
@@ -98,4 +98,6 @@ export default function SideBar({ open, setOpen }: IDrawerProps) {
       )}
     </Drawer>
   );
-}
+};
+
+export default SideBar;

@@ -25,7 +25,9 @@ Once you have finished the coding exercise please create a PR into Tekmetric/int
 I might have gone a bit further away from the initial goal of this excercise, but I had some ideas I wanted to experiment with.
 
 The code is not perfect, it was a lot to fit everything in 5 days of work so I sometimes rushed more than I would have liked to, because I did not want to exceed the inital 1 week estimation.
-I wanted to also integrate Redux, but it's currently a work in progress.
+I wanted to also integrate Redux, it's currently a work in progress, keeps some basic user data when logged in.
+
+The signin is not wired to the backend, just input whatever looks like a valid email and a password and you will log in :D.
 
 I have written some UI unit test examples, but again, due to time constraints, I did not manage to test all the components.
 

@@ -34,4 +34,4 @@ export const sessionSlice = createSlice({
 
 export const { setTheme, completeLogin, logout } = sessionSlice.actions;
 
-export default sessionSlice.reducer
+export default sessionSlice.reducer;

@@ -1,0 +1,15 @@
+.rp-attribution {
+  bottom: 0;
+  right: 0;
+  max-height: 14;
+}
+.rp-attribution > button {
+  display: "none !important";
+};
+.rp-attribution > ul {
+  margin: 0;
+  padding: "1px 0.5em";
+  font-size: 12;
+  list-style-type: "none";
+  display: "none !important";
+};

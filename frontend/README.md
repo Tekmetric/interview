@@ -31,3 +31,10 @@ I have written some UI unit test examples, but again, due to time constraints, I
 
 ### I also built a basic nodejs backed
 Please find it in the /pandaAPI folder
+
+#### To run the backend
+`cd ./pandaApi/backend`
+
+`npm i`
+
+`node index.js`

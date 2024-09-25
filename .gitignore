@@ -1,5 +1,7 @@
 frontend/node_modules
-pandaApi/node_modules
+frontend/dist
+pandaApi/backend/node_modules
+pandaApi/backend/dist
 backend/.idea/*
 backend/*.iml
 backend/target/**

@@ -1,6 +1,6 @@
 import { createPanda, deletePanda, fetchAllPandas, getPandaById, updatePanda } from "../api/panda.api";
 import { redPandaColours } from "../constants/panda.constants";
-import { RedPanda, RedPandaSpecies } from "../types/RedPanda";
+import { RedPanda, RedPandaDetailDTO, RedPandaSpecies } from "../types/RedPanda";
 
 const initDefaultPandaObject = (): RedPanda => ({
   id: "",
@@ -45,7 +45,7 @@ export const fetchPandas = async (): Promise<RedPanda[]> => {
   }
 }
 
-export const getById = async (id: string): Promise<RedPanda | undefined> => {
+export const getById = async (id: string): Promise<RedPandaDetailDTO | undefined> => {
   try {
     const response = await getPandaById(id);
     return response.data;

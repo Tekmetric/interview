@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { Routes } from "../../../constants/routes.constants";
 import { getColumns } from "./SightingsList.helper";
 import { SightingService } from "../../../service/SightingsService";
-import { RedPanda } from "../../../types/RedPanda";
 import { RedPandaService } from "../../../service/RedPandaService";
 
 export default function SightingsList() {
@@ -18,7 +17,6 @@ export default function SightingsList() {
   const [selectedLocation, setSelectedLocation] = useState<Location>();
 
   const [rows, setRows] = useState<Sighting[]>([]);
-  const [pandas, setPandas] = useState<RedPanda[]>([]);
 
   const navigate = useNavigate();
 
@@ -30,7 +28,6 @@ export default function SightingsList() {
     const pandas = await RedPandaService.fetchPandas();
     const sightings = await SightingService.fetchSightings(pandas);
     setRows(sightings);
-    setPandas(pandas);
   }
 
   const columns = getColumns(navigate, setSelectedLocation);

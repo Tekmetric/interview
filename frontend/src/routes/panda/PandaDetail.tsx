@@ -1,14 +1,15 @@
 import { Box, Grid2, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { RedPanda, RedPandaSpeciesLabels } from "../../types/RedPanda";
+import { RedPanda, RedPandaDetailDTO, RedPandaSpeciesLabels } from "../../types/RedPanda";
 import RedPandaImage from "../../assets/panda-tree.png";
 import { RedPandaService } from "../../service/RedPandaService";
+import { MapService } from "../../service/MapService";
 
 export default function PandaDetail() {
   const { id } = useParams();
 
-  const [panda, setPanda] = useState<RedPanda>();
+  const [panda, setPanda] = useState<RedPandaDetailDTO>();
 
   useEffect(() => {
     getPandaById();
@@ -87,16 +88,42 @@ export default function PandaDetail() {
               <Box sx={{ width: '100%', height: "100%", background: panda.color }} />
             </Grid2>
 
-            <Grid2 size={4}>
-              <Typography>
-                Last seen on
-              </Typography>
-            </Grid2>
-            <Grid2 size={8}>
-              <Typography>
-                {new Date().toLocaleString()}
-              </Typography>
-            </Grid2>
+            {panda.mostRecentSighting && (
+              <>
+                {panda.mostRecentSighting.dateTime && (
+                  <>
+                    <Grid2 size={4}>
+                      <Typography>
+                        Last seen on
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={8}>
+                      <Typography>
+                        {new Date(panda.mostRecentSighting.dateTime).toLocaleString()}
+                      </Typography>
+                    </Grid2>
+                  </>
+                )}
+
+                {panda.mostRecentSighting.locationLat && panda.mostRecentSighting.locationLon && (
+                  <>
+                    <Grid2 size={4}>
+                      <Typography>
+                        At
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={8}>
+                      <Typography color="primary">
+                        {MapService.formatLocationForDisplay({
+                          latitude: panda.mostRecentSighting.locationLat,
+                          longitude: panda.mostRecentSighting.locationLon,
+                        })}
+                      </Typography>
+                    </Grid2>
+                  </>
+                )}
+              </>
+            )}
           </Grid2>
 
           <Grid2 size={{ sm: 12, md: 4 }}>

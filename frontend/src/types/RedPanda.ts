@@ -17,3 +17,13 @@ export type RedPanda = {
   name: string;
   age: number | undefined;
 }
+
+export type RedPandaDetailDTO = RedPanda & {
+  mostRecentSighting: MostRecentSighting;
+}
+
+type MostRecentSighting = {
+  dateTime: string | null;
+  locationLat: number | null;
+  locationLon: number | null;
+}

@@ -22,6 +22,7 @@ import TileLayer from "ol/layer/Tile";
 import BaseLayer from "ol/layer/Base";
 import { defaults } from "ol/interaction/defaults";
 import { Coordinate } from "ol/coordinate";
+import BaseEvent from "ol/events/Event";
 
 const mapDatasetAssetsToLayers = (assets: Location[]) => {
   const positionalFeatures: Feature<Point>[] = assets.map(asset =>
@@ -132,10 +133,8 @@ const transformCoordinateFromMapProjection = (coordinate: Coordinate) => transfo
 );
 
 const mapCoordinateToLocation = (coordinate: Coordinate) => {
-  const transformedCoordinate = transform(
-    coordinate,
-    DEFAULT_MAP_PROJECTION,
-    ASSETS_PROJECTION
+  const transformedCoordinate = transformCoordinateFromMapProjection(
+    coordinate
   );
 
   return { longitude: transformedCoordinate[0], latitude: transformedCoordinate[1] };
@@ -144,13 +143,13 @@ const mapCoordinateToLocation = (coordinate: Coordinate) => {
 
 const registerLocationClickEvent = (
   map: OlMap | undefined,
-  onAssetsClick: (targetLocation: Location) => void | undefined,
+  onAssetsClick: (event: BaseEvent | Event) => void,
 ): (() => void) => {
   if (map) {
-    map.on("click", onAssetsClick);
+    map.on(["click"], onAssetsClick);
 
     return () => {
-      map.un("click", onAssetsClick);
+      map.un(["click"], onAssetsClick);
     };
   }
 

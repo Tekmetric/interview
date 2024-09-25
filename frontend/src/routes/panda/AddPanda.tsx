@@ -6,7 +6,7 @@ import { Routes } from "../../constants/routes.constants";
 import { RedPandaService } from "../../service/RedPandaService";
 import { RedPanda } from "../../types/RedPanda";
 
-export default function AddPanda() {
+const AddPanda: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -29,3 +29,5 @@ export default function AddPanda() {
     <PandaForm onSave={handleSave} onDiscard={handleDiscard} />
   );
 }
+
+export default AddPanda;

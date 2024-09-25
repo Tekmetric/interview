@@ -37,12 +37,14 @@ export default function RPMap (props: IRPMapProps) {
   }, [map, props.centerPoint]);
 
   useEffect(() => {
-    const unregister = MapService.registerLocationClickEvent(
-      map, 
-      handleMapClick
-    );
+    if (props.withSelectLocation, props.onSelectLocation) {
+      const unregister = MapService.registerLocationClickEvent(
+        map, 
+        handleMapClick
+      );
 
-    return () => unregister();
+      return () => unregister();
+    }
   }, [map, props.withSelectLocation, props.onSelectLocation]);
   
   const handleMapClick = useCallback(

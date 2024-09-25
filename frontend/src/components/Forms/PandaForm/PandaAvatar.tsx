@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box } from "@mui/material";
 import { IPandaAvatarProps } from "./PandaForm.interface";
 import { RedPandaSpecies } from "../../../types/RedPanda";
@@ -18,4 +19,4 @@ export default function PandaAvatar({ hasTracker, species }: IPandaAvatarProps) 
       </Box>
     </Box>
   )
-}
+};

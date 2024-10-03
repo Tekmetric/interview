@@ -1,30 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { BqButton, BqCard, BqIcon } from '@beeq/react';
+import ViteSVG from '/vite.svg';
+import ReactSVG from './assets/react.svg';
+
+import './App.css';
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <>
-      <div className="flex gap-16 justify-center">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="size-24 will-change-[filter]" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="size-24 react animate-logo-spin speed" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+    <BqCard>
+      <h1>BEEQ</h1>
+      <h2>
+        with React <img src={ReactSVG} className="logo react animate-logo-spin" alt="React logo" /> + Vite{' '}
+        <img src={ViteSVG} className="logo" alt="Vite logo" />
+      </h2>
+      <h3>On CodeSandbox!</h3>
+      <div className="m-bs-m">
+        <BqButton onBqClick={() => setCount((count) => count + 1)}>
+          Give a thumbs up
+          <BqIcon name="thumbs-up" slot="suffix" />
+        </BqButton>
+
+        <p className="m-bs-m m-be-m">Total of thumbs: {count}</p>
+
+        <p className="m-bs-m m-be-m">
+          Edit <code>src/App.tsx</code> and save to test HMR.
         </p>
       </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
+    </BqCard>
   );
 }
 

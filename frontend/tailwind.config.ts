@@ -1,7 +1,10 @@
+import plugin from 'tailwindcss/plugin';
+import { default as beeqPreset, TYPOGRAPHY_DEFAULT } from '@beeq/tailwindcss';
 import type { Config } from 'tailwindcss';
 
 export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
+  presets: [beeqPreset],
   theme: {
     extend: {
       animation: {
@@ -15,5 +18,13 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addBase }) {
+      // Use the default typography styles
+      addBase({ ...TYPOGRAPHY_DEFAULT });
+    }),
+  ],
+  corePlugins: {
+    preflight: false,
+  },
 } satisfies Config;

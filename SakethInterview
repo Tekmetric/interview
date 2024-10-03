@@ -1,0 +1,113 @@
+import requests
+import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
+
+# Your NASA API key
+api_key = 'vwDyXRlRsu7GhORsAyctQ0VhhMfvkndUl8n6ceoI'
+
+# Set the base URL for the NASA NEO (Near Earth Objects) browse endpoint
+base_url = 'https://api.nasa.gov/neo/rest/v1/neo/browse'
+
+# Parameters to control pagination and limit results
+params = {
+    'api_key': api_key,
+    'page': 0,   # Start with the first page
+    'size': 20   # Fetch 20 results per page (can adjust up to 200)
+}
+
+# List to store extracted data
+extracted_data = []
+
+# Loop to fetch multiple pages until 200 objects are collected
+while len(extracted_data) < 200:
+    response = requests.get(base_url, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        neos = data.get('near_earth_objects', [])
+
+        # Extract specified fields for each NEO
+        for neo in neos:
+            # Access close approach data (if available)
+            closest_approach = neo['close_approach_data'][0] if neo.get('close_approach_data') else {}
+            
+            extracted_data.append({
+                'id': neo.get('id'),
+                'neo_reference_id': neo.get('neo_reference_id'),
+                'name': neo.get('name'),
+                'name_limited': neo.get('name_limited'),
+                'designation': neo.get('designation'),
+                'nasa_jpl_url': neo.get('nasa_jpl_url'),
+                'absolute_magnitude_h': neo.get('absolute_magnitude_h'),
+                'is_potentially_hazardous_asteroid': neo.get('is_potentially_hazardous_asteroid'),
+                'min_diameter_meters': neo['estimated_diameter']['meters'].get('estimated_diameter_min'),
+                'max_diameter_meters': neo['estimated_diameter']['meters'].get('estimated_diameter_max'),
+                'closest_approach_date': closest_approach.get('close_approach_date'),
+                'closest_approach_miss_distance_km': closest_approach.get('miss_distance', {}).get('kilometers'),
+                'closest_approach_relative_velocity_kps': closest_approach.get('relative_velocity', {}).get('kilometers_per_second'),
+                'first_observation_date': neo.get('orbital_data', {}).get('first_observation_date'),
+                'last_observation_date': neo.get('orbital_data', {}).get('last_observation_date'),
+                'observations_used': neo.get('orbital_data', {}).get('observations_used'),
+                'orbital_period': neo.get('orbital_data', {}).get('orbital_period')
+                
+            })
+            
+            # Access close approach data (if available)
+            closest_approach_data = neo.get('close_approach_data', [])
+            
+            # Print 'miss_distance.astronomical' for each close approach
+            for approach in closest_approach_data:
+                miss_distance_au = approach.get('miss_distance', {}).get('astronomical')
+#                 if miss_distance_au:  # Ensure there's a valid value
+#                     print(f"Miss distance (astronomical units): {miss_distance_au}")
+        
+        # Update page for the next request
+        params['page'] += 1
+        
+        # Break if fewer results than requested (end of available data)
+        if len(neos) < params['size']:
+            break
+    else:
+        print(f"Failed to retrieve data: {response.status_code}")
+        break
+
+# Convert to DataFrame
+df = pd.DataFrame(extracted_data)
+
+#print(df)
+
+# Save DataFrame to Parquet format
+df.to_parquet('near_earth_objects.parquet', engine='pyarrow')
+
+file_path = "C:\\Users\\saket\\Documents\\Interviews\\near_earth_objects1.csv"
+
+#df.to_csv(file_path, index=False)
+
+#print(f"Data saved to: {file_path}")
+
+# Aggregations
+# 1. Count approaches closer than 0.2 astronomical units
+close_approaches_under_02_au = sum(float(approach.get('miss_distance', {}).get('astronomical', 1)) < 0.2 for neo in neos for approach in neo.get('close_approach_data', []))
+
+# Iterate over the fetched data to print 'miss_distance.astronomical'
+
+            
+
+# 2. Count close approaches by year
+approaches_by_year = {}
+for neo in neos:
+    for approach in neo.get('close_approach_data', []):
+        date = approach.get('close_approach_date', '')
+        
+      
+        if date:
+            year = date.split('-')[0]
+            if year in approaches_by_year:
+                approaches_by_year[year] += 1
+            else:
+                approaches_by_year[year] = 1
+
+# Display results
+print(f"Total close approaches under 0.2 AU: {close_approaches_under_02_au}")
+print("Close approaches by year:", approaches_by_year)

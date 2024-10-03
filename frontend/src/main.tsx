@@ -1,14 +1,29 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { setBasePath } from '@beeq/core/dist/components';
-
-import App from './App.tsx';
 import './index.css';
+
+import { Home } from './pages';
+import { Page } from './layout/Page';
 
 setBasePath('icons/svg');
 
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Page />,
+    children: [
+      {
+        path: '',
+        element: <Home />,
+      },
+    ],
+  },
+]);
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </StrictMode>,
 );

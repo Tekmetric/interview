@@ -24,7 +24,33 @@ export default {
       addBase({ ...TYPOGRAPHY_DEFAULT });
     }),
   ],
+  variantOrder: [
+    'first',
+    'last',
+    'odd',
+    'even',
+    'visited',
+    'checked',
+    'empty',
+    'read-only',
+    'group-hover',
+    'group-focus',
+    'focus-within',
+    'hover',
+    'focus',
+    'focus-visible',
+    'active',
+    'disabled',
+  ],
   corePlugins: {
     preflight: false,
+    // Disables usage of rgb/opacity
+    textOpacity: false,
+    backgroundOpacity: false,
+    borderOpacity: false,
+  },
+  experimental: {
+    // Prevents Tailwind from generating that wall of empty custom properties
+    optimizeUniversalDefaults: true,
   },
 } satisfies Config;

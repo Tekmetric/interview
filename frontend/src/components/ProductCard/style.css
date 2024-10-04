@@ -1,0 +1,11 @@
+.product-card {
+  /* Override the default card styles via CSS custom properties */
+  --bq-card--background: theme(colors.transparent);
+  --bq-card--borderColor: theme(colors.stroke.primary);
+  --bq-card--borderWidth: 1px;
+}
+
+.product-card::part(wrapper) {
+  /* We use the `wrapper` shadow DOM part to apply some custom styles to the card */
+  @apply flex flex-col h-full overflow-hidden shadow-s hover:shadow-l transition-shadow duration-300;
+}

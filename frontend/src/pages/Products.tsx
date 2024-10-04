@@ -7,7 +7,7 @@ import type { Category } from '../api/service.types';
 import { fetchCategoryProducts, fetchProducts } from '../api/service';
 import { capitalize } from '../utils';
 
-import { ProductCard, Spinner } from '../components';
+import { NoResults, ProductCard, Spinner } from '../components';
 
 const retrieveProducts = async (category?: Category) => {
   try {
@@ -16,8 +16,7 @@ const retrieveProducts = async (category?: Category) => {
     if (!response.data) throw new Error('No products data found');
     return response.data;
   } catch (error) {
-    // Note: This is a simple error handling, in a real project scenario we should handle it properly.
-    console.error(error);
+    return Promise.reject(error);
   }
 };
 
@@ -25,7 +24,7 @@ export const Products: React.FC = () => {
   const navigate = useNavigate();
   const { category } = useParams<{ category: Category }>();
   // Note: We can use the `useQuery` hook to fetch data from the API. It will automatically handle the loading state.
-  const { data: products, isLoading } = useQuery(['products', category], () => retrieveProducts(category));
+  const { data: products, isError, isLoading } = useQuery(['products', category], () => retrieveProducts(category));
 
   return (
     <>
@@ -43,19 +42,25 @@ export const Products: React.FC = () => {
         )}
         {category ? capitalize(category) : 'All'} products
       </BqPageTitle>
-      <div className="relative grid grid-cols-4 grid-rows-2 m-bs-m md:m-bs-l xl:m-bs-xl gap-m md:gap-l xl:gap-xl">
-        {isLoading && <Spinner />}
-        {products?.map((product) => (
-          <ProductCard
-            key={product.id}
-            id={product.id}
-            title={product.title}
-            description={product.description}
-            price={product.price}
-            image={product.image}
-          />
-        ))}
-      </div>
+      {/* Show a spinner while the data is loading */}
+      {isLoading && <Spinner />}
+      {/* Show a message if there is an error or no products are found */}
+      {(isError || products?.length === 0) && <NoResults />}
+      {/* Show the products catalogue */}
+      {products && products?.length > 0 && (
+        <div className="grid grid-cols-4 grid-rows-2 m-bs-m md:m-bs-l xl:m-bs-xl gap-m md:gap-l xl:gap-xl">
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              title={product.title}
+              description={product.description}
+              price={product.price}
+              image={product.image}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 };

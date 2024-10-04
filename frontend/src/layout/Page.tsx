@@ -29,7 +29,7 @@ export const Page: React.FC = () => {
   return (
     <>
       <Menu categories={categories} />
-      <div className="max-w-[1280px] m-i-[auto] p-m md:p-l xl:p-xl">
+      <div className="relative max-w-[1280px] m-i-[auto] p-m md:p-l xl:p-xl">
         <Outlet />
       </div>
     </>

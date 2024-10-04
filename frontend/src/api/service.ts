@@ -23,4 +23,4 @@ export const fetchCategories = (): Promise<AxiosResponse<Category[]>> => apiClie
  * @returns {Promise} The promise object containing the products for the specified category.
  */
 export const fetchCategoryProducts = (category: string): Promise<AxiosResponse<Product[]>> =>
-  apiClient.get(`/products/category/${category}`);
+  apiClient.get(`/category/${category}`);

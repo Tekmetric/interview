@@ -10,7 +10,7 @@ import { ProductCard } from '../components';
 
 export const Products: React.FC = () => {
   const params = useParams<{ category: Category }>();
-  const category = params.category!;
+  const category = params.category;
 
   const [products, setProducts] = useState<Product[]>([]);
 

@@ -5,7 +5,7 @@ import { setBasePath } from '@beeq/core/dist/components';
 import './index.css';
 
 import { Home } from './pages';
-import { Page } from './layout/Page';
+import { Page } from './layout';
 
 setBasePath('icons/svg');
 

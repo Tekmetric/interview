@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 import { fetchCategories } from '../api/service';
 import { Category } from '../api/service.types';
 
-import { Menu } from '../components';
+import { Menu } from './components';
 
 export const Page: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -29,7 +29,7 @@ export const Page: React.FC = () => {
   return (
     <>
       <Menu categories={categories} />
-      <div className="max-w-[1280px] ps-m pe-m m-i-[auto]">
+      <div className="max-w-[1280px] m-i-[auto] p-m md:p-l xl:p-xl">
         <Outlet />
       </div>
     </>

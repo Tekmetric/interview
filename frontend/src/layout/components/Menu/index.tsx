@@ -1,7 +1,7 @@
 import React from 'react';
 import { BqDivider, BqIcon, BqSideMenu, BqSideMenuItem } from '@beeq/react';
-import { capitalize } from '../../utils';
-import { Categories, Category } from '../../api/service.types';
+import { capitalize } from '../../../utils';
+import { Categories, Category } from '../../../api/service.types';
 
 export const Menu: React.FC<{ categories: Category[] }> = ({ categories }) => {
   const setCategoryIcon = (category: string): string => {

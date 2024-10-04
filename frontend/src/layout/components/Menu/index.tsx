@@ -6,8 +6,8 @@ import { capitalize } from '../../../utils';
 import { Categories, Category } from '../../../api/service.types';
 
 export const Menu: React.FC<{ categories: Category[] }> = ({ categories }) => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const setCategoryIcon = (category: string): string => {
     const categoriesIconMap: { [key in Categories]: string } = {
@@ -22,7 +22,7 @@ export const Menu: React.FC<{ categories: Category[] }> = ({ categories }) => {
 
   const isActiveRoute = (category: string): boolean => {
     // Remove leading slash from pathname
-    const path = location.pathname.replace(/^\//, '');
+    const path = pathname.replace(/^\//, '');
     // Decode URI to handle special characters
     return decodeURI(path) === category;
   };

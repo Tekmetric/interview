@@ -9,9 +9,7 @@ import { capitalize } from '../utils';
 import { ProductCard } from '../components';
 
 export const Products: React.FC = () => {
-  const params = useParams<{ category: Category }>();
-  const category = params.category;
-
+  const { category } = useParams<{ category: Category }>();
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {

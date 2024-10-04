@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { setBasePath } from '@beeq/core/dist/components';
 import './index.css';
 
-import { Home } from './pages';
+import { Products } from './pages';
 import { Page } from './layout';
 
 setBasePath('icons/svg');
@@ -16,7 +16,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <Home />,
+        element: <Products />,
+      },
+      {
+        path: '/:category',
+        element: <Products />,
       },
     ],
   },

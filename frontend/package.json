@@ -33,6 +33,7 @@
     "postcss": "8.4.47",
     "prettier": "3.3.3",
     "prettier-plugin-tailwindcss": "0.6.8",
+    "react-query": "3.39.3",
     "tailwindcss": "3.4.13",
     "typescript": "5.6.2",
     "typescript-eslint": "8.8.0",

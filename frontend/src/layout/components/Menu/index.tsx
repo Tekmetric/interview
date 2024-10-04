@@ -1,9 +1,14 @@
 import React from 'react';
+import { useLocation, useMatch, useNavigate } from 'react-router-dom';
 import { BqDivider, BqIcon, BqSideMenu, BqSideMenuItem } from '@beeq/react';
+
 import { capitalize } from '../../../utils';
 import { Categories, Category } from '../../../api/service.types';
 
 export const Menu: React.FC<{ categories: Category[] }> = ({ categories }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const setCategoryIcon = (category: string): string => {
     const categoriesIconMap: { [key in Categories]: string } = {
       electronics: 'devices',
@@ -11,8 +16,15 @@ export const Menu: React.FC<{ categories: Category[] }> = ({ categories }) => {
       "men's clothing": 't-shirt',
       "women's clothing": 'dress',
     };
-
+    // Typescript does not allow to use dynamic keys in object, so we need to cast it to keyof typeof
     return categoriesIconMap[category as keyof typeof categoriesIconMap] ?? 'tag';
+  };
+
+  const isActiveRoute = (category: string): boolean => {
+    // Remove leading slash from pathname
+    const path = location.pathname.replace(/^\//, '');
+    // Decode URI to handle special characters
+    return decodeURI(path) === category;
   };
 
   return (
@@ -24,14 +36,14 @@ export const Menu: React.FC<{ categories: Category[] }> = ({ categories }) => {
       </div>
       <BqDivider />
       {/* Static home menu item */}
-      <BqSideMenuItem>
+      <BqSideMenuItem active={Boolean(useMatch('/'))} onBqClick={() => navigate('/')}>
         <BqIcon name="storefront" slot="prefix" />
         All Products
       </BqSideMenuItem>
       <BqDivider />
       {/* Dynamic menu items */}
       {categories.map((category) => (
-        <BqSideMenuItem key={category} onClick={() => console.log(category)}>
+        <BqSideMenuItem key={category} active={isActiveRoute(category)} onBqClick={() => navigate(category)}>
           <BqIcon name={setCategoryIcon(category)} slot="prefix" />
           {capitalize(category)}
         </BqSideMenuItem>

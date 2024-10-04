@@ -1,31 +1,34 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useLocation, useMatch, useNavigate } from 'react-router-dom';
 import { BqDivider, BqIcon, BqSideMenu, BqSideMenuItem } from '@beeq/react';
 
 import { capitalize } from '../../../utils';
 import { Categories, Category } from '../../../api/service.types';
 
+const setCategoryIcon = (category: string): string => {
+  const categoriesIconMap: { [key in Categories]: string } = {
+    electronics: 'devices',
+    jewelery: 'diamonds-four',
+    "men's clothing": 't-shirt',
+    "women's clothing": 'dress',
+  };
+  // Typescript does not allow to use dynamic keys in object, so we need to cast it to keyof typeof
+  return categoriesIconMap[category as keyof typeof categoriesIconMap] ?? 'tag';
+};
+
 export const Menu: React.FC<{ categories: Category[] }> = ({ categories }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const setCategoryIcon = (category: string): string => {
-    const categoriesIconMap: { [key in Categories]: string } = {
-      electronics: 'devices',
-      jewelery: 'diamonds-four',
-      "men's clothing": 't-shirt',
-      "women's clothing": 'dress',
-    };
-    // Typescript does not allow to use dynamic keys in object, so we need to cast it to keyof typeof
-    return categoriesIconMap[category as keyof typeof categoriesIconMap] ?? 'tag';
-  };
-
-  const isActiveRoute = (category: string): boolean => {
-    // Remove leading slash from pathname
-    const path = pathname.replace(/^\//, '');
-    // Decode URI to handle special characters
-    return decodeURI(path) === category;
-  };
+  const isActiveRoute = useCallback(
+    (category: string): boolean => {
+      // Remove leading slash from pathname
+      const path = pathname.replace(/^\//, '');
+      // Decode URI to handle special characters
+      return decodeURI(path) === category;
+    },
+    [pathname],
+  );
 
   return (
     <BqSideMenu>

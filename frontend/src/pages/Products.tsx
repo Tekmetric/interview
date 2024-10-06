@@ -3,27 +3,27 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { BqButton, BqIcon, BqPageTitle } from '@beeq/react';
 
-import type { Category } from '../api/service.types';
+import type { Category, Product } from '../api/service.types';
 import { fetchCategoryProducts, fetchProducts } from '../api/service';
 import { capitalize } from '../utils';
 
 import { NoResults, ProductCard, Spinner } from '../components';
 
-const retrieveProducts = async (category?: Category) => {
+const retrieveProducts = async (category?: Category): Promise<Product[]> => {
   try {
     const response = category ? await fetchCategoryProducts(category) : await fetchProducts();
     // Current API returns 200 status code even if there is no data.
     if (!response.data) throw new Error('No products data found');
     return response.data;
   } catch (error) {
-    return Promise.reject(error);
+    return Promise.reject(new Error(error instanceof Error ? error.message : String(error)));
   }
 };
 
 export const Products: React.FC = () => {
   const navigate = useNavigate();
   const { category } = useParams<{ category: Category }>();
-  // Note: We can use the `useQuery` hook to fetch data from the API. It will automatically handle the loading state.
+  // `useQuery` hook will automatically handle the loading and error states.
   const { data: products, isError, isLoading } = useQuery(['products', category], () => retrieveProducts(category));
 
   return (

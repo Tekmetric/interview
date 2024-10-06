@@ -11,5 +11,5 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error instanceof Error ? error : new Error(error.message || 'An error occurred')),
 );

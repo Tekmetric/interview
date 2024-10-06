@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 import { useLocation, useMatch, useNavigate } from 'react-router-dom';
-import { BqDivider, BqIcon, BqSideMenu, BqSideMenuItem } from '@beeq/react';
+import { BqDivider, BqEmptyState, BqIcon, BqSideMenu, BqSideMenuItem } from '@beeq/react';
 
 import { capitalize } from '../../../utils';
-import { Categories, Category } from '../../../api/service.types';
+import { Categories } from '../../../api/service.types';
 
 const setCategoryIcon = (category: string): string => {
   const categoriesIconMap: { [key in Categories]: string } = {
@@ -16,7 +16,21 @@ const setCategoryIcon = (category: string): string => {
   return categoriesIconMap[category as keyof typeof categoriesIconMap] ?? 'tag';
 };
 
-export const Menu: React.FC<{ categories: Category[] }> = ({ categories }) => {
+const NoCategories: React.FC = () => (
+  <BqEmptyState
+    className="[&::part(thumbnail)]:m-be-0 [&::part(title)]:text-m [&::part(title)]:font-regular [&::part(title)]:m-be-0"
+    size="small"
+  >
+    <div className="justify-center" slot="thumbnail" />
+    No categories found
+    {/* Body content */}
+    <div className="text-center text-xs font-light text-text-secondary" slot="body">
+      Sorry, there was an issue fetching the categories. Please try again later.
+    </div>
+  </BqEmptyState>
+);
+
+export const Menu: React.FC<{ categories?: Categories[] }> = ({ categories }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -45,7 +59,8 @@ export const Menu: React.FC<{ categories: Category[] }> = ({ categories }) => {
       </BqSideMenuItem>
       <BqDivider />
       {/* Dynamic menu items */}
-      {categories.map((category) => (
+      {!categories?.length && <NoCategories />}
+      {categories?.map((category) => (
         <BqSideMenuItem key={category} active={isActiveRoute(category)} onBqClick={() => navigate(category)}>
           <BqIcon name={setCategoryIcon(category)} slot="prefix" />
           {capitalize(category)}

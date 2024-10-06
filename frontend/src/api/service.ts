@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { apiClient } from './client';
-import { Category, Product } from './service.types';
+import { Categories, Product } from './service.types';
 
 /**
  * Fetches all the products available in the store.
@@ -14,7 +14,7 @@ export const fetchProducts = (): Promise<AxiosResponse<Product[]>> => apiClient.
  *
  * @returns {Promise} The promise object containing the categories.
  */
-export const fetchCategories = (): Promise<AxiosResponse<Category[]>> => apiClient.get('/categories');
+export const fetchCategories = (): Promise<AxiosResponse<Categories[]>> => apiClient.get('/categories');
 
 /**
  * Fetches the products of a specific category.

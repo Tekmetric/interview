@@ -14,6 +14,7 @@ export const ProductCard: React.FC<Product> = ({ id, title, description, price, 
     >
       <div className="square aspect-[5/7] w-full overflow-hidden">
         <img
+          alt={title}
           className="h-full w-full object-contain object-center p-m transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
           src={image}

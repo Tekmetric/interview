@@ -48,7 +48,7 @@ export const Products: React.FC = () => {
       {(isError || products?.length === 0) && <NoResults />}
       {/* Show the products catalogue */}
       {products && products?.length > 0 && (
-        <div className="grid grid-cols-4 grid-rows-2 m-bs-m md:m-bs-l xl:m-bs-xl gap-m md:gap-l xl:gap-xl">
+        <div className="grid grid-cols-1 grid-rows-2 gap-m m-bs-m sm:grid-cols-2 md:grid-cols-4 md:gap-l md:m-bs-l xl:gap-xl xl:m-bs-xl">
           {products.map((product) => (
             <ProductCard
               key={product.id}

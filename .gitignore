@@ -1,4 +1,6 @@
-frontend/node_modules
+# Frontend
+node_modules
+# Backend
 backend/.idea/*
 backend/*.iml
 backend/target/**

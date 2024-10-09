@@ -1,39 +1,34 @@
-# Java Spring Boot API Coding Exercise
+# Cats API v1.1
 
-## Steps to get started:
+## Usage
+Run the following command from this directory to build and run the application:
 
-#### Prerequisites
-- Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
+`mvn package && java -jar target/interview-1.1-SNAPSHOT.jar`
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
 
-#### Import project into IDE
-- Project root is located in `backend` folder
+## Documentation
+While the application is running, access to this API's documentation can be found at the following link.
 
-#### Build and run your app
-- `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
+http://localhost:8080/swagger-ui/index.html#/cat-resource
 
-#### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
+Use the `Try it out` features to interact with a locally hosted sandbox instance of this API.
 
-#### After finishing the goals listed below create a PR
 
-### Goals
-1. Design a CRUD API with data store using Spring Boot and in memory H2 database (pre-configured, see below)
-2. API should include one object with create, read, update, and delete operations. Read should include fetching a single item and list of items.
-3. Provide SQL create scripts for your object(s) in resources/data.sql
-4. Demo API functionality using API client tool
+## Data Source
+Data is persisted in a runtime database. While the application is running, access to the database console can be found at the following link.
 
-### Considerations
-This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
+http://localhost:8080/h2-console
 
-#### H2 Configuration
-- Console: http://localhost:8080/h2-console 
-- JDBC URL: jdbc:h2:mem:testdb
-- Username: sa
-- Password: password
+After gaining access to the console, use the configuration below to connect.
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+```
+JDBC URL: jdbc:h2:mem:testdb
+User Name: sa
+Password: password
+```
+
+
+## Notable Additions
+- Data source initialization on start up
+- Exception handling
+- API documentation

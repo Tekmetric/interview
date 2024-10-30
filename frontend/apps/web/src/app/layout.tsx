@@ -1,5 +1,3 @@
-import '@tekmetric/components/styles.css'
-import '@tekmetric/ui/styles.css'
 import classNames from 'classnames'
 import type { Metadata } from 'next'
 import { Lato } from 'next/font/google'

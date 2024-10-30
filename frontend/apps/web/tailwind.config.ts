@@ -3,7 +3,11 @@ import sharedConfig from '@tekmetric/tailwind-config'
 import type { Config } from 'tailwindcss'
 
 const config: Pick<Config, 'content' | 'presets'> = {
-  content: ['./src/app/**/*.{ts,tsx}'],
+  content: [
+    './src/app/**/*.{ts,tsx}',
+    '../../packages/components/**/*.{js,ts,jsx,tsx}',
+    '../../packages/ui/**/*.{js,ts,jsx,tsx}'
+  ],
   presets: [sharedConfig]
 }
 

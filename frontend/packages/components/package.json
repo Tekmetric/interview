@@ -14,9 +14,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "lint": "eslint src/",
-    "dev": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

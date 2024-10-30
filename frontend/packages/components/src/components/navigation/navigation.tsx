@@ -13,6 +13,7 @@ export const Navigation = (): JSX.Element => {
 
   return (
     <Nav
+      pathname={pathname}
       actions={
         <Button size='small'>
           <Icon icon='logout' /> Logout

@@ -7,7 +7,7 @@ export const NavigationItemClassNames = ({
 }): string =>
   classNames(
     '[&_a]:tek-block',
-    '[&_a]:tek-px-2 [&_a]:tek-py-1',
+    '[&_a]:tek-px-2 [&_a]:tek-py-2 sm:[&_a]:tek-py-1',
     '[&_a]:tek-rounded-lg',
     '[&_a]:hover:tek-bg-slate-600',
     '[&_a]:tek-select-none',

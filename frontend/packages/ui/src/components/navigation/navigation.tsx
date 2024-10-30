@@ -9,7 +9,11 @@ import {
 
 import { NavigationButton } from './components/navigation-button/navigation-button'
 import { NavigationItem } from './components/navigation-item/navigation-item'
-import { NavigationClassNames, NavigationListClassNames } from './styles'
+import {
+  NavigationClassNames,
+  NavigationListClassNames,
+  NavigationOverlayClassNames
+} from './styles'
 
 interface NavigationProps {
   pathname?: string
@@ -34,6 +38,14 @@ export const Navigation = ({
   return (
     <div>
       <NavigationButton open={isOpen} onClick={toggleMenu} />
+
+      {Boolean(isOpen) && (
+        <div
+          role='presentation'
+          className={NavigationOverlayClassNames}
+          onClick={toggleMenu}
+        />
+      )}
 
       <nav className={NavigationClassNames({ open: isOpen })}>
         <ol className={NavigationListClassNames}>{children}</ol>

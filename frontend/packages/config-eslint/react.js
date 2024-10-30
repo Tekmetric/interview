@@ -27,6 +27,7 @@ module.exports = {
   rules: {
     'import/no-default-export': 'off',
     'import/no-relative-packages': 'off',
+    'react/button-has-type': 'off',
     'no-restricted-imports': [
       'error',
       {

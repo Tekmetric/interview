@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  transpilePackages: ["@tekmetric/ui"],
-};
+  transpilePackages: ['@tekmetric/components', '@tekmetric/ui']
+}

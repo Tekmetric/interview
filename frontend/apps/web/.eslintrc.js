@@ -1,3 +1,3 @@
 module.exports = {
-  extends: ["@tekmetric/eslint-config/next.js"],
-};
+  extends: ['@tekmetric/eslint-config/next.js']
+}

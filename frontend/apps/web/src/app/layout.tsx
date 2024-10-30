@@ -1,25 +1,35 @@
+import '@tekmetric/components/styles.css'
 import '@tekmetric/ui/styles.css'
 import classNames from 'classnames'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Lato } from 'next/font/google'
+import type { PropsWithChildren } from 'react'
 
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const lato = Lato({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-lato'
+})
 
 export const metadata: Metadata = {
   title: 'Tekmetric',
   description: 'Tekmetric Q&A'
 }
 
-const RootLayout = ({
-  children
-}: {
-  children: React.ReactNode
-}): JSX.Element => {
+const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
   return (
     <html lang='en'>
-      <body className={classNames(inter.className)}>{children}</body>
+      <body
+        className={classNames(
+          lato.variable,
+          'tek-font-sans',
+          'tek-text-slate-800'
+        )}
+      >
+        {children}
+      </body>
     </html>
   )
 }

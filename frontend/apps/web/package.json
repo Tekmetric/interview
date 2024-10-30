@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tekmetric/components": "*",
     "@tekmetric/ui": "*",
     "classnames": "2.5.1",
     "next": "^15.0.1",

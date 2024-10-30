@@ -2,6 +2,10 @@ import type { InputHTMLAttributes } from 'react'
 
 import { InputClassNames } from './styles'
 
-export const Input = (
-  props: InputHTMLAttributes<HTMLInputElement>
-): JSX.Element => <input {...props} className={InputClassNames} />
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  width?: 'default' | 'full'
+}
+
+export const Input = ({ width, ...rest }: InputProps): JSX.Element => (
+  <input {...rest} className={InputClassNames({ width })} />
+)

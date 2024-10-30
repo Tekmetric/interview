@@ -20,6 +20,12 @@
       }
     },
     {
+      "files": "packages/components/**",
+      "options": {
+        "tailwindConfig": "./packages/components/tailwind.config.ts"
+      }
+    },
+    {
       "files": "packages/ui/**",
       "options": {
         "tailwindConfig": "./packages/ui/tailwind.config.ts"

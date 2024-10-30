@@ -1,5 +1,5 @@
 {
-  "name": "@tekmetric/ui",
+  "name": "@tekmetric/components",
   "version": "0.0.0",
   "sideEffects": [
     "**/*.css"
@@ -9,12 +9,8 @@
   ],
   "exports": {
     "./styles.css": "./dist/index.css",
-    "./button": "./src/components/button/button.tsx",
-    "./field": "./src/components/field/field.tsx",
-    "./icon": "./src/components/icon/icon.tsx",
-    "./input": "./src/components/input/input.tsx",
-    "./navigation": "./src/components/navigation/navigation.tsx",
-    "./typography": "./src/components/typography/typography.tsx"
+    "./login": "./src/components/login/login.tsx",
+    "./navigation": "./src/components/navigation/navigation.tsx"
   },
   "license": "MIT",
   "scripts": {
@@ -27,10 +23,12 @@
     "react": "^18.3.1"
   },
   "dependencies": {
-    "@heroicons/react": "2.1.5",
-    "classnames": "2.5.1"
+    "@tekmetric/ui": "*",
+    "classnames": "2.5.1",
+    "next": "^15.0.1"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^15.0.1",
     "@tekmetric/eslint-config": "*",
     "@tekmetric/tailwind-config": "*",
     "@tekmetric/typescript-config": "*",

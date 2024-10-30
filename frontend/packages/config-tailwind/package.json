@@ -1,0 +1,12 @@
+{
+  "name": "@tekmetric/tailwind-config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./tailwind.config.ts"
+  },
+  "devDependencies": {
+    "@tekmetric/typescript-config": "*",
+    "tailwindcss": "^3.4.14"
+  }
+}

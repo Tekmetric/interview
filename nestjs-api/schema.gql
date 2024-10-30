@@ -1,0 +1,24 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Mutation {
+  login(email: String!, password: String!): Profile
+  logout: String
+}
+
+type Profile {
+  fullName: String!
+  role: UserRole
+  userId: String!
+}
+
+type Query {
+  hello: String!
+  profile: Profile!
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}

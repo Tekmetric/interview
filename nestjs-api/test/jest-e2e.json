@@ -1,0 +1,21 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "@tekmetric/database/(.*)": "<rootDir>/../libs/database/src/$1",
+    "@tekmetric/database": "<rootDir>/../libs/database/src",
+    "@tekmetric/prisma/(.*)": "<rootDir>/../libs/prisma/src/$1",
+    "@tekmetric/prisma": "<rootDir>/../libs/prisma/src",
+    "@tekmetric/user/(.*)": "<rootDir>/../libs/user/src/$1",
+    "@tekmetric/user": "<rootDir>/../libs/user/src",
+    "@tekmetric/auth/(.*)": "<rootDir>/../libs/auth/src/$1",
+    "@tekmetric/auth": "<rootDir>/../libs/auth/src",
+    "@tekmetric/core/(.*)": "<rootDir>/../libs/core/src/$1",
+    "@tekmetric/core": "<rootDir>/../libs/core/src"
+  }
+}

@@ -1,0 +1,58 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = "generated"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("TEKMETRIC_DB_URL")
+}
+
+enum UserRole {
+    ADMIN
+    USER
+}
+
+model User {
+    id             String          @id @default(uuid())
+    role           UserRole        @default(USER)
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @updatedAt
+    email          String          @unique
+    firstName      String?
+    lastName       String?
+    authentication Authentication?
+    Question       Question[]
+    Answer         Answer[]
+}
+
+model Authentication {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    userId    String   @unique
+    user      User     @relation(fields: [userId], references: [id])
+    password  String
+}
+
+model Question {
+    id          String   @id @default(uuid())
+    title       String?
+    description String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    authorId    String   @unique
+    author      User     @relation(fields: [authorId], references: [id])
+    Answer      Answer[]
+}
+
+model Answer {
+    id          String   @id @default(uuid())
+    description String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    authorId    String   @unique
+    author      User     @relation(fields: [authorId], references: [id])
+    questionId  String   @unique
+    question    Question @relation(fields: [questionId], references: [id])
+}

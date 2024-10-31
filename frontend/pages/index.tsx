@@ -6,15 +6,15 @@ const Home: FC = () => {
 	const [selectedMuscle, setSelectedMuscle] = useState<string>('');
 
 	return (
-		<div className='Home'>
-			<h1>Fitness App</h1>
-
-			<MuscleSelect
-				selectedMuscle={selectedMuscle}
-				setSelectedMuscle={setSelectedMuscle}
-			/>
-
-			{selectedMuscle && <ExerciseList muscle={selectedMuscle} />}
+		<div>
+			<div>
+				<h1>Fitness Tracker</h1>
+				<MuscleSelect
+					selectedMuscle={selectedMuscle}
+					setSelectedMuscle={setSelectedMuscle}
+				/>
+				{selectedMuscle && <ExerciseList muscle={selectedMuscle} />}
+			</div>
 		</div>
 	);
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { MuscleGroupSelectInputClassNames } from './styles';
 
 interface MuscleSelectProps {
 	selectedMuscle: string;
@@ -29,12 +30,16 @@ const MuscleSelect: React.FC<MuscleSelectProps> = ({
 	];
 
 	return (
-		<div>
-			<label htmlFor='muscle-select'>Select Muscle Group: </label>
+		<div className='mb-4'>
+			<label htmlFor='muscle-select' className='block text-lg font-medium mb-2'>
+				Select Muscle Group
+			</label>
+
 			<select
 				id='muscle-select'
 				value={selectedMuscle}
 				onChange={(e) => setSelectedMuscle(e.target.value)}
+				className={MuscleGroupSelectInputClassNames}
 			>
 				<option value=''>Select a muscle group</option>
 

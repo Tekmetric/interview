@@ -1,8 +1,8 @@
 import { ArtworkApi } from '../artwork-api/ArtworkApi';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { ArtworkListItem } from '../../types/artwork-list-item';
 import { ArtworkGetListResponse } from '../../types/response/ArtworkGetListResponse';
+import { normalizeArtworkData } from './services/normalize-artwork-data/normalize-artwork-data';
 
 export const useGetArtworkData = () => {
   const {
@@ -20,31 +20,9 @@ export const useGetArtworkData = () => {
     queryFn: ({ pageParam }) => ArtworkApi.getList({ page: pageParam })
   })
 
-  const flattenData = useMemo(
-    () => data?.pages.flatMap((page) => page.data) ?? [],
-    [data?.pages]
-  )
-
   const normalizedArtworkList = useMemo(
-    () => flattenData.reduce((acc, {
-      id,
-      image_id,
-      thumbnail,
-      title
-    }) => {
-      if (image_id && thumbnail) {
-        acc.push({
-          id,
-          imageId: image_id,
-          title,
-          altText: thumbnail.alt_text,
-          blurDataURL: thumbnail.lqip
-        })
-      }
-
-      return acc
-    }, [] as ArtworkListItem[]),
-    [flattenData]
+    () => normalizeArtworkData(data?.pages ?? []),
+    [data?.pages]
   )
 
   return {

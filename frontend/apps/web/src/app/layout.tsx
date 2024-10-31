@@ -3,8 +3,10 @@ import { AuthStoreProvider } from '@tekmetric/components/auth-store-provider'
 import classNames from 'classnames'
 import type { Metadata } from 'next'
 import { Lato } from 'next/font/google'
+import { cookies } from 'next/headers'
 import type { PropsWithChildren } from 'react'
 
+import { SESSION_KEY } from './constants'
 import './globals.css'
 
 const lato = Lato({
@@ -18,7 +20,12 @@ export const metadata: Metadata = {
   description: 'Tekmetric Q&A'
 }
 
-const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
+const RootLayout = async ({
+  children
+}: PropsWithChildren): Promise<JSX.Element> => {
+  const cookieStore = await cookies()
+  const session = cookieStore.get(SESSION_KEY)?.value ?? null
+
   return (
     <html lang='en'>
       <body
@@ -28,7 +35,7 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
           'tek-text-slate-800'
         )}
       >
-        <AuthStoreProvider>
+        <AuthStoreProvider session={session}>
           <ApolloWrapper>{children}</ApolloWrapper>
         </AuthStoreProvider>
       </body>

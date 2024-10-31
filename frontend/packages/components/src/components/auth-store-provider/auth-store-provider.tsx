@@ -1,24 +1,24 @@
 'use client'
 
-import { type ReactNode, useRef } from 'react'
+import { type PropsWithChildren, useRef } from 'react'
 
 import {
   type AuthStoreApi,
   AuthStoreContext
 } from '../../contexts/auth-store-context'
-import { AuthStorage } from '../../services/auth-storage/auth-storage'
 import { createAuthStore, initAuthStore } from '../../stores/auth-store'
 
 export interface AuthStoreProviderProps {
-  children: ReactNode
+  session: string | null
 }
 
 export const AuthStoreProvider = ({
-  children
-}: AuthStoreProviderProps): JSX.Element => {
+  children,
+  session
+}: PropsWithChildren<AuthStoreProviderProps>): JSX.Element => {
   const storeRef = useRef<AuthStoreApi>()
   if (!storeRef.current) {
-    storeRef.current = createAuthStore(initAuthStore(AuthStorage.getSession()))
+    storeRef.current = createAuthStore(initAuthStore(session))
   }
 
   return (

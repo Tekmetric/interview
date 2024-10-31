@@ -1,17 +1,18 @@
 import { cookies } from 'next/headers'
 import { type NextRequest, NextResponse } from 'next/server'
 
-const protectedRoutes = ['/dashboard']
-const publicRoutes = ['/']
+const PROTECTED_ROUTES = ['/dashboard']
+const PUBLIC_ROUTES = ['/']
+const SESSION_KEY = 'session'
 
 const middleware = async (req: NextRequest): Promise<NextResponse> => {
   const path = req.nextUrl.pathname
-  const isProtectedRoute = protectedRoutes.some((protectedRoute) =>
+  const isProtectedRoute = PROTECTED_ROUTES.some((protectedRoute) =>
     path.startsWith(protectedRoute)
   )
-  const isPublicRoute = publicRoutes.includes(path)
+  const isPublicRoute = PUBLIC_ROUTES.includes(path)
 
-  const cookie = (await cookies()).get('session')?.value
+  const cookie = (await cookies()).get(SESSION_KEY)?.value
 
   if (isProtectedRoute && !cookie) {
     return NextResponse.redirect(new URL('/', req.nextUrl))

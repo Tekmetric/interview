@@ -17,6 +17,7 @@
     "./input": "./src/components/input/input.tsx",
     "./navigation": "./src/components/navigation/navigation.tsx",
     "./typography": "./src/components/typography/typography.tsx",
+    "./validation-error": "./src/components/validation-error/validation-error.tsx",
     "./validate-schema": "./src/services/validate-form-values/validate-form-values.ts"
   },
   "license": "MIT",

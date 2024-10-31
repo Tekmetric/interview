@@ -6,20 +6,32 @@ import { Field } from '@tekmetric/ui/field'
 import { Form } from '@tekmetric/ui/form'
 import { Input } from '@tekmetric/ui/input'
 import { validateSchema } from '@tekmetric/ui/validate-schema'
+import { ValidationError } from '@tekmetric/ui/validation-error'
+import { useRouter } from 'next/navigation'
 import { useCallback } from 'react'
 
+import { useAuthStore } from '../../services/use-auth-store/use-auth-store'
 import { loginValidationSchema } from './constants'
 import { LoginClassNames } from './styles'
 import type { LoginFormFields } from './types'
 
 export const Login = (): JSX.Element => {
-  const [login] = useMutation(LoginDocument)
+  const router = useRouter()
+  const [login, { error: globalError }] = useMutation(LoginDocument)
+  const { setSession } = useAuthStore((state) => state)
+  const hasGlobalError = Boolean(globalError)
 
   const handleSubmit = useCallback(
     async ({ email, password }: LoginFormFields) => {
-      await login({ variables: { email, password } })
+      const result = await login({ variables: { email, password } })
+
+      if (result.data?.login?.userId && !result.errors?.length) {
+        setSession({ userId: result.data.login.userId })
+
+        router.push(`/dashboard`)
+      }
     },
-    [login]
+    [login, router, setSession]
   )
 
   return (
@@ -55,6 +67,12 @@ export const Login = (): JSX.Element => {
             />
           )}
         </Field>
+
+        {hasGlobalError && (
+          <ValidationError>
+            Credentials are invalid. Please try again.
+          </ValidationError>
+        )}
 
         <div className='tek-pt-4'>
           <Button type='submit' width='full'>

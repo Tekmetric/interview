@@ -10,9 +10,11 @@
   "exports": {
     "./styles.css": "./dist/index.css",
     "./apollo-wrapper": "./src/components/apollo-wrapper/apollo-wrapper.tsx",
+    "./auth-store-provider": "./src/components/auth-store-provider/auth-store-provider.tsx",
     "./login": "./src/components/login/login.tsx",
     "./navigation": "./src/components/navigation/navigation.tsx",
-    "./page": "./src/components/page/page.tsx"
+    "./page": "./src/components/page/page.tsx",
+    "./use-auth-store": "./src/services/use-auth-store/use-auth-store.tsx"
   },
   "license": "MIT",
   "scripts": {

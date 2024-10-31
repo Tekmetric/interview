@@ -1,4 +1,5 @@
 import { ApolloWrapper } from '@tekmetric/components/apollo-wrapper'
+import { AuthStoreProvider } from '@tekmetric/components/auth-store-provider'
 import classNames from 'classnames'
 import type { Metadata } from 'next'
 import { Lato } from 'next/font/google'
@@ -27,7 +28,9 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
           'tek-text-slate-800'
         )}
       >
-        <ApolloWrapper>{children}</ApolloWrapper>
+        <AuthStoreProvider>
+          <ApolloWrapper>{children}</ApolloWrapper>
+        </AuthStoreProvider>
       </body>
     </html>
   )

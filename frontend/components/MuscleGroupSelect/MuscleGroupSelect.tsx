@@ -1,12 +1,11 @@
 import React from 'react';
-import { MuscleGroupSelectInputClassNames } from './styles';
 
 interface MuscleSelectProps {
 	selectedMuscle: string;
 	setSelectedMuscle: (muscle: string) => void;
 }
 
-const MuscleSelect: React.FC<MuscleSelectProps> = ({
+const MuscleGroupSelect: React.FC<MuscleSelectProps> = ({
 	selectedMuscle,
 	setSelectedMuscle,
 }) => {
@@ -34,15 +33,13 @@ const MuscleSelect: React.FC<MuscleSelectProps> = ({
 			<label htmlFor='muscle-select' className='block text-lg font-medium mb-2'>
 				Select Muscle Group
 			</label>
-
 			<select
 				id='muscle-select'
 				value={selectedMuscle}
 				onChange={(e) => setSelectedMuscle(e.target.value)}
-				className={MuscleGroupSelectInputClassNames}
+				className='select select-bordered w-full max-w-xs'
 			>
-				<option value=''>Select a muscle group</option>
-
+				<option value=''>--Please choose an option--</option>
 				{muscles.map((muscle) => (
 					<option key={muscle} value={muscle}>
 						{muscle}
@@ -53,4 +50,4 @@ const MuscleSelect: React.FC<MuscleSelectProps> = ({
 	);
 };
 
-export default MuscleSelect;
+export default MuscleGroupSelect;

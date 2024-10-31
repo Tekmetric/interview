@@ -2,6 +2,7 @@ import classNames from 'classnames'
 
 import type {
   TypographyAlignment,
+  TypographyColor,
   TypographySize,
   TypographyWeight
 } from './types'
@@ -29,17 +30,25 @@ export const TypographyAlignmentClassNames: Record<
   right: 'tek-text-right'
 }
 
+export const TypographyColorClassNames: Record<TypographyColor, string> = {
+  current: '',
+  'slate-500': 'tek-text-slate-500'
+}
+
 export const TypographyClassNames = ({
   alignment = 'left',
+  color = 'current',
   size = 'md',
   weight = 'medium'
 }: {
   alignment?: TypographyAlignment
+  color?: TypographyColor
   size?: TypographySize
   weight?: TypographyWeight
 }): string =>
   classNames(
     TypographySizeClassNames[size],
     TypographyWeightClassNames[weight],
-    TypographyAlignmentClassNames[alignment]
+    TypographyAlignmentClassNames[alignment],
+    TypographyColorClassNames[color]
   )

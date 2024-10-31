@@ -26,5 +26,6 @@ export const NavigationListClassNames = classNames(
 
 export const NavigationOverlayClassNames = classNames(
   'tek-fixed tek-bottom-0 tek-left-0 tek-right-0 tek-top-0 tek-z-10',
+  'tek-bg-slate-50/30',
   'sm:tek-hidden'
 )

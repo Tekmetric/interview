@@ -12,7 +12,7 @@ export const Icon = ({ icon }: IconProps): JSX.Element | null => {
 
   return (
     <Suspense fallback={null}>
-      <Element className='tek-size-4 tek-text-white' />
+      <Element className='tek-size-4 tek-text-current' />
     </Suspense>
   )
 }

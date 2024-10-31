@@ -4,6 +4,7 @@ import { TypographyClassNames } from './styles'
 import type {
   TypographyAlignment,
   TypographyAs,
+  TypographyColor,
   TypographySize,
   TypographyWeight
 } from './types'
@@ -13,6 +14,7 @@ interface TypographyProps {
   alignment?: TypographyAlignment
   size?: TypographySize
   weight?: TypographyWeight
+  color?: TypographyColor
 }
 
 export const Typography = ({
@@ -20,10 +22,13 @@ export const Typography = ({
   alignment = 'left',
   size = 'md',
   weight = 'medium',
+  color = 'current',
   children
 }: PropsWithChildren<TypographyProps>): JSX.Element => {
   return (
-    <Element className={TypographyClassNames({ alignment, size, weight })}>
+    <Element
+      className={TypographyClassNames({ alignment, size, weight, color })}
+    >
       {children}
     </Element>
   )

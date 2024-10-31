@@ -10,7 +10,8 @@
   "exports": {
     "./styles.css": "./dist/index.css",
     "./login": "./src/components/login/login.tsx",
-    "./navigation": "./src/components/navigation/navigation.tsx"
+    "./navigation": "./src/components/navigation/navigation.tsx",
+    "./page": "./src/components/page/page.tsx"
   },
   "license": "MIT",
   "scripts": {

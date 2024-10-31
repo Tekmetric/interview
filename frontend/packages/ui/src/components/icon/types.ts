@@ -1,1 +1,1 @@
-export type IconType = 'logout' | 'close' | 'menu'
+export type IconType = 'logout' | 'chat' | 'check' | 'close' | 'menu'

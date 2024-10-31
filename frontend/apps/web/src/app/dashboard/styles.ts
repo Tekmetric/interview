@@ -8,4 +8,4 @@ export const LayoutClassNames = classNames(
   'tek-p-4'
 )
 
-export const PageClassNames = classNames('tek-pt-8')
+export const PageClassNames = classNames('tek-pt-12 sm:tek-pt-8')

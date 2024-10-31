@@ -7,3 +7,5 @@ export type TypographySize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 export type TypographyWeight = 'medium' | 'semibold'
 
 export type TypographyAlignment = 'left' | 'center' | 'right'
+
+export type TypographyColor = 'current' | 'slate-500'

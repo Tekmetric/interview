@@ -120,7 +120,7 @@ export const StyledArtworkImageFrameShadow = styled.div`
 `
 
 export const StyledArtworkImage = styled.img<{
-  blurDataUrl: string
+  $blurDataUrl: string
 }>`
     ${variables}
     
@@ -129,8 +129,8 @@ export const StyledArtworkImage = styled.img<{
     position: relative;
     background: #f0f0f0;
 
-    ${({ blurDataUrl }) => css`
-        background-image: url(${blurDataUrl});
+    ${({ $blurDataUrl }) => css`
+        background-image: url(${$blurDataUrl});
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;

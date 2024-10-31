@@ -27,7 +27,7 @@ export const ArtworkImage = ({ imageId, title, altText, blurDataUrl }: Props) =>
           <StyledArtworkImage
             src={ArtworkApi.getImageUrl(imageId)}
             alt={altText}
-            blurDataUrl={blurDataUrl}
+            $blurDataUrl={blurDataUrl}
           />
         </StyledArtworkImageFrameShadow>
 

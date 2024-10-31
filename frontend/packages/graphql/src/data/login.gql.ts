@@ -1,8 +1,4 @@
-'use client'
-
-import { gql, useMutation } from '@apollo/client'
-
-import { LoginDocument } from '../../__generated__/graphql'
+import { gql } from '@apollo/client'
 
 export default gql`
   mutation login($email: String!, $password: String!) {

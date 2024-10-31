@@ -20,6 +20,7 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.0.1",
     "@tekmetric/eslint-config": "*",
+    "@tekmetric/graphql": "*",
     "@tekmetric/tailwind-config": "*",
     "@tekmetric/typescript-config": "*",
     "@types/node": "^22.8.1",

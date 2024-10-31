@@ -9,6 +9,7 @@
   ],
   "exports": {
     "./styles.css": "./dist/index.css",
+    "./apollo-wrapper": "./src/components/apollo-wrapper/apollo-wrapper.tsx",
     "./login": "./src/components/login/login.tsx",
     "./navigation": "./src/components/navigation/navigation.tsx",
     "./page": "./src/components/page/page.tsx"
@@ -23,6 +24,7 @@
   },
   "dependencies": {
     "@tekmetric/ui": "*",
+    "@tekmetric/graphql": "*",
     "classnames": "2.5.1",
     "next": "^15.0.1"
   },

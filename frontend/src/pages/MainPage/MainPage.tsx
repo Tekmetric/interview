@@ -3,13 +3,21 @@ import { ArtworkImage } from '../../components/ArtworkImage/ArtworkImage';
 import { ArtworkList } from '../../components/ArtworkList/ArtworkList';
 import { Spinner } from '../../components/Spinner/Spinner';
 import { ArtworkImageSpace } from '../../components/ArtworkImageSpace/ArtworkImageSpace';
+import { useCallback } from 'react';
 
 export const MainPage = () => {
-  const { artworkList, isLoading } = useGetArtworkData()
+  const { data: artworkList, isFetching, fetchNextPage } = useGetArtworkData()
+  
+  const handleLoadMoreItems = useCallback(
+    async () => {
+      await fetchNextPage()
+    },
+    []
+  )
   
   return (
-    <ArtworkList>
-      {isLoading && (
+    <ArtworkList onScrollToEnd={handleLoadMoreItems}>
+      {isFetching && (
         <ArtworkImageSpace>
           <Spinner />
         </ArtworkImageSpace>

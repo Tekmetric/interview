@@ -1,16 +1,32 @@
 import { ArtworkApi } from '../artwork-api/ArtworkApi';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { ArtworkListItem } from '../../types/artwork-list-item';
+import { ArtworkGetListResponse } from '../../types/response/ArtworkGetListResponse';
 
 export const useGetArtworkData = () => {
-  const { data: artworkList, isLoading: artworkListLoading } = useQuery({
+  const {
+    data,
+    isFetching,
+    fetchNextPage
+  } = useInfiniteQuery({
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: ArtworkGetListResponse) => {
+      return lastPage.pagination.current_page < lastPage.pagination.total_pages
+        ? lastPage.pagination.current_page + 1
+        : null
+    },
     queryKey: ['artwork-list'],
-    queryFn: () => ArtworkApi.getList({ page: 1 })
+    queryFn: ({ pageParam }) => ArtworkApi.getList({ page: pageParam })
   })
 
+  const flattenData = useMemo(
+    () => data?.pages.flatMap((page) => page.data) ?? [],
+    [data?.pages]
+  )
+
   const normalizedArtworkList = useMemo(
-    () => artworkList?.data.reduce((acc, {
+    () => flattenData.reduce((acc, {
       id,
       image_id,
       thumbnail,
@@ -28,11 +44,12 @@ export const useGetArtworkData = () => {
 
       return acc
     }, [] as ArtworkListItem[]),
-    [artworkList?.data]
+    [flattenData]
   )
 
   return {
-    artworkList: normalizedArtworkList,
-    isLoading: artworkListLoading
+    data: normalizedArtworkList,
+    isFetching,
+    fetchNextPage
   }
 }

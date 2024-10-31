@@ -30,6 +30,7 @@ export const MainPage = () => {
             title={artworkListItem.title}
             altText={artworkListItem.altText}
             blurDataUrl={artworkListItem.blurDataURL}
+            width={artworkListItem.width}
           />
         </ArtworkImageSpace>
       ))}

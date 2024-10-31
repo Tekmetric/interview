@@ -4,6 +4,7 @@ type ArtworkListItem = {
   thumbnail: {
     lqip: string;
     alt_text: string;
+    width: number
   } | null;
   title: string;
 }

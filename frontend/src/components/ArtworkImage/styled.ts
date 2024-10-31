@@ -7,7 +7,7 @@ const variables = css`
 `
 
 export const StyledArtworkImageOuterFrame = styled.div`
-    ${variables}
+    ${variables};
 
     position: relative;
     display: block;
@@ -31,7 +31,7 @@ export const StyledArtworkImageOuterFrame = styled.div`
 `
 
 const getOuterFrameBackgroundSharedStyles = (position: 'top' | 'bottom') => css`
-    ${variables}
+    ${variables};
 
     position: absolute;
     z-index: 2;
@@ -45,7 +45,7 @@ const getOuterFrameBackgroundPseudoSharedStyles = (position: 'top-left' | 'top-r
     const [vertical, horizontal] = position.split('-') as ['top' | 'bottom', 'left' | 'right']
 
     return css`
-        ${variables}
+        ${variables};
         
         --gap-color: rgba(166, 161, 161, 0.3);
         --gap-start: 49.95%;
@@ -93,7 +93,7 @@ export const StyledArtworkImageOuterFrameBackgroundBottom = styled.div`
 `
 
 export const StyledArtworkImageFrame = styled.div`
-    ${variables}
+    ${variables};
     
     box-sizing: border-box;
     padding: var(--inner-frame-width) var(--inner-frame-width) 0 var(--inner-frame-width);
@@ -102,7 +102,7 @@ export const StyledArtworkImageFrame = styled.div`
 `
 
 export const StyledArtworkImageFrameShadow = styled.div`
-    ${variables}
+    ${variables};
     
     position: relative;
 
@@ -122,11 +122,12 @@ export const StyledArtworkImageFrameShadow = styled.div`
 export const StyledArtworkImage = styled.img<{
   $blurDataUrl: string
 }>`
-    ${variables}
+    ${variables};
+    
+    position: relative;
     
     max-width: calc(75vw - var(--frame-width));
     max-height: calc(75vh - var(--frame-width));
-    position: relative;
     background: #f0f0f0;
 
     ${({ $blurDataUrl }) => css`
@@ -138,7 +139,7 @@ export const StyledArtworkImage = styled.img<{
 `
 
 export const StyledArtworkImageTitle = styled.div`
-    ${variables}
+    ${variables};
     
     display: flex;
     justify-content: center;

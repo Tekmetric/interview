@@ -2,6 +2,8 @@ import { ArtworkGetListResponse } from '../../types/response/ArtworkGetListRespo
 
 export class ArtworkApi {
   private static readonly limit = 10
+  private static readonly defaultImageWidthPx = 843
+  private static readonly smallImageWidthPx = 450
 
   public static async getList ({ page }: {
     page: number
@@ -11,7 +13,11 @@ export class ArtworkApi {
     return await response.json()
   }
 
-  public static getImageUrl (imageId: string) {
-    return `https://www.artic.edu/iiif/2/${imageId}/full/843,/0/default.jpg`
+  public static getImageUrl (imageId: string, width: number) {
+    const normalizedWidth = width <= ArtworkApi.defaultImageWidthPx
+      ? ArtworkApi.smallImageWidthPx
+      : ArtworkApi.defaultImageWidthPx
+
+    return `https://www.artic.edu/iiif/2/${imageId}/full/${normalizedWidth},/0/default.jpg`
   }
 }

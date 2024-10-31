@@ -14,9 +14,10 @@ type Props = {
   title: string;
   altText: string;
   blurDataUrl: string;
+  width: number
 }
 
-export const ArtworkImage = ({ imageId, title, altText, blurDataUrl }: Props) => {
+export const ArtworkImage = ({ imageId, title, altText, blurDataUrl, width }: Props) => {
   return (
     <StyledArtworkImageOuterFrame>
       <StyledArtworkImageOuterFrameBackgroundTop />
@@ -25,7 +26,7 @@ export const ArtworkImage = ({ imageId, title, altText, blurDataUrl }: Props) =>
       <StyledArtworkImageFrame>
         <StyledArtworkImageFrameShadow>
           <StyledArtworkImage
-            src={ArtworkApi.getImageUrl(imageId)}
+            src={ArtworkApi.getImageUrl(imageId, width)}
             alt={altText}
             $blurDataUrl={blurDataUrl}
           />

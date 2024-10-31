@@ -4,4 +4,5 @@ export type ArtworkListItem = {
   title: string;
   altText: string;
   blurDataURL: string;
+  width: number
 }

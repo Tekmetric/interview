@@ -25,7 +25,8 @@ export const normalizeArtworkData = (artworkDataPages: ArtworkGetListResponse[])
       imageId: image_id,
       title,
       altText: thumbnail.alt_text,
-      blurDataURL: thumbnail.lqip
+      blurDataURL: thumbnail.lqip,
+      width: thumbnail.width
     })
 
     return acc

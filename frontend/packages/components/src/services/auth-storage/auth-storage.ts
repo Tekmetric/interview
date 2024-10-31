@@ -1,15 +1,33 @@
+import { getCookie, removeCookie, setCookie } from 'typescript-cookie'
+
 const STORAGE_KEY = 'session'
+
+const isClient = typeof window !== 'undefined'
 
 export class AuthStorage {
   static setSession(token: string): void {
-    localStorage.setItem(STORAGE_KEY, token)
+    if (!isClient) {
+      return
+    }
+
+    setCookie(STORAGE_KEY, token)
   }
 
   static getSession(): string | null {
-    return localStorage.getItem(STORAGE_KEY)
+    if (!isClient) {
+      return null
+    }
+
+    const result: string | undefined = getCookie(STORAGE_KEY)
+
+    return result ?? null
   }
 
   static removeSession(): void {
-    localStorage.removeItem(STORAGE_KEY)
+    if (!isClient) {
+      return
+    }
+
+    removeCookie(STORAGE_KEY)
   }
 }

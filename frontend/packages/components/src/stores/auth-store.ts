@@ -1,3 +1,5 @@
+'use client'
+
 import { type StoreApi, createStore } from 'zustand/vanilla'
 
 import { AuthStorage } from '../services/auth-storage/auth-storage'

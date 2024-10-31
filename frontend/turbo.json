@@ -18,6 +18,10 @@
     "start": {
       "cache": true,
       "persistent": true
+    },
+    "generate:types": {
+      "cache": false,
+      "persistent": false
     }
   }
 }

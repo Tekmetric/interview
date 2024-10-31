@@ -1,19 +1,49 @@
+'use client'
+
 import type { ReactNode } from 'react'
+import {
+  type FieldInputProps,
+  type FieldMetaState,
+  Field as FormField
+} from 'react-final-form'
 
-import { FieldClassLabelNames, FieldClassNames } from './styles'
+import {
+  FieldClassErrorNames,
+  FieldClassLabelNames,
+  FieldClassNames
+} from './styles'
 
-interface FieldProps {
+interface FieldProps<TValue = unknown> {
   name: string
   label: string
-  children: ({ name }: { name: string }) => ReactNode
+  children: (props: {
+    input: FieldInputProps<TValue, HTMLInputElement>
+    meta: FieldMetaState<TValue>
+  }) => ReactNode
 }
 
-export const Field = ({ name, label, children }: FieldProps): JSX.Element => (
-  <fieldset className={FieldClassNames}>
-    <label htmlFor={name} className={FieldClassLabelNames}>
-      {label}
-    </label>
+export const Field = <TValue, TOutputValue extends TValue = TValue>({
+  name,
+  label,
+  children
+}: FieldProps<TValue>): JSX.Element => (
+  <FormField<TOutputValue, HTMLElement, TValue> name={name}>
+    {({ input, meta }) => {
+      const hasError = Boolean(meta.error && meta.touched)
 
-    {children({ name })}
-  </fieldset>
+      return (
+        <fieldset className={FieldClassNames}>
+          <label htmlFor={name} className={FieldClassLabelNames}>
+            {label}
+          </label>
+
+          {children({ input, meta })}
+
+          {hasError && (
+            <span className={FieldClassErrorNames}>{meta.error}</span>
+          )}
+        </fieldset>
+      )
+    }}
+  </FormField>
 )

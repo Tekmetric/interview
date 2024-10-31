@@ -12,10 +12,12 @@
     "./button": "./src/components/button/button.tsx",
     "./card": "./src/components/card/card.tsx",
     "./field": "./src/components/field/field.tsx",
+    "./form": "./src/components/form/form.tsx",
     "./icon": "./src/components/icon/icon.tsx",
     "./input": "./src/components/input/input.tsx",
     "./navigation": "./src/components/navigation/navigation.tsx",
-    "./typography": "./src/components/typography/typography.tsx"
+    "./typography": "./src/components/typography/typography.tsx",
+    "./validate-schema": "./src/services/validate-form-values/validate-form-values.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -27,7 +29,10 @@
   },
   "dependencies": {
     "@heroicons/react": "2.1.5",
-    "classnames": "2.5.1"
+    "classnames": "2.5.1",
+    "final-form": "4.20.10",
+    "react-final-form": "6.5.9",
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@tekmetric/eslint-config": "*",

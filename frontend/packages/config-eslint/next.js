@@ -75,6 +75,8 @@ module.exports = {
       files: ['*.ts', '*.tsx'],
       rules: {
         'no-unused-vars': 'off',
+        "@typescript-eslint/no-invalid-void-type": "off",
+        "react/jsx-no-leaked-render": "off",
         '@typescript-eslint/no-unused-vars': [
           'error',
           {
@@ -83,6 +85,12 @@ module.exports = {
             ignoreRestSiblings: true,
             argsIgnorePattern: '^_',
             varsIgnorePattern: '^_'
+          }
+        ],
+        '@typescript-eslint/no-misused-promises': [
+          'error',
+          {
+            checksVoidReturn: false
           }
         ]
       }

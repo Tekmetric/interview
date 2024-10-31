@@ -41,7 +41,7 @@ model Question {
     description String?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
-    authorId    String   @unique
+    authorId    String
     author      User     @relation(fields: [authorId], references: [id])
     Answer      Answer[]
 }
@@ -51,8 +51,8 @@ model Answer {
     description String?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
-    authorId    String   @unique
+    authorId    String
     author      User     @relation(fields: [authorId], references: [id])
-    questionId  String   @unique
+    questionId  String
     question    Question @relation(fields: [questionId], references: [id])
 }

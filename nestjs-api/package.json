@@ -99,7 +99,8 @@
       "^@tekmetric/database(|/.*)$": "<rootDir>/libs/database/src/$1",
       "^@tekmetric/user(|/.*)$": "<rootDir>/libs/user/src/$1",
       "^@tekmetric/auth(|/.*)$": "<rootDir>/libs/auth/src/$1",
-      "^@tekmetric/core(|/.*)$": "<rootDir>/libs/core/src/$1"
+      "^@tekmetric/core(|/.*)$": "<rootDir>/libs/core/src/$1",
+      "^@tekmetric/question(|/.*)$": "<rootDir>/libs/question/src/$1"
     }
   },
   "prisma": {

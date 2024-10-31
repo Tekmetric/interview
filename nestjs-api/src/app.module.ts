@@ -7,11 +7,13 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
+import { QuestionModule } from '@tekmetric/question';
 
 @Module({
   imports: [
     PrismaModule,
     AuthModule,
+    QuestionModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       useFactory: () => {

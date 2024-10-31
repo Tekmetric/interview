@@ -55,15 +55,6 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "Authentication_userId_key" ON "Authentication"("userId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Question_authorId_key" ON "Question"("authorId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Answer_authorId_key" ON "Answer"("authorId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Answer_questionId_key" ON "Answer"("questionId");
-
 -- AddForeignKey
 ALTER TABLE "Authentication" ADD CONSTRAINT "Authentication_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 

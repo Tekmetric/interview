@@ -41,6 +41,12 @@
       ],
       "@tekmetric/core/*": [
         "libs/core/src/*"
+      ],
+      "@tekmetric/question": [
+        "libs/question/src"
+      ],
+      "@tekmetric/question/*": [
+        "libs/question/src/*"
       ]
     }
   }

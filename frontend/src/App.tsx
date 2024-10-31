@@ -1,25 +1,14 @@
-import { Component } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useRef } from 'react';
+import { MainPage } from './pages/MainPage/MainPage';
+import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <h2>Welcome to the interview app!</h2>
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
+export const App = () => {
+  const queryClientRef = useRef(new QueryClient())
 
-        <ul>
-          <li>Fetch Data from a public API <a href="https://github.com/toddmotto/public-apis">Samples</a></li>
-          <li>Display data from API onto your page (Table, List, etc.)</li>
-          <li>Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)</li> 
-        </ul>
-       
-        </header>
-      </div>
-    );
-  }
+  return <ErrorBoundary>
+      <QueryClientProvider client={queryClientRef.current}>
+      <MainPage />
+    </QueryClientProvider>
+  </ErrorBoundary>
 }
-
-export default App;

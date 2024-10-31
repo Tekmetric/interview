@@ -9,5 +9,5 @@ export const StyledArtworkList = styled.ul`
     margin: 0;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    background: #f0f4f4;
+    background: #c5c5c5;
 `

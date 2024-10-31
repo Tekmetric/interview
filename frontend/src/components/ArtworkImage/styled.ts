@@ -6,17 +6,6 @@ const variables = css`
     --frame-width: calc(var(--inner-frame-width) + var(--outer-frame-width));
 `
 
-export const StyledArtworkImageSpace = styled.li`
-    position: relative;
-    display: flex;
-    flex-shrink: 0;
-    justify-content: center;
-    align-items: center;
-    width: 100vw;
-    height: 100%;
-    scroll-snap-align: start;
-`
-
 export const StyledArtworkImageOuterFrame = styled.div`
     ${variables}
 
@@ -33,10 +22,10 @@ export const StyledArtworkImageOuterFrame = styled.div`
         top: 0;
         left: 0;
         right: 0;
-        bottom: 0;  
+        bottom: 0;
         z-index: 1;
-        box-shadow: 8px 10px 10px -5px rgba(0, 0, 0, 0.25),
-            10px 15px 30px -5px rgba(0, 0, 0, 0.25);
+        box-shadow: 8px 10px 10px -5px rgba(124, 112, 103, 0.35),
+        0 30px 10px -15px rgba(124, 112, 103, 0.35);
         pointer-events: none;
     }
 `
@@ -148,30 +137,17 @@ export const StyledArtworkImage = styled.img<{
     `}
 `
 
-export const StyledArtworkImageTitle = styled.span`
+export const StyledArtworkImageTitle = styled.div`
     ${variables}
     
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
     min-height: var(--inner-frame-width);
     width: 0;
     min-width: 100%;
-    height: auto;
     padding: 5px 0;
     font-style: italic;
     line-height: 1.5rem;
-`
-
-export const StyledLightOverlay = styled.div`
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: rgb(240, 244, 244);
-    background: radial-gradient(circle at 50% 0, rgb(238, 238, 238) 4%, rgb(197, 197, 197) 50%);
-    pointer-events: all;
 `

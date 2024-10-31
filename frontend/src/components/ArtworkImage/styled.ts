@@ -17,57 +17,50 @@ export const StyledArtworkImageSpace = styled.li`
     scroll-snap-align: start;
 `
 
-export const StyledArtworkImageFrame = styled.div`
+export const StyledArtworkImageOuterFrame = styled.div`
     ${variables}
 
     position: relative;
     display: block;
-    margin: var(--frame-width);
-    box-shadow: 0 0 0 var(--inner-frame-width) #f1efef;
+    box-sizing: border-box;
+    padding: var(--outer-frame-width);
     z-index: 1;
-
-    &:before {
-        content: '';
-        position: absolute;
-        z-index: 1;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        box-shadow: inset 0 6px 6px 2px rgba(0, 0, 0, 0.2);
-    }
+    background: #e1dede;
 
     &:after {
         content: '';
         position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;  
         z-index: 1;
-        top: calc(var(--frame-width) * -1);
-        left: calc(var(--frame-width) * -1);
-        right: calc(var(--frame-width) * -1);
-        bottom: calc(var(--frame-width) * -1);
-        border: var(--outer-frame-width) solid #e1dede;
-        box-shadow: inset 0 6px 6px 4px rgba(0, 0, 0, 0.3),
-        8px 10px 10px -5px rgba(0, 0, 0, 0.25),
-        10px 15px 30px -5px rgba(0, 0, 0, 0.25);
+        box-shadow: 8px 10px 10px -5px rgba(0, 0, 0, 0.25),
+            10px 15px 30px -5px rgba(0, 0, 0, 0.25);
+        pointer-events: none;
     }
 `
 
-const getFrameBackgroundSharedStyles = (position: 'top' | 'bottom') => css`
+const getOuterFrameBackgroundSharedStyles = (position: 'top' | 'bottom') => css`
     ${variables}
 
     position: absolute;
     z-index: 2;
-    ${position}: calc(var(--frame-width) * -1);
-    left: calc(var(--frame-width) * -1);
-    right: calc(var(--frame-width) * -1);
-    height: var(--frame-width);
+    ${position}: 0;
+    left: 0;
+    right: 0;
+    height: var(--outer-frame-width);
 `
 
-const getFrameBackgroundPseudoSharedStyles = (position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right') => {
+const getOuterFrameBackgroundPseudoSharedStyles = (position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right') => {
     const [vertical, horizontal] = position.split('-') as ['top' | 'bottom', 'left' | 'right']
 
     return css`
         ${variables}
+        
+        --gap-color: rgba(166, 161, 161, 0.3);
+        --gap-start: 49.95%;
+        --gap-end: 50.05%;
     
         content: '';
         position: absolute;
@@ -75,31 +68,65 @@ const getFrameBackgroundPseudoSharedStyles = (position: 'top-left' | 'top-right'
         ${horizontal}: 0;
         width: var(--outer-frame-width);
         height: var(--outer-frame-width);
-        background-image: linear-gradient(to ${vertical === 'top' ? 'bottom' : 'top'} ${horizontal}, transparent 49.95%, rgba(166, 161, 161, 0.2) 49.95%, rgba(166, 161, 161, 0.18) 50.05%, transparent 50.05%);
+        background-image: 
+            linear-gradient(
+                to ${vertical === 'top' ? 'bottom' : 'top'} ${horizontal}, 
+                transparent var(--gap-start), 
+                 var(--gap-color) var(--gap-start), 
+                 var(--gap-color) var(--gap-end), 
+                transparent var(--gap-end)
+            );
     `
 }
 
-export const StyledArtworkImageFrameBackgroundTop = styled.div`
-    ${getFrameBackgroundSharedStyles('top')}
+export const StyledArtworkImageOuterFrameBackgroundTop = styled.div`
+    ${getOuterFrameBackgroundSharedStyles('top')}
     
     &:before {
-        ${getFrameBackgroundPseudoSharedStyles('top-left')}
+        ${getOuterFrameBackgroundPseudoSharedStyles('top-left')}
     }
 
     &:after {
-        ${getFrameBackgroundPseudoSharedStyles('top-right')}
+        ${getOuterFrameBackgroundPseudoSharedStyles('top-right')}
     }
 `
 
-export const StyledArtworkImageFrameBackgroundBottom = styled.div`
-    ${getFrameBackgroundSharedStyles('bottom')}
+export const StyledArtworkImageOuterFrameBackgroundBottom = styled.div`
+    ${getOuterFrameBackgroundSharedStyles('bottom')}
     
     &:before {
-        ${getFrameBackgroundPseudoSharedStyles('bottom-left')}
+        ${getOuterFrameBackgroundPseudoSharedStyles('bottom-left')}
     }
 
     &:after {
-        ${getFrameBackgroundPseudoSharedStyles('bottom-right')}
+        ${getOuterFrameBackgroundPseudoSharedStyles('bottom-right')}
+    }
+`
+
+export const StyledArtworkImageFrame = styled.div`
+    ${variables}
+    
+    box-sizing: border-box;
+    padding: var(--inner-frame-width) var(--inner-frame-width) 0 var(--inner-frame-width);
+    background: #f1efef;
+    box-shadow: inset 0 4px 6px 0px rgba(0, 0, 0, 0.3);
+`
+
+export const StyledArtworkImageFrameShadow = styled.div`
+    ${variables}
+    
+    position: relative;
+
+    &:after {
+        content: '';
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        box-shadow: inset 0 2px 6px 2px rgba(0, 0, 0, 0.2);
+        pointer-events: none;
     }
 `
 
@@ -116,8 +143,26 @@ export const StyledArtworkImage = styled.img<{
     ${({ blurDataUrl }) => css`
         background-image: url(${blurDataUrl});
         background-repeat: no-repeat;
+        background-size: cover;
         background-position: center;
     `}
+`
+
+export const StyledArtworkImageTitle = styled.span`
+    ${variables}
+    
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: var(--inner-frame-width);
+    width: 0;
+    min-width: 100%;
+    height: auto;
+    padding: 5px 0;
+    font-style: italic;
+    line-height: 1.5rem;
 `
 
 export const StyledLightOverlay = styled.div`

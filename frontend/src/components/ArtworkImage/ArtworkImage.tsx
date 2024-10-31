@@ -1,32 +1,44 @@
 import {
   StyledArtworkImage,
+  StyledArtworkImageOuterFrame,
+  StyledArtworkImageOuterFrameBackgroundBottom,
+  StyledArtworkImageOuterFrameBackgroundTop,
   StyledArtworkImageFrame,
-  StyledArtworkImageFrameBackgroundBottom,
-  StyledArtworkImageFrameBackgroundTop,
   StyledArtworkImageSpace,
-  StyledLightOverlay
+  StyledArtworkImageTitle,
+  StyledLightOverlay,
+  StyledArtworkImageFrameShadow
 } from './styled';
 import { ArtworkApi } from '../../services/artwork-api/ArtworkApi';
 
 type Props = {
-  imageId: string
-  altText: string
-  blurDataUrl: string
+  imageId: string;
+  title: string;
+  altText: string;
+  blurDataUrl: string;
 }
 
-export const ArtworkImage = ({ imageId, altText, blurDataUrl }: Props) => {
+export const ArtworkImage = ({ imageId, title, altText, blurDataUrl }: Props) => {
   return (
     <StyledArtworkImageSpace>
-      <StyledArtworkImageFrame>
-        <StyledArtworkImageFrameBackgroundTop />
-        <StyledArtworkImageFrameBackgroundBottom />
+      <StyledArtworkImageOuterFrame>
+        <StyledArtworkImageOuterFrameBackgroundTop />
+        <StyledArtworkImageOuterFrameBackgroundBottom />
 
-        <StyledArtworkImage
-          src={ArtworkApi.getImageUrl(imageId)}
-          alt={altText}
-          blurDataUrl={blurDataUrl}
-        />
-      </StyledArtworkImageFrame>
+        <StyledArtworkImageFrame>
+          <StyledArtworkImageFrameShadow>
+            <StyledArtworkImage
+              src={ArtworkApi.getImageUrl(imageId)}
+              alt={altText}
+              blurDataUrl={blurDataUrl}
+            />
+          </StyledArtworkImageFrameShadow>
+
+          <StyledArtworkImageTitle>
+            {title}
+          </StyledArtworkImageTitle>
+        </StyledArtworkImageFrame>
+      </StyledArtworkImageOuterFrame>
 
       <StyledLightOverlay />
     </StyledArtworkImageSpace>

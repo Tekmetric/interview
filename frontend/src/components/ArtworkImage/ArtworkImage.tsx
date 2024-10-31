@@ -1,4 +1,11 @@
-import { StyledArtworkImage, StyledArtworkImageFrame, StyledArtworkImageSpace, StyledLightOverlay } from './styled';
+import {
+  StyledArtworkImage,
+  StyledArtworkImageFrame,
+  StyledArtworkImageFrameBackgroundBottom,
+  StyledArtworkImageFrameBackgroundTop,
+  StyledArtworkImageSpace,
+  StyledLightOverlay
+} from './styled';
 import { ArtworkApi } from '../../services/artwork-api/ArtworkApi';
 
 type Props = {
@@ -11,6 +18,9 @@ export const ArtworkImage = ({ imageId, altText, blurDataUrl }: Props) => {
   return (
     <StyledArtworkImageSpace>
       <StyledArtworkImageFrame>
+        <StyledArtworkImageFrameBackgroundTop />
+        <StyledArtworkImageFrameBackgroundBottom />
+
         <StyledArtworkImage
           src={ArtworkApi.getImageUrl(imageId)}
           alt={altText}

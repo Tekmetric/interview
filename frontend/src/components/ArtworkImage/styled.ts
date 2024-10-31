@@ -52,6 +52,57 @@ export const StyledArtworkImageFrame = styled.div`
     }
 `
 
+const getFrameBackgroundSharedStyles = (position: 'top' | 'bottom') => css`
+    ${variables}
+
+    position: absolute;
+    z-index: 2;
+    ${position}: calc(var(--frame-width) * -1);
+    left: calc(var(--frame-width) * -1);
+    right: calc(var(--frame-width) * -1);
+    height: var(--frame-width);
+`
+
+const getFrameBackgroundPseudoSharedStyles = (position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right') => {
+    const [vertical, horizontal] = position.split('-') as ['top' | 'bottom', 'left' | 'right']
+
+    return css`
+        ${variables}
+    
+        content: '';
+        position: absolute;
+        ${vertical}: 0;
+        ${horizontal}: 0;
+        width: var(--outer-frame-width);
+        height: var(--outer-frame-width);
+        background-image: linear-gradient(to ${vertical === 'top' ? 'bottom' : 'top'} ${horizontal}, transparent 49.95%, rgba(166, 161, 161, 0.2) 49.95%, rgba(166, 161, 161, 0.18) 50.05%, transparent 50.05%);
+    `
+}
+
+export const StyledArtworkImageFrameBackgroundTop = styled.div`
+    ${getFrameBackgroundSharedStyles('top')}
+    
+    &:before {
+        ${getFrameBackgroundPseudoSharedStyles('top-left')}
+    }
+
+    &:after {
+        ${getFrameBackgroundPseudoSharedStyles('top-right')}
+    }
+`
+
+export const StyledArtworkImageFrameBackgroundBottom = styled.div`
+    ${getFrameBackgroundSharedStyles('bottom')}
+    
+    &:before {
+        ${getFrameBackgroundPseudoSharedStyles('bottom-left')}
+    }
+
+    &:after {
+        ${getFrameBackgroundPseudoSharedStyles('bottom-right')}
+    }
+`
+
 export const StyledArtworkImage = styled.img<{
   blurDataUrl: string
 }>`

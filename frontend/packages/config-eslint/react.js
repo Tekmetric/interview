@@ -76,8 +76,8 @@ module.exports = {
       files: ['*.ts', '*.tsx'],
       rules: {
         'no-unused-vars': 'off',
-        "@typescript-eslint/no-invalid-void-type": "off",
-        "react/jsx-no-leaked-render": "off",
+        '@typescript-eslint/no-invalid-void-type': 'off',
+        'react/jsx-no-leaked-render': 'off',
         '@typescript-eslint/no-unused-vars': [
           'error',
           {
@@ -94,6 +94,16 @@ module.exports = {
             checksVoidReturn: false
           }
         ]
+      }
+    },
+    {
+      files: ['*.test.ts', '*.test.tsx'],
+      env: {
+        jest: true
+      },
+      rules: {
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off'
       }
     }
   ]

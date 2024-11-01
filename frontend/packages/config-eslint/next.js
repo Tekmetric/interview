@@ -100,6 +100,16 @@ module.exports = {
           }
         ]
       }
+    },
+    {
+      files: ['*.test.ts', '*.test.tsx'],
+      env: {
+        jest: true
+      },
+      rules: {
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off'
+      }
     }
   ]
 }

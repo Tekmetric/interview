@@ -60,6 +60,7 @@ type Question {
   description: String!
   id: String!
   permissions: QuestionPermissions!
+  shortDescription: String!
   status: QuestionStatus!
   title: String!
 }

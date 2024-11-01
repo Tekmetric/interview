@@ -69,6 +69,15 @@ export class QuestionService {
     return answers.map(this.answerService.mapAnswer);
   }
 
+  public async getShortDescription(question: Question) {
+    if (!question.description) {
+      return '';
+    }
+
+    const short = question.description.split(' ');
+    return short.slice(0, 50).join(' ');
+  }
+
   private mapQuestion({
     id,
     authorId,

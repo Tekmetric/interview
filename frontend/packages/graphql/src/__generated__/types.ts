@@ -105,6 +105,7 @@ export type Question = {
   description: Scalars['String']['output'];
   id: Scalars['String']['output'];
   permissions: QuestionPermissions;
+  shortDescription: Scalars['String']['output'];
   status: QuestionStatus;
   title: Scalars['String']['output'];
 };
@@ -125,6 +126,27 @@ export enum UserRole {
   User = 'USER'
 }
 
+export type CreateAnswerMutationVariables = Exact<{
+  input: CreateAnswerDto;
+}>;
+
+
+export type CreateAnswerMutation = { __typename?: 'Mutation', createAnswer: { __typename?: 'Answer', id: string, description: string } };
+
+export type CreateQuestionMutationVariables = Exact<{
+  input: CreateQuestionDto;
+}>;
+
+
+export type CreateQuestionMutation = { __typename?: 'Mutation', createQuestion: { __typename?: 'Question', id: string, title: string, description: string } };
+
+export type GetQuestionsQueryVariables = Exact<{
+  status: QuestionStatus;
+}>;
+
+
+export type GetQuestionsQuery = { __typename?: 'Query', questions: Array<{ __typename?: 'Question', id: string, title: string, shortDescription: string, status: QuestionStatus, createdAt: any, author: { __typename?: 'Author', id: string, firstName: string, lastName: string }, permissions: { __typename?: 'QuestionPermissions', id: string, canResolve: boolean } }> };
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -132,3 +154,12 @@ export type LoginMutationVariables = Exact<{
 
 
 export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'Profile', userId: string } | null };
+
+export type QuestionFragment = { __typename?: 'Question', id: string, title: string, shortDescription: string, status: QuestionStatus, createdAt: any, author: { __typename?: 'Author', id: string, firstName: string, lastName: string }, permissions: { __typename?: 'QuestionPermissions', id: string, canResolve: boolean } };
+
+export type ResolveQuestionMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ResolveQuestionMutation = { __typename?: 'Mutation', resolveQuestion: { __typename?: 'Question', id: string, status: QuestionStatus } };

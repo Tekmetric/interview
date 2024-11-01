@@ -22,7 +22,7 @@ interface FieldProps<TValue = unknown> {
   name: string
   label: string
   children: (props: {
-    input: FieldInputProps<TValue, HTMLInputElement>
+    input: FieldInputProps<TValue, HTMLInputElement | HTMLTextAreaElement>
     meta: FieldMetaState<TValue>
     options: FieldOptions
   }) => ReactNode

@@ -5,7 +5,8 @@ export const makeClient = (): ApolloClient<unknown> => {
 
   const httpLink = new HttpLink({
     uri: `${URI}/graphql`,
-    fetchOptions: { cache: 'no-store' }
+    fetchOptions: { cache: 'no-store', mode: 'cors' },
+    credentials: 'include'
   })
 
   return new ApolloClient({

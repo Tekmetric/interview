@@ -34,6 +34,11 @@ export class QuestionResolver {
     return await this.service.getQuestionById(id);
   }
 
+  @ResolveField(() => String)
+  public async shortDescription(@Parent() question: Question) {
+    return await this.service.getShortDescription(question);
+  }
+
   @ResolveField(() => Author)
   public async author(@Parent() question: Question) {
     return await this.service.getAuthorById(question.authorId);

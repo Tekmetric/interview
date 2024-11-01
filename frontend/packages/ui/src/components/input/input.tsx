@@ -1,9 +1,10 @@
 import type { InputHTMLAttributes } from 'react'
 
 import { InputClassNames } from './styles'
+import type { InputWidth } from './types'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  width?: 'default' | 'full'
+  width?: InputWidth
 }
 
 export const Input = ({ width, ...rest }: InputProps): JSX.Element => (

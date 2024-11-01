@@ -18,6 +18,9 @@ export const Navigation = (): JSX.Element => {
       <Nav.Item active={isMenuItemActive(pathname, '/dashboard/completed')}>
         <Link href='/dashboard/completed'>Completed</Link>
       </Nav.Item>
+      <Nav.Item active={isMenuItemActive(pathname, '/dashboard/create')}>
+        <Link href='/dashboard/create'>Create</Link>
+      </Nav.Item>
     </Nav>
   )
 }

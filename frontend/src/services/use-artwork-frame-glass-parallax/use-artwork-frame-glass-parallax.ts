@@ -47,7 +47,7 @@ export const useArtworkFrameGlassParallax = () => {
     }
 
     onScroll()
-  }, [isIntersecting]);
+  }, [isIntersecting, onScroll]);
 
   useEffect(function setupParallaxEventListeners () {
     const scrollableParent = getScrollableParent(glassRef.current);
@@ -57,7 +57,7 @@ export const useArtworkFrameGlassParallax = () => {
     return () => {
       scrollableParent?.removeEventListener('scroll', onScroll);
     };
-  }, [handleGlassParallax]);
+  }, [onScroll]);
 
   return { glassRef }
 }

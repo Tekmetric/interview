@@ -6,7 +6,6 @@ import { Form } from '@tekmetric/ui/form'
 import { SubmitButton } from '@tekmetric/ui/submit-button'
 import { TextBox } from '@tekmetric/ui/text-box'
 import { validateSchema } from '@tekmetric/ui/validate-schema'
-import { ValidationError } from '@tekmetric/ui/validation-error'
 
 import { createAnswerValidationSchema } from './constants'
 import { useCreateAnswer } from './services/use-create-answer/use-create-answer'
@@ -19,12 +18,14 @@ interface CreateAnswerProps {
 export const CreateAnswer = ({
   questionId
 }: CreateAnswerProps): JSX.Element => {
-  const { createAnswer, hasGlobalError } = useCreateAnswer(questionId)
+  const { createAnswer } = useCreateAnswer(questionId)
 
   return (
     <Card>
       <Card.Title>
-        <span className='tek-block tek-mb-4'>Add your answer to this question.</span>
+        <span className='tek-mb-4 tek-block'>
+          Add your answer to this question.
+        </span>
       </Card.Title>
       <Card.Body>
         <Form<CreateAnswerFormFields>
@@ -46,12 +47,6 @@ export const CreateAnswer = ({
               />
             )}
           </Field>
-
-          {hasGlobalError && (
-            <ValidationError>
-              Something went wrong. Please try again.
-            </ValidationError>
-          )}
 
           <div className='tek-flex tek-justify-end'>
             <SubmitButton type='submit'>Create a new question</SubmitButton>

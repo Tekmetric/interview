@@ -8,6 +8,8 @@ import {
 } from '@tekmetric/graphql'
 import { useCallback } from 'react'
 
+import { useToastContainer } from '../../../../../../services/use-toast-container/use-toast-container'
+
 export const useResolveQuestion = (
   questionId: string
 ): {
@@ -15,6 +17,7 @@ export const useResolveQuestion = (
   hasGlobalError: boolean
   loading: boolean
 } => {
+  const { notify } = useToastContainer()
   const [resolveQuestion, { error: globalError, loading }] = useMutation(
     ResolveQuestionDocument,
     { refetchQueries: [GetQuestionsDocument, GetQuestionDocument] }
@@ -22,8 +25,14 @@ export const useResolveQuestion = (
   const hasGlobalError = Boolean(globalError)
 
   const handleSubmit = useCallback(async () => {
-    await resolveQuestion({ variables: { id: questionId } })
-  }, [questionId, resolveQuestion])
+    const data = await resolveQuestion({ variables: { id: questionId } })
+
+    if (!data.errors?.length) {
+      notify({ message: 'Question resolved successfully' })
+    } else {
+      notify({ type: 'error', message: 'Failed to resolve question' })
+    }
+  }, [notify, questionId, resolveQuestion])
 
   return { resolveQuestion: handleSubmit, hasGlobalError, loading }
 }

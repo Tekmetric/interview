@@ -7,6 +7,8 @@ import {
   useQuery
 } from '@tekmetric/graphql'
 import { Card } from '@tekmetric/ui/card'
+import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
 
 import { BaseQuestion } from '../base-question/base-question'
 import { CardsSkeletonLoader } from '../cards-skeleton-loader/cards-skeleton-loader'
@@ -16,9 +18,14 @@ interface QuestionProps {
 }
 
 export const Questions = ({ status }: QuestionProps): JSX.Element => {
-  const { data, loading } = useQuery(GetQuestionsDocument, {
+  const pathname = usePathname()
+  const { data, loading, refetch } = useQuery(GetQuestionsDocument, {
     variables: { status }
   })
+
+  useEffect(() => {
+    void refetch()
+  }, [pathname, refetch])
 
   if (loading && !data) {
     return <CardsSkeletonLoader cards={5} />

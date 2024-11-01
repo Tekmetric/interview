@@ -18,7 +18,9 @@
     "./page": "./src/components/page/page.tsx",
     "./question": "./src/components/question/question.tsx",
     "./questions": "./src/components/questions/questions.tsx",
-    "./use-auth-store": "./src/services/use-auth-store/use-auth-store.ts"
+    "./toast-container": "./src/components/toast-container/toast-container.tsx",
+    "./use-auth-store": "./src/services/use-auth-store/use-auth-store.ts",
+    "./use-toast-container": "./src/services/use-toast-container/use-toast-container.ts"
   },
   "license": "MIT",
   "scripts": {
@@ -35,6 +37,7 @@
     "date-fns": "4.1.0",
     "typescript-cookie": "1.0.6",
     "next": "^15.0.1",
+    "react-toastify": "10.0.6",
     "zod": "3.23.8",
     "zustand": "5.0.1"
   },

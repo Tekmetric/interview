@@ -1,5 +1,6 @@
 import { ApolloWrapper } from '@tekmetric/components/apollo-wrapper'
 import { AuthStoreProvider } from '@tekmetric/components/auth-store-provider'
+import { ToastContainer } from '@tekmetric/components/toast-container'
 import classNames from 'classnames'
 import type { Metadata } from 'next'
 import { Lato } from 'next/font/google'
@@ -36,7 +37,11 @@ const RootLayout = async ({
         )}
       >
         <AuthStoreProvider session={session}>
-          <ApolloWrapper>{children}</ApolloWrapper>
+          <ApolloWrapper>
+            {children}
+
+            <ToastContainer />
+          </ApolloWrapper>
         </AuthStoreProvider>
       </body>
     </html>

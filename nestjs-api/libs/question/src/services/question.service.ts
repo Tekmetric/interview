@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Question as PrismaQuestion } from '@tekmetric/database';
+import {
+  Question as PrismaQuestion,
+  QuestionStatus,
+} from '@tekmetric/database';
 import { CreateQuestionDto } from '../objects/dto/create-question.dto';
 import { Question } from '../objects/models/question.model';
 import { QuestionRepository } from '../repositories/question.repository';
@@ -12,8 +15,8 @@ export class QuestionService {
     private readonly answerService: AnswerServices,
   ) {}
 
-  public async getQuestions() {
-    const questions = await this.repo.getQuestions();
+  public async getQuestionsByStatus(status: QuestionStatus) {
+    const questions = await this.repo.getQuestionsByStatus(status);
 
     if (!questions.length) {
       return [];
@@ -46,6 +49,16 @@ export class QuestionService {
     return this.mapQuestion(question);
   }
 
+  public async resolveQuestion(id: string) {
+    const question = await this.repo.resolveQuestion(id);
+
+    if (!question) {
+      return null;
+    }
+
+    return this.mapQuestion(question);
+  }
+
   public async getAnswersByQuestionId(questionId: string) {
     const answers = await this.repo.getAnswersByQuestionId(questionId);
 
@@ -62,9 +75,11 @@ export class QuestionService {
     title,
     description,
     createdAt,
+    status,
   }: PrismaQuestion): Question {
     return {
       id,
+      status,
       authorId,
       title,
       description,

@@ -24,7 +24,8 @@ export class AnswerResolver {
   @Mutation(() => Answer)
   async createAnswer(
     @CurrentUser() user: UserContext,
-    @Args() Answer: CreateAnswerDto,
+    @Args({ name: 'input', type: () => CreateAnswerDto })
+    Answer: CreateAnswerDto,
   ) {
     return await this.service.createAnswer(user.userId, Answer);
   }

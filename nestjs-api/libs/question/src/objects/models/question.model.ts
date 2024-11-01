@@ -1,9 +1,22 @@
-import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
+import {
+  Field,
+  GraphQLISODateTime,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
+import { QuestionStatus } from '@tekmetric/database';
+
+registerEnumType(QuestionStatus, {
+  name: 'QuestionStatus',
+});
 
 @ObjectType()
 export class Question {
   @Field(() => String)
   id: string;
+
+  @Field(() => QuestionStatus)
+  status: QuestionStatus;
 
   @Field(() => String)
   authorId: string;

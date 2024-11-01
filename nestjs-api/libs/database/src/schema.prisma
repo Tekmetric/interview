@@ -13,6 +13,11 @@ enum UserRole {
     USER
 }
 
+enum QuestionStatus {
+    PENDING
+    COMPLETED
+}
+
 model User {
     id             String          @id @default(uuid())
     role           UserRole        @default(USER)
@@ -36,13 +41,14 @@ model Authentication {
 }
 
 model Question {
-    id          String   @id @default(uuid())
+    id          String         @id @default(uuid())
+    status      QuestionStatus @default(PENDING)
     title       String?
     description String?
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    createdAt   DateTime       @default(now())
+    updatedAt   DateTime       @updatedAt
     authorId    String
-    author      User     @relation(fields: [authorId], references: [id])
+    author      User           @relation(fields: [authorId], references: [id])
     Answer      Answer[]
 }
 

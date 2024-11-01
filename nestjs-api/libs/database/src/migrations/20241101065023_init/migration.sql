@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER');
 
+-- CreateEnum
+CREATE TYPE "QuestionStatus" AS ENUM ('PENDING', 'COMPLETED');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -28,6 +31,7 @@ CREATE TABLE "Authentication" (
 -- CreateTable
 CREATE TABLE "Question" (
     "id" TEXT NOT NULL,
+    "status" "QuestionStatus" NOT NULL DEFAULT 'PENDING',
     "title" TEXT,
     "description" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

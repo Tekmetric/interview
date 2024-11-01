@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@tekmetric/database';
+import { PrismaService, QuestionStatus } from '@tekmetric/database';
 import { Author } from '../objects/models/author.model';
 import { CreateQuestionDto } from '../objects/dto/create-question.dto';
 
@@ -7,8 +7,12 @@ import { CreateQuestionDto } from '../objects/dto/create-question.dto';
 export class QuestionRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  public async getQuestions() {
-    return await this.prisma.question.findMany();
+  public async getQuestionsByStatus(status: QuestionStatus) {
+    return await this.prisma.question.findMany({
+      where: {
+        status,
+      },
+    });
   }
 
   public async getQuestionById(id: string) {
@@ -42,6 +46,15 @@ export class QuestionRepository {
       data: {
         ...data,
         authorId,
+      },
+    });
+  }
+
+  public async resolveQuestion(id: string) {
+    return await this.prisma.question.update({
+      where: { id },
+      data: {
+        status: QuestionStatus.COMPLETED,
       },
     });
   }

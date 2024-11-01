@@ -16,21 +16,32 @@ type Author {
   lastName: String!
 }
 
+input CreateAnswerDto {
+  description: String!
+  questionId: String!
+}
+
+input CreateQuestionDto {
+  description: String!
+  title: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
 
 type Mutation {
-  createAnswer(description: String!, questionId: String!): Answer!
-  createQuestion(description: String!, title: String!): Question!
+  createAnswer(input: CreateAnswerDto!): Answer!
+  createQuestion(input: CreateQuestionDto!): Question!
   login(email: String!, password: String!): Profile
   logout: String
+  resolveQuestion(id: String!): Question!
 }
 
 type Profile {
   fullName: String!
-  role: UserRole
+  role: UserRole!
   userId: String!
 }
 
@@ -38,7 +49,7 @@ type Query {
   hello: String!
   profile: Profile!
   question(id: String!): Question!
-  questions: [Question!]!
+  questions(status: QuestionStatus!): [Question!]!
 }
 
 type Question {
@@ -48,7 +59,19 @@ type Question {
   createdAt: DateTime!
   description: String!
   id: String!
+  permissions: QuestionPermissions!
+  status: QuestionStatus!
   title: String!
+}
+
+type QuestionPermissions {
+  canResolve: Boolean!
+  id: String!
+}
+
+enum QuestionStatus {
+  COMPLETED
+  PENDING
 }
 
 enum UserRole {

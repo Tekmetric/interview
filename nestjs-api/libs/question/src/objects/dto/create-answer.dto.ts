@@ -1,7 +1,7 @@
-import { ArgsType, Field } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { MinLength } from 'class-validator';
 
-@ArgsType()
+@InputType()
 export class CreateAnswerDto {
   @Field()
   questionId: string;

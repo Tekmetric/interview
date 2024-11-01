@@ -13,6 +13,6 @@ export class Profile {
   @Field(() => String)
   fullName: string;
 
-  @Field(() => UserRole, { nullable: true })
-  role?: UserRole;
+  @Field(() => UserRole)
+  role: UserRole;
 }

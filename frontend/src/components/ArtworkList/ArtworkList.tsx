@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 import { StyledArtworkList } from './styled';
-import { useOnScrollToEnd } from '../../services/use-on-scroll-to-end/use-on-scroll-to-end';
+import { useOnScrollToEnd } from './services/use-on-scroll-to-end/use-on-scroll-to-end';
 
 type Props = {
   onScrollToEnd: () => void

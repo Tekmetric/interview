@@ -1,19 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useOnScreen } from '../use-on-screen/use-on-screen';
-
-const getScrollableParent = (node: HTMLElement | null): HTMLElement | null => {
-  if (!node) {
-    return null;
-  }
-
-  const overflowY = window.getComputedStyle(node).overflowY;
-
-  if (overflowY === 'auto' || overflowY === 'scroll') {
-    return node;
-  }
-
-  return getScrollableParent(node.parentElement);
-};
+import { getScrollableParent } from '../get-scrollable-parent/get-scrollable-parent';
 
 export const useArtworkFrameGlassParallax = () => {
   const glassRef = useRef<HTMLDivElement>(null);

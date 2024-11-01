@@ -1,4 +1,4 @@
-import { useGetArtworkData } from '../../services/use-get-artwork-data/use-get-artwork-data';
+import { useGetArtworkData } from './services/use-get-artwork-data/use-get-artwork-data';
 import { ArtworkImage } from '../../components/ArtworkImage/ArtworkImage';
 import { ArtworkList } from '../../components/ArtworkList/ArtworkList';
 import { Spinner } from '../../components/Spinner/Spinner';

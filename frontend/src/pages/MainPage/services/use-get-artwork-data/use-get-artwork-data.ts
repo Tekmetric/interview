@@ -1,8 +1,8 @@
-import { ArtworkApi } from '../artwork-api/ArtworkApi';
+import { ArtworkApi } from '../../../../services/artwork-api/ArtworkApi';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { ArtworkGetListResponse } from '../../types/response/ArtworkGetListResponse';
-import { normalizeArtworkData } from './services/normalize-artwork-data/normalize-artwork-data';
+import { ArtworkGetListResponse } from '../../../../types/response/ArtworkGetListResponse';
+import { normalizeArtworkData } from '../normalize-artwork-data/normalize-artwork-data';
 
 export const useGetArtworkData = () => {
   const {

@@ -2,8 +2,10 @@ export {
   HttpLink,
   useMutation,
   useQuery,
-  useSuspenseQuery
+  useSuspenseQuery,
+  ApolloLink
 } from '@apollo/client'
+export { onError } from '@apollo/client/link/error'
 export {
   ApolloClient,
   ApolloNextAppProvider,

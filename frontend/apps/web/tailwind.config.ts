@@ -6,7 +6,8 @@ const config: Pick<Config, 'content' | 'presets'> = {
   content: [
     './src/app/**/*.{ts,tsx}',
     '../../packages/components/**/*.{js,ts,jsx,tsx}',
-    '../../packages/ui/**/*.{js,ts,jsx,tsx}'
+    '../../packages/ui/**/*.{js,ts,jsx,tsx}',
+    '!../../packages/**/node_modules/**'
   ],
   presets: [sharedConfig]
 }

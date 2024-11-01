@@ -1,3 +1,6 @@
-import classNames from "classnames";
+import classNames from 'classnames'
 
-export const FormClassNames = classNames('tek-w-full', 'tek-flex tek-flex-col tek-gap-6')
+export const FormClassNames = classNames(
+  'tek-w-full',
+  'tek-flex tek-flex-col tek-gap-6'
+)

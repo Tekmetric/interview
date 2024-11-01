@@ -16,7 +16,7 @@ export const CardsSkeletonLoader = ({
   <div className={CardsSkeletonLoaderClassNames}>
     {Array.from({ length: cards }).map((_, index) => (
       // eslint-disable-next-line react/no-array-index-key -- This is a temporary solution
-      <Card key={index}>
+      <Card key={index} data-testid='card-skeleton-loader'>
         <Card.Title>
           <span
             className={classNames(

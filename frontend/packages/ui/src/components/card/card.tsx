@@ -8,13 +8,17 @@ import type { CardVariant } from './types'
 
 export interface CardProps {
   variant?: CardVariant
+  'data-testid'?: string
 }
 
 export const Card = ({
   children,
-  variant
+  variant,
+  'data-testid': dataTestId
 }: PropsWithChildren<CardProps>): JSX.Element => (
-  <div className={CardClassNames({ variant })}>{children}</div>
+  <div className={CardClassNames({ variant })} data-testid={dataTestId}>
+    {children}
+  </div>
 )
 
 Card.Title = CardTitle

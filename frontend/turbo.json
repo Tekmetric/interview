@@ -24,8 +24,8 @@
       "persistent": false
     },
     "test": {
-      "inputs": ["./**/*.{js,jsx,ts,tsx}"],
-      "outputs": ["reports/**"]
+      "cache": false,
+      "inputs": ["./**/*.{js,jsx,ts,tsx}"]
     }
   }
 }

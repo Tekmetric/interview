@@ -31,6 +31,7 @@ export const CreateQuestion = (): JSX.Element => {
             width='full'
             autoComplete='question-title'
             placeholder='What you want to ask?'
+            data-testid='create-question-title'
           />
         )}
       </Field>
@@ -47,12 +48,15 @@ export const CreateQuestion = (): JSX.Element => {
             width='full'
             autoComplete='question-description'
             placeholder='Write a description for your question'
+            data-testid='create-question-description'
           />
         )}
       </Field>
 
       <div className='tek-flex tek-justify-end'>
-        <SubmitButton type='submit'>Create a new question</SubmitButton>
+        <SubmitButton type='submit' data-testid='submit-button'>
+          Create a new question
+        </SubmitButton>
       </div>
     </Form>
   )

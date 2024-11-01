@@ -30,6 +30,7 @@ export const Login = (): JSX.Element => {
             name={input.name}
             width='full'
             autoComplete='email'
+            data-testid='email'
           />
         )}
       </Field>
@@ -45,6 +46,7 @@ export const Login = (): JSX.Element => {
             name={input.name}
             width='full'
             autoComplete='password'
+            data-testid='password'
           />
         )}
       </Field>
@@ -56,7 +58,7 @@ export const Login = (): JSX.Element => {
       )}
 
       <div className='tek-pt-4'>
-        <SubmitButton type='submit' width='full'>
+        <SubmitButton type='submit' width='full' data-testid='submit-button'>
           Sign in
         </SubmitButton>
       </div>

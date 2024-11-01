@@ -17,6 +17,7 @@ export const AuthStoreProvider = ({
   session
 }: PropsWithChildren<AuthStoreProviderProps>): JSX.Element => {
   const storeRef = useRef<AuthStoreApi>()
+
   if (!storeRef.current) {
     storeRef.current = createAuthStore(initAuthStore(session))
   }

@@ -44,12 +44,15 @@ export const CreateAnswer = ({
                 width='full'
                 autoComplete='question-description'
                 placeholder='Write your answer here'
+                data-testid='create-answer-description'
               />
             )}
           </Field>
 
           <div className='tek-flex tek-justify-end'>
-            <SubmitButton type='submit'>Create a new question</SubmitButton>
+            <SubmitButton type='submit' data-testid='submit-button'>
+              Answer to this question
+            </SubmitButton>
           </div>
         </Form>
       </Card.Body>

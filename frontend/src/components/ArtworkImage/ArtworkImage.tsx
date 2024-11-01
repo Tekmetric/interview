@@ -5,9 +5,10 @@ import {
   StyledArtworkImageOuterFrameBackgroundTop,
   StyledArtworkImageFrame,
   StyledArtworkImageTitle,
-  StyledArtworkImageFrameShadow
+  StyledArtworkImageFrameInner
 } from './styled';
 import { ArtworkApi } from '../../services/artwork-api/ArtworkApi';
+import { ArtworkFrameGlass } from '../ArtworkFrameGlass/ArtworkFrameGlass';
 
 type Props = {
   imageId: string;
@@ -24,13 +25,15 @@ export const ArtworkImage = ({ imageId, title, altText, blurDataUrl, width }: Pr
       <StyledArtworkImageOuterFrameBackgroundBottom />
 
       <StyledArtworkImageFrame>
-        <StyledArtworkImageFrameShadow>
+        <StyledArtworkImageFrameInner>
+          <ArtworkFrameGlass />
+
           <StyledArtworkImage
             src={ArtworkApi.getImageUrl(imageId, width)}
             alt={altText}
             $blurDataUrl={blurDataUrl}
           />
-        </StyledArtworkImageFrameShadow>
+        </StyledArtworkImageFrameInner>
 
         <StyledArtworkImageTitle>
           {title}

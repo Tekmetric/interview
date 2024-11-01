@@ -101,10 +101,11 @@ export const StyledArtworkImageFrame = styled.div`
     box-shadow: inset 0 4px 6px 0px rgba(0, 0, 0, 0.3);
 `
 
-export const StyledArtworkImageFrameShadow = styled.div`
+export const StyledArtworkImageFrameInner = styled.div`
     ${variables};
     
     position: relative;
+    overflow: hidden;
 
     &:after {
         content: '';

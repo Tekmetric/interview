@@ -13,11 +13,11 @@ import { useCreateQuestion } from './services/use-create-question/use-create-que
 import type { CreateQuestionFormFields } from './types'
 
 export const CreateQuestion = (): JSX.Element => {
-  const { handleSubmit, hasGlobalError } = useCreateQuestion()
+  const { createQuestion, hasGlobalError } = useCreateQuestion()
 
   return (
     <Form<CreateQuestionFormFields>
-      onSubmit={handleSubmit}
+      onSubmit={createQuestion}
       validate={validateSchema(createQuestionValidationSchema)}
     >
       <Field<string> name='title' label='Title'>
@@ -31,6 +31,7 @@ export const CreateQuestion = (): JSX.Element => {
             name={input.name}
             width='full'
             autoComplete='question-title'
+            placeholder='What you want to ask?'
           />
         )}
       </Field>

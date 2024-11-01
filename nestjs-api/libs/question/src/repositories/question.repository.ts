@@ -12,6 +12,9 @@ export class QuestionRepository {
       where: {
         status,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
@@ -37,6 +40,9 @@ export class QuestionRepository {
     return await this.prisma.answer.findMany({
       where: {
         questionId,
+      },
+      orderBy: {
+        createdAt: 'asc',
       },
     });
   }

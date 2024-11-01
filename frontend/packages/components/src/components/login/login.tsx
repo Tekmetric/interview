@@ -12,11 +12,11 @@ import { useLogin } from './services/use-login/use-login'
 import type { LoginFormFields } from './types'
 
 export const Login = (): JSX.Element => {
-  const { handleSubmit, hasGlobalError } = useLogin()
+  const { login, hasGlobalError } = useLogin()
 
   return (
     <Form<LoginFormFields>
-      onSubmit={handleSubmit}
+      onSubmit={login}
       validate={validateSchema(loginValidationSchema)}
     >
       <Field<string> name='email' label='Email Address'>

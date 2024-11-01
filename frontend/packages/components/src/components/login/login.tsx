@@ -1,9 +1,9 @@
 'use client'
 
-import { Button } from '@tekmetric/ui/button'
 import { Field } from '@tekmetric/ui/field'
 import { Form } from '@tekmetric/ui/form'
 import { Input } from '@tekmetric/ui/input'
+import { SubmitButton } from '@tekmetric/ui/submit-button'
 import { validateSchema } from '@tekmetric/ui/validate-schema'
 import { ValidationError } from '@tekmetric/ui/validation-error'
 
@@ -22,11 +22,12 @@ export const Login = (): JSX.Element => {
     >
       <div className={LoginClassNames}>
         <Field<string> name='email' label='Email Address'>
-          {({ input }) => (
+          {({ input, options: { disabled } }) => (
             <Input
               {...input}
               id={input.name}
               required
+              disabled={disabled}
               type='email'
               name={input.name}
               width='full'
@@ -36,11 +37,12 @@ export const Login = (): JSX.Element => {
         </Field>
 
         <Field<string> name='password' label='Password'>
-          {({ input }) => (
+          {({ input, options: { disabled } }) => (
             <Input
               {...input}
               id={input.name}
               required
+              disabled={disabled}
               type='password'
               name={input.name}
               width='full'
@@ -56,9 +58,9 @@ export const Login = (): JSX.Element => {
         )}
 
         <div className='tek-pt-4'>
-          <Button type='submit' width='full'>
+          <SubmitButton type='submit' width='full'>
             Sign in
-          </Button>
+          </SubmitButton>
         </div>
       </div>
     </Form>

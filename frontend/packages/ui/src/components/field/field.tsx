@@ -4,7 +4,8 @@ import type { ReactNode } from 'react'
 import {
   type FieldInputProps,
   type FieldMetaState,
-  Field as FormField
+  Field as FormField,
+  useFormState
 } from 'react-final-form'
 
 import {
@@ -13,12 +14,17 @@ import {
   FieldClassNames
 } from './styles'
 
+interface FieldOptions {
+  disabled?: boolean
+}
+
 interface FieldProps<TValue = unknown> {
   name: string
   label: string
   children: (props: {
     input: FieldInputProps<TValue, HTMLInputElement>
     meta: FieldMetaState<TValue>
+    options: FieldOptions
   }) => ReactNode
 }
 
@@ -26,24 +32,28 @@ export const Field = <TValue, TOutputValue extends TValue = TValue>({
   name,
   label,
   children
-}: FieldProps<TValue>): JSX.Element => (
-  <FormField<TOutputValue, HTMLElement, TValue> name={name}>
-    {({ input, meta }) => {
-      const hasError = Boolean(meta.error && meta.touched)
+}: FieldProps<TValue>): JSX.Element => {
+  const { submitting } = useFormState({ subscription: { submitting: true } })
 
-      return (
-        <fieldset className={FieldClassNames}>
-          <label htmlFor={name} className={FieldClassLabelNames}>
-            {label}
-          </label>
+  return (
+    <FormField<TOutputValue, HTMLElement, TValue> name={name}>
+      {({ input, meta }) => {
+        const hasError = Boolean(meta.error && meta.touched)
 
-          {children({ input, meta })}
+        return (
+          <fieldset className={FieldClassNames}>
+            <label htmlFor={name} className={FieldClassLabelNames}>
+              {label}
+            </label>
 
-          {hasError && (
-            <span className={FieldClassErrorNames}>{meta.error}</span>
-          )}
-        </fieldset>
-      )
-    }}
-  </FormField>
-)
+            {children({ input, meta, options: { disabled: submitting } })}
+
+            {hasError && (
+              <span className={FieldClassErrorNames}>{meta.error}</span>
+            )}
+          </fieldset>
+        )
+      }}
+    </FormField>
+  )
+}

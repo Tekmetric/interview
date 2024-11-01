@@ -23,7 +23,9 @@ export const CreateAnswer = ({
 
   return (
     <Card>
-      <Card.Title>Add your answer to this question.</Card.Title>
+      <Card.Title>
+        <span className='tek-block tek-mb-4'>Add your answer to this question.</span>
+      </Card.Title>
       <Card.Body>
         <Form<CreateAnswerFormFields>
           onSubmit={createAnswer}

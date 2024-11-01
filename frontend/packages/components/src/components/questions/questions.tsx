@@ -9,6 +9,7 @@ import {
 import { Card } from '@tekmetric/ui/card'
 
 import { BaseQuestion } from '../base-question/base-question'
+import { CardsSkeletonLoader } from '../cards-skeleton-loader/cards-skeleton-loader'
 
 interface QuestionProps {
   status: QuestionStatus
@@ -19,7 +20,11 @@ export const Questions = ({ status }: QuestionProps): JSX.Element => {
     variables: { status }
   })
 
-  if (!data && !loading) {
+  if (loading && !data) {
+    return <CardsSkeletonLoader cards={5} />
+  }
+
+  if (!data) {
     return (
       <Card>
         <Card.Body>There are no questions to display.</Card.Body>
@@ -29,7 +34,7 @@ export const Questions = ({ status }: QuestionProps): JSX.Element => {
 
   return (
     <>
-      {data?.questions.map((question) => (
+      {data.questions.map((question) => (
         <BaseQuestion
           key={question.id}
           question={question as QuestionFragment}

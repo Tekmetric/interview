@@ -13,8 +13,9 @@ export const useResolveQuestion = (
 ): {
   resolveQuestion: () => Promise<void>
   hasGlobalError: boolean
+  loading: boolean
 } => {
-  const [resolveQuestion, { error: globalError }] = useMutation(
+  const [resolveQuestion, { error: globalError, loading }] = useMutation(
     ResolveQuestionDocument,
     { refetchQueries: [GetQuestionsDocument, GetQuestionDocument] }
   )
@@ -24,5 +25,5 @@ export const useResolveQuestion = (
     await resolveQuestion({ variables: { id: questionId } })
   }, [questionId, resolveQuestion])
 
-  return { resolveQuestion: handleSubmit, hasGlobalError }
+  return { resolveQuestion: handleSubmit, hasGlobalError, loading }
 }

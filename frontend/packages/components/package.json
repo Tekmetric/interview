@@ -10,6 +10,7 @@
   "exports": {
     "./styles.css": "./dist/index.css",
     "./apollo-wrapper": "./src/components/apollo-wrapper/apollo-wrapper.tsx",
+    "./auth-checker": "./src/components/auth-checker/auth-checker.tsx",
     "./auth-store-provider": "./src/components/auth-store-provider/auth-store-provider.tsx",
     "./login": "./src/components/login/login.tsx",
     "./create-question": "./src/components/create-question/create-question.tsx",

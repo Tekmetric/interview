@@ -12,10 +12,15 @@ interface ResolveButtonProps {
 export const ResolveButton = ({
   questionId
 }: ResolveButtonProps): JSX.Element => {
-  const { resolveQuestion } = useResolveQuestion(questionId)
+  const { resolveQuestion, loading } = useResolveQuestion(questionId)
 
   return (
-    <Button variant='secondary' size='small' onClick={resolveQuestion}>
+    <Button
+      variant='secondary'
+      size='small'
+      disabled={loading}
+      onClick={resolveQuestion}
+    >
       <Icon icon='check' /> Resolve
     </Button>
   )

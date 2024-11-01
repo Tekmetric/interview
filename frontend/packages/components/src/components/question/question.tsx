@@ -8,6 +8,7 @@ import {
 import { Card } from '@tekmetric/ui/card'
 
 import { BaseQuestion } from '../base-question/base-question'
+import { CardsSkeletonLoader } from '../cards-skeleton-loader/cards-skeleton-loader'
 import { Answers } from './components/answers/answers'
 import { CreateAnswer } from './components/create-answer/create-answer'
 import { QuestionClassNames } from './styles'
@@ -21,16 +22,16 @@ export const Question = ({ questionId }: QuestionProps): JSX.Element | null => {
     variables: { id: questionId }
   })
 
-  if (!data && !loading) {
+  if (loading && !data) {
+    return <CardsSkeletonLoader cards={1} />
+  }
+
+  if (!data) {
     return (
       <Card>
         <Card.Body>There is no question to display.</Card.Body>
       </Card>
     )
-  }
-
-  if (!data) {
-    return null
   }
 
   return (

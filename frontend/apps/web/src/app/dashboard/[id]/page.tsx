@@ -1,14 +1,17 @@
 import { Page } from '@tekmetric/components/page'
-import { Questions } from '@tekmetric/components/questions'
-import { QuestionStatus } from '@tekmetric/graphql'
+import { Question } from '@tekmetric/components/question'
 
-const QuestionPage = (): JSX.Element => {
+const QuestionPage = async ({
+  params
+}: {
+  params: Promise<{ id: string }>
+}): Promise<JSX.Element> => {
+  const { id: questionId } = await params
+
   return (
     <Page>
-      <Page.Title>Completed Questions</Page.Title>
-
       <Page.Body>
-        <Questions status={QuestionStatus.Completed} />
+        <Question questionId={questionId} />
       </Page.Body>
     </Page>
   )

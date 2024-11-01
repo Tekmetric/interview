@@ -8,7 +8,7 @@ import {
 } from '@tekmetric/graphql'
 import { Card } from '@tekmetric/ui/card'
 
-import { Question } from './components/question/question'
+import { BaseQuestion } from '../base-question/base-question'
 
 interface QuestionProps {
   status: QuestionStatus
@@ -30,7 +30,10 @@ export const Questions = ({ status }: QuestionProps): JSX.Element => {
   return (
     <>
       {data?.questions.map((question) => (
-        <Question key={question.id} question={question as QuestionFragment} />
+        <BaseQuestion
+          key={question.id}
+          question={question as QuestionFragment}
+        />
       ))}
     </>
   )

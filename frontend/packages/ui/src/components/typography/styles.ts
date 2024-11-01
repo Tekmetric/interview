@@ -50,5 +50,6 @@ export const TypographyClassNames = ({
     TypographySizeClassNames[size],
     TypographyWeightClassNames[weight],
     TypographyAlignmentClassNames[alignment],
-    TypographyColorClassNames[color]
+    TypographyColorClassNames[color],
+    'tek-whitespace-pre-line'
   )

@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  GetQuestionDocument,
   GetQuestionsDocument,
   ResolveQuestionDocument,
   useMutation
@@ -15,7 +16,7 @@ export const useResolveQuestion = (
 } => {
   const [resolveQuestion, { error: globalError }] = useMutation(
     ResolveQuestionDocument,
-    { refetchQueries: [GetQuestionsDocument] }
+    { refetchQueries: [GetQuestionsDocument, GetQuestionDocument] }
   )
   const hasGlobalError = Boolean(globalError)
 

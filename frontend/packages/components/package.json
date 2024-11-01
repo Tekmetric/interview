@@ -15,6 +15,7 @@
     "./create-question": "./src/components/create-question/create-question.tsx",
     "./navigation": "./src/components/navigation/navigation.tsx",
     "./page": "./src/components/page/page.tsx",
+    "./question": "./src/components/question/question.tsx",
     "./questions": "./src/components/questions/questions.tsx",
     "./use-auth-store": "./src/services/use-auth-store/use-auth-store.ts"
   },

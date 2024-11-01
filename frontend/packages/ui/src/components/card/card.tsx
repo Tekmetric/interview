@@ -4,9 +4,17 @@ import { CardBody } from './components/card-body/card-body'
 import { CardInfo } from './components/card-info/card-info'
 import { CardTitle } from './components/card-title/card-title'
 import { CardClassNames } from './styles'
+import type { CardVariant } from './types'
 
-export const Card = ({ children }: PropsWithChildren): JSX.Element => (
-  <div className={CardClassNames}>{children}</div>
+export interface CardProps {
+  variant?: CardVariant
+}
+
+export const Card = ({
+  children,
+  variant
+}: PropsWithChildren<CardProps>): JSX.Element => (
+  <div className={CardClassNames({ variant })}>{children}</div>
 )
 
 Card.Title = CardTitle

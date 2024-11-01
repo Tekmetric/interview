@@ -8,12 +8,14 @@ interface QuestionActionsProps {
   questionId: string
   status: QuestionStatus
   canResolve: boolean
+  hideViewButton?: boolean
 }
 
 export const QuestionActions = ({
   questionId,
   canResolve,
-  status
+  status,
+  hideViewButton
 }: QuestionActionsProps): JSX.Element | null => {
   const isPending = status === QuestionStatus.Pending
 
@@ -21,13 +23,13 @@ export const QuestionActions = ({
     <>
       {isPending && canResolve && <ResolveButton questionId={questionId} />}
 
-      {!isPending && (
+      {!hideViewButton && !isPending && (
         <ViewQuestionButton questionId={questionId} variant='secondary'>
           View
         </ViewQuestionButton>
       )}
 
-      {isPending && (
+      {!hideViewButton && isPending && (
         <ViewQuestionButton questionId={questionId}>
           <Icon icon='chat' /> Answer
         </ViewQuestionButton>

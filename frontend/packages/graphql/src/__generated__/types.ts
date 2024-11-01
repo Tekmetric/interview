@@ -126,6 +126,8 @@ export enum UserRole {
   User = 'USER'
 }
 
+export type AnswerFragment = { __typename?: 'Answer', id: string, description: string, createdAt: any, author: { __typename?: 'Author', id: string, firstName: string, lastName: string } };
+
 export type CreateAnswerMutationVariables = Exact<{
   input: CreateAnswerDto;
 }>;
@@ -139,6 +141,13 @@ export type CreateQuestionMutationVariables = Exact<{
 
 
 export type CreateQuestionMutation = { __typename?: 'Mutation', createQuestion: { __typename?: 'Question', id: string, title: string, description: string } };
+
+export type GetQuestionQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetQuestionQuery = { __typename?: 'Query', question: { __typename?: 'Question', id: string, description: string, title: string, shortDescription: string, status: QuestionStatus, createdAt: any, answers: Array<{ __typename?: 'Answer', id: string, description: string, createdAt: any, author: { __typename?: 'Author', id: string, firstName: string, lastName: string } }>, author: { __typename?: 'Author', id: string, firstName: string, lastName: string }, permissions: { __typename?: 'QuestionPermissions', id: string, canResolve: boolean } } };
 
 export type GetQuestionsQueryVariables = Exact<{
   status: QuestionStatus;
@@ -156,6 +165,8 @@ export type LoginMutationVariables = Exact<{
 export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'Profile', userId: string } | null };
 
 export type QuestionFragment = { __typename?: 'Question', id: string, title: string, shortDescription: string, status: QuestionStatus, createdAt: any, author: { __typename?: 'Author', id: string, firstName: string, lastName: string }, permissions: { __typename?: 'QuestionPermissions', id: string, canResolve: boolean } };
+
+export type QuestionWithAnswersFragment = { __typename?: 'Question', id: string, description: string, title: string, shortDescription: string, status: QuestionStatus, createdAt: any, answers: Array<{ __typename?: 'Answer', id: string, description: string, createdAt: any, author: { __typename?: 'Author', id: string, firstName: string, lastName: string } }>, author: { __typename?: 'Author', id: string, firstName: string, lastName: string }, permissions: { __typename?: 'QuestionPermissions', id: string, canResolve: boolean } };
 
 export type ResolveQuestionMutationVariables = Exact<{
   id: Scalars['String']['input'];

@@ -4,6 +4,7 @@ import { ArtworkList } from '../../components/ArtworkList/ArtworkList';
 import { Spinner } from '../../components/Spinner/Spinner';
 import { ArtworkImageSpace } from '../../components/ArtworkImageSpace/ArtworkImageSpace';
 import { useCallback } from 'react';
+import { GuideText } from '../../components/GuideText/GuideText';
 
 export const MainPage = () => {
   const { data: artworkList, isFetching, fetchNextPage } = useGetArtworkData()
@@ -23,8 +24,12 @@ export const MainPage = () => {
         </ArtworkImageSpace>
       )}
 
-      {artworkList?.map((artworkListItem) => (
+      {artworkList?.map((artworkListItem, index) => (
         <ArtworkImageSpace key={artworkListItem.imageId}>
+          {index === 0 && (
+            <GuideText />
+          )}
+
           <ArtworkImage
             imageId={artworkListItem.imageId}
             title={artworkListItem.title}

@@ -13,7 +13,7 @@ export const MainPage = () => {
     async () => {
       await fetchNextPage()
     },
-    []
+    [fetchNextPage]
   )
   
   return (

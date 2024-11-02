@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { getScrollableParent } from '../get-scrollable-parent/get-scrollable-parent'
 import { useOnScreen } from '../use-on-screen/use-on-screen'
 
 export const useArtworkFrameGlassParallax = () => {
   const glassRef = useRef<HTMLDivElement>(null)
+  const [horizontalOffset, setHorizontalOffset] = useState(0)
 
-  const { isIntersecting } = useOnScreen({ ref: glassRef })
+  const { isIntersecting } = useOnScreen(glassRef)
 
   const handleGlassParallax = useCallback(() => {
     if (!glassRef.current || !isIntersecting) {
@@ -21,7 +22,7 @@ export const useArtworkFrameGlassParallax = () => {
 
     const frameOffset = (glassCenter - viewportCenter) * parallaxIntensity
 
-    glassRef.current.style.backgroundPosition = `calc(50% - ${frameOffset}px) 0px`
+    setHorizontalOffset(frameOffset)
   }, [glassRef, isIntersecting])
 
   const onScroll = useCallback(
@@ -53,5 +54,5 @@ export const useArtworkFrameGlassParallax = () => {
     [onScroll]
   )
 
-  return { glassRef }
+  return { glassRef, horizontalOffset }
 }

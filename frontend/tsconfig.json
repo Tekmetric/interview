@@ -27,7 +27,7 @@
     "strictNullChecks": true,
     "strictBindCallApply": true,
     "target": "es2015",
-    "types": ["node"],
+    "types": ["node", "jest"],
     "paths": {}
   },
   "exclude": ["node_modules", "public"]

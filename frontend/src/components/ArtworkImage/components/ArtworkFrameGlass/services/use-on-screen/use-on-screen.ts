@@ -1,10 +1,8 @@
 import { RefObject, useEffect, useMemo, useState } from 'react'
 
-export const useOnScreen = <T extends HTMLElement = HTMLElement>({
-  ref
-}: {
+export const useOnScreen = <T extends HTMLElement = HTMLElement>(
   ref: RefObject<T>
-}) => {
+) => {
   const [isIntersecting, setIntersecting] = useState(false)
 
   const observer = useMemo(() => {

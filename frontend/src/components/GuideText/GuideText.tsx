@@ -1,4 +1,4 @@
-import { StyledGuideText, StyledGuideTextWrapper } from './styled'
+import { StyledGuideText, StyledGuideTextWrapper } from './styles'
 
 export const GuideText = () => {
   return (

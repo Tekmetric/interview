@@ -1,4 +1,4 @@
-import { StyledArtworkImageTitle } from './styled'
+import { StyledArtworkImageTitle } from './styles'
 
 type Props = {
   title: string

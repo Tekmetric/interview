@@ -1,5 +1,5 @@
 import { AdditionalInfoCloseButton } from '../AdditionalInfoCloseButton/AdditionalInfoCloseButton'
-import { StyledArtworkAdditionalInfo } from './styled'
+import { StyledArtworkAdditionalInfo } from './styles'
 
 type Props = {
   visible: boolean

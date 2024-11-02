@@ -11,7 +11,7 @@ import {
   StyledArtworkImageOuterFrame,
   StyledArtworkImageOuterFrameBackgroundBottom,
   StyledArtworkImageOuterFrameBackgroundTop
-} from './styled'
+} from './styles'
 
 type Props = {
   imageId: string

@@ -8,8 +8,11 @@ export const normalizeArtworkData = (artworkDataPages: ArtworkGetListResponse[])
   return flattenData.reduce((acc, {
     id,
     image_id,
-    thumbnail,
-    title
+    title,
+    description,
+    date_display,
+    artist_title,
+    thumbnail
   }) => {
     if (!image_id || !thumbnail) {
       return acc;
@@ -24,6 +27,9 @@ export const normalizeArtworkData = (artworkDataPages: ArtworkGetListResponse[])
       id,
       imageId: image_id,
       title,
+      description,
+      date: date_display,
+      artist: artist_title,
       altText: thumbnail.alt_text,
       blurDataURL: thumbnail.lqip,
       originalWidth: thumbnail.width,

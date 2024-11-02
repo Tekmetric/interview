@@ -20,4 +20,8 @@ export class ArtworkApi {
 
     return `https://www.artic.edu/iiif/2/${imageId}/full/${normalizedWidth},/0/default.jpg`
   }
+
+  public static getFallbackImageUrl () {
+    return '/missing_image.png'
+  }
 }

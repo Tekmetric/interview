@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   StyledArtworkImage,
   StyledArtworkImageOuterFrame,
@@ -20,7 +21,15 @@ type Props = {
 }
 
 export const ArtworkImage = ({ imageId, title, altText, blurDataUrl, originalWidth, originalHeight }: Props) => {
-  const isLandscapeOrientation = originalWidth >= originalHeight;
+  const [isImageLoadingError, setImageLoadingError] = useState(false);
+
+  const handleImageLoadingError = () => {
+    setImageLoadingError(true)
+  };
+
+  const imageSrc = !isImageLoadingError
+    ? ArtworkApi.getImageUrl(imageId, originalWidth)
+    : ArtworkApi.getFallbackImageUrl()
 
   return (
     <StyledArtworkImageOuterFrame>
@@ -32,12 +41,12 @@ export const ArtworkImage = ({ imageId, title, altText, blurDataUrl, originalWid
           <ArtworkFrameGlass />
 
           <StyledArtworkImage
-            src={ArtworkApi.getImageUrl(imageId, originalWidth)}
+            src={imageSrc}
             alt={altText}
             $blurDataUrl={blurDataUrl}
             $originalWidth={originalWidth}
             $originalHeight={originalHeight}
-            $isLandscapeOrientation={isLandscapeOrientation}
+            onError={handleImageLoadingError}
           />
         </StyledArtworkImageFrameInner>
 

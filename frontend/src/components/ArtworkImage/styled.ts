@@ -124,7 +124,6 @@ export const StyledArtworkImage = styled.img<{
     $blurDataUrl: string;
     $originalWidth: number;
     $originalHeight: number;
-    $isLandscapeOrientation: boolean;
 }>`
     ${variables};
     
@@ -147,6 +146,7 @@ export const StyledArtworkImage = styled.img<{
     }
     
     background: #f0f0f0;
+    object-fit: cover;
 
     ${({ $blurDataUrl }) => css`
         background-image: url(${$blurDataUrl});

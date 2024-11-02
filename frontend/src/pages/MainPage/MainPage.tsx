@@ -33,6 +33,9 @@ export const MainPage = () => {
           <ArtworkImage
             imageId={artworkListItem.imageId}
             title={artworkListItem.title}
+            description={artworkListItem.description}
+            date={artworkListItem.date}
+            artist={artworkListItem.artist}
             altText={artworkListItem.altText}
             blurDataUrl={artworkListItem.blurDataURL}
             originalWidth={artworkListItem.originalWidth}

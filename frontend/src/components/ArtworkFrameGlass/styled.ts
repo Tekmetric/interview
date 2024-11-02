@@ -9,6 +9,7 @@ export const StyledArtworkFrameGlass = styled.div`
     bottom: 0;
     background-image: url('/room.png');
     background-size: cover;
-    opacity: 0.03;
+    opacity: 0.02;
     transform: scale(1.5);
+    pointer-events: none;
 `

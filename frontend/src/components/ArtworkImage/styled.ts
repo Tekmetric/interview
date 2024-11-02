@@ -1,13 +1,13 @@
 import styled, { css } from 'styled-components';
 
-const variables = css`
+export const artworkImageVariables = css`
     --inner-frame-width: 40px;
     --outer-frame-width: 25px;
     --frame-width: calc(var(--inner-frame-width) + var(--outer-frame-width));
 `
 
 export const StyledArtworkImageOuterFrame = styled.div`
-    ${variables};
+    ${artworkImageVariables};
 
     position: relative;
     display: block;
@@ -31,7 +31,7 @@ export const StyledArtworkImageOuterFrame = styled.div`
 `
 
 const getOuterFrameBackgroundSharedStyles = (position: 'top' | 'bottom') => css`
-    ${variables};
+    ${artworkImageVariables};
 
     position: absolute;
     z-index: 2;
@@ -45,7 +45,7 @@ const getOuterFrameBackgroundPseudoSharedStyles = (position: 'top-left' | 'top-r
     const [vertical, horizontal] = position.split('-') as ['top' | 'bottom', 'left' | 'right']
 
     return css`
-        ${variables};
+        ${artworkImageVariables};
         
         --gap-color: rgba(166, 161, 161, 0.3);
         --gap-start: 49.95%;
@@ -93,7 +93,7 @@ export const StyledArtworkImageOuterFrameBackgroundBottom = styled.div`
 `
 
 export const StyledArtworkImageFrame = styled.div`
-    ${variables};
+    ${artworkImageVariables};
     
     box-sizing: border-box;
     padding: var(--inner-frame-width) var(--inner-frame-width) 0 var(--inner-frame-width);
@@ -102,7 +102,7 @@ export const StyledArtworkImageFrame = styled.div`
 `
 
 export const StyledArtworkImageFrameInner = styled.div`
-    ${variables};
+    ${artworkImageVariables};
     
     position: relative;
     overflow: hidden;
@@ -125,7 +125,7 @@ export const StyledArtworkImage = styled.img<{
     $originalWidth: number;
     $originalHeight: number;
 }>`
-    ${variables};
+    ${artworkImageVariables};
     
     display: block;
 
@@ -147,6 +147,8 @@ export const StyledArtworkImage = styled.img<{
     
     background: #f0f0f0;
     object-fit: cover;
+    cursor: pointer;
+    user-select: none;
 
     ${({ $blurDataUrl }) => css`
         background-image: url(${$blurDataUrl});
@@ -154,19 +156,4 @@ export const StyledArtworkImage = styled.img<{
         background-size: cover;
         background-position: center;
     `}
-`
-
-export const StyledArtworkImageTitle = styled.div`
-    ${variables};
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    min-height: var(--inner-frame-width);
-    width: 0;
-    min-width: 100%;
-    padding: 5px 0;
-    font-style: italic;
-    line-height: 1.5rem;
 `

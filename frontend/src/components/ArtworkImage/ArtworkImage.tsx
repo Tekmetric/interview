@@ -5,27 +5,45 @@ import {
   StyledArtworkImageOuterFrameBackgroundBottom,
   StyledArtworkImageOuterFrameBackgroundTop,
   StyledArtworkImageFrame,
-  StyledArtworkImageTitle,
   StyledArtworkImageFrameInner
 } from './styled';
 import { ArtworkApi } from '../../services/artwork-api/ArtworkApi';
 import { ArtworkFrameGlass } from '../ArtworkFrameGlass/ArtworkFrameGlass';
+import { ArtworkImageTitle } from '../ArtworkImageTitle/ArtworkImageTitle';
 
 type Props = {
   imageId: string;
   title: string;
+  description: string | null;
+  date: string | null;
+  artist: string | null;
   altText: string;
   blurDataUrl: string;
   originalWidth: number
   originalHeight: number
 }
 
-export const ArtworkImage = ({ imageId, title, altText, blurDataUrl, originalWidth, originalHeight }: Props) => {
+export const ArtworkImage = ({
+  imageId,
+  title,
+  description,
+  date,
+  artist,
+  altText,
+  blurDataUrl,
+  originalWidth,
+  originalHeight
+}: Props) => {
   const [isImageLoadingError, setImageLoadingError] = useState(false);
+  const [showArtworkInfo, setShowArtworkInfo] = useState(false)
 
-  const handleImageLoadingError = () => {
+  const handleLoadingError = () => {
     setImageLoadingError(true)
   };
+
+  const toggleArtworkInfoVisibility = () => {
+    setShowArtworkInfo(!showArtworkInfo)
+  }
 
   const imageSrc = !isImageLoadingError
     ? ArtworkApi.getImageUrl(imageId, originalWidth)
@@ -46,13 +64,12 @@ export const ArtworkImage = ({ imageId, title, altText, blurDataUrl, originalWid
             $blurDataUrl={blurDataUrl}
             $originalWidth={originalWidth}
             $originalHeight={originalHeight}
-            onError={handleImageLoadingError}
+            onError={handleLoadingError}
+            onClick={toggleArtworkInfoVisibility}
           />
         </StyledArtworkImageFrameInner>
 
-        <StyledArtworkImageTitle>
-          {title}
-        </StyledArtworkImageTitle>
+        <ArtworkImageTitle title={title} artist={artist} date={date} />
       </StyledArtworkImageFrame>
     </StyledArtworkImageOuterFrame>
   )

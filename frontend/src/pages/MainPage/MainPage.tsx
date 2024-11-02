@@ -16,7 +16,7 @@ export const MainPage = () => {
 
   return (
     <ArtworkList onScrollToEnd={handleLoadMoreItems}>
-      {isFetching && (
+      {isFetching && !artworkList.length && (
         <ArtworkImageSpace>
           <Spinner />
         </ArtworkImageSpace>

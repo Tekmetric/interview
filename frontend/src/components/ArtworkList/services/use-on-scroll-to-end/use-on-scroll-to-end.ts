@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 
-const debounceIntervalMs = 250
+const debounceIntervalMs = 100
 
 export const useOnScrollToEnd = <TElement extends HTMLElement>({
   onScrollToEnd

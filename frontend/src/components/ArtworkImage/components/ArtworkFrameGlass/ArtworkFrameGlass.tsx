@@ -2,12 +2,7 @@ import { useArtworkFrameGlassParallax } from './services/use-artwork-frame-glass
 import { StyledArtworkFrameGlass } from './styled'
 
 export const ArtworkFrameGlass = () => {
-  const { glassRef, horizontalOffset } = useArtworkFrameGlassParallax()
+  const { glassRef } = useArtworkFrameGlassParallax()
 
-  return (
-    <StyledArtworkFrameGlass
-      ref={glassRef}
-      $horizontalOffset={horizontalOffset}
-    />
-  )
+  return <StyledArtworkFrameGlass ref={glassRef} />
 }

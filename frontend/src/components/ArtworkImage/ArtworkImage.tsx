@@ -1,9 +1,9 @@
 import { useState } from 'react'
 
 import { ArtworkApi } from '../../services/artwork-api/ArtworkApi'
-import { ArtworkAdditionalInfo } from '../ArtworkAdditionalInfo/ArtworkAdditionalInfo'
-import { ArtworkFrameGlass } from '../ArtworkFrameGlass/ArtworkFrameGlass'
-import { ArtworkImageTitle } from '../ArtworkImageTitle/ArtworkImageTitle'
+import { ArtworkAdditionalInfo } from './components/ArtworkAdditionalInfo/ArtworkAdditionalInfo'
+import { ArtworkFrameGlass } from './components/ArtworkFrameGlass/ArtworkFrameGlass'
+import { ArtworkImageTitle } from './components/ArtworkImageTitle/ArtworkImageTitle'
 import {
   StyledArtworkImage,
   StyledArtworkImageFrame,

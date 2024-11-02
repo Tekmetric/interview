@@ -1,5 +1,7 @@
 import styled, { css } from 'styled-components'
 
+import { ADDITIONAL_INFO_CLOSE_BUTTON_SIZE_PX } from '../../constants'
+
 export const StyledArtworkAdditionalInfo = styled.div<{
   $visible: boolean
 }>`
@@ -8,7 +10,7 @@ export const StyledArtworkAdditionalInfo = styled.div<{
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 10%;
+  padding: 10% calc(10% + ${ADDITIONAL_INFO_CLOSE_BUTTON_SIZE_PX}px / 2) 10% 10%;
   display: flex;
   flex-direction: column;
   overflow-y: auto;

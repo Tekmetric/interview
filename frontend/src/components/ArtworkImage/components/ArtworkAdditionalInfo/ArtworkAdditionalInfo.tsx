@@ -1,3 +1,4 @@
+import { AdditionalInfoCloseButton } from '../AdditionalInfoCloseButton/AdditionalInfoCloseButton'
 import { StyledArtworkAdditionalInfo } from './styled'
 
 type Props = {
@@ -45,7 +46,9 @@ export const ArtworkAdditionalInfo = ({
   }
 
   return (
-    <StyledArtworkAdditionalInfo $visible={visible} onClick={handleClick}>
+    <StyledArtworkAdditionalInfo $visible={visible}>
+      <AdditionalInfoCloseButton onClick={handleClick} />
+
       <AdditionalInfoItem field='Title' value={`"${title}"`} />
 
       <AdditionalInfoItem field='Artist' value={artist} />

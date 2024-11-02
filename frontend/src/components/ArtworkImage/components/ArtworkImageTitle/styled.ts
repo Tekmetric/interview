@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { artworkImageVariables } from '../ArtworkImage/styled'
+import { artworkImageVariables } from '../../styled'
 
 export const StyledArtworkImageTitle = styled.div`
   ${artworkImageVariables};

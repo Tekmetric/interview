@@ -1,7 +1,5 @@
-import { StyledErrorMessage } from './styles';
+import { StyledErrorMessage } from './styles'
 
 export const ErrorMessage = () => (
-  <StyledErrorMessage>
-    Something went wrong...
-  </StyledErrorMessage>
+  <StyledErrorMessage>Something went wrong...</StyledErrorMessage>
 )

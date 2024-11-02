@@ -1,5 +1,6 @@
 import { Component, ReactNode } from 'react'
-import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
+
+import { ErrorMessage } from '../ErrorMessage/ErrorMessage'
 
 type Props = {
   children: ReactNode

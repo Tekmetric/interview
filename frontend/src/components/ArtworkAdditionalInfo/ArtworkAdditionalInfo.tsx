@@ -1,11 +1,11 @@
-import { StyledArtworkAdditionalInfo } from './styled';
+import { StyledArtworkAdditionalInfo } from './styled'
 
 type Props = {
   visible: boolean
-  title: string;
-  description: string | null;
-  date: string | null;
-  artist: string | null;
+  title: string
+  description: string | null
+  date: string | null
+  artist: string | null
   onClose: () => void
 }
 
@@ -13,17 +13,29 @@ const AdditionalInfoItem = ({
   field,
   value
 }: {
-  field: string | null;
-  value: string | null;
+  field: string | null
+  value: string | null
 }) => {
   if (!value) {
     return null
   }
 
-  return <span>{field && `${field}: `}<span dangerouslySetInnerHTML={{__html: value}} /></span>
+  return (
+    <span>
+      {field && `${field}: `}
+      <span dangerouslySetInnerHTML={{ __html: value }} />
+    </span>
+  )
 }
 
-export const ArtworkAdditionalInfo = ({ visible, title, description, date, artist, onClose }: Props) => {
+export const ArtworkAdditionalInfo = ({
+  visible,
+  title,
+  description,
+  date,
+  artist,
+  onClose
+}: Props) => {
   const handleClick = () => {
     if (!visible) {
       return
@@ -32,13 +44,15 @@ export const ArtworkAdditionalInfo = ({ visible, title, description, date, artis
     onClose()
   }
 
-  return <StyledArtworkAdditionalInfo $visible={visible} onClick={handleClick}>
-    <AdditionalInfoItem field="Title" value={`"${title}"`} />
+  return (
+    <StyledArtworkAdditionalInfo $visible={visible} onClick={handleClick}>
+      <AdditionalInfoItem field='Title' value={`"${title}"`} />
 
-    <AdditionalInfoItem field='Artist' value={artist} />
+      <AdditionalInfoItem field='Artist' value={artist} />
 
-    <AdditionalInfoItem field='Date' value={date} />
+      <AdditionalInfoItem field='Date' value={date} />
 
-    <AdditionalInfoItem field={null} value={description} />
-  </StyledArtworkAdditionalInfo>
+      <AdditionalInfoItem field={null} value={description} />
+    </StyledArtworkAdditionalInfo>
+  )
 }

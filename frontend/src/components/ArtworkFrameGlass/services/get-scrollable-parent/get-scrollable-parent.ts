@@ -1,13 +1,15 @@
-export const getScrollableParent = (node: HTMLElement | null): HTMLElement | null => {
+export const getScrollableParent = (
+  node: HTMLElement | null
+): HTMLElement | null => {
   if (!node) {
-    return null;
+    return null
   }
 
-  const overflowY = window.getComputedStyle(node).overflowY;
+  const overflowY = window.getComputedStyle(node).overflowY
 
   if (overflowY === 'auto' || overflowY === 'scroll') {
-    return node;
+    return node
   }
 
-  return getScrollableParent(node.parentElement);
-};
+  return getScrollableParent(node.parentElement)
+}

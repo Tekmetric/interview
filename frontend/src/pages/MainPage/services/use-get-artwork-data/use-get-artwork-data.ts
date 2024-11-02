@@ -1,15 +1,12 @@
-import { ArtworkApi } from '../../../../services/artwork-api/ArtworkApi';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
-import { ArtworkGetListResponse } from '../../../../types/response/ArtworkGetListResponse';
-import { normalizeArtworkData } from '../normalize-artwork-data/normalize-artwork-data';
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+
+import { ArtworkApi } from '../../../../services/artwork-api/ArtworkApi'
+import { ArtworkGetListResponse } from '../../../../types/response/ArtworkGetListResponse'
+import { normalizeArtworkData } from '../normalize-artwork-data/normalize-artwork-data'
 
 export const useGetArtworkData = () => {
-  const {
-    data,
-    isFetching,
-    fetchNextPage
-  } = useInfiniteQuery({
+  const { data, isFetching, fetchNextPage } = useInfiniteQuery({
     initialPageParam: 1,
     getNextPageParam: (lastPage: ArtworkGetListResponse) => {
       return lastPage.pagination.current_page < lastPage.pagination.total_pages

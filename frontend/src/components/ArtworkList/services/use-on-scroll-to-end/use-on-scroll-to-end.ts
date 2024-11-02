@@ -1,36 +1,35 @@
-import { useRef } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import { useRef } from 'react'
+import { useDebouncedCallback } from 'use-debounce'
 
 const debounceIntervalMs = 250
 
-export const useOnScrollToEnd = <TElement extends HTMLElement>({ onScrollToEnd }: {
+export const useOnScrollToEnd = <TElement extends HTMLElement>({
+  onScrollToEnd
+}: {
   onScrollToEnd: () => void
 }) => {
   const containerRef = useRef<TElement>(null)
 
-  const handleScroll = useDebouncedCallback(
-    () => {
-      if (!containerRef.current) {
-        return
-      }
+  const handleScroll = useDebouncedCallback(() => {
+    if (!containerRef.current) {
+      return
+    }
 
-      const clientWidth = containerRef.current.clientWidth
+    const clientWidth = containerRef.current.clientWidth
 
-      const scrollLeft = containerRef.current.scrollLeft
-      const scrollRight = scrollLeft + clientWidth
+    const scrollLeft = containerRef.current.scrollLeft
+    const scrollRight = scrollLeft + clientWidth
 
-      const scrollWidth = containerRef.current.scrollWidth
+    const scrollWidth = containerRef.current.scrollWidth
 
-      const isScrollToEnd = scrollRight === scrollWidth
+    const isScrollToEnd = scrollRight === scrollWidth
 
-      if (!isScrollToEnd) {
-        return;
-      }
+    if (!isScrollToEnd) {
+      return
+    }
 
-      onScrollToEnd()
-    },
-    debounceIntervalMs
-  )
+    onScrollToEnd()
+  }, debounceIntervalMs)
 
   return {
     containerRef,

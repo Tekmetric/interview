@@ -1,21 +1,19 @@
-import { useGetArtworkData } from './services/use-get-artwork-data/use-get-artwork-data';
-import { ArtworkImage } from '../../components/ArtworkImage/ArtworkImage';
-import { ArtworkList } from '../../components/ArtworkList/ArtworkList';
-import { Spinner } from '../../components/Spinner/Spinner';
-import { ArtworkImageSpace } from '../../components/ArtworkImageSpace/ArtworkImageSpace';
-import { useCallback } from 'react';
-import { GuideText } from '../../components/GuideText/GuideText';
+import { useCallback } from 'react'
+
+import { ArtworkImage } from '../../components/ArtworkImage/ArtworkImage'
+import { ArtworkImageSpace } from '../../components/ArtworkImageSpace/ArtworkImageSpace'
+import { ArtworkList } from '../../components/ArtworkList/ArtworkList'
+import { GuideText } from '../../components/GuideText/GuideText'
+import { Spinner } from '../../components/Spinner/Spinner'
+import { useGetArtworkData } from './services/use-get-artwork-data/use-get-artwork-data'
 
 export const MainPage = () => {
   const { data: artworkList, isFetching, fetchNextPage } = useGetArtworkData()
-  
-  const handleLoadMoreItems = useCallback(
-    async () => {
-      await fetchNextPage()
-    },
-    [fetchNextPage]
-  )
-  
+
+  const handleLoadMoreItems = useCallback(async () => {
+    await fetchNextPage()
+  }, [fetchNextPage])
+
   return (
     <ArtworkList onScrollToEnd={handleLoadMoreItems}>
       {isFetching && (
@@ -26,9 +24,7 @@ export const MainPage = () => {
 
       {artworkList?.map((artworkListItem, index) => (
         <ArtworkImageSpace key={artworkListItem.imageId}>
-          {index === 0 && (
-            <GuideText />
-          )}
+          {index === 0 && <GuideText />}
 
           <ArtworkImage
             imageId={artworkListItem.imageId}

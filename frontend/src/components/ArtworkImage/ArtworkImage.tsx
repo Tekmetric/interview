@@ -1,25 +1,26 @@
 import { useState } from 'react'
+
+import { ArtworkApi } from '../../services/artwork-api/ArtworkApi'
+import { ArtworkAdditionalInfo } from '../ArtworkAdditionalInfo/ArtworkAdditionalInfo'
+import { ArtworkFrameGlass } from '../ArtworkFrameGlass/ArtworkFrameGlass'
+import { ArtworkImageTitle } from '../ArtworkImageTitle/ArtworkImageTitle'
 import {
   StyledArtworkImage,
+  StyledArtworkImageFrame,
+  StyledArtworkImageFrameInner,
   StyledArtworkImageOuterFrame,
   StyledArtworkImageOuterFrameBackgroundBottom,
-  StyledArtworkImageOuterFrameBackgroundTop,
-  StyledArtworkImageFrame,
-  StyledArtworkImageFrameInner
-} from './styled';
-import { ArtworkApi } from '../../services/artwork-api/ArtworkApi';
-import { ArtworkFrameGlass } from '../ArtworkFrameGlass/ArtworkFrameGlass';
-import { ArtworkImageTitle } from '../ArtworkImageTitle/ArtworkImageTitle';
-import { ArtworkAdditionalInfo } from '../ArtworkAdditionalInfo/ArtworkAdditionalInfo';
+  StyledArtworkImageOuterFrameBackgroundTop
+} from './styled'
 
 type Props = {
-  imageId: string;
-  title: string;
-  description: string | null;
-  date: string | null;
-  artist: string | null;
-  altText: string;
-  blurDataUrl: string;
+  imageId: string
+  title: string
+  description: string | null
+  date: string | null
+  artist: string | null
+  altText: string
+  blurDataUrl: string
   originalWidth: number
   originalHeight: number
 }
@@ -35,12 +36,12 @@ export const ArtworkImage = ({
   originalWidth,
   originalHeight
 }: Props) => {
-  const [isImageLoadingError, setImageLoadingError] = useState(false);
+  const [isImageLoadingError, setImageLoadingError] = useState(false)
   const [showArtworkInfo, setShowArtworkInfo] = useState(false)
 
   const handleLoadingError = () => {
     setImageLoadingError(true)
-  };
+  }
 
   const toggleArtworkInfoVisibility = () => {
     setShowArtworkInfo(!showArtworkInfo)
@@ -79,11 +80,7 @@ export const ArtworkImage = ({
           />
         </StyledArtworkImageFrameInner>
 
-        <ArtworkImageTitle
-          title={title}
-          artist={artist}
-          date={date}
-        />
+        <ArtworkImageTitle title={title} artist={artist} date={date} />
       </StyledArtworkImageFrame>
     </StyledArtworkImageOuterFrame>
   )

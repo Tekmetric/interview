@@ -3,6 +3,7 @@ import styled from 'styled-components';
 export const StyledGuideTextWrapper = styled.div`
     box-sizing: border-box;
     position: absolute;
+    z-index: 2;
     top: 0;
     left: 0;
     right: 0;
@@ -11,6 +12,7 @@ export const StyledGuideTextWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    backdrop-filter: blur(10px);
 `
 
 export const StyledGuideText = styled.h1`

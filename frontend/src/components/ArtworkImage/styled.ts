@@ -121,14 +121,31 @@ export const StyledArtworkImageFrameInner = styled.div`
 `
 
 export const StyledArtworkImage = styled.img<{
-  $blurDataUrl: string
+    $blurDataUrl: string;
+    $originalWidth: number;
+    $originalHeight: number;
+    $isLandscapeOrientation: boolean;
 }>`
     ${variables};
     
-    position: relative;
+    display: block;
+
+    ${({ $originalWidth, $originalHeight }) =>
+        css`
+            --artwork-image-max-width: calc(75vw - var(--frame-width));
+            --artwork-image-max-height: calc(75vh - var(--frame-width));
+            
+            width: min(
+                var(--artwork-image-max-height) * ${$originalWidth} / ${$originalHeight},
+                var(--artwork-image-max-width)
+            );
+            height: min(
+                var(--artwork-image-max-width) * ${$originalHeight} / ${$originalWidth},
+                var(--artwork-image-max-height)
+            );
+        `
+    }
     
-    max-width: calc(75vw - var(--frame-width));
-    max-height: calc(75vh - var(--frame-width));
     background: #f0f0f0;
 
     ${({ $blurDataUrl }) => css`

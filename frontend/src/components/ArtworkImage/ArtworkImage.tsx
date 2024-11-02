@@ -15,10 +15,13 @@ type Props = {
   title: string;
   altText: string;
   blurDataUrl: string;
-  width: number
+  originalWidth: number
+  originalHeight: number
 }
 
-export const ArtworkImage = ({ imageId, title, altText, blurDataUrl, width }: Props) => {
+export const ArtworkImage = ({ imageId, title, altText, blurDataUrl, originalWidth, originalHeight }: Props) => {
+  const isLandscapeOrientation = originalWidth >= originalHeight;
+
   return (
     <StyledArtworkImageOuterFrame>
       <StyledArtworkImageOuterFrameBackgroundTop />
@@ -29,9 +32,12 @@ export const ArtworkImage = ({ imageId, title, altText, blurDataUrl, width }: Pr
           <ArtworkFrameGlass />
 
           <StyledArtworkImage
-            src={ArtworkApi.getImageUrl(imageId, width)}
+            src={ArtworkApi.getImageUrl(imageId, originalWidth)}
             alt={altText}
             $blurDataUrl={blurDataUrl}
+            $originalWidth={originalWidth}
+            $originalHeight={originalHeight}
+            $isLandscapeOrientation={isLandscapeOrientation}
           />
         </StyledArtworkImageFrameInner>
 

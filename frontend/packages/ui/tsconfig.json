@@ -1,0 +1,5 @@
+{
+  "extends": "@tekmetric/typescript-config/react-library.json",
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"]
+}

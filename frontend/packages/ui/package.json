@@ -1,0 +1,50 @@
+{
+  "name": "@tekmetric/ui",
+  "version": "0.0.0",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./styles.css": "./dist/index.css",
+    "./button": "./src/components/button/button.tsx",
+    "./card": "./src/components/card/card.tsx",
+    "./field": "./src/components/field/field.tsx",
+    "./form": "./src/components/form/form.tsx",
+    "./icon": "./src/components/icon/icon.tsx",
+    "./input": "./src/components/input/input.tsx",
+    "./navigation": "./src/components/navigation/navigation.tsx",
+    "./submit-button": "./src/components/submit-button/submit-button.tsx",
+    "./text-box": "./src/components/text-box/text-box.tsx",
+    "./typography": "./src/components/typography/typography.tsx",
+    "./validation-error": "./src/components/validation-error/validation-error.tsx",
+    "./validate-schema": "./src/services/validate-form-values/validate-form-values.ts"
+  },
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1"
+  },
+  "dependencies": {
+    "@heroicons/react": "2.1.5",
+    "classnames": "2.5.1",
+    "final-form": "4.20.10",
+    "react-final-form": "6.5.9",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@tekmetric/eslint-config": "*",
+    "@tekmetric/tailwind-config": "*",
+    "@tekmetric/typescript-config": "*",
+    "@types/react": "^18.3.12",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "5.3.3"
+  }
+}

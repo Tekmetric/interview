@@ -1,0 +1,10 @@
+{
+  "name": "@tekmetric/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "@vercel/style-guide": "^6.0.0",
+    "eslint-config-turbo": "^2.2.3"
+  }
+}

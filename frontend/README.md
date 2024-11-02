@@ -1,21 +1,76 @@
-# Tech Interview Project
+## Description
 
-## Steps to get started:
+The front-end application is built using the Next.js framework. It leverages Apollo Client for GraphQL queries and mutations.
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+The application provides a user interface for managing a Q&A application.
 
-#### Let's install the project locally
-`npm install`
+## Tech stack
 
-#### Let's start the project locally
-`npm start`
+- Nextjs
+- turborepo (monorepo)
+- Apollo GraphQL Client
+- zod (schema validation)
+- Tailwind CSS
+- TypeScript
+- Jest
+- React Testing Library
+- ESLint
+- Prettier
+- react-toastify (notifications)
 
-### Goals
-1. Fetch Data from the backend Crud API you created or from a public API
-2. Display data from API onto your page (Table, List, etc.)
-3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
-4. Have fun
+## Pre-requisites
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+- nvm
+- yarn
+
+## Installation
+
+```bash
+# use the correct node version
+$ nvm use
+
+# Install the dependencies
+$ yarn install
+```
+
+## Environment variables
+
+Adjust the environment variables in the `.env` file from the `/apps/web/.env`.
+For demo purposes, you can use this configuration:
+
+```
+NEXT_PUBLIC_TEKMETRIC_API_URL=http://localhost:5089
+```
+
+## Running the app
+
+```bash
+# watch mode
+$ yarn run dev
+
+# The application will be available at http://localhost:3000/
+```
+
+## Test
+
+```bash
+$ yarn run test
+```
+
+## Type check
+
+```bash
+$ yarn run typecheck
+```
+
+## Lint
+
+```bash
+$ yarn run lint
+```
+
+## Generate graphql types
+
+```bash
+$ yarn run generate:types
+```

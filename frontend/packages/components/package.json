@@ -1,0 +1,66 @@
+{
+  "name": "@tekmetric/components",
+  "version": "0.0.0",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./styles.css": "./dist/index.css",
+    "./apollo-wrapper": "./src/components/apollo-wrapper/apollo-wrapper.tsx",
+    "./auth-checker": "./src/components/auth-checker/auth-checker.tsx",
+    "./auth-store-provider": "./src/components/auth-store-provider/auth-store-provider.tsx",
+    "./login": "./src/components/login/login.tsx",
+    "./create-question": "./src/components/create-question/create-question.tsx",
+    "./navigation": "./src/components/navigation/navigation.tsx",
+    "./page": "./src/components/page/page.tsx",
+    "./question": "./src/components/question/question.tsx",
+    "./questions": "./src/components/questions/questions.tsx",
+    "./toast-container": "./src/components/toast-container/toast-container.tsx",
+    "./use-auth-store": "./src/services/use-auth-store/use-auth-store.ts",
+    "./use-toast-container": "./src/services/use-toast-container/use-toast-container.ts"
+  },
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "test": "jest --colors --passWithNoTests"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1"
+  },
+  "dependencies": {
+    "@tekmetric/ui": "*",
+    "@tekmetric/graphql": "*",
+    "classnames": "2.5.1",
+    "date-fns": "4.1.0",
+    "typescript-cookie": "1.0.6",
+    "next": "^15.0.1",
+    "react-toastify": "10.0.6",
+    "zod": "3.23.8",
+    "zustand": "5.0.1"
+  },
+  "devDependencies": {
+    "@next/eslint-plugin-next": "^15.0.1",
+    "@testing-library/react": "16.0.1",
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/jest-dom": "6.6.3",
+    "@tekmetric/eslint-config": "*",
+    "@tekmetric/tailwind-config": "*",
+    "@tekmetric/typescript-config": "*",
+    "@types/jest": "29.5.14",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "18.3.1",
+    "autoprefixer": "^10.4.20",
+    "eslint-plugin-jest": "28.8.3",
+    "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "ts-jest": "29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "5.3.3"
+  }
+}

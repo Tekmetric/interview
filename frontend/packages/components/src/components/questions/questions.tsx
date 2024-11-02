@@ -31,7 +31,7 @@ export const Questions = ({ status }: QuestionProps): JSX.Element => {
     return <CardsSkeletonLoader cards={5} />
   }
 
-  if (!data) {
+  if (!data?.questions.length) {
     return (
       <Card>
         <Card.Body>There are no questions to display.</Card.Body>

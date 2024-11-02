@@ -10,7 +10,9 @@ export const createErrorLink = (): ApolloLink =>
           case 'UNAUTHENTICATED': {
             AuthStorage.removeSession()
 
-            window.location.reload()
+            if (!err.path?.includes('login')) {
+              window.location.reload()
+            }
           }
         }
       }

@@ -15,10 +15,4 @@ export const StyledArtworkImageTitle = styled.div`
     padding: 5px 0;
     font-style: italic;
     line-height: 1.5rem;
-    
-    & * {
-        flex-shrink: 0;
-        white-space: nowrap;
-        word-break: keep-all;
-    }
 `

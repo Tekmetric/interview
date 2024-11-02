@@ -10,6 +10,7 @@ import {
 import { ArtworkApi } from '../../services/artwork-api/ArtworkApi';
 import { ArtworkFrameGlass } from '../ArtworkFrameGlass/ArtworkFrameGlass';
 import { ArtworkImageTitle } from '../ArtworkImageTitle/ArtworkImageTitle';
+import { ArtworkAdditionalInfo } from '../ArtworkAdditionalInfo/ArtworkAdditionalInfo';
 
 type Props = {
   imageId: string;
@@ -58,6 +59,15 @@ export const ArtworkImage = ({
         <StyledArtworkImageFrameInner>
           <ArtworkFrameGlass />
 
+          <ArtworkAdditionalInfo
+            visible={showArtworkInfo}
+            title={title}
+            description={description}
+            artist={artist}
+            date={date}
+            onClose={toggleArtworkInfoVisibility}
+          />
+
           <StyledArtworkImage
             src={imageSrc}
             alt={altText}
@@ -69,7 +79,11 @@ export const ArtworkImage = ({
           />
         </StyledArtworkImageFrameInner>
 
-        <ArtworkImageTitle title={title} artist={artist} date={date} />
+        <ArtworkImageTitle
+          title={title}
+          artist={artist}
+          date={date}
+        />
       </StyledArtworkImageFrame>
     </StyledArtworkImageOuterFrame>
   )

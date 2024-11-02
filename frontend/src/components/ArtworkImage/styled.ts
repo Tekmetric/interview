@@ -118,6 +118,8 @@ export const StyledArtworkImageFrameInner = styled.div`
         box-shadow: inset 0 2px 6px 2px rgba(0, 0, 0, 0.2);
         pointer-events: none;
     }
+    
+    cursor: pointer;
 `
 
 export const StyledArtworkImage = styled.img<{
@@ -147,7 +149,6 @@ export const StyledArtworkImage = styled.img<{
     
     background: #f0f0f0;
     object-fit: cover;
-    cursor: pointer;
     user-select: none;
 
     ${({ $blurDataUrl }) => css`

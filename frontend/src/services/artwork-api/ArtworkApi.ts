@@ -1,6 +1,7 @@
 import { ArtworkGetListResponse } from '../../types/response/ArtworkGetListResponse'
 
 export class ArtworkApi {
+  public static readonly initialPage = 20 // It has some non-broken images
   private static readonly limit = 10
   private static readonly defaultImageWidthPx = 843
   private static readonly smallImageWidthPx = 450

@@ -7,7 +7,7 @@ import { normalizeArtworkData } from '../normalize-artwork-data/normalize-artwor
 
 export const useGetArtworkData = () => {
   const { data, isFetching, fetchNextPage } = useInfiniteQuery({
-    initialPageParam: 1,
+    initialPageParam: ArtworkApi.initialPage,
     getNextPageParam: (lastPage: ArtworkGetListResponse) => {
       return lastPage.pagination.current_page < lastPage.pagination.total_pages
         ? lastPage.pagination.current_page + 1

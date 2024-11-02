@@ -33,7 +33,7 @@ export const ArtworkAdditionalInfo = ({ visible, title, description, date, artis
   }
 
   return <StyledArtworkAdditionalInfo $visible={visible} onClick={handleClick}>
-    <AdditionalInfoItem field='Title' value={`"${title}"`} />
+    <AdditionalInfoItem field="Title" value={`"${title}"`} />
 
     <AdditionalInfoItem field='Artist' value={artist} />
 

@@ -1,116 +1,109 @@
-import { act, render, renderHook } from '@testing-library/react'
+import { act, render } from '@testing-library/react'
 import React from 'react'
 
+import { getArtworkFrameGlassParallaxOffset } from '../get-artwork-frame-glass-parallax-offset/get-artwork-frame-glass-parallax-offset'
 import { getScrollableParent } from '../get-scrollable-parent/get-scrollable-parent'
 import { useOnScreen } from '../use-on-screen/use-on-screen'
 import { useArtworkFrameGlassParallax } from './use-artwork-frame-glass-parallax'
 
-jest.mock('../use-on-screen/use-on-screen', () => ({
-  useOnScreen: jest.fn()
-}))
-
-jest.mock('../get-scrollable-parent/get-scrollable-parent', () => ({
-  getScrollableParent: jest.fn()
-}))
-
-const useOnScreenMock = useOnScreen as jest.Mock
-const getScrollableParentMock = getScrollableParent as jest.Mock
+jest.mock('../use-on-screen/use-on-screen')
+jest.mock('../get-scrollable-parent/get-scrollable-parent')
+jest.mock(
+  '../get-artwork-frame-glass-parallax-offset/get-artwork-frame-glass-parallax-offset'
+)
 
 describe('useArtworkFrameGlassParallax', () => {
-  const scrollableParentMock = document.createElement('div')
+  const useOnScreenMock = useOnScreen as jest.Mock
+  const getScrollableParentMock = getScrollableParent as jest.Mock
+  const getParallaxOffsetMock = getArtworkFrameGlassParallaxOffset as jest.Mock
 
   beforeEach(() => {
-    useOnScreenMock.mockReturnValue({
-      isIntersecting: true
+    jest.clearAllMocks()
+  })
+
+  it('should call getArtworkFrameGlassParallaxOffset when isIntersecting is true', async () => {
+    useOnScreenMock.mockReturnValue({ isIntersecting: true })
+
+    const mockScrollableParent = document.createElement('div')
+    getScrollableParentMock.mockReturnValue(mockScrollableParent)
+
+    const addEventListenerSpy = jest.spyOn(
+      mockScrollableParent,
+      'addEventListener'
+    )
+
+    const TestComponent = () => {
+      const { glassRef } = useArtworkFrameGlassParallax()
+      return <div ref={glassRef}></div>
+    }
+
+    await act(async () => {
+      render(<TestComponent />)
     })
 
-    getScrollableParentMock.mockReturnValue(scrollableParentMock)
-  })
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      'scroll',
+      expect.any(Function)
+    )
+    const scrollHandler = addEventListenerSpy.mock.calls[0][1] as EventListener
 
-  it('should initialize horizontalOffset', () => {
-    const { result } = renderHook(() => useArtworkFrameGlassParallax())
-
-    expect(result.current.horizontalOffset).toBe(0)
-  })
-
-  it('should set horizontalOffset correctly when scrolled', () => {
-    Object.defineProperty(window, 'innerWidth', { value: 800, writable: true })
-
-    jest
+    const rafSpy = jest
       .spyOn(window, 'requestAnimationFrame')
-      .mockImplementation((callback: FrameRequestCallback) => {
+      .mockImplementation(callback => {
         callback(0)
         return 0
       })
 
-    const TestComponent = () => {
-      const { glassRef, horizontalOffset } = useArtworkFrameGlassParallax()
-      return (
-        <div>
-          <div ref={glassRef} data-testid='glass-div'></div>
-          <div data-testid='offset-value'>{horizontalOffset}</div>
-        </div>
-      )
-    }
-
-    const { getByTestId } = render(<TestComponent />)
-
-    const glassDiv = getByTestId('glass-div') as HTMLDivElement
-
-    glassDiv.getBoundingClientRect = jest.fn(
-      () =>
-        ({
-          left: 100,
-          width: 200
-        }) as DOMRect
-    )
-
     act(() => {
-      const scrollEvent = new Event('scroll')
-      scrollableParentMock.dispatchEvent(scrollEvent)
+      scrollHandler(new Event('scroll'))
     })
 
-    const parallaxIntensity = 0.2
-    const viewportCenter = window.innerWidth / 2
-    const glassCenter = 100 + 200 / 2
-    const frameOffset = (glassCenter - viewportCenter) * parallaxIntensity
+    expect(getParallaxOffsetMock).toHaveBeenCalled()
 
-    const offsetValue = getByTestId('offset-value').textContent
-    expect(Number(offsetValue)).toBe(frameOffset)
+    rafSpy.mockRestore()
   })
 
-  it('should not set horizontalOffset when not intersecting', () => {
+  it('should not call getArtworkFrameGlassParallaxOffset when isIntersecting is false', async () => {
     useOnScreenMock.mockReturnValue({ isIntersecting: false })
 
-    const TestComponent = () => {
-      const { glassRef, horizontalOffset } = useArtworkFrameGlassParallax()
-      return (
-        <div>
-          <div ref={glassRef} data-testid='glass-div'></div>
-          <div data-testid='offset-value'>{horizontalOffset}</div>
-        </div>
-      )
-    }
+    const mockScrollableParent = document.createElement('div')
+    getScrollableParentMock.mockReturnValue(mockScrollableParent)
 
-    const { getByTestId } = render(<TestComponent />)
-
-    const glassDiv = getByTestId('glass-div') as HTMLDivElement
-
-    glassDiv.getBoundingClientRect = jest.fn(
-      () =>
-        ({
-          left: 100,
-          width: 200
-        }) as DOMRect
+    const addEventListenerSpy = jest.spyOn(
+      mockScrollableParent,
+      'addEventListener'
     )
 
-    act(() => {
-      const scrollEvent = new Event('scroll')
-      window.dispatchEvent(scrollEvent)
+    const TestComponent = () => {
+      const { glassRef } = useArtworkFrameGlassParallax()
+      return <div ref={glassRef}></div>
+    }
+
+    await act(async () => {
+      render(<TestComponent />)
     })
 
-    const offsetValue = getByTestId('offset-value').textContent
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      'scroll',
+      expect.any(Function)
+    )
 
-    expect(offsetValue).toBe('0')
+    const scrollHandler = addEventListenerSpy.mock.calls[0][1] as EventListener
+
+    const rafSpy = jest
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation(callback => {
+        callback(0)
+        return 0
+      })
+
+    act(() => {
+      scrollHandler(new Event('scroll'))
+    })
+
+    expect(getParallaxOffsetMock).not.toHaveBeenCalled()
+
+    // Clean up
+    rafSpy.mockRestore()
   })
 })

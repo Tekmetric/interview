@@ -25,7 +25,7 @@ export const StyledArtworkImageOuterFrame = styled.div`
     bottom: 0;
     z-index: -1;
     opacity: 0.1;
-    background: rgba(0, 0, 0, 1);
+    background: linear-gradient(rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
     transform-origin: top center;
     transform: perspective(100px) rotateX(2deg);
     filter: blur(20px);

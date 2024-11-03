@@ -19,4 +19,5 @@ export const StyledGuideText = styled.h1`
   font-style: italic;
   font-size: 1rem;
   font-weight: 500;
+  color: var(--color-white);
 `

@@ -1,4 +1,20 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
+
+const lightSource = css`
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 50vh;
+  filter: blur(100px);
+  background: linear-gradient(#fff 20%, transparent 85%),
+    rgba(255, 255, 255, 0.4);
+  transform-origin: top center;
+  transform: perspective(150px) rotateX(45deg) scale(0.25);
+  z-index: 0;
+  mix-blend-mode: luminosity;
+  pointer-events: none;
+`
 
 export const StyledArtworkImageSpace = styled.div`
   position: relative;
@@ -9,5 +25,17 @@ export const StyledArtworkImageSpace = styled.div`
   width: 100vw;
   height: 100%;
   scroll-snap-align: start;
-  background: radial-gradient(circle at 50% 0, #eee 4%, #c5c5c5 50%);
+  background: rgba(0, 0, 0, 0.3);
+
+  &:before {
+    ${lightSource};
+
+    left: 0;
+  }
+
+  &:after {
+    ${lightSource};
+
+    right: 0;
+  }
 `

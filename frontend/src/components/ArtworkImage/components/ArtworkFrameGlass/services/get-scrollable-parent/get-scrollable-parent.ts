@@ -5,9 +5,9 @@ export const getScrollableParent = (
     return null
   }
 
-  const overflowY = window.getComputedStyle(node).overflowY
+  const overflowX = window.getComputedStyle(node).overflowX
 
-  if (overflowY === 'auto' || overflowY === 'scroll') {
+  if (overflowX === 'auto' || overflowX === 'scroll') {
     return node
   }
 

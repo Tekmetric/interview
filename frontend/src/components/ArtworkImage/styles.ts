@@ -16,6 +16,22 @@ export const StyledArtworkImageOuterFrame = styled.div`
   z-index: 1;
   background: #e1dede;
 
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    opacity: 0.1;
+    background: rgba(0, 0, 0, 1);
+    transform-origin: top center;
+    transform: perspective(100px) rotateX(2deg);
+    filter: blur(20px);
+    pointer-events: none;
+  }
+
   &:after {
     content: '';
     position: absolute;
@@ -25,8 +41,8 @@ export const StyledArtworkImageOuterFrame = styled.div`
     bottom: 0;
     z-index: 1;
     box-shadow:
-      8px 10px 10px -5px rgba(124, 112, 103, 0.35),
-      0 30px 10px -15px rgba(124, 112, 103, 0.35);
+      8px 10px 10px -5px rgba(0, 0, 0, 0.1),
+      0 50px 30px -15px rgba(0, 0, 0, 0.35);
     pointer-events: none;
   }
 `
@@ -136,7 +152,7 @@ export const StyledArtworkImage = styled.img<{
   display: block;
 
   ${({ $originalWidth, $originalHeight }) => css`
-    --artwork-image-max-width: calc(75vw - var(--frame-width));
+    --artwork-image-max-width: calc(60vw - var(--frame-width));
     --artwork-image-max-height: calc(75vh - var(--frame-width));
 
     width: min(

@@ -10,7 +10,8 @@ export const StyledArtworkAdditionalInfo = styled.div<{
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 10% calc(10% + ${ADDITIONAL_INFO_CLOSE_BUTTON_SIZE_PX}px / 2) 10% 10%;
+  padding: 20px calc(20px + ${ADDITIONAL_INFO_CLOSE_BUTTON_SIZE_PX}px / 2) 20px
+    20px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;

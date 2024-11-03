@@ -5,21 +5,21 @@ describe('getScrollableParent', () => {
     expect(getScrollableParent(null)).toBeNull()
   })
 
-  it('should return the node itself if it has overflowY auto', () => {
+  it('should return the node itself if it has overflowX auto', () => {
     const node = document.createElement('div')
 
     Object.defineProperty(window, 'getComputedStyle', {
-      value: () => ({ overflowY: 'auto' })
+      value: () => ({ overflowX: 'auto' })
     })
 
     expect(getScrollableParent(node)).toBe(node)
   })
 
-  it('should return the node itself if it has overflowY scroll', () => {
+  it('should return the node itself if it has overflowX scroll', () => {
     const node = document.createElement('div')
 
     Object.defineProperty(window, 'getComputedStyle', {
-      value: () => ({ overflowY: 'scroll' })
+      value: () => ({ overflowX: 'scroll' })
     })
 
     expect(getScrollableParent(node)).toBe(node)
@@ -34,8 +34,8 @@ describe('getScrollableParent', () => {
     Object.defineProperty(window, 'getComputedStyle', {
       value: (node: HTMLElement) => {
         return node === parent
-          ? { overflowY: 'auto' }
-          : { overflowY: 'visible' }
+          ? { overflowX: 'auto' }
+          : { overflowX: 'visible' }
       }
     })
 
@@ -46,7 +46,7 @@ describe('getScrollableParent', () => {
     const node = document.createElement('div')
 
     Object.defineProperty(window, 'getComputedStyle', {
-      value: () => ({ overflowY: 'visible' })
+      value: () => ({ overflowX: 'visible' })
     })
 
     expect(getScrollableParent(node)).toBeNull()

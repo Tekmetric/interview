@@ -1,8 +1,8 @@
 import { useCallback } from 'react'
 
+import { ArtworkGallery } from '../../components/ArtworkGallery/ArtworkGallery'
 import { ArtworkImage } from '../../components/ArtworkImage/ArtworkImage'
-import { ArtworkImageSpace } from '../../components/ArtworkImageSpace/ArtworkImageSpace'
-import { ArtworkList } from '../../components/ArtworkList/ArtworkList'
+import { ArtworkImageWall } from '../../components/ArtworkImageWall/ArtworkImageWall'
 import { GuideText } from '../../components/GuideText/GuideText'
 import { Logo } from '../../components/Logo/Logo'
 import { Spinner } from '../../components/Spinner/Spinner'
@@ -19,15 +19,15 @@ export const MainPage = () => {
     <>
       <Logo />
 
-      <ArtworkList onScrollToEnd={handleLoadMoreItems}>
+      <ArtworkGallery onScrollToEnd={handleLoadMoreItems}>
         {isFetching && !artworkList.length && (
-          <ArtworkImageSpace>
+          <ArtworkImageWall>
             <Spinner />
-          </ArtworkImageSpace>
+          </ArtworkImageWall>
         )}
 
         {artworkList?.map((artworkListItem, index) => (
-          <ArtworkImageSpace key={artworkListItem.imageId}>
+          <ArtworkImageWall key={artworkListItem.imageId}>
             {index === 0 && <GuideText />}
 
             <ArtworkImage
@@ -41,9 +41,9 @@ export const MainPage = () => {
               originalWidth={artworkListItem.originalWidth}
               originalHeight={artworkListItem.originalHeight}
             />
-          </ArtworkImageSpace>
+          </ArtworkImageWall>
         ))}
-      </ArtworkList>
+      </ArtworkGallery>
     </>
   )
 }

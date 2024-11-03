@@ -1,13 +1,13 @@
 import { PropsWithChildren } from 'react'
 
 import { useOnScrollToEnd } from './services/use-on-scroll-to-end/use-on-scroll-to-end'
-import { StyledArtworkList } from './styles'
+import { StyledArtworkGallery } from './styles'
 
 type Props = {
   onScrollToEnd: () => void
 }
 
-export const ArtworkList = ({
+export const ArtworkGallery = ({
   children,
   onScrollToEnd
 }: PropsWithChildren<Props>) => {
@@ -15,8 +15,8 @@ export const ArtworkList = ({
     useOnScrollToEnd<HTMLUListElement>({ onScrollToEnd })
 
   return (
-    <StyledArtworkList ref={artworkListRef} onScroll={handleScroll}>
+    <StyledArtworkGallery ref={artworkListRef} onScroll={handleScroll}>
       {children}
-    </StyledArtworkList>
+    </StyledArtworkGallery>
   )
 }

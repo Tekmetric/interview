@@ -9,4 +9,5 @@ export type ArtworkListItem = {
   blurDataURL: string
   originalWidth: number
   originalHeight: number
+  aspectRatio: number
 }

@@ -3,6 +3,7 @@ import { useCallback } from 'react'
 import { ArtworkGallery } from '../../components/ArtworkGallery/ArtworkGallery'
 import { ArtworkImage } from '../../components/ArtworkImage/ArtworkImage'
 import { ArtworkImageWall } from '../../components/ArtworkImageWall/ArtworkImageWall'
+import { SINGLE_LIGHT_SOURCE_ARTWORK_ASPECT_RATIO_THRESHOLD } from '../../components/ArtworkImageWall/constants'
 import { GuideText } from '../../components/GuideText/GuideText'
 import { Logo } from '../../components/Logo/Logo'
 import { Spinner } from '../../components/Spinner/Spinner'
@@ -21,13 +22,21 @@ export const MainPage = () => {
 
       <ArtworkGallery onScrollToEnd={handleLoadMoreItems}>
         {isFetching && !artworkList.length && (
-          <ArtworkImageWall>
+          <ArtworkImageWall lightSources='none'>
             <Spinner />
           </ArtworkImageWall>
         )}
 
         {artworkList?.map((artworkListItem, index) => (
-          <ArtworkImageWall key={artworkListItem.imageId}>
+          <ArtworkImageWall
+            key={artworkListItem.imageId}
+            lightSources={
+              artworkListItem.aspectRatio <
+              SINGLE_LIGHT_SOURCE_ARTWORK_ASPECT_RATIO_THRESHOLD
+                ? 'single'
+                : 'double'
+            }
+          >
             {index === 0 && <GuideText />}
 
             <ArtworkImage

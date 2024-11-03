@@ -1,7 +1,7 @@
 import { ArtworkListItem } from '../../../../types/artwork-list-item'
 import { ArtworkGetListResponse } from '../../../../types/response/ArtworkGetListResponse'
 
-export const normalizeArtworkData = (
+export const buildArtworkData = (
   artworkDataPages: ArtworkGetListResponse[]
 ) => {
   const imageIdsSet = new Set<string>()
@@ -28,7 +28,10 @@ export const normalizeArtworkData = (
         return acc
       }
 
+      // To avoid duplicated ids in the case when requesting a new page,
+      // and it contains some ids from the current page (because of new artworks were added)
       imageIdsSet.add(image_id)
+
       acc.push({
         id,
         imageId: image_id,
@@ -39,7 +42,8 @@ export const normalizeArtworkData = (
         altText: thumbnail.alt_text,
         blurDataURL: thumbnail.lqip,
         originalWidth: thumbnail.width,
-        originalHeight: thumbnail.height
+        originalHeight: thumbnail.height,
+        aspectRatio: thumbnail.width / thumbnail.height
       })
 
       return acc

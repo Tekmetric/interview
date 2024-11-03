@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 
 import { ArtworkApi } from '../../../../services/artwork-api/ArtworkApi'
 import { ArtworkGetListResponse } from '../../../../types/response/ArtworkGetListResponse'
-import { normalizeArtworkData } from '../normalize-artwork-data/normalize-artwork-data'
+import { buildArtworkData } from '../build-artwork-data/build-artwork-data'
 
 export const useGetArtworkData = () => {
   const { data, isFetching, fetchNextPage } = useInfiniteQuery({
@@ -18,7 +18,7 @@ export const useGetArtworkData = () => {
   })
 
   const normalizedArtworkList = useMemo(
-    () => normalizeArtworkData(data?.pages ?? []),
+    () => buildArtworkData(data?.pages ?? []),
     [data?.pages]
   )
 

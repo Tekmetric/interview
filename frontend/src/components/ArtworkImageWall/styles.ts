@@ -1,5 +1,7 @@
 import styled, { css } from 'styled-components'
 
+import { ArtworkImageWallLightSources } from './types'
+
 const lightSource = css`
   content: '';
   position: absolute;
@@ -16,7 +18,9 @@ const lightSource = css`
   pointer-events: none;
 `
 
-export const StyledArtworkImageWall = styled.li`
+export const StyledArtworkImageWall = styled.li<{
+  $lightSources: ArtworkImageWallLightSources
+}>`
   position: relative;
   display: flex;
   flex-shrink: 0;
@@ -27,15 +31,31 @@ export const StyledArtworkImageWall = styled.li`
   scroll-snap-align: start;
   background: rgba(0, 0, 0, 0.3);
 
-  &:before {
-    ${lightSource};
+  ${({ $lightSources }) => {
+    switch ($lightSources) {
+      case 'single':
+        return css`
+          &:before {
+            ${lightSource};
 
-    left: 15vw;
-  }
+            left: 35vw;
+          }
+        `
 
-  &:after {
-    ${lightSource};
+      case 'double':
+        return css`
+          &:before {
+            ${lightSource};
 
-    right: 15vw;
-  }
+            left: 15vw;
+          }
+
+          &:after {
+            ${lightSource};
+
+            right: 15vw;
+          }
+        `
+    }
+  }}
 `

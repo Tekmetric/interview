@@ -6,7 +6,7 @@ import {
 	ExerciseMuscle,
 	Exercise as ExerciseType,
 	ExerciseDifficulty,
-} from '../types';
+} from '../../types';
 
 interface Props {
 	muscle: ExerciseMuscle;

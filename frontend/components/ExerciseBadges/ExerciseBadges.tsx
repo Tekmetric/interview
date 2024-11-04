@@ -1,4 +1,4 @@
-import { ExerciseDifficulty, ExerciseType } from '../types';
+import { ExerciseDifficulty, ExerciseType } from '../../types';
 import { humanizeText } from '../utils';
 
 const DIFFICULTY_BADGE_COLOR_MAPPING: Record<ExerciseDifficulty, string> = {
@@ -22,7 +22,7 @@ export const ExerciseBadges = ({
 		<div
 			className={`badge badge-outline ${DIFFICULTY_BADGE_COLOR_MAPPING[difficulty]} w-32`}
 		>
-			{difficulty}
+			{humanizeText(difficulty)}
 		</div>
 	</div>
 );

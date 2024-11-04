@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExerciseDifficulty } from '../types';
+import { ExerciseDifficulty } from '../../types';
 
 interface Props {
 	selectedDifficulties: ExerciseDifficulty[];

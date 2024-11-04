@@ -1,5 +1,5 @@
 import React from 'react';
-import { Exercise as ExerciseType } from '../types';
+import { Exercise as ExerciseType } from '../../types';
 import { ExerciseBadges } from '../ExerciseBadges/ExerciseBadges';
 import { humanizeText } from '../utils';
 

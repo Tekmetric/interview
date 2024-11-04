@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExerciseMuscle } from '../types';
+import { ExerciseMuscle } from '../../types';
 import { humanizeText } from '../utils';
 
 interface Props {

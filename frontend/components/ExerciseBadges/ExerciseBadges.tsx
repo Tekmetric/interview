@@ -1,4 +1,11 @@
 import { ExerciseDifficulty, ExerciseType } from '../types';
+import { humanizeText } from '../utils';
+
+const DIFFICULTY_BADGE_COLOR_MAPPING: Record<ExerciseDifficulty, string> = {
+	beginner: 'badge-success',
+	intermediate: 'badge-warning',
+	expert: 'badge-error',
+};
 
 export const ExerciseBadges = ({
 	type,
@@ -6,27 +13,16 @@ export const ExerciseBadges = ({
 }: {
 	type: ExerciseType;
 	difficulty: ExerciseDifficulty;
-}) => {
-	const getBadgeVariant = (difficulty: ExerciseDifficulty): string => {
-		switch (difficulty) {
-			case 'beginner':
-				return 'badge-success';
-			case 'intermediate':
-				return 'badge-warning';
-			case 'expert':
-				return 'badge-error';
-			default:
-				return 'badge-primary';
-		}
-	};
-
-	return (
-		<div className='flex gap-4'>
-			<div className='badge badge-primary w-32'>{type}</div>
-
-			<div className={`badge ${getBadgeVariant(difficulty)} w-32`}>
-				{difficulty}
-			</div>
+}) => (
+	<div className='flex gap-4'>
+		<div className='badge badge-outline badge-primary w-32'>
+			{humanizeText(type)}
 		</div>
-	);
-};
+
+		<div
+			className={`badge badge-outline ${DIFFICULTY_BADGE_COLOR_MAPPING[difficulty]} w-32`}
+		>
+			{difficulty}
+		</div>
+	</div>
+);

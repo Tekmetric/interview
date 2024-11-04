@@ -14,7 +14,6 @@ const lightSource = css`
   transform-origin: top center;
   transform: perspective(150px) rotateX(45deg) scale(0.25);
   z-index: 0;
-  mix-blend-mode: luminosity;
   pointer-events: none;
 `
 

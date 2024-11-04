@@ -53,8 +53,11 @@ export const ExerciseList: FC<Props> = ({ muscle, selectedDifficulties }) => {
 
   if (!data || filteredExercises.length === 0) {
     return (
-      <div className='text-center text-gray-500'>
-        <p>No exercises found for the selected difficulty levels.</p>
+      <div className='flex justify-center items-center min-h-[200px]'>
+        <p className='text-center text-gray-500 text-lg'>
+          No exercises found for the selected difficulty levels. Please try
+          adjusting your filters.
+        </p>
       </div>
     )
   }

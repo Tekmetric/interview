@@ -1,0 +1,7 @@
+/dist
+/coverage
+.github/
+.next/
+node_modules/
+public
+*-lock.json

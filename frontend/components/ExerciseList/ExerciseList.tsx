@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchExercises } from './data/fetch-exercises/fetch-exercises';
 import { Exercise } from '../Exercise/Exercise';
@@ -14,26 +14,53 @@ interface Props {
 }
 
 export const ExerciseList: FC<Props> = ({ muscle, selectedDifficulties }) => {
-	const { data, isLoading, error } = useQuery<ExerciseType[], Error>({
+	const { data, isLoading, isError, error } = useQuery<ExerciseType[], Error>({
 		queryKey: ['exercises', muscle],
 		queryFn: () => fetchExercises(muscle),
+		retry: 2,
+		staleTime: 1000 * 60 * 5, // Cache 5 minutes
 	});
 
+	const filteredExercises = useMemo(() => {
+		return (
+			data?.filter((exercise) =>
+				selectedDifficulties.includes(exercise.difficulty)
+			) || []
+		);
+	}, [data, selectedDifficulties]);
+
 	if (isLoading) {
-		return <span className='loading loading-dots loading-lg' />;
+		return (
+			<div className='flex justify-center items-center'>
+				<span className='loading loading-dots loading-lg'>
+					Loading exercises...
+				</span>
+			</div>
+		);
 	}
 
-	if (error) {
-		return <div>Error loading exercises</div>;
+	if (isError) {
+		return (
+			<div role='alert' className='alert alert-error'>
+				<span>
+					Error loading exercises:{' '}
+					{error?.message || 'An unknown error occurred.'}
+				</span>
+			</div>
+		);
+	}
+
+	if (!data || filteredExercises.length === 0) {
+		return (
+			<div className='text-center text-gray-500'>
+				<p>No exercises found for the selected difficulty levels.</p>
+			</div>
+		);
 	}
 
 	if (!data) {
 		return null;
 	}
-
-	const filteredExercises = data.filter((exercise) =>
-		selectedDifficulties.includes(exercise.difficulty)
-	);
 
 	return (
 		<div>

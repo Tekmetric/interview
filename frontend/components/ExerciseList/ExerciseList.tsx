@@ -1,22 +1,26 @@
 import React, { FC } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { fetchExercises } from './data/fetch-exercises/fetch-exercises';
+import { Exercise } from '../Exercise/Exercise';
 import {
-	fetchExercises,
-	Exercise,
-} from './data/fetch-exercises/fetch-exercises';
+	ExerciseMuscle,
+	Exercise as ExerciseType,
+	ExerciseDifficulty,
+} from '../types';
 
 interface Props {
-	muscle: string;
+	muscle: ExerciseMuscle;
+	selectedDifficulties: ExerciseDifficulty[];
 }
 
-export const ExerciseList: FC<Props> = ({ muscle }) => {
-	const { data, isLoading, error } = useQuery<Exercise[], Error>({
+export const ExerciseList: FC<Props> = ({ muscle, selectedDifficulties }) => {
+	const { data, isLoading, error } = useQuery<ExerciseType[], Error>({
 		queryKey: ['exercises', muscle],
 		queryFn: () => fetchExercises(muscle),
 	});
 
 	if (isLoading) {
-		return <div>Loading...</div>;
+		return <span className='loading loading-dots loading-lg' />;
 	}
 
 	if (error) {
@@ -27,20 +31,15 @@ export const ExerciseList: FC<Props> = ({ muscle }) => {
 		return null;
 	}
 
+	const filteredExercises = data.filter((exercise) =>
+		selectedDifficulties.includes(exercise.difficulty)
+	);
+
 	return (
 		<div>
-			<h2>Exercise List</h2>
-
-			<ul>
-				{data.map((exercise: Exercise) => (
-					<li key={exercise.name}>
-						<strong>{exercise.name}</strong> - {exercise.type} -{' '}
-						{exercise.muscle} - Difficulty: {exercise.difficulty}
-						<br />
-						Equipment: {exercise.equipment}
-						<br />
-						Instructions: {exercise.instructions}
-					</li>
+			<ul className='flex flex-col gap-3'>
+				{filteredExercises.map((exercise: ExerciseType) => (
+					<Exercise key={exercise.name} {...exercise} />
 				))}
 			</ul>
 		</div>

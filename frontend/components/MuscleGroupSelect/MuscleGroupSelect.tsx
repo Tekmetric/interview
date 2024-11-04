@@ -1,53 +1,33 @@
 import React from 'react';
+import { ExerciseMuscle } from '../types';
+import { humanizeText } from '../utils';
 
-interface MuscleSelectProps {
-	selectedMuscle: string;
-	setSelectedMuscle: (muscle: string) => void;
+interface Props {
+	selectedMuscle: ExerciseMuscle | '';
+	setSelectedMuscle: (muscle: ExerciseMuscle) => void;
 }
 
-const MuscleGroupSelect: React.FC<MuscleSelectProps> = ({
+export const MuscleGroupSelect: React.FC<Props> = ({
 	selectedMuscle,
 	setSelectedMuscle,
 }) => {
-	const muscles = [
-		'abdominals',
-		'abductors',
-		'adductors',
-		'biceps',
-		'calves',
-		'chest',
-		'forearms',
-		'glutes',
-		'hamstrings',
-		'lats',
-		'lower_back',
-		'middle_back',
-		'neck',
-		'quadriceps',
-		'traps',
-		'triceps',
-	];
+	const muscles = Object.values(ExerciseMuscle);
 
 	return (
-		<div className='mb-4'>
-			<label htmlFor='muscle-select' className='block text-lg font-medium mb-2'>
-				Select Muscle Group
-			</label>
-			<select
-				id='muscle-select'
-				value={selectedMuscle}
-				onChange={(e) => setSelectedMuscle(e.target.value)}
-				className='select select-bordered w-full max-w-xs'
-			>
-				<option value=''>--Please choose an option--</option>
-				{muscles.map((muscle) => (
-					<option key={muscle} value={muscle}>
-						{muscle}
-					</option>
-				))}
-			</select>
-		</div>
+		<select
+			id='muscle-select'
+			value={selectedMuscle}
+			onChange={(e) => setSelectedMuscle(e.target.value as ExerciseMuscle)}
+			className='select select-bordered w-full max-w-xs'
+		>
+			<option value='' disabled selected>
+				Select muscle group
+			</option>
+			{muscles.map((muscle) => (
+				<option key={muscle} value={muscle}>
+					{humanizeText(muscle)}
+				</option>
+			))}
+		</select>
 	);
 };
-
-export default MuscleGroupSelect;

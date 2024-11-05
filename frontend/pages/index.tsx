@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 
 import { DifficultyFilter } from '../components/DifficultyFilter/DifficultyFilter'
 import ExerciseList from '../components/ExerciseList/ExerciseList'
@@ -15,11 +15,13 @@ const Home: FC = () => {
   } = useExerciseFilters()
 
   return (
-    <div className='flex flex-col items-center min-h-screen'>
-      <Logo />
+    <div className='flex flex-col items-center min-h-screen px-4 md:px-8'>
+      <div className='hidden md:block'>
+        <Logo />
+      </div>
 
-      <div className='flex flex-col gap-6 w-full max-w-4xl mt-20 px-8'>
-        <div className='flex gap-20 justify-between'>
+      <div className='flex flex-col gap-6 w-full max-w-4xl mt-10 md:mt-20'>
+        <div className='flex flex-col md:flex-row gap-6 md:gap-20 justify-between items-center'>
           <MuscleGroupSelect
             selectedMuscle={selectedMuscle}
             setSelectedMuscle={setSelectedMuscle}

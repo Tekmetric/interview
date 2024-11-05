@@ -11,10 +11,10 @@ export const Exercise = ({
   difficulty,
   instructions
 }: ExerciseType) => (
-  <div className='collapse collapse-plus bg-base-200'>
+  <div className='collapse collapse-plus bg-base-200 w-full'>
     <input type='checkbox' />
 
-    <div className='flex justify-between items-center collapse-title text-xl font-medium'>
+    <div className='flex flex-col md:flex-row gap-4 justify-between items-center collapse-title text-xl font-medium'>
       <strong>{name}</strong>
 
       <ExerciseBadges type={type} difficulty={difficulty} />

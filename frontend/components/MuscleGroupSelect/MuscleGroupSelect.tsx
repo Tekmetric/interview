@@ -19,11 +19,12 @@ export const MuscleGroupSelect: React.FC<Props> = ({
       id='muscle-select'
       value={selectedMuscle}
       onChange={e => setSelectedMuscle(e.target.value as ExerciseMuscle)}
-      className='select select-bordered w-full max-w-xs'
+      className='select select-bordered max-w-xs w-72'
     >
-      <option value='' disabled selected>
+      <option value='' disabled>
         Select muscle group
       </option>
+
       {muscles.map(muscle => (
         <option key={muscle} value={muscle}>
           {humanizeText(muscle)}

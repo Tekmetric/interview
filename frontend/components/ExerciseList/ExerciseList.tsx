@@ -19,7 +19,7 @@ export const ExerciseList: FC<Props> = ({ muscle, selectedDifficulties }) => {
     queryKey: ['exercises', muscle],
     queryFn: () => fetchExercises(muscle),
     retry: 2,
-    staleTime: 1000 * 60 * 5 // Cache 5 minutes
+    staleTime: 1000 * 60 * 5
   })
 
   const filteredExercises = useMemo(() => {
@@ -32,7 +32,7 @@ export const ExerciseList: FC<Props> = ({ muscle, selectedDifficulties }) => {
 
   if (isLoading) {
     return (
-      <div className='flex justify-center items-center'>
+      <div className='flex justify-center items-center min-h-[200px]'>
         <span className='loading loading-dots loading-lg'>
           Loading exercises...
         </span>
@@ -60,10 +60,6 @@ export const ExerciseList: FC<Props> = ({ muscle, selectedDifficulties }) => {
         </p>
       </div>
     )
-  }
-
-  if (!data) {
-    return null
   }
 
   return (

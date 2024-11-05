@@ -15,7 +15,7 @@ export const ExerciseBadges = ({
   difficulty: ExerciseDifficulty
 }) => (
   <div className='flex gap-4'>
-    <div className='badge badge-outline badge-primary w-32'>
+    <div className='badge badge-outline badge-primary min-w-32'>
       {humanizeText(type)}
     </div>
 

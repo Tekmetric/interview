@@ -36,8 +36,8 @@ export const DifficultyFilter: React.FC<Props> = ({
           onClick={() => handleToggle(difficulty)}
           className={`btn px-4 join-item py-2 rounded-lg font-medium ${
             selectedDifficulties.includes(difficulty)
-              ? 'bg-primary text-black'
-              : 'bg-neutral text-white'
+              ? 'bg-primary'
+              : 'bg-neutral'
           }`}
         >
           {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}

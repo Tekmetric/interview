@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { Exercise, ExerciseMuscle } from '../../../types'
+import { Exercise, ExerciseMuscle } from '../../../../types'
 
 export const fetchExercises = async (
   muscle: ExerciseMuscle

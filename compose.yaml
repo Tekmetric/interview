@@ -1,0 +1,13 @@
+services:
+  backend:
+    container_name: backend_app
+    restart: unless-stopped
+    build: backend/.
+    ports:
+      - 8080:8080
+  frontend:
+    container_name: frontend_app
+    restart: unless-stopped
+    build: frontend/.
+    ports:
+      - 3000:3000

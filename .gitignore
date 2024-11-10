@@ -2,6 +2,7 @@ frontend/node_modules
 backend/.idea/*
 backend/*.iml
 backend/target/**
+backend/dist
 
 # ignoring the .idea folder
 .idea

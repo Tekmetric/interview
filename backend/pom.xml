@@ -6,7 +6,7 @@
 
     <groupId>com.tekmetric</groupId>
     <artifactId>interview</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>${env.VERSION}</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

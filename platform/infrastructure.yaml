@@ -1,0 +1,503 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Deploys the routing layer for the backend services
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: The domain name to use for the application
+
+  CertificateArn:
+    Type: String
+    Description: The certificate to use for the application
+
+  HostedZoneId:
+    Type: String
+    Description: The hosted zone to use for the application
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/20
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-igw"
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  # setup the CIDRs this way to make any future
+  # routes or firewall rules easier to write
+  # The full space is 10.0.0.0/20
+  #
+  # The public subnets (for the alb) are the first 3 /23s
+  # that make up 10.0.0.0/21, with the 4th held in reserve for future expansion
+  # Any firewall rules or routes that need to reference all the public
+  # subnets can be condensed to just 10.0.0.0/21
+  #
+  # The private subnets (for the app) are the first 3 /24s
+  # that make up 10.0.8.0/21, with the 4th held in reserve for future expansion
+  # Any firewall rules or routes that need to reference all the private
+  # subnets can be condensed to just 10.0.8.0/21
+  AlbSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      CidrBlock: 10.0.0.0/23
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-alb-az1"
+
+  AlbSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      CidrBlock: 10.0.2.0/23
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-alb-az2"
+
+  AlbSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [2, !GetAZs ""]
+      CidrBlock: 10.0.4.0/23
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-alb-az3"
+
+  AppSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      CidrBlock: 10.0.8.0/23
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-app-az1"
+
+  AppSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      CidrBlock: 10.0.10.0/23
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-app-az2"
+
+  AppSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [2, !GetAZs ""]
+      CidrBlock: 10.0.12.0/23
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-app-az3"
+
+  NatGateway1EIP:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      Domain: vpc
+
+  NatGateway2EIP:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      Domain: vpc
+
+  NatGateway3EIP:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      Domain: vpc
+
+  NatGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGateway1EIP.AllocationId
+      SubnetId: !Ref AlbSubnet1
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-natgw-az1"
+
+  NatGateway2:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGateway2EIP.AllocationId
+      SubnetId: !Ref AlbSubnet2
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-natgw-az2"
+
+  NatGateway3:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGateway3EIP.AllocationId
+      SubnetId: !Ref AlbSubnet3
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-natgw-az3"
+
+  AlbRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  AlbRouteToInternet1:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref AlbRouteTable1
+
+  AlbRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  AlbRouteToInternet2:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref AlbRouteTable2
+
+  AlbRouteTable3:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  AlbRouteToInternet3:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref AlbRouteTable3
+
+  AlbSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref AlbRouteTable1
+      SubnetId: !Ref AlbSubnet1
+
+  AlbSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref AlbRouteTable2
+      SubnetId: !Ref AlbSubnet2
+
+  AlbSubnet3RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref AlbRouteTable3
+      SubnetId: !Ref AlbSubnet3
+
+  AppRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  DefaultAppRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref AppRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway1
+
+  AppSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref AppRouteTable1
+      SubnetId: !Ref AppSubnet1
+
+  AppRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  DefaultAppRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref AppRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway2
+
+  AppSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref AppRouteTable2
+      SubnetId: !Ref AppSubnet2
+
+  AppRouteTable3:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  DefaultAppRoute3:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref AppRouteTable3
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway3
+
+  AppSubnet3RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref AppRouteTable3
+      SubnetId: !Ref AppSubnet3
+
+  EcsCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub ${AWS::StackName}-cluster
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+      CapacityProviders:
+        - FARGATE
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${AWS::StackName}-alb-sg
+      GroupDescription: Security group for the ALB
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  EcsServiceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${AWS::StackName}-ecs-sg
+      GroupDescription: Security group for the ECS service
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          SourceSecurityGroupId: !Ref AlbSecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  Alb:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${AWS::StackName}-alb"
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - !Ref AlbSubnet1
+        - !Ref AlbSubnet2
+        - !Ref AlbSubnet3
+      SecurityGroups:
+        - !Ref AlbSecurityGroup
+
+  AlbHttpsListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref Alb
+      Port: 443
+      Protocol: HTTPS
+      DefaultActions:
+        - Type: fixed-response
+          FixedResponseConfig:
+            ContentType: text/plain
+            MessageBody: "Not Found"
+            StatusCode: "404"
+      Certificates:
+        - CertificateArn: !Ref CertificateArn
+
+  AlbCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        DefaultTTL: 0 # rely on the services to set Cache-Control
+        MaxTTL: 604800 # 7 days
+        MinTTL: 0
+        Name: !Sub "${AWS::StackName}-cache-policy"
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          HeadersConfig:
+            HeaderBehavior: whitelist
+            Headers:
+              - Authorization
+              - Origin
+          QueryStringsConfig:
+            QueryStringBehavior: all
+          EnableAcceptEncodingGzip: true
+          EnableAcceptEncodingBrotli: true
+
+  CloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        HttpVersion: http2and3
+        Comment: Backend services
+        Aliases:
+          - !Ref DomainName
+        DefaultCacheBehavior:
+          CachePolicyId: !Ref AlbCachePolicy
+          OriginRequestPolicyId: 216adef6-5c7f-47e4-b989-5492eafa07d3 # Managed-AllViewer
+          ResponseHeadersPolicyId: 5cc3b908-e619-4b99-88e5-2cf7f45965bd # Managed-CORS-With-Preflight
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - POST
+            - PATCH
+            - DELETE
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          TargetOriginId: alb
+          ViewerProtocolPolicy: redirect-to-https
+        Origins:
+          - Id: alb
+            DomainName: !GetAtt Alb.DNSName
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols:
+                - TLSv1.2
+            OriginCustomHeaders:
+              - HeaderName: "{{resolve:secretsmanager:/shared/cloudfront-alb-header:SecretString:headerName}}"
+                HeaderValue: "{{resolve:secretsmanager:/shared/cloudfront-alb-header:SecretString:headerValue}}"
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+
+  DnsARecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Type: A
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      AliasTarget:
+        DNSName: !GetAtt CloudfrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # cloudfront hosted zone id
+
+  DnsAAAARecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Type: AAAA
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      AliasTarget:
+        DNSName: !GetAtt CloudfrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # cloudfront hosted zone id
+
+  Ecr:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub "${AWS::StackName}-repo"
+      ImageTagMutability: MUTABLE
+      EmptyOnDelete: true
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+Outputs:
+  Vpc:
+    Description: VPC Id for the VPC
+    Value: !Ref VPC
+    Export:
+      Name: !Sub "${AWS::StackName}:vpc"
+
+  AppSubnet1:
+    Description: App subnet 1
+    Value: !Ref AppSubnet1
+    Export:
+      Name: !Sub "${AWS::StackName}:app-subnet-1"
+
+  AppSubnet2:
+    Description: App subnet 2
+    Value: !Ref AppSubnet2
+    Export:
+      Name: !Sub "${AWS::StackName}:app-subnet-2"
+
+  AppSubnet3:
+    Description: App subnet 3
+    Value: !Ref AppSubnet3
+    Export:
+      Name: !Sub "${AWS::StackName}:app-subnet-3"
+
+  AppSubnetList:
+    Description: Comma separated list of app subnets
+    Value: !Join [",", [!Ref AppSubnet1, !Ref AppSubnet2, !Ref AppSubnet3]]
+    Export:
+      Name: !Sub "${AWS::StackName}:app-subnets"
+
+  EcsServiceSecurityGroup:
+    Description: ECS service security group
+    Value: !Ref EcsServiceSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}:ecs-sg"
+
+  EcsCluster:
+    Description: ECS Cluster for the backend services
+    Value: !Ref EcsCluster
+    Export:
+      Name: !Sub "${AWS::StackName}:cluster"
+
+  Alb:
+    Description: Application load balancer
+    Value: !Ref Alb
+    Export:
+      Name: !Sub "${AWS::StackName}:alb"
+
+  HttpsListenerArn:
+    Description: Listener ARN for the ALB
+    Value: !Ref AlbHttpsListener
+    Export:
+      Name: !Sub "${AWS::StackName}:https-alb-listener"
+
+  EcrRepoArn:
+    Description: ECR repository ARN
+    Value: !GetAtt Ecr.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}:ecr-repo-arn"
+
+  EcrRepoUri:
+    Description: ECR repository URI
+    Value: !GetAtt Ecr.RepositoryUri
+    Export:
+      Name: !Sub "${AWS::StackName}:ecr-repo-uri"

@@ -1,0 +1,258 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Deploys the ECS service and related infrastructure for the backend application
+
+Parameters:
+  ImageUri:
+    Type: String
+    Description: URI for the backend image to deploy
+  DomainName:
+    Type: String
+    Description: The domain name for the backend service
+  TaskCpu:
+    Type: "Number"
+    Description: CPU size for the tasks
+    Default: 1024
+  TaskMemory:
+    Type: "Number"
+    Description: Memory size for the tasks
+    Default: 2048
+
+Resources:
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !ImportValue "backend-infrastructure:vpc"
+      Port: 8080
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-299
+      HealthCheckIntervalSeconds: 15
+      HealthCheckPath: /actuator/health
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      TargetType: ip
+
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !ImportValue "backend-infrastructure:https-alb-listener"
+      Priority: 1
+      Conditions:
+        - Field: host-header
+          Values:
+            - !Ref DomainName
+      Actions:
+        - TargetGroupArn: !Ref TargetGroup
+          Type: forward
+
+  EcsTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: "ecs-tasks.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "EcsTaskExecutionPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "ecr:GetAuthorizationToken"
+                  - "ecr:BatchCheckLayerAvailability"
+                  - "ecr:GetDownloadUrlForLayer"
+                  - "ecr:BatchGetImage"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "ssm:GetParameter*"
+                Resource:
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/backend/*"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/shared/*"
+
+  EcsTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: "ecs-tasks.amazonaws.com"
+            Action: "sts:AssumeRole"
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: "backend"
+      TaskRoleArn: !Ref "EcsTaskRole"
+      ExecutionRoleArn: !Ref "EcsTaskExecutionRole"
+      NetworkMode: "awsvpc"
+      RequiresCompatibilities:
+        - "FARGATE"
+      Cpu: !Ref TaskCpu
+      Memory: !Ref TaskMemory
+      ContainerDefinitions:
+        - Name: "backend"
+          Image: !Ref "ImageUri"
+          Environment:
+            - Name: "SPRING_PROFILES_ACTIVE"
+              Value: "production"
+          PortMappings:
+            - ContainerPort: 8080
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              "awslogs-group": !Ref EcsLogGroup
+              "awslogs-region": !Ref AWS::Region
+              "awslogs-stream-prefix": "backend"
+
+  EcsService:
+    Type: AWS::ECS::Service
+    DependsOn: ListenerRule
+    Properties:
+      Cluster: !ImportValue "backend-infrastructure:cluster"
+      LaunchType: "FARGATE"
+      ServiceName: "backend"
+      DesiredCount: 1
+      TaskDefinition: !Ref TaskDefinition
+      PlatformVersion: LATEST
+      HealthCheckGracePeriodSeconds: 30
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      PropagateTags: "SERVICE"
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: "DISABLED"
+          SecurityGroups:
+            - !ImportValue "backend-infrastructure:ecs-sg"
+          Subnets:
+            !Split [",", !ImportValue "backend-infrastructure:app-subnets"]
+      LoadBalancers:
+        - ContainerName: "backend"
+          ContainerPort: 8080
+          TargetGroupArn: !Ref "TargetGroup"
+
+  EcsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: "/aws/ecs/backend"
+      RetentionInDays: 365
+
+  ScalableTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      ResourceId:
+        !Join [
+          "/",
+          [
+            service,
+            !ImportValue "backend-infrastructure:cluster",
+            !GetAtt EcsService.Name,
+          ],
+        ]
+      ServiceNamespace: ecs
+      ScalableDimension: ecs:service:DesiredCount
+      MinCapacity: 3
+      MaxCapacity: 100
+
+  ScaleOutPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: CPUServiceScaleOutPolicy
+      PolicyType: StepScaling
+      ScalingTargetId: !Ref ScalableTarget
+      StepScalingPolicyConfiguration:
+        AdjustmentType: ChangeInCapacity
+        StepAdjustments:
+          - MetricIntervalLowerBound: 0
+            ScalingAdjustment: 2
+
+  ScaleInPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: CPUServiceScaleInPolicy
+      PolicyType: StepScaling
+      ScalingTargetId: !Ref ScalableTarget
+      StepScalingPolicyConfiguration:
+        AdjustmentType: ChangeInCapacity
+        Cooldown: 600 # scale down slower than we scaled up
+        StepAdjustments:
+          - MetricIntervalUpperBound: 0
+            ScalingAdjustment: -1
+
+  CpuAlarmScaleOut:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${EcsService.Name}-cpu-scale-out
+      AlarmDescription: "High CPU Scale Out alarm for API"
+      MetricName: CPUUtilization
+      Namespace: AWS/ECS
+      Dimensions:
+        - Name: ServiceName
+          Value: !GetAtt EcsService.Name
+        - Name: ClusterName
+          Value: !ImportValue "backend-infrastructure:cluster"
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 3
+      Threshold: 60
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmActions:
+        - !Ref ScaleOutPolicy
+
+  CpuAlarmScaleIn:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${EcsService.Name}-cpu-scale-in
+      AlarmDescription: !Sub "Low CPU Scale In alarm for ${EcsService.Name}"
+      MetricName: CPUUtilization
+      Namespace: AWS/ECS
+      Dimensions:
+        - Name: ServiceName
+          Value: !GetAtt EcsService.Name
+        - Name: ClusterName
+          Value: !ImportValue "backend-infrastructure:cluster"
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 40
+      ComparisonOperator: LessThanOrEqualToThreshold
+      AlarmActions:
+        - !Ref ScaleInPolicy
+
+  NoHealthyHostsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${EcsService.Name}-no-healthy-hosts"
+      AlarmDescription: "No healthy hosts alarm for backend"
+      MetricName: UnHealthyHostCount
+      Namespace: AWS/ApplicationELB
+      Dimensions:
+        - Name: TargetGroup
+          Value: !Ref "TargetGroup"
+        - Name: LoadBalancer
+          Value: !ImportValue "backend-infrastructure:alb"
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 2
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: breaching
+      AlarmActions:
+        - "{{resolve:ssm:/shared/oncall-topic-arn}}"
+      OKActions:
+        - "{{resolve:ssm:/shared/oncall-topic-arn}}"

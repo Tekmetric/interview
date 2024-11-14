@@ -1,0 +1,75 @@
+name: ECS Deploy
+
+on:
+  workflow_call:
+    inputs:
+      project-directory:
+        type: string
+        description: directory containing the service to deploy
+        required: true
+      stack-name:
+        type: string
+        description: Cloudformation stack name
+        required: true
+      environment:
+        type: string
+        description: Environment to deploy to
+        required: true
+      aws-region:
+        type: string
+        description: Region to deploy to. Defaults to 'us-east-1'
+        required: false
+        default: us-east-1
+      ecr-repo-name:
+        type: string
+        description: Name of the ECR repo. Defaults to 'backend-infrastructure-repo'
+        required: false
+        default: backend-infrastructure-repo
+      template-file:
+        type: string
+        description: Name of the template file, relative to the project directory. Defaults to 'service.yaml'
+        required: false
+        default: service.yaml
+
+jobs:
+  deploy:
+    name: Build and Deploy to ECS
+    runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
+    defaults:
+      run:
+        working-directory: ${{inputs.project-directory}}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{vars.PIPELINE_EXECUTION_ROLE_ARN}}
+          aws-region: ${{inputs.aws-region}}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{steps.login-ecr.outputs.registry}}/${{inputs.ecr-repo-name}}:${{github.sha}}
+          platforms: linux/amd64
+          context: ${{inputs.project-directory}}
+
+      - name: Deploy service
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ${{inputs.stack-name}}
+          template: ${{inputs.project-directory}}/${{inputs.template-file}}
+          parameter-overrides: "ImageUri=${{steps.login-ecr.outputs.registry}}/${{inputs.ecr-repo-name}}:${{github.sha}},DomainName=${{vars.APP_DOMAIN}}"
+          capabilities: CAPABILITY_IAM
+          no-fail-on-empty-changeset: true
+          role-arn: ${{vars.CLOUDFORMATION_DEPLOY_ROLE}}

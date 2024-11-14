@@ -18,6 +18,7 @@ schema Container:
     command?: [str]
     args?: [str]
     ports?: [ContainerPort]
+    spring_actuator_health_enabled?: bool = True
 
 schema Image:
     name: str

@@ -24,6 +24,31 @@ kubernetesRender = lambda a: app.App {
         #             env = c.env
                     resources = c.resources
                     ports = c.ports
+                    if c.spring_actuator_health_enabled:
+                        startupProbe = {
+                            httpGet = {
+                                path: "/actuator/health/liveness"
+                                port: "http"
+                            }
+                            failureThreshold: 10
+                            periodSeconds: 5
+                        }
+                        readinessProbe = {
+                            httpGet = {
+                                path: "/actuator/health/readiness"
+                                port: "http"
+                            }
+                            periodSeconds: 1
+                            failureThreshold: 3
+                        }
+                        livenessProbe = {
+                            httpGet = {
+                                path: "/actuator/health/liveness"
+                                port: "http"
+                            }
+                            periodSeconds: 5
+                            failureThreshold: 1
+                        }
                 } for cname, c in a.containers
             ]
         }

@@ -4,7 +4,7 @@ import .app
 
 # Convert the `App` model into Kubernetes Deployment and Service Manifests
 kubernetesRender = lambda a: app.App {
-    # Construct the deployment manifest.
+
     deployment = {
         apiVersion = "apps/v1"
         kind = "Deployment"
@@ -51,9 +51,40 @@ kubernetesRender = lambda a: app.App {
                         }
                 } for cname, c in a.containers
             ]
+
+            template.spec.affinity.nodeAffinity = {
+                requiredDuringSchedulingIgnoredDuringExecution = {
+                    nodeSelectorTerms = [{
+                        matchExpressions = [{
+                            key = "node-role.kubernetes.io/control-plane"
+                            operator = "NotIn"
+                            values = ["true"]
+                        }]
+                    }]
+                }
+            }
+
+            if a.antiaffinity_enabled:
+                template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution = [
+                    {
+                        weight: 100
+                        podAffinityTerm = {
+                            labelSelector = {
+                                matchExpressions = [
+                                    {
+                                        key: k
+                                        operator: "In"
+                                        values: [ v ]
+                                    }  for k, v in a.labels
+                                ]
+                            }
+                        topologyKey = "kubernetes.io/hostname"
+                        }
+                    }
+                ]
         }
     }
-    # Construct the service manifest.
+
     service = {
         apiVersion = "v1"
         kind = "Service"

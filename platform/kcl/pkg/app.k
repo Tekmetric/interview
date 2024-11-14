@@ -11,6 +11,7 @@ schema App:
     service?: Service
     hostname?: str
     pathPrefix: str
+    antiaffinity_enabled?: bool = False
 
 schema Container:
     image: Image
@@ -35,7 +36,6 @@ schema Resource:
 schema ContainerPort:
     name?: str
     protocol: "TCP" | "UDP" = "TCP"
-    # port?: int
     containerPort: int
 
     check:

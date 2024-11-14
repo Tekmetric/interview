@@ -10,14 +10,14 @@ backend: app.App {
     }
 
     annotations = { 
-        "app.kubernetes.io/version" = option("tag")
+        "app.kubernetes.io/version" = str(option("tag"))
     }
 
     containers = {
         "backend" = {
             image = { 
                 name: "tekmetric/interview-backend"
-                tag: option("tag")
+                tag: str(option("tag"))
             }
             ports = [{
                 name = "http"

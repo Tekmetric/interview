@@ -256,3 +256,26 @@ Resources:
         - "{{resolve:ssm:/shared/oncall-topic-arn}}"
       OKActions:
         - "{{resolve:ssm:/shared/oncall-topic-arn}}"
+
+  ServiceErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${EcsService.Name}-service-errors"
+      AlarmDescription: "Service errors alarm for backend"
+      MetricName: HTTPCode_Target_5XX_Count
+      Namespace: AWS/ApplicationELB
+      Dimensions:
+        - Name: TargetGroup
+          Value: !Ref "TargetGroup"
+        - Name: LoadBalancer
+          Value: !ImportValue "backend-infrastructure:alb"
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 5
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - "{{resolve:ssm:/shared/oncall-topic-arn}}"
+      OKActions:
+        - "{{resolve:ssm:/shared/oncall-topic-arn}}"

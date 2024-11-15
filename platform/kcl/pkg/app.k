@@ -12,6 +12,13 @@ schema App:
     hostname?: str
     pathPrefix: str
     antiaffinity_enabled?: bool = False
+    databaseConfig: DatabaseConfig
+
+schema DatabaseConfig:
+    url: str
+    driverClassName: str
+    username: str
+    password: str
 
 schema Container:
     image: Image

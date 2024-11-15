@@ -1,9 +1,14 @@
 import manifests
+import crypto
+import yaml
 
 import .app
 
 # Convert the `App` model into Kubernetes Deployment and Service Manifests
 kubernetesRender = lambda a: app.App {
+
+    _databaseConfigMapName = a.name + "-database-config"
+    _databaseSecretName = a.name + "-database-secret"
 
     deployment = {
         apiVersion = "apps/v1"
@@ -15,13 +20,17 @@ kubernetesRender = lambda a: app.App {
             replicas = a.replicas
             selector.matchLabels = a.labels
             template.metadata.labels = a.labels
+            template.metadata.annotations = {configSha: str(crypto.sha256(yaml.encode(a.databaseConfig)))}
             template.spec.containers = [
                 {
                     name = cname
                     image = c.image.name + ":" + c.image.tag
                     command = c.command
                     args = c.args
-        #             env = c.env
+                    envFrom = [
+                        { configMapRef = { name = _databaseConfigMapName} }
+                        { secretRef = { name = _databaseSecretName} }
+                    ]
                     resources = c.resources
                     ports = c.ports
                     if c.spring_actuator_health_enabled:
@@ -120,9 +129,30 @@ kubernetesRender = lambda a: app.App {
 
     }
 
+    configMapDatabase = {
+        apiVersion = "v1"
+        kind = "ConfigMap"
+        metadata.name = _databaseConfigMapName
+        metadata.labels = a.labels
+        data = {
+            SPRING__DATASOURCE__URL = a.databaseConfig.url
+            SPRING__DATASOURCE__DRIVER_CLASS_NAME = a.databaseConfig.driverClassName
+            SPRING__DATASOURCE__USERNAME = a.databaseConfig.username
+        }
+    }
+
+    secretDatabase = {
+        apiVersion = "v1"
+        kind = "Secret"
+        metadata.name = _databaseSecretName
+        metadata.labels = a.labels
+        stringData = {
+            SPRING__DATASOURCE__PASSWORD = a.databaseConfig.password
+        }
+    }
 
     # Returns Kubernetes manifests
-    [deployment, service, if a.hostname: ingressRoute]
+    [deployment, service, if a.hostname: ingressRoute, configMapDatabase, secretDatabase]
 }
 
 manifests.yaml_stream(sum([kubernetesRender(a) for a in app.App.instances()], []))

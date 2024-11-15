@@ -51,10 +51,14 @@ deploy: k3d-image-load
 		kcl run -D tag=${VERSION} \
 			apps/interview-backend/base/base.k \
 			apps/interview-backend/prod/main.k \
-			pkg/render-k8s.k | KUBECONFIG=`k3d kubeconfig write ${K3D_CLUSTER}` kubectl apply -f -
+			pkg/render-k8s.k | vals eval -f - | KUBECONFIG=`k3d kubeconfig write ${K3D_CLUSTER}` kubectl apply -f -
 
 deploy-dry-run:
-	docker run --rm -it  -v ${PWD}/../platform/kcl:/work -w /work kcllang/kcl:v${KCL_VERSION} kcl run -D tag="${VERSION}" apps/interview-backend/base/base.k  apps/interview-backend/prod/main.k  pkg/render-k8s.k
+	docker run --rm -it  -v ${PWD}/../platform/kcl:/work -w /work kcllang/kcl:v${KCL_VERSION} \
+		kcl run -D tag="${VERSION}" \
+		apps/interview-backend/base/base.k  \
+		apps/interview-backend/prod/main.k  \
+		pkg/render-k8s.k
 
 backend-api-test:
 	curl --resolve interview.tekmetric.com:8888:127.0.0.1 -XGET http://interview.tekmetric.com:8888/api/welcome

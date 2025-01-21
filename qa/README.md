@@ -1,4 +1,4 @@
-# Playwright Coding Excersize
+# Playwright Coding Excersise
 
 ## Steps to get started:
 

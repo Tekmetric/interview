@@ -3,7 +3,7 @@
 ## Steps to get started:
 
 ### Testing Website
-- For the website under test utilize https://www.automationexercise.com/api_list
+- For the website under test utilize https://www.automationexercise.com/
 
 #### Prerequisites
 - Node.js

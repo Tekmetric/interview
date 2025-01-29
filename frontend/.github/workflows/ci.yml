@@ -1,0 +1,62 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker Image
+        run: docker build -t frontend .
+
+      - name: Run ESLint with HTML Report
+        run: |
+          # Run the container mounting the workspace so that the HTML report
+          # is available in the repository root after the run.
+          docker run --rm \
+            -v "${{ github.workspace }}:/app" \
+            frontend \
+            npm run lint -- --format=html --output-file=eslint-report.html
+
+      - name: Run Unit Tests with Coverage
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/app" \
+            frontend \
+            npm run test -- --coverage --coverageReporters=html
+
+      - name: Set up Node.js for Playwright
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies for Playwright
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      - name: Upload Reports
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: html-reports
+          path: |
+            eslint-report.html
+            coverage/lcov-report/index.html
+            playwright-report/
+          retention-days: 30

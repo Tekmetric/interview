@@ -25,17 +25,17 @@ This project is a SpaceX Launch Dashboard that provides real-time information (a
 
 - **Vercel**: Cloud platform for static sites and Serverless Functions, providing seamless deployment and hosting for Next.js applications.
 - **Vercel Analytics**: A feature that provides real-time insights into your application's performance, allowing you to monitor metrics such as page load times and user interactions.
-  ---------------------------------------<details>
+  <details>
     <summary>Web Analytics</summary>
 
-  ![Web Analytics](https://i.ibb.co/4RhtvXGX/Screenshot-2025-02-03-at-00-25-53.png)
+  ![Web Analytics](https://github.com/user-attachments/assets/f7ae29b9-7442-41f3-96f6-924f5fdb1c70)
   </details>
 
 - **Vercel Speed Reports**: Tools that help you analyze the speed of your application, offering suggestions for optimization to enhance user experience and performance.
-  ---------------------------------------<details>
-    <summary>Speed Reports</summary>
+  <details>
+    <summary>Speed Report</summary>
 
-  ![Web Analytics](https://i.ibb.co/236Crgd5/Screenshot-2025-02-03-at-00-25-30.png)
+  ![Speed Report](https://github.com/user-attachments/assets/80081865-3999-47dd-b14c-dc33ea99939c)
   </details>
 
 ## Getting Started
@@ -50,13 +50,12 @@ This project is a SpaceX Launch Dashboard that provides real-time information (a
 1. Clone the repository:
 
 ```
-git clone [git@github.com:SerhiiYakovenko/tekmetric-interview.git](git@github.com:SerhiiYakovenko/tekmetric-interview.git)
+git clone git@github.com:SerhiiYakovenko/tekmetric-interview.git
 ```
 
 2. Navigate to the project directory:
 
 ```
-
 cd frontend
 ```
 
@@ -71,7 +70,6 @@ npm install
 To start the development server:
 
 ```
-
 npm run dev
 ```
 
@@ -82,14 +80,12 @@ npm run dev
 To create a production build:
 
 ```
-
 npm run build
 ```
 
 To start the production server:
 
 ```
-
 npm start
 ```
 
@@ -116,7 +112,6 @@ Storybook is used for developing and showcasing UI components in isolation.
 To start Storybook:
 
 ```
-
 npm run storybook
 ```
 
@@ -133,14 +128,12 @@ npm run lint
 To fix auto-fixable ESLint issues:
 
 ```
-
 npm run lint:fix
 ```
 
 To format code with Prettier:
 
 ```
-
 npm run format
 ```
 
@@ -174,7 +167,6 @@ frontend/
 │   │   ├── types/       # TypeScript type definitions
 │   │   ├── layout.tsx   # Layout component
 │   │   └── page.tsx     # Home page component
-│   └── styles/          # Global styles
 ├── tests/
 │   ├── e2e/             # E2E testing with Playwright
 ├── .eslintrc.js         # ESLint configuration
@@ -183,7 +175,8 @@ frontend/
 ├── jest.config.js       # Jest configuration
 ├── next.config.js       # Next.js configuration
 ├── package.json         # Project dependencies and scripts
-├── README.md            # Project documentation (this file)
+├── playwright.config.ts # Playwright configuration
+├── README.md            # Project documentation
 ├── tailwind.config.js   # Tailwind CSS configuration
 └── tsconfig.json        # TypeScript configuration
 ```

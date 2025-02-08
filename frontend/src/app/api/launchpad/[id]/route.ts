@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { getLaunchpad } from '@/app/lib/api'
 
-
 export async function GET(
   request: NextRequest,
   context: any // eslint-disable-line @typescript-eslint/no-explicit-any

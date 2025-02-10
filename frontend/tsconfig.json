@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "ESNext",
     "lib": [
       "dom",
@@ -24,11 +25,32 @@
     "noUnusedParameters": true,
     "incremental": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vite/client", "vite-plugin-svgr/client", "vitest/importMeta", "vitest/globals"
-    ]
+    "types": [
+      "vite/client",
+      "vite-plugin-svgr/client",
+      "vitest/importMeta",
+      "vitest/globals"
+    ],
+    "paths": {
+      "@api/*": [
+        "./src/api/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@routes/*": [
+        "./src/routes/*"
+      ],
+      "@customTypes/*": [
+        "./src/types/*"
+      ]
+    }
   },
   "include": [
     "src/**/*"
   ],
-  "exclude": ["node_modules", "build"]
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
 }

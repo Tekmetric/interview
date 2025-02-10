@@ -10,5 +10,6 @@ export default antfu({
     stylistic: {
       'style/comma-dangle': ['error', 'never']
     }
-  }
+  },
+  ignores: ['src/routeTree.gen.ts']
 });

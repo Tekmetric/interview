@@ -1,11 +1,14 @@
 /// <reference types="vitest" />
+
+// @ts-expect-error https://github.com/tailwindlabs/tailwindcss/discussions/16250
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vitest/config';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/',
-  plugins: [react()],
+  plugins: [tailwindcss(), react()],
   server: {
     port: 3000,
     open: true

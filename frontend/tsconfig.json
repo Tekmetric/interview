@@ -38,6 +38,9 @@
       "@components/*": [
         "./src/components/*"
       ],
+      "@constants/*": [
+        "./src/constants/*"
+      ],
       "@routes/*": [
         "./src/routes/*"
       ],

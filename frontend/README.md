@@ -1,21 +1,15 @@
-# Tech Interview Project
+# Tekmetric Frontend Interview
 
-## Steps to get started:
+## A WMATA Metro Tracker
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+### Steps to get started:
 
-#### Let's install the project locally
-`npm install`
+1. Go to https://developer.wmata.com/signup and create an account to get your own WMATA API key.
+2. Run `cp .env.template .env.local` to create a new, local environment file.
+3. Add your API key to the `.env.local` file as `VITE_WMATA_API_KEY`.
+4. Install the dependencies of the project by running `yarn`.
+5. Run the project locally by running `yarn start`.
 
-#### Let's start the project locally
-`npm start`
+### Running tests
 
-### Goals
-1. Fetch Data from the backend Crud API you created or from a public API
-2. Display data from API onto your page (Table, List, etc.)
-3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
-4. Have fun
-
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+Simply run `yarn test` to run the tests.

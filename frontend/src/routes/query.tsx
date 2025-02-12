@@ -18,7 +18,7 @@ function Query() {
   }
 
   if (error) {
-    return `An error has occurred: ${error.message}`;
+    return `An error has occurred: ${ error.message }`;
   }
 
   return (

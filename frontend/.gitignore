@@ -1,3 +1,5 @@
+*.local
+
 coverage
-tsconfig.tsbuildinfo
 dist
+tsconfig.tsbuildinfo

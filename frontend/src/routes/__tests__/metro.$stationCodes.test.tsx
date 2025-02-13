@@ -15,7 +15,7 @@ function useMetroArrivalTimes(stationCodes: string) {
 }
 
 describe('metro.$stationCodes route', () => {
-  it.each([['All'], ['A01'], ['B01']])('metro arrival times query should work as expected for stationCodes "%s"', async (stationCodes: string) => {
+  it.each([['All'], ['A01'], ['B01']])('queries for stationCodes "%s" as expected', async (stationCodes: string) => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {

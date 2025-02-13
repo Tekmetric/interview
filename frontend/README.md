@@ -1,6 +1,8 @@
 # Tekmetric Frontend Interview
 
-## A WMATA Metro Tracker
+## Metro Buddy, a WMATA Metro Tracker
+
+Inspired by (but nowhere near enough features as) [MetroHero](https://dcmetrohero.net/dashboard).
 
 ### Steps to get started:
 

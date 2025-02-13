@@ -11,17 +11,10 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as QueryImport } from './routes/query'
 import { Route as IndexImport } from './routes/index'
 import { Route as MetroStationCodesImport } from './routes/metro.$stationCodes'
 
 // Create/Update Routes
-
-const QueryRoute = QueryImport.update({
-  id: '/query',
-  path: '/query',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -46,13 +39,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/query': {
-      id: '/query'
-      path: '/query'
-      fullPath: '/query'
-      preLoaderRoute: typeof QueryImport
-      parentRoute: typeof rootRoute
-    }
     '/metro/$stationCodes': {
       id: '/metro/$stationCodes'
       path: '/metro/$stationCodes'
@@ -67,41 +53,36 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/query': typeof QueryRoute
   '/metro/$stationCodes': typeof MetroStationCodesRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/query': typeof QueryRoute
   '/metro/$stationCodes': typeof MetroStationCodesRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/query': typeof QueryRoute
   '/metro/$stationCodes': typeof MetroStationCodesRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/query' | '/metro/$stationCodes'
+  fullPaths: '/' | '/metro/$stationCodes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/query' | '/metro/$stationCodes'
-  id: '__root__' | '/' | '/query' | '/metro/$stationCodes'
+  to: '/' | '/metro/$stationCodes'
+  id: '__root__' | '/' | '/metro/$stationCodes'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  QueryRoute: typeof QueryRoute
   MetroStationCodesRoute: typeof MetroStationCodesRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  QueryRoute: QueryRoute,
   MetroStationCodesRoute: MetroStationCodesRoute,
 }
 
@@ -116,15 +97,11 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/query",
         "/metro/$stationCodes"
       ]
     },
     "/": {
       "filePath": "index.tsx"
-    },
-    "/query": {
-      "filePath": "query.tsx"
     },
     "/metro/$stationCodes": {
       "filePath": "metro.$stationCodes.tsx"

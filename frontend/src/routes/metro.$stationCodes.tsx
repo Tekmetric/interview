@@ -1,5 +1,13 @@
 import { metroArrivalTimesOptions } from '@api/wmata';
 import { MetroLineSelect } from '@components/MetroLineSelect';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@components/ui/table';
 import { ALL_STATIONS, METRO_COLORS, METRO_LINE_LABELS } from '@constants/wmata';
 import { Train } from '@phosphor-icons/react';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -38,7 +46,9 @@ function MetroStationCodes() {
 
   const metroArrivalTimesQuery = useSuspenseQuery(metroArrivalTimesOptions(stationCodes));
 
-  let upcomingTrains = metroArrivalTimesQuery.data.Trains.filter(train => train.Line && train.Line !== 'No' && train.Min && train.Min !== '---');
+  let upcomingTrains = metroArrivalTimesQuery.data.Trains
+    .filter(train => train.Line && train.Line !== 'No' && train.Min && train.Min !== '---')
+    .sort((a, b) => a.Line.localeCompare(b.Line));
 
   if (lineFilter) {
     upcomingTrains = upcomingTrains.filter(train => train.Line === lineFilter);
@@ -54,30 +64,43 @@ function MetroStationCodes() {
       : (
           <div className="mx-auto w-full">
             <h2 className="text-3xl text-center pt-2 font-bold">{currentStation.Name}</h2>
-            {linesServedAtStation.length > 1 && <MetroLineSelect className="justify-center py-2" stationCodes={ stationCodes } lines={ linesServedAtStation } />}
-            <table className="mx-auto w-1/2 table-auto border-separate border-spacing-1.5 text-sm">
-              <tbody>
+            {linesServedAtStation.length > 1
+            && (
+              <MetroLineSelect
+                className="justify-center py-2"
+                stationCodes={ stationCodes }
+                lines={ linesServedAtStation }
+              />
+            )}
+            <Table className="mx-auto w-1/2  shadow rounded p-4 bg-white dark:bg-gray-700">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Train</TableHead>
+                  <TableHead>Arrival</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 { upcomingTrains.length > 0
                   ? upcomingTrains.map(train => (
-                      <tr className="my-2" key={ `${ train.Line }-${ train.LocationCode }-${ train.Destination }-${ train.Min }-${ train.Group }` }>
-                        <td className="flex align-center">
+                      <TableRow key={ `${ train.Line }-${ train.LocationCode }-${ train.Destination }-${ train.Min }-${ train.Group }` }>
+                        <TableCell className="flex align-center">
                           <Train size="24" className={ `${ METRO_COLORS[train.Line as keyof typeof METRO_COLORS] } rounded mr-2` } />
                           <div>
                             { METRO_LINE_LABELS[train.Line as keyof typeof METRO_LINE_LABELS] } Line to { train.DestinationName ?? train.Destination }
                           </div>
-                        </td>
-                        <td>
+                        </TableCell>
+                        <TableCell>
                           { `${ train.Min } ${ Number.isNaN(Number(train.Min)) ? '' : ` min${ train.Min === '1' ? '' : 's' }` }` }
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))
                   : (
-                      <tr>
-                        <td className="text-center">No trains currently scheduled.</td>
-                      </tr>
+                      <TableRow>
+                        <TableCell className="text-center" colSpan={ 2 }>No trains currently scheduled.</TableCell>
+                      </TableRow>
                     ) }
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         )
   );

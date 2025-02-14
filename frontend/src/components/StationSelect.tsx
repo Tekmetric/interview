@@ -1,10 +1,29 @@
 import type { StationSelectOption } from '@customTypes/components/StationSelect';
+import type { ReactNode } from 'react';
 import type { ActionMeta, SelectInstance } from 'react-select';
 import { STATIONS_BY_CODE } from '@constants/wmata';
+import createCache from '@emotion/cache';
+import { CacheProvider } from '@emotion/react';
 import { useNavigate } from '@tanstack/react-router';
 import { useLocalStorage } from '@uidotdev/usehooks';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import Select from 'react-select';
+
+/**
+ * Ensures the Emotion CSS classes are inserted _before_ the custom CSS from the root index.css.
+ */
+const EmotionCacheProvider = ({ children }: { children: ReactNode }) => {
+  const cache = useMemo(
+    () =>
+      createCache({
+        key: 'with-tailwind',
+        insertionPoint: document.querySelector('title')!
+      }),
+    []
+  );
+
+  return <CacheProvider value={ cache }>{children}</CacheProvider>;
+};
 
 export function StationSelect({
   autoFocus = true,
@@ -61,17 +80,20 @@ export function StationSelect({
     }
   }
   return (
-    <div className={ className }>
-      <Select
-        ref={ stationSelectRef }
-        autoFocus={ autoFocus }
-        className="text-left mx-auto"
-        isClearable={ isClearable }
-        isDisabled={ isDisabled }
-        options={ parsedStationHistory.length > 0 ? groupedSelectOptions : stationOptions }
-        placeholder={ placeholder }
-        onChange={ onChange }
-      />
-    </div>
+    <EmotionCacheProvider>
+      <div className={ className }>
+        <Select
+          ref={ stationSelectRef }
+          autoFocus={ autoFocus }
+          className="metro-buddy-react-select-container"
+          classNamePrefix="metro-buddy-react-select"
+          isClearable={ isClearable }
+          isDisabled={ isDisabled }
+          options={ parsedStationHistory.length > 0 ? groupedSelectOptions : stationOptions }
+          placeholder={ placeholder }
+          onChange={ onChange }
+        />
+      </div>
+    </EmotionCacheProvider>
   );
 }

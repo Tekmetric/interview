@@ -1,10 +1,12 @@
 import { StationSelect } from '@components/StationSelect';
+import { Button } from '@components/ui/button';
+import { ModeToggle } from '@components/ui/mode-toggle';
 import { Subway } from '@phosphor-icons/react';
 import { Link } from '@tanstack/react-router';
 
 export function NavBar() {
   return (
-    <div className="py-2 px-4 flex w-full items-center justify-between">
+    <div className="py-2 px-4 flex w-full items-center justify-between shadow-md rounded  dark:shadow-gray-800">
       <Link
         to="/"
         title="Home"
@@ -13,18 +15,21 @@ export function NavBar() {
       >
         { ({ isActive }) => {
           return (
-            <div className="bg-white hover:bg-gray-200 rounded px-2 py-1 shadow">
+            <Button variant="outline" size="lg">
               <Subway
                 size={ 32 }
                 weight={ isActive ? 'bold' : 'regular' }
-                className="p-1 inline-block mr-1"
+                className="inline-block mr-1"
               />
               Home
-            </div>
+            </Button>
           );
         } }
       </Link>
-      <StationSelect className="w-80" placeholder="Find your station | ⌘/ctrl + k" />
+      <div className="flex gap-2">
+        <StationSelect className="w-80" placeholder="Find your station | ⌘/ctrl + k" />
+        <ModeToggle />
+      </div>
     </div>
   );
 }

@@ -5,12 +5,13 @@ export function MetroLineSelect({ className, stationCodes, lines }: { lines: str
   return (
     <div className={ `flex gap-2 ${ className }` }>
       <Link
+        className="bg-white dark:bg-gray-800 h-[32px] p-1 align-middle hover:bg-gray-200 dark:hover:bg-gray-600 rounded shadow"
         title="Show all lines"
         to="/metro/$stationCodes"
         params={ {
           stationCodes
         } }
-        className="bg-white h-[32px] p-1 align-middle hover:bg-gray-200 rounded shadow"
+        search={ { line: '' } }
         activeProps={ { className: 'font-bold' } }
         preload="intent"
       >

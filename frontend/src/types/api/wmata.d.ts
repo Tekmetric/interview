@@ -5,8 +5,8 @@ export type RailLine = keyof typeof METRO_COLORS;
 export interface AIMPredictionTrainInfo {
   Car: string | null;
   Destination: string;
-  DestinationCode: string;
-  DestinationName: string;
+  DestinationCode: string | null;
+  DestinationName?: string;
   Group: string;
   Line: RailLine | '' | 'No';
   LocationCode: string;
@@ -28,12 +28,11 @@ export interface Address {
 export interface Station {
   Code: string;
   Name: string;
-  StationTogether1: string;
-  StationTogether2: string;
   LineCode1: string;
   LineCode2: string | null;
   LineCode3: string | null;
   LineCode4: string | null;
+  LineCode5?: string;
   Lat: number;
   Lon: number;
   Address: Address;

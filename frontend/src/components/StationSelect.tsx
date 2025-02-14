@@ -6,16 +6,13 @@ import { useLocalStorage } from '@uidotdev/usehooks';
 import { useRef } from 'react';
 import Select from 'react-select';
 
-// command symbol
-
 export function StationSelect({
   autoFocus = true,
   isClearable = true,
   isDisabled = false,
   className,
   onSelect,
-  placeholder = 'Find your station',
-  options
+  placeholder = 'Find your station'
 }: {
   autoFocus?: boolean;
   isClearable?: boolean;
@@ -23,17 +20,21 @@ export function StationSelect({
   className?: string;
   onSelect?: () => void;
   placeholder?: string;
-  options?: StationSelectOption[];
 }) {
   const stationSelectRef = useRef<SelectInstance<StationSelectOption> | null>(null);
 
   const navigate = useNavigate({ from: '/' });
-  const [_, setHistory] = useLocalStorage('MetroBuddy.history', '[]');
-
-  const stationOptions = options ?? Object.entries(STATIONS_BY_CODE).map(([code, station]) => ({
+  const [stationHistory, setStationHistory] = useLocalStorage('MetroBuddy.history', '[]');
+  const parsedStationHistory = JSON.parse(stationHistory);
+  const stationOptions = Object.entries(STATIONS_BY_CODE).map(([code, station]) => ({
     label: station.Name,
     value: code
   })).sort((a, b) => a.label.localeCompare(b.label));
+
+  const groupedSelectOptions = [
+    { label: 'History', options: parsedStationHistory },
+    { label: 'All Stations', options: stationOptions }
+  ];
 
   async function onChange(
     newValue: StationSelectOption | null,
@@ -41,7 +42,7 @@ export function StationSelect({
   ) {
     if (action === 'select-option' && newValue) {
       await navigate({ to: '/metro/$stationCodes', params: { stationCodes: newValue.value } });
-      setHistory((prevHistory) => {
+      setStationHistory((prevHistory) => {
         const history = JSON.parse(prevHistory!) as StationSelectOption[];
         if (history.length > 25) {
           history.slice(0, 25);
@@ -67,7 +68,7 @@ export function StationSelect({
         className="text-left mx-auto"
         isClearable={ isClearable }
         isDisabled={ isDisabled }
-        options={ stationOptions }
+        options={ parsedStationHistory.length > 0 ? groupedSelectOptions : stationOptions }
         placeholder={ placeholder }
         onChange={ onChange }
       />

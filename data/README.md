@@ -10,6 +10,7 @@ To save our data, we'll write it out to the local filesystem as if we're saving 
 - Create an account at [api.nasa.gov](https://api.nasa.gov) to get an API key
 - Find the docs for the Near Earth Object Web Service (below the signup on the same page)
 - Data should be saved in Parquet format
+- Design the code such that the scraping and processing part could easily be scaled up GBs of data by swapping in and out various implementations.
 - Use the Browse API to request data
     - There are over 1800 pages of near Earth objects, so we'll limit ourselves to gathering the first 200 near earth objects
 - We want to save the following columns in our file(s):

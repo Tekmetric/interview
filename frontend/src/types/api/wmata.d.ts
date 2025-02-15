@@ -8,7 +8,7 @@ export interface AIMPredictionTrainInfo {
   DestinationCode: string | null;
   DestinationName?: string;
   Group: string;
-  Line: RailLine | '' | 'No';
+  Line: RailLine | '' | 'No' | '--';
   LocationCode: string;
   LocationName: string;
   Min: number | 'ARR' | 'BRD' | '---' | string;

@@ -27,8 +27,8 @@ export const trainsByCode = {
   A02: A02Train
 };
 
-export const getPredictionsMockResponse = {
-  Trains: [A01Train, A02Train, {
+export const otherTrains = [
+  {
     Car: '6',
     Destination: 'Shady Gr',
     DestinationCode: 'A15',
@@ -38,7 +38,8 @@ export const getPredictionsMockResponse = {
     LocationCode: 'A03',
     LocationName: 'Dupont Circle',
     Min: '6'
-  }, {
+  },
+  {
     Car: '8',
     Destination: 'Glenmont',
     DestinationCode: 'B11',
@@ -48,7 +49,8 @@ export const getPredictionsMockResponse = {
     LocationCode: 'A04',
     LocationName: 'Woodley Park-Zoo/Adams Morgan',
     Min: '8'
-  }, {
+  },
+  {
     Car: '6',
     Destination: 'SilvrSpg',
     DestinationCode: 'B08',
@@ -58,7 +60,8 @@ export const getPredictionsMockResponse = {
     LocationCode: 'A05',
     LocationName: 'Cleveland Park',
     Min: '9'
-  }, {
+  },
+  {
     Car: '6',
     Destination: 'Grsvnor',
     DestinationCode: 'A11',
@@ -68,5 +71,9 @@ export const getPredictionsMockResponse = {
     LocationCode: 'A06',
     LocationName: 'Van Ness-UDC',
     Min: '9'
-  }]
+  }
+];
+
+export const getPredictionsMockResponse = {
+  Trains: [A01Train, A02Train, ...otherTrains]
 };

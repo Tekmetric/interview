@@ -1,5 +1,5 @@
 import type { Station } from '@customTypes/api/wmata';
-import * as stations from '../data/stations.json';
+import * as stations from '@data/stations.json';
 
 export const ALL_STATIONS = stations.Stations;
 

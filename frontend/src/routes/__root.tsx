@@ -2,9 +2,9 @@ import type { QueryClient } from '@tanstack/react-query';
 import { NavBar } from '@components/NavBar';
 import { StationSelect } from '@components/StationSelect';
 import { ThemeProvider } from '@components/ui/theme-provider';
-import { useKey, useKeyCombo } from '@rwh/react-keystrokes';
+import { useKBarShortcut } from '@hooks/useKBarShortcut';
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
-import { lazy, useEffect, useState } from 'react';
+import { lazy } from 'react';
 
 // Only load the dev tools outside of building for production
 const TanStackRouterDevtools
@@ -23,22 +23,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootRoute() {
-  const isMetaComboPressed = useKeyCombo('meta + k');
-  const isControlComboPressed = useKeyCombo('control + k');
-  const isEscapePressed = useKey('escape');
-  const [showStationSelect, setShowStationSelect] = useState(false);
-
-  useEffect(() => {
-    if (isMetaComboPressed || isControlComboPressed) {
-      setShowStationSelect(true);
-    }
-  }, [isMetaComboPressed, isControlComboPressed]);
-
-  useEffect(() => {
-    if (isEscapePressed) {
-      setShowStationSelect(false);
-    }
-  }, [isEscapePressed]);
+  const [showStationSelect, setShowStationSelect] = useKBarShortcut();
 
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">

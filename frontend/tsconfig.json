@@ -41,6 +41,12 @@
       "@constants/*": [
         "./src/constants/*"
       ],
+      "@data/*": [
+        "./src/data/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
       "@routes/*": [
         "./src/routes/*"
       ],

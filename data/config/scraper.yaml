@@ -1,0 +1,6 @@
+scraper:
+  endpoint: "https://api.nasa.gov/neo/rest/v1/neo/browse"
+  api_key: ""
+  start_page: 0
+  page_size: 20
+  end_page: 10

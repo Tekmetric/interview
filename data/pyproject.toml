@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "neo_data"
+name = "data"
 version = "0.1.0"
 description = "Scraper for NASA NEO objects"
 authors = ["Mihai Campean <mihai.ci@gmail.com>"]

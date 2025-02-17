@@ -1,5 +1,5 @@
 from omegaconf import DictConfig
-from .persistence import DataPersister
+from .data_processing import DataProcessor
 from .request_handler import RequestHandler
 
 
@@ -21,7 +21,7 @@ class Scraper:
         Scrapes data from a range of pages and persists the data.
     """
 
-    def __init__(self, cfg: DictConfig, persister: DataPersister, request_handler: RequestHandler):
+    def __init__(self, cfg: DictConfig, persister: DataProcessor, request_handler: RequestHandler):
         self.cfg = cfg
         self.persister = persister
         self.request_handler = request_handler
@@ -37,10 +37,10 @@ class Scraper:
             None
         """
 
-        start_page = self.cfg.scraper.start_page
-        end_page = self.cfg.scraper.end_page
+        start_page = self.cfg.scraper.request.start_page
+        end_page = self.cfg.scraper.request.end_page
 
         for page in range(start_page, end_page):
             data = self.request_handler.fetch_page(page)
             if data:
-                self.persister.persist(data)
+                self.persister.process_json_data(data)

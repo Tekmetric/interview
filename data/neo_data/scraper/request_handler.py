@@ -3,13 +3,23 @@ import logging
 from omegaconf import DictConfig
 
 class RequestHandler:
+    """RequestHandler is responsible for handling requests to the NASA NEO Web Service API.
+    Attributes:
+        cfg (DictConfig): Configuration object containing API details.
+    Methods:
+        __init__(cfg: DictConfig):
+            Initializes the RequestHandler with the given configuration.
+        _build_paged_request(page: int) -> dict:
+            Builds a dictionary representing a paged request with the given page number.
+        fetch_page(page: int) -> dict:
+    """
 
     def __init__(self, cfg: DictConfig):
         self.cfg = cfg
 
     def _build_paged_request(self, page: int):
         """
-        Builds a dictionary representing a paged request with the given page number.
+        Builds a dictionary representing a paged request with the given page number, for the NASA NEO Web Service API.
         Args:
             page (int): The page number to include in the request.
         Returns:
@@ -17,9 +27,9 @@ class RequestHandler:
         """
 
         return {
-            "api_key": self.cfg.scraper.api_key,
+            "api_key": self.cfg.scraper.request.api_key,
             "page": page,
-            "size": self.cfg.scraper.page_size
+            "size": self.cfg.scraper.request.page_size
         }
         
 
@@ -35,7 +45,7 @@ class RequestHandler:
         """
 
         try:
-            response = requests.get(self.cfg.scraper.endpoint, params=self._build_paged_request(page))
+            response = requests.get(self.cfg.scraper.request.endpoint, params=self._build_paged_request(page))
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
             logging.error(f"Error fetching NEO page: {e}")

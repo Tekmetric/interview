@@ -2,9 +2,11 @@ package com.interview.dtos;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
+import com.interview.models.Actor;
+import com.interview.models.Director;
+import com.interview.models.Keyword;
 import com.interview.models.Movie;
 
 public class MovieDTO {
@@ -14,14 +16,14 @@ public class MovieDTO {
     private BigDecimal rating;
     private int releaseYear;
     private int duration;
-    private int directorId;
     private String language;
     private BigDecimal budget;
     private BigDecimal boxOffice;
+    private Director director;
     private Instant createdAt;
     private Instant updatedAt;
-    private Set<ActorDTO> actors;
-    private Set<KeywordDTO> keywords;
+    private List<Keyword> keywords = List.of();
+    private List<Actor> actors = List.of();
 
     public MovieDTO() {
     }
@@ -33,15 +35,15 @@ public class MovieDTO {
         this.rating = movie.getRating();
         this.releaseYear = movie.getReleaseYear();
         this.duration = movie.getDuration();
-        this.directorId = movie.getDirector().getId();
         this.language = movie.getLanguage();
         this.budget = movie.getBudget();
         this.boxOffice = movie.getBoxOffice();
         this.createdAt = movie.getCreatedAt();
         this.updatedAt = movie.getUpdatedAt();
-        this.actors = movie.getActors().stream().map((actor) -> new ActorDTO(actor)).collect(Collectors.toSet());
-        this.keywords = movie.getKeywords().stream().map((keyword) -> new KeywordDTO(keyword))
-                .collect(Collectors.toSet());
+        this.director = movie.getDirector();
+        this.keywords = movie.getKeywords();
+        this.actors = movie.getActors();
+
     }
 
     public String getTitle() {
@@ -68,10 +70,6 @@ public class MovieDTO {
         return duration;
     }
 
-    public int getDirectorId() {
-        return directorId;
-    }
-
     public String getLanguage() {
         return language;
     }
@@ -92,12 +90,71 @@ public class MovieDTO {
         return updatedAt;
     }
 
-    public Set<ActorDTO> getActors() {
-        return actors;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public Set<KeywordDTO> getKeywords() {
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public void setRating(BigDecimal rating) {
+        this.rating = rating;
+    }
+
+    public void setReleaseYear(int releaseYear) {
+        this.releaseYear = releaseYear;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setBudget(BigDecimal budget) {
+        this.budget = budget;
+    }
+
+    public void setBoxOffice(BigDecimal boxOffice) {
+        this.boxOffice = boxOffice;
+    }
+
+    public void setCreatedAt(Instant created_at) {
+        this.createdAt = created_at;
+    }
+
+    public void setDirector(Director director) {
+        this.director = director;
+    }
+
+    public Director getDirector() {
+        return director;
+    }
+
+    public void setUpdatedAt(Instant updated_at) {
+        this.updatedAt = updated_at;
+    }
+
+    public void setKeywords(List<Keyword> keywords) {
+        this.keywords = keywords;
+    }
+
+    public List<Keyword> getKeywords() {
         return keywords;
     }
 
+    public void setActors(List<Actor> actors) {
+        this.actors = actors;
+    }
+
+    public List<Actor> getActors() {
+        return actors;
+    }
 }

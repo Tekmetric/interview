@@ -2,10 +2,7 @@ package com.interview.models;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Date;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,13 +21,16 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.interview.dtos.MovieDTO;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "title" }) })
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String title;
+
     private String description;
+
     private String genre;
 
     @Column(precision = 3, scale = 1)
@@ -39,23 +41,23 @@ public class Movie {
 
     private int duration;
 
-    @Column(name = "director_id")
     @ManyToOne(targetEntity = Director.class)
     private Director director;
 
     @ManyToMany
     @JoinTable(name = "movie_actor", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "actor_id"))
-    private Set<Actor> actors;
+    private List<Actor> actors = List.of();
 
     @ManyToMany
     @JoinTable(name = "movie_keyword", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "keyword_id"))
-    private Set<Keyword> keywords;
+    private List<Keyword> keywords = List.of();
 
     private String language;
 
+    @Column(precision = 10, scale = 2)
     private BigDecimal budget;
 
-    @Column(name = "box_office")
+    @Column(precision = 10, scale = 2)
     private BigDecimal boxOffice;
 
     @Column(updatable = false, nullable = false, name = "created_at")
@@ -81,12 +83,9 @@ public class Movie {
         this.boxOffice = movieDTO.getBoxOffice();
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
-        this.actors = movieDTO.getActors().stream().map((actorDTO) -> new Actor(actorDTO)).collect(Collectors.toSet());
-        this.keywords = movieDTO.getKeywords().stream().map((keywordDTO) -> new Keyword(keywordDTO))
-                .collect(Collectors.toSet());
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -118,11 +117,11 @@ public class Movie {
         return director;
     }
 
-    public Set<Actor> getActors() {
+    public List<Actor> getActors() {
         return actors;
     }
 
-    public Set<Keyword> getKeywords() {
+    public List<Keyword> getKeywords() {
         return keywords;
     }
 
@@ -150,11 +149,11 @@ public class Movie {
         this.director = director;
     }
 
-    public void setActors(Set<Actor> actors) {
+    public void setActors(List<Actor> actors) {
         this.actors = actors;
     }
 
-    public void setKeywords(Set<Keyword> keywords) {
+    public void setKeywords(List<Keyword> keywords) {
         this.keywords = keywords;
     }
 
@@ -176,10 +175,6 @@ public class Movie {
 
     public void setCreatedAt(Instant created_at) {
         this.createdAt = created_at;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public void setTitle(String title) {

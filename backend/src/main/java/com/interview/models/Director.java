@@ -2,17 +2,21 @@ package com.interview.models;
 
 import java.time.Instant;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.interview.dtos.DirectorDTO;
+import com.interview.dto.DirectorDTO;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "first_name", "last_name" }) })
 public class Director {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +44,7 @@ public class Director {
         this.lastName = directorDTO.getLastName();
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
+        this.id = directorDTO.getId();
     }
 
     public Long getId() {

@@ -7,5 +7,4 @@ import com.interview.models.Actor;
 
 @Repository
 public interface IActorRepository extends JpaRepository<Actor, Long> {
-
 }

@@ -1,6 +1,6 @@
 package com.interview.services;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +31,7 @@ public class KeywordService {
 
     @Transactional
     public Keyword updateKeyword(long id, String keyword) {
-        Keyword keywordToUpdate = this.keywordRepository.findById(id).get();
+        Keyword keywordToUpdate = getKeywordById(id);
         keywordToUpdate.setName(keyword);
 
         return this.keywordRepository.save(keywordToUpdate);

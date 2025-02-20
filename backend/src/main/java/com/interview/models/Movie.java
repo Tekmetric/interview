@@ -2,23 +2,25 @@ package com.interview.models;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.interview.dtos.MovieDTO;
+import com.interview.dto.MovieDTO;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "title" }) })
@@ -41,16 +43,17 @@ public class Movie {
 
     private int duration;
 
-    @ManyToOne(targetEntity = Director.class)
+    @ManyToOne
+    @JoinColumn(name = "director_id", nullable = true)
     private Director director;
 
     @ManyToMany
     @JoinTable(name = "movie_actor", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "actor_id"))
-    private List<Actor> actors = List.of();
+    private List<Actor> actors = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "movie_keyword", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "keyword_id"))
-    private List<Keyword> keywords = List.of();
+    private List<Keyword> keywords = new ArrayList<>();
 
     private String language;
 
@@ -75,6 +78,9 @@ public class Movie {
         this.title = movieDTO.getTitle();
         this.description = movieDTO.getDescription();
         this.genre = movieDTO.getGenre();
+        this.director = new Director(movieDTO.getDirector());
+        this.actors = movieDTO.getActors().stream().map(Actor::new).toList();
+        this.keywords = movieDTO.getKeywords().stream().map(Keyword::new).toList();
         this.rating = movieDTO.getRating();
         this.releaseYear = movieDTO.getReleaseYear();
         this.duration = movieDTO.getDuration();

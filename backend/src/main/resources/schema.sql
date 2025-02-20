@@ -16,7 +16,8 @@ CREATE TABLE
         first_name VARCHAR(255) NOT NULL,
         last_name VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        CONSTRAINT unique_first_last_name_director UNIQUE (first_name, last_name)
     );
 
 CREATE TABLE
@@ -25,7 +26,8 @@ CREATE TABLE
         first_name VARCHAR(255) NOT NULL,
         last_name VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        CONSTRAINT unique_first_last_name_actor UNIQUE (first_name, last_name)
     );
 
 CREATE TABLE
@@ -42,7 +44,7 @@ CREATE TABLE
         budget BIGINT,
         box_office BIGINT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (director_id) REFERENCES director (id)
     );
 
@@ -52,7 +54,7 @@ CREATE TABLE
         movie_id INT NOT NULL,
         actor_id INT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (movie_id) REFERENCES movie (id),
         FOREIGN KEY (actor_id) REFERENCES actor (id)
     );

@@ -1,29 +1,52 @@
-package com.interview.dtos;
+package com.interview.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.interview.models.Actor;
-import com.interview.models.Director;
-import com.interview.models.Keyword;
 import com.interview.models.Movie;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class MovieDTO {
+    @NotBlank(message = "Title is required")
     private String title;
+
     private String description;
+
+    @NotBlank(message = "Genre is required")
     private String genre;
+
+    @Min(value = 0, message = "Rating must be greater than 0")
+    @Max(value = 10, message = "Rating must be less than 10")
     private BigDecimal rating;
+
     private int releaseYear;
+
+    @Min(value = 1, message = "Duration must be greater than 0")
     private int duration;
+
+    @NotNull(message = "Language is required")
     private String language;
+
     private BigDecimal budget;
+
     private BigDecimal boxOffice;
-    private Director director;
+
+    @NotNull(message = "Director is required")
+    private DirectorDTO director;
+
     private Instant createdAt;
+
     private Instant updatedAt;
-    private List<Keyword> keywords = List.of();
-    private List<Actor> actors = List.of();
+
+    private List<KeywordDTO> keywords = new ArrayList<>();
+
+    private List<ActorDTO> actors = new ArrayList<>();
 
     public MovieDTO() {
     }
@@ -40,9 +63,9 @@ public class MovieDTO {
         this.boxOffice = movie.getBoxOffice();
         this.createdAt = movie.getCreatedAt();
         this.updatedAt = movie.getUpdatedAt();
-        this.director = movie.getDirector();
-        this.keywords = movie.getKeywords();
-        this.actors = movie.getActors();
+        this.director = new DirectorDTO(movie.getDirector());
+        this.keywords = movie.getKeywords().stream().map(KeywordDTO::new).toList();
+        this.actors = movie.getActors().stream().map(ActorDTO::new).toList();
 
     }
 
@@ -130,11 +153,11 @@ public class MovieDTO {
         this.createdAt = created_at;
     }
 
-    public void setDirector(Director director) {
+    public void setDirector(DirectorDTO director) {
         this.director = director;
     }
 
-    public Director getDirector() {
+    public DirectorDTO getDirector() {
         return director;
     }
 
@@ -142,19 +165,19 @@ public class MovieDTO {
         this.updatedAt = updated_at;
     }
 
-    public void setKeywords(List<Keyword> keywords) {
+    public void setKeywords(List<KeywordDTO> keywords) {
         this.keywords = keywords;
     }
 
-    public List<Keyword> getKeywords() {
+    public List<KeywordDTO> getKeywords() {
         return keywords;
     }
 
-    public void setActors(List<Actor> actors) {
+    public void setActors(List<ActorDTO> actors) {
         this.actors = actors;
     }
 
-    public List<Actor> getActors() {
+    public List<ActorDTO> getActors() {
         return actors;
     }
 }

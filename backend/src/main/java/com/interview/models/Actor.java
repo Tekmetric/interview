@@ -1,33 +1,32 @@
 package com.interview.models;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.interview.dtos.ActorDTO;
+import com.interview.dto.ActorDTO;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "actor")
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "first_name", "last_name" }) })
 public class Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @Column(updatable = false, nullable = false, name = "created_at")
@@ -42,13 +41,13 @@ public class Actor {
     }
 
     public Actor(ActorDTO actorDTO) {
-        this.firstName = actorDTO.getFirst_name();
-        this.lastName = actorDTO.getLast_name();
+        this.firstName = actorDTO.getFirstName();
+        this.lastName = actorDTO.getLastName();
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

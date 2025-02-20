@@ -1,5 +1,7 @@
 package com.interview.controllers;
 
+import com.interview.util.ConvertUtil;
+import jakarta.validation.Valid;
 import java.math.BigDecimal;
 
 import org.springframework.data.domain.Page;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.interview.dtos.MovieDTO;
+import com.interview.dto.MovieDTO;
 import com.interview.models.Movie;
 import com.interview.services.MovieService;
 
@@ -31,24 +33,19 @@ public class MovieController {
 
     @GetMapping
     public ResponseEntity<Page<MovieDTO>> getMoviesPaged(final Pageable pageable) {
-        return ResponseEntity.ok(movieService.getMovies(pageable).map(MovieDTO::new));
+        return ResponseEntity
+                .ok(movieService.getMovies(pageable).map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MovieDTO> getMovieById(@PathVariable("id") long id) {
-
         Movie movie = movieService.getMovieById(id);
-
-        if (movie == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(new MovieDTO(movie));
+        return ResponseEntity.ok(ConvertUtil.convertToDTO(movie, MovieDTO.class));
     }
 
     @PostMapping
-    public ResponseEntity<MovieDTO> saveMovie(@RequestBody MovieDTO movie) {
-        return ResponseEntity.ok(new MovieDTO(movieService.saveMovie(new Movie(movie))));
+    public ResponseEntity<MovieDTO> saveMovie(@Valid @RequestBody MovieDTO movie) {
+        return ResponseEntity.ok(ConvertUtil.convertToDTO(movieService.saveMovie(new Movie(movie)), MovieDTO.class));
     }
 
     @DeleteMapping("/{id}")
@@ -59,7 +56,8 @@ public class MovieController {
 
     @PutMapping("/{id}")
     public ResponseEntity<MovieDTO> updateMovie(@PathVariable("id") long id, final MovieDTO movie) {
-        return ResponseEntity.ok(new MovieDTO(movieService.updateMovie(id, new Movie(movie))));
+        return ResponseEntity
+                .ok(ConvertUtil.convertToDTO(movieService.updateMovie(id, new Movie(movie)), MovieDTO.class));
     }
 
     @GetMapping("/filter")
@@ -102,10 +100,6 @@ public class MovieController {
                 return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.ok(movies.map(this::convertToDTO));
-    }
-
-    private MovieDTO convertToDTO(Movie movie) {
-        return new MovieDTO(movie);
+        return ResponseEntity.ok(movies.map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));
     }
 }

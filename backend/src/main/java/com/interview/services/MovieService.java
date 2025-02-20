@@ -1,12 +1,10 @@
 package com.interview.services;
 
+import com.interview.exceptions.NotFoundException;
 import com.interview.exceptions.UniqueConstraintViolationException;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.Set;
-
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,7 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.interview.models.Actor;
+import com.interview.models.Director;
 import com.interview.models.Movie;
 import com.interview.repositories.IMovieRepository;
 
@@ -37,7 +35,7 @@ public class MovieService {
     }
 
     public Movie getMovieById(final long id) {
-        return movieRepository.findById(id).orElse(null);
+        return movieRepository.findById(id).orElseThrow(() -> new NotFoundException("Movie not found"));
     }
 
     @Transactional
@@ -51,7 +49,14 @@ public class MovieService {
     @CacheEvict(value = "moviesList", allEntries = true)
     public Movie saveMovie(final Movie movie) {
         try {
-            directorService.getDirectorById(movie.getDirector().getId());
+            Director director = movie.getDirector();
+
+            if (director.getId() == null) {
+                movie.setDirector(directorService.saveDirector(director));
+            }
+
+            directorService.getDirectorById(director.getId());
+
             return movieRepository.save(movie);
         } catch (DataIntegrityViolationException e) {
             throw new UniqueConstraintViolationException("Movie already exists");
@@ -74,7 +79,6 @@ public class MovieService {
         existingMovie.setLanguage(movie.getLanguage());
         existingMovie.setBudget(movie.getBudget());
         existingMovie.setBoxOffice(movie.getBoxOffice());
-        existingMovie.setUpdatedAt(Instant.now());
 
         return existingMovie;
     }
@@ -96,7 +100,7 @@ public class MovieService {
     }
 
     public Page<Movie> getMoviesByDirector(final String firstName, final String lastName, final Pageable pageable) {
-        return movieRepository.findByDirector(firstName, lastName, pageable);
+        return movieRepository.findByDirectorName(firstName, lastName, pageable);
     }
 
     public Page<Movie> getMoviesByReleaseYear(final int releaseYear, final Pageable pageable) {
@@ -105,11 +109,6 @@ public class MovieService {
 
     public Page<Movie> getMoviesByMinRating(final BigDecimal rating, final Pageable pageable) {
         return movieRepository.findByMinRating(rating, pageable);
-    }
-
-    public void addActorsToMovie(Set<Actor> actors, long movieId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addActorsToMovie'");
     }
 
 }

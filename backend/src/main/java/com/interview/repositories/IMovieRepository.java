@@ -1,8 +1,10 @@
 package com.interview.repositories;
 
+import com.interview.models.Director;
 import com.interview.models.Movie;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -13,8 +15,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IMovieRepository extends JpaRepository<Movie, Long> {
-
-    Optional<Movie> findById(long id);
 
     Page<Movie> findByGenre(String genre, Pageable pageable);
 
@@ -27,7 +27,9 @@ public interface IMovieRepository extends JpaRepository<Movie, Long> {
     Page<Movie> findByLanguage(String language, Pageable pageable);
 
     @Query("SELECT m FROM Movie m JOIN m.director d WHERE d.firstName = ?1 AND d.lastName = ?2")
-    Page<Movie> findByDirector(String firstName, String lastName, Pageable pageable);
+    Page<Movie> findByDirectorName(String firstName, String lastName, Pageable pageable);
+
+    List<Movie> findByDirector(Director director);
 
     Page<Movie> findByReleaseYear(int releaseYear, Pageable pageable);
 

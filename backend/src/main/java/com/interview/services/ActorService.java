@@ -1,15 +1,16 @@
 package com.interview.services;
 
-import java.time.Instant;
-
-import javax.transaction.Transactional;
-
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.interview.exceptions.NotFoundException;
+import com.interview.exceptions.UniqueConstraintViolationException;
 import com.interview.models.Actor;
 import com.interview.repositories.IActorRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ActorService {
@@ -22,7 +23,12 @@ public class ActorService {
 
     @Transactional
     public Actor saveActor(Actor actor) {
-        return this.actorRepository.save(actor);
+        try {
+            return this.actorRepository.save(actor);
+        } catch (DataIntegrityViolationException e) {
+            throw new UniqueConstraintViolationException("Actor already exists");
+        }
+
     }
 
     @Transactional
@@ -36,13 +42,12 @@ public class ActorService {
         Actor actorToUpdate = this.actorRepository.findById(id).get();
         actorToUpdate.setFirstName(actor.getFirstName());
         actorToUpdate.setLastName(actor.getLastName());
-        actorToUpdate.setUpdatedAt(Instant.now());
 
         return this.actorRepository.save(actorToUpdate);
     }
 
     public Actor getActorById(long id) {
-        return this.actorRepository.findById(id).orElseThrow(() -> new RuntimeException("Actor not found"));
+        return this.actorRepository.findById(id).orElseThrow(() -> new NotFoundException("Actor not found"));
     }
 
     public Page<Actor> getActors(Pageable pageable) {

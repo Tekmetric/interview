@@ -30,7 +30,7 @@ public class MovieDTOTest {
     }
 
     @Test
-    public void testValidations() {
+    void testValidations() {
         MovieDTO movie = new MovieDTO();
 
         Set<ConstraintViolation<MovieDTO>> violations = validator.validate(movie);
@@ -48,7 +48,7 @@ public class MovieDTOTest {
     }
 
     @Test
-    public void testValidMovieDTO() {
+    void testValidMovieDTO() {
         MovieDTO movieDTO = new MovieDTO();
         movieDTO.setTitle("Valid Movie");
         movieDTO.setGenre("Drama");
@@ -63,7 +63,7 @@ public class MovieDTOTest {
     }
 
     @Test
-    public void testMappingFromMovie() {
+    void testMappingFromMovie() {
         Movie movie = new Movie();
         movie.setTitle("Valid Movie");
         movie.setGenre("Drama");
@@ -97,7 +97,7 @@ public class MovieDTOTest {
     }
 
     @Test
-    public void testAllGettersAndSetters() {
+    void testAllGettersAndSetters() {
         MovieDTO movieDTO = new MovieDTO();
         movieDTO.setTitle("Valid Movie");
         movieDTO.setGenre("Drama");
@@ -129,7 +129,7 @@ public class MovieDTOTest {
     }
 
     @Test
-    public void testNegativeRating() {
+    void testNegativeRating() {
         MovieDTO movieDTO = new MovieDTO();
         movieDTO.setTitle("Valid Movie");
         movieDTO.setGenre("Drama");
@@ -144,7 +144,7 @@ public class MovieDTOTest {
     }
 
     @Test
-    public void testRatingGreaterThan10() {
+    void testRatingGreaterThan10() {
         MovieDTO movieDTO = new MovieDTO();
         movieDTO.setTitle("Valid Movie");
         movieDTO.setGenre("Drama");
@@ -159,7 +159,7 @@ public class MovieDTOTest {
     }
 
     @Test
-    public void testNegativeDuration() {
+    void testNegativeDuration() {
         MovieDTO movieDTO = new MovieDTO();
         movieDTO.setTitle("Valid Movie");
         movieDTO.setGenre("Drama");

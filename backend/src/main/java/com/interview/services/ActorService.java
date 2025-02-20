@@ -1,5 +1,7 @@
 package com.interview.services;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ public class ActorService {
     }
 
     @Transactional
+    @CacheEvict(value = "actorsList", allEntries = true)
     public Actor saveActor(Actor actor) {
         try {
             return this.actorRepository.save(actor);
@@ -32,14 +35,16 @@ public class ActorService {
     }
 
     @Transactional
+    @CacheEvict(value = "actorsList", allEntries = true)
     public void deleteActorById(long id) {
         Actor actor = getActorById(id);
         this.actorRepository.delete(actor);
     }
 
     @Transactional
+    @CacheEvict(value = "actorsList", allEntries = true)
     public Actor updateActor(long id, Actor actor) {
-        Actor actorToUpdate = this.actorRepository.findById(id).get();
+        Actor actorToUpdate = getActorById(id);
         actorToUpdate.setFirstName(actor.getFirstName());
         actorToUpdate.setLastName(actor.getLastName());
 
@@ -50,6 +55,7 @@ public class ActorService {
         return this.actorRepository.findById(id).orElseThrow(() -> new NotFoundException("Actor not found"));
     }
 
+    @Cacheable(value = "actorsList", key = "'page:' + #pageable.pageNumber + '- size:' + #pageable.pageSize")
     public Page<Actor> getActors(Pageable pageable) {
         return this.actorRepository.findAll(pageable);
     }

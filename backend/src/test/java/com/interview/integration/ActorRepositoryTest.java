@@ -19,7 +19,7 @@ public class ActorRepositoryTest {
 
     @Test
     @Transactional
-    public void testSaveAndFindById() {
+    void testSaveAndFindById() {
         Actor actor = new Actor();
         actor.setFirstName("New");
         actor.setLastName("Actor");
@@ -34,7 +34,7 @@ public class ActorRepositoryTest {
 
     @Test
     @Transactional
-    public void testUpdate() {
+    void testUpdate() {
         Actor actor = new Actor();
         actor.setFirstName("Update");
         actor.setLastName("Actor");
@@ -51,7 +51,7 @@ public class ActorRepositoryTest {
 
     @Test
     @Transactional
-    public void testDelete() {
+    void testDelete() {
         Actor actor = new Actor();
         actor.setFirstName("Delete");
         actor.setLastName("Actor");

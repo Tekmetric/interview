@@ -53,7 +53,7 @@ public class DirectorTest {
         Instant createdAtBeforeSave = director.getCreatedAt();
         Instant updatedAtBeforeSave = director.getUpdatedAt();
 
-        director.setUpdatedAt(Instant.now()); // Simulating an update
+        director.setUpdatedAt(Instant.now());
 
         assertNotNull(director.getUpdatedAt(), "updatedAt should be set");
         assertNotEquals(createdAtBeforeSave, director.getUpdatedAt(), "createdAt and updatedAt should differ");

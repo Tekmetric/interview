@@ -24,7 +24,7 @@ public class DirectorDTOTest {
     }
 
     @Test
-    public void testRequiredProperties() {
+    void testRequiredProperties() {
         DirectorDTO director = new DirectorDTO();
 
         Set<ConstraintViolation<DirectorDTO>> violations = validator.validate(director);
@@ -40,7 +40,7 @@ public class DirectorDTOTest {
     }
 
     @Test
-    public void testAllGettersAndSetters() {
+    void testAllGettersAndSetters() {
         DirectorDTO director = new DirectorDTO();
         director.setFirstName("John");
         director.setLastName("Doe");

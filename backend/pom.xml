@@ -117,6 +117,7 @@
                             <excludes>
                                 <exclude>java/sql/ResultSetMetaData</exclude>
                                 <exclude>org/hibernate/**</exclude>
+
                             </excludes>
                         </configuration>
                     </execution>

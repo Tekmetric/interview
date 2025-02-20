@@ -2,6 +2,8 @@ package com.interview.services;
 
 import jakarta.transaction.Transactional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ public class DirectorService {
     }
 
     @Transactional
+    @CacheEvict(value = "directorList", allEntries = true)
     public Director saveDirector(Director director) {
         try {
             return directorRepository.save(director);
@@ -31,18 +34,20 @@ public class DirectorService {
     }
 
     @Transactional
+    @CacheEvict(value = "directorList", allEntries = true)
     public void deleteDirectorById(long id) {
         getDirectorById(id);
         directorRepository.deleteById(id);
     }
 
     @Transactional
+    @CacheEvict(value = "directorList", allEntries = true)
     public Director updateDirector(long id, Director director) {
         Director directorToUpdate = getDirectorById(id);
         directorToUpdate.setFirstName(director.getFirstName());
         directorToUpdate.setLastName(director.getLastName());
 
-        return directorToUpdate;
+        return directorRepository.save(directorToUpdate);
 
     }
 
@@ -50,6 +55,7 @@ public class DirectorService {
         return directorRepository.findById(id).orElseThrow(() -> new NotFoundException("Director not found"));
     }
 
+    @Cacheable(value = "directorList", key = "'page:' + #pageable.pageNumber + '- size:' + #pageable.pageSize")
     public Page<Director> getDirectors(Pageable pageable) {
         return directorRepository.findAll(pageable);
     }

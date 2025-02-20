@@ -20,7 +20,7 @@ public class KeywordRepositoryTest {
 
     @Test
     @Transactional
-    public void testSaveAndFindById() {
+    void testSaveAndFindById() {
         Keyword keyword = new Keyword();
         keyword.setName("New");
 
@@ -33,7 +33,7 @@ public class KeywordRepositoryTest {
 
     @Test
     @Transactional
-    public void testUpdate() {
+    void testUpdate() {
         Keyword keyword = new Keyword();
         keyword.setName("Update");
 
@@ -49,7 +49,7 @@ public class KeywordRepositoryTest {
 
     @Test
     @Transactional
-    public void testDelete() {
+    void testDelete() {
         Keyword keyword = new Keyword();
         keyword.setName("Delete");
 

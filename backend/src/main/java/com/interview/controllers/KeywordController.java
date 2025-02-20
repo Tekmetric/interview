@@ -17,6 +17,8 @@ import com.interview.models.Keyword;
 import com.interview.services.KeywordService;
 import com.interview.util.ConvertUtil;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/keyword")
 public class KeywordController {
@@ -40,19 +42,21 @@ public class KeywordController {
     }
 
     @PostMapping
-    public ResponseEntity<KeywordDTO> saveMovie(@RequestBody KeywordDTO director) {
+    public ResponseEntity<KeywordDTO> saveKeyword(@RequestBody KeywordDTO keywordDTO) {
         return ResponseEntity
-                .ok(ConvertUtil.convertToDTO(keywordService.saveKeyword(new Keyword(director)), KeywordDTO.class));
+                .ok(ConvertUtil.convertToDTO(keywordService.saveKeyword(new Keyword(keywordDTO)), KeywordDTO.class));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteActorById(@PathVariable("id") long id) {
+    public ResponseEntity<Void> deleteKeywordById(@PathVariable("id") long id) {
         keywordService.deleteKeywordById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<KeywordDTO> updateMovie(@PathVariable("id") long id, final KeywordDTO keyword) {
+    public ResponseEntity<KeywordDTO> updateKeyword(@PathVariable("id") long id,
+            @Valid @RequestBody KeywordDTO keyword) {
+
         return ResponseEntity
                 .ok(ConvertUtil.convertToDTO(keywordService.updateKeyword(id, keyword.getName()), KeywordDTO.class));
     }

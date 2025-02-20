@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +46,11 @@ public class MovieController {
 
     @PostMapping
     public ResponseEntity<MovieDTO> saveMovie(@Valid @RequestBody MovieDTO movie) {
-        return ResponseEntity.ok(ConvertUtil.convertToDTO(movieService.saveMovie(new Movie(movie)), MovieDTO.class));
+        Movie movieEntity = new Movie(movie);
+        Movie savedMovie = movieService.saveMovie(movieEntity);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ConvertUtil.convertToDTO(savedMovie, MovieDTO.class));
     }
 
     @DeleteMapping("/{id}")
@@ -55,9 +60,10 @@ public class MovieController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MovieDTO> updateMovie(@PathVariable("id") long id, final MovieDTO movie) {
+    public ResponseEntity<MovieDTO> updateMovie(@PathVariable("id") long id, @Valid @RequestBody final MovieDTO movie) {
+        Movie mov = movieService.updateMovie(id, new Movie(movie));
         return ResponseEntity
-                .ok(ConvertUtil.convertToDTO(movieService.updateMovie(id, new Movie(movie)), MovieDTO.class));
+                .ok(ConvertUtil.convertToDTO(mov, MovieDTO.class));
     }
 
     @GetMapping("/filter")
@@ -72,7 +78,11 @@ public class MovieController {
             @RequestParam(required = false) String genre,
             Pageable pageable) {
 
-        Page<Movie> movies;
+        Page<Movie> movies = Page.empty();
+
+        if (filterType == null || filterType.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
 
         switch (filterType.toLowerCase()) {
             case "actor":
@@ -96,8 +106,6 @@ public class MovieController {
             case "genre":
                 movies = movieService.getMoviesByGenre(genre, pageable);
                 break;
-            default:
-                return ResponseEntity.badRequest().build();
         }
 
         return ResponseEntity.ok(movies.map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));

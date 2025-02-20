@@ -55,7 +55,6 @@ public class MovieRepositoryTest {
     }
 
     @Test
-
     void testFindByGenre() {
         Movie movie = new Movie();
         movie.setTitle("New Genre Movie");
@@ -149,7 +148,8 @@ public class MovieRepositoryTest {
         movie.setDirector(director);
         movieRepository.save(movie);
 
-        Page<Movie> movies = movieRepository.findByDirectorName("Christopher", "Nolan", PageRequest.of(0, 10));
+        Page<Movie> movies = movieRepository.findByDirectorFirstNameLastName("Christopher", "Nolan",
+                PageRequest.of(0, 10));
 
         assertNotNull(movies);
         assertTrue(movies.getTotalElements() > 0);

@@ -55,7 +55,7 @@ public class ActorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ActorDTO> updateMovie(@PathVariable("id") long id, final ActorDTO actor) {
+    public ResponseEntity<ActorDTO> updateActor(@PathVariable("id") long id, @RequestBody final ActorDTO actor) {
         return ResponseEntity
                 .ok(ConvertUtil.convertToDTO(actorService.updateActor(id, new Actor(actor)), ActorDTO.class));
     }

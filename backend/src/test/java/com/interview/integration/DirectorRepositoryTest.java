@@ -20,7 +20,7 @@ public class DirectorRepositoryTest {
 
     @Test
     @Transactional
-    public void testSaveAndFindById() {
+    void testSaveAndFindById() {
         Director director = new Director();
         director.setFirstName("New");
         director.setLastName("Director");
@@ -35,7 +35,7 @@ public class DirectorRepositoryTest {
 
     @Test
     @Transactional
-    public void testUpdate() {
+    void testUpdate() {
         Director director = new Director();
         director.setFirstName("Update");
         director.setLastName("Director");
@@ -52,7 +52,7 @@ public class DirectorRepositoryTest {
 
     @Test
     @Transactional
-    public void testDelete() {
+    void testDelete() {
         Director director = new Director();
         director.setFirstName("Delete");
         director.setLastName("Director");

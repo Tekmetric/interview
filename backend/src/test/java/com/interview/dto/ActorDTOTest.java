@@ -24,7 +24,7 @@ public class ActorDTOTest {
     }
 
     @Test
-    public void testRequiredProperties() {
+    void testRequiredProperties() {
         ActorDTO actor = new ActorDTO();
 
         Set<ConstraintViolation<ActorDTO>> violations = validator.validate(actor);
@@ -40,7 +40,7 @@ public class ActorDTOTest {
     }
 
     @Test
-    public void testAllGettersAndSetters() {
+    void testAllGettersAndSetters() {
         ActorDTO actor = new ActorDTO();
         actor.setFirstName("John");
         actor.setLastName("Doe");

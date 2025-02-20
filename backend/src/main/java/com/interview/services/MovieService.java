@@ -52,7 +52,7 @@ public class MovieService {
             Director director = movie.getDirector();
 
             if (director.getId() == null) {
-                movie.setDirector(directorService.saveDirector(director));
+                director = directorService.saveDirector(director);
             }
 
             directorService.getDirectorById(director.getId());
@@ -80,7 +80,7 @@ public class MovieService {
         existingMovie.setBudget(movie.getBudget());
         existingMovie.setBoxOffice(movie.getBoxOffice());
 
-        return existingMovie;
+        return movieRepository.save(existingMovie);
     }
 
     public Page<Movie> getMoviesByGenre(final String genre, final Pageable pageable) {
@@ -100,7 +100,7 @@ public class MovieService {
     }
 
     public Page<Movie> getMoviesByDirector(final String firstName, final String lastName, final Pageable pageable) {
-        return movieRepository.findByDirectorName(firstName, lastName, pageable);
+        return movieRepository.findByDirectorFirstNameLastName(firstName, lastName, pageable);
     }
 
     public Page<Movie> getMoviesByReleaseYear(final int releaseYear, final Pageable pageable) {

@@ -23,7 +23,7 @@ public class KeywordDTOTest {
     }
 
     @Test
-    public void testRequiredProperty() {
+    void testRequiredProperty() {
         KeywordDTO keyword = new KeywordDTO();
 
         Set<ConstraintViolation<KeywordDTO>> violations = validator.validate(keyword);
@@ -38,7 +38,7 @@ public class KeywordDTOTest {
     }
 
     @Test
-    public void testAllGettersAndSetters() {
+    void testAllGettersAndSetters() {
         KeywordDTO keyword = new KeywordDTO();
         keyword.setName("Action");
         keyword.setId(1L);

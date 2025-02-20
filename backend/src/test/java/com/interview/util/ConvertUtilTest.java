@@ -15,7 +15,7 @@ import com.interview.models.Movie;
 
 public class ConvertUtilTest {
     @Test
-    public void testConvertMovieToMovieDTO() {
+    void testConvertMovieToMovieDTO() {
         Movie movieDTO = new Movie();
         movieDTO.setTitle("Valid Movie");
         movieDTO.setGenre("Drama");
@@ -39,7 +39,7 @@ public class ConvertUtilTest {
     }
 
     @Test
-    public void testConvertDirectorToDirectorDTO() {
+    void testConvertDirectorToDirectorDTO() {
         Director director = new Director();
         director.setFirstName("John");
         director.setLastName("Doe");
@@ -53,16 +53,21 @@ public class ConvertUtilTest {
     }
 
     @Test()
-    public void testErrorConvertingToInvalidDTO() {
+    void testErrorConvertingToInvalidDTO() {
         Movie movie = new Movie();
         Class<DirectorDTO> dtoClass = DirectorDTO.class;
 
-        // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             ConvertUtil.convertToDTO(movie, dtoClass);
         });
 
         assertTrue(exception.getMessage().contains("Error converting to DTO"));
 
+    }
+
+    @Test
+    void testInstantiation() {
+        ConvertUtil convertUtil = new ConvertUtil();
+        assertTrue(convertUtil instanceof ConvertUtil);
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import jakarta.validation.Valid;
 
 @RequestMapping("/api/director")
 @RestController
+@Validated
 public class DirectorController {
     DirectorService directorService;
 
@@ -29,18 +31,36 @@ public class DirectorController {
         this.directorService = directorService;
     }
 
+    /**
+     * Get all directors, paged
+     * 
+     * @param pageable
+     * @return
+     */
     @GetMapping
     public ResponseEntity<Page<DirectorDTO>> getActors(final Pageable pageable) {
         return ResponseEntity.ok(directorService.getDirectors(pageable)
                 .map(director -> ConvertUtil.convertToDTO(director, DirectorDTO.class)));
     }
 
+    /**
+     * Get director by id
+     * 
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     public ResponseEntity<DirectorDTO> getActorById(@PathVariable("id") long id) {
         Director director = directorService.getDirectorById(id);
         return ResponseEntity.ok(ConvertUtil.convertToDTO(director, DirectorDTO.class));
     }
 
+    /**
+     * Save director
+     * 
+     * @param director
+     * @return
+     */
     @PostMapping
     public ResponseEntity<DirectorDTO> saveMovie(@Valid @RequestBody final DirectorDTO director) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -48,12 +68,25 @@ public class DirectorController {
                         DirectorDTO.class));
     }
 
+    /**
+     * Delete director by id
+     * 
+     * @param id
+     * @return
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActorById(@PathVariable("id") long id) {
         directorService.deleteDirectorById(id);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Update director
+     * 
+     * @param id
+     * @param actor
+     * @return
+     */
     @PutMapping("/{id}")
     public ResponseEntity<DirectorDTO> updateMovie(@PathVariable("id") long id,
             @Valid @RequestBody final DirectorDTO actor) {

@@ -93,7 +93,7 @@ public class KeywordControllerTest {
 
         ResponseEntity<KeywordDTO> response = restTemplate.postForEntity(baseUrl, request, KeywordDTO.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
     }
 

@@ -2,6 +2,7 @@ package com.interview.controllers;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,9 +43,9 @@ public class KeywordController {
     }
 
     @PostMapping
-    public ResponseEntity<KeywordDTO> saveKeyword(@RequestBody KeywordDTO keywordDTO) {
-        return ResponseEntity
-                .ok(ConvertUtil.convertToDTO(keywordService.saveKeyword(new Keyword(keywordDTO)), KeywordDTO.class));
+    public ResponseEntity<KeywordDTO> saveKeyword(@Valid @RequestBody KeywordDTO keywordDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ConvertUtil.convertToDTO(keywordService.saveKeyword(new Keyword(keywordDTO)), KeywordDTO.class));
     }
 
     @DeleteMapping("/{id}")

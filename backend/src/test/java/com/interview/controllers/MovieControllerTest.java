@@ -146,7 +146,7 @@ public class MovieControllerTest {
 
         ResponseEntity<MovieDTO> response = restTemplate.postForEntity(baseUrl, request, MovieDTO.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
     }
 
@@ -220,7 +220,7 @@ public class MovieControllerTest {
         when(movieService.getMoviesByGenre(anyString(), any(PageRequest.class))).thenReturn(page);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter?filterType=genre&genre=Horror&page=0&size=10",
+                baseUrl + "/filter/genre?value=Horror&page=0&size=10",
                 HttpMethod.GET,
                 null,
                 String.class);
@@ -252,7 +252,7 @@ public class MovieControllerTest {
         when(movieService.getMoviesByLanguage(anyString(), any(PageRequest.class))).thenReturn(page);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter?filterType=language&language=Chinese&page=0&size=10",
+                baseUrl + "/filter/language?value=Chinese&page=0&size=10",
                 HttpMethod.GET,
                 null,
                 String.class);
@@ -284,7 +284,7 @@ public class MovieControllerTest {
         when(movieService.getMoviesByDirector(anyString(), anyString(), any(PageRequest.class))).thenReturn(page);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter?filterType=director&firstName=Test&lastName=Director&page=0&size=10",
+                baseUrl + "/filter/director?firstName=Test&lastName=Director&page=0&size=10",
                 HttpMethod.GET,
                 null,
                 String.class);
@@ -323,7 +323,7 @@ public class MovieControllerTest {
         when(movieService.getMoviesByActor(anyString(), anyString(), any(PageRequest.class))).thenReturn(page);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter?filterType=actor&firstName=Test&lastName=Actor&page=0&size=10",
+                baseUrl + "/filter/actor?firstName=Test&lastName=Actor&page=0&size=10",
                 HttpMethod.GET,
                 null,
                 String.class);
@@ -362,7 +362,7 @@ public class MovieControllerTest {
         when(movieService.getMoviesByKeyword(anyString(), any(PageRequest.class))).thenReturn(page);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter?filterType=keyword&keyword=woods&page=0&size=10",
+                baseUrl + "/filter/keyword?value=woods&page=0&size=10",
                 HttpMethod.GET,
                 null,
                 String.class);
@@ -397,7 +397,7 @@ public class MovieControllerTest {
         when(movieService.getMoviesByReleaseYear(anyInt(), any(PageRequest.class))).thenReturn(page);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter?filterType=release-year&releaseYear=2022&page=0&size=10",
+                baseUrl + "/filter/release-year?value=2022&page=0&size=10",
                 HttpMethod.GET,
                 null,
                 String.class);
@@ -431,7 +431,7 @@ public class MovieControllerTest {
         when(movieService.getMoviesByMinRating(any(BigDecimal.class), any(PageRequest.class))).thenReturn(page);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter?filterType=rating&rating=7.5&page=0&size=10",
+                baseUrl + "/filter/rating?value=7.5&page=0&size=10",
                 HttpMethod.GET,
                 null,
                 String.class);
@@ -445,16 +445,4 @@ public class MovieControllerTest {
         assertEquals(7.5, jsonNode.get("content").get(0).get("rating").asDouble());
         assertEquals("Test Movie", jsonNode.get("content").get(0).get("title").asText());
     }
-
-    @Test
-    void testFilterWithNoFilterType() {
-        ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter?filterType=&page=0&size=10",
-                HttpMethod.GET,
-                null,
-                String.class);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
 }

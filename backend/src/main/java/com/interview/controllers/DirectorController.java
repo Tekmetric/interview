@@ -18,6 +18,8 @@ import com.interview.models.Director;
 import com.interview.services.DirectorService;
 import com.interview.util.ConvertUtil;
 
+import jakarta.validation.Valid;
+
 @RequestMapping("/api/director")
 @RestController
 public class DirectorController {
@@ -40,7 +42,7 @@ public class DirectorController {
     }
 
     @PostMapping
-    public ResponseEntity<DirectorDTO> saveMovie(@RequestBody DirectorDTO director) {
+    public ResponseEntity<DirectorDTO> saveMovie(@Valid @RequestBody final DirectorDTO director) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ConvertUtil.convertToDTO(directorService.saveDirector(new Director(director)),
                         DirectorDTO.class));
@@ -53,7 +55,8 @@ public class DirectorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DirectorDTO> updateMovie(@PathVariable("id") long id, @RequestBody final DirectorDTO actor) {
+    public ResponseEntity<DirectorDTO> updateMovie(@PathVariable("id") long id,
+            @Valid @RequestBody final DirectorDTO actor) {
         return ResponseEntity.ok(
                 ConvertUtil.convertToDTO(directorService.updateDirector(id, new Director(actor)), DirectorDTO.class));
     }

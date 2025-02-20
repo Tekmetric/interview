@@ -43,7 +43,7 @@ public class ActorController {
     }
 
     @PostMapping
-    public ResponseEntity<ActorDTO> saveActor(@Valid @RequestBody ActorDTO actor) {
+    public ResponseEntity<ActorDTO> saveActor(@Valid @RequestBody final ActorDTO actor) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ConvertUtil.convertToDTO(actorService.saveActor(new Actor(actor)), ActorDTO.class));
     }
@@ -55,7 +55,7 @@ public class ActorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ActorDTO> updateActor(@PathVariable("id") long id, @RequestBody final ActorDTO actor) {
+    public ResponseEntity<ActorDTO> updateActor(@PathVariable("id") long id, @Valid @RequestBody final ActorDTO actor) {
         return ResponseEntity
                 .ok(ConvertUtil.convertToDTO(actorService.updateActor(id, new Actor(actor)), ActorDTO.class));
     }

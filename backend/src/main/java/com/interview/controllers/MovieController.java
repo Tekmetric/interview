@@ -66,48 +66,66 @@ public class MovieController {
                 .ok(ConvertUtil.convertToDTO(mov, MovieDTO.class));
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<Page<MovieDTO>> getMoviesByFilter(
-            @RequestParam("filterType") String filterType,
+    @GetMapping("/filter/actor")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByActor(
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String language,
-            @RequestParam(required = false) Integer releaseYear,
-            @RequestParam(required = false) BigDecimal rating,
-            @RequestParam(required = false) String genre,
             Pageable pageable) {
-
-        Page<Movie> movies = Page.empty();
-
-        if (filterType == null || filterType.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        switch (filterType.toLowerCase()) {
-            case "actor":
-                movies = movieService.getMoviesByActor(firstName, lastName, pageable);
-                break;
-            case "keyword":
-                movies = movieService.getMoviesByKeyword(keyword, pageable);
-                break;
-            case "language":
-                movies = movieService.getMoviesByLanguage(language, pageable);
-                break;
-            case "director":
-                movies = movieService.getMoviesByDirector(firstName, lastName, pageable);
-                break;
-            case "release-year":
-                movies = movieService.getMoviesByReleaseYear(releaseYear, pageable);
-                break;
-            case "rating":
-                movies = movieService.getMoviesByMinRating(rating, pageable);
-                break;
-            case "genre":
-                movies = movieService.getMoviesByGenre(genre, pageable);
-                break;
-        }
-
-        return ResponseEntity.ok(movies.map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));
+        return ResponseEntity.ok(movieService.getMoviesByActor(firstName, lastName, pageable)
+                .map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));
     }
+
+    @GetMapping("/filter/keyword")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByKeyword(
+            @RequestParam(required = false) String value,
+            Pageable pageable) {
+        return ResponseEntity.ok(movieService.getMoviesByKeyword(
+                value, pageable)
+                .map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));
+    }
+
+    @GetMapping("/filter/language")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByLanguage(
+            @RequestParam(required = false) String value,
+            Pageable pageable) {
+        return ResponseEntity.ok(movieService.getMoviesByLanguage(
+                value, pageable)
+                .map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));
+    }
+
+    @GetMapping("/filter/director")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByDirector(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            Pageable pageable) {
+        return ResponseEntity.ok(movieService.getMoviesByDirector(firstName, lastName, pageable)
+                .map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));
+    }
+
+    @GetMapping("/filter/release-year")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByReleaseYear(
+            @RequestParam(required = false) Integer value,
+            Pageable pageable) {
+        return ResponseEntity.ok(movieService.getMoviesByReleaseYear(
+                value, pageable)
+                .map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));
+    }
+
+    @GetMapping("/filter/rating")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByMinRating(
+            @RequestParam(required = false) BigDecimal value,
+            Pageable pageable) {
+        return ResponseEntity.ok(movieService.getMoviesByMinRating(
+                value, pageable)
+                .map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));
+    }
+
+    @GetMapping("/filter/genre")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByGenre(
+            @RequestParam(required = false) String value,
+            Pageable pageable) {
+        return ResponseEntity.ok(movieService.getMoviesByGenre(value, pageable)
+                .map(movie -> ConvertUtil.convertToDTO(movie, MovieDTO.class)));
+    }
+
 }

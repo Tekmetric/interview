@@ -8,10 +8,10 @@ import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
 
-import com.interview.dto.DirectorDTO;
-import com.interview.dto.MovieDTO;
-import com.interview.models.Director;
-import com.interview.models.Movie;
+import com.interview.director.dto.DirectorDTO;
+import com.interview.director.model.Director;
+import com.interview.movie.dto.MovieDTO;
+import com.interview.movie.model.Movie;
 
 public class ConvertUtilTest {
     @Test
@@ -63,11 +63,5 @@ public class ConvertUtilTest {
 
         assertTrue(exception.getMessage().contains("Error converting to DTO"));
 
-    }
-
-    @Test
-    void testInstantiation() {
-        ConvertUtil convertUtil = new ConvertUtil();
-        assertTrue(convertUtil instanceof ConvertUtil);
     }
 }

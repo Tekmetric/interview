@@ -1,8 +1,14 @@
+from abc import ABC, abstractmethod
 from typing import Optional
 import pandas as pd
 from data import NEOData
 
-class Transformer:
+class Transformer(ABC):
+    @abstractmethod
+    def process(self, raw_data: list[list[dict]]) -> pd.DataFrame:
+        pass
+
+class Standard(Transformer):
 	def process_estimated_diameter(self, estimated_diameter: dict) -> tuple[Optional[float], Optional[float]]:
 		estimated_diameter_meters = estimated_diameter.get("meters", {})
 		estimated_diameter_min = estimated_diameter_meters.get("estimated_diameter_min", None)

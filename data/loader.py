@@ -1,6 +1,15 @@
+from abc import ABC, abstractmethod
 import pandas as pd
 
-class Loader:
+class Loader(ABC):
+    @abstractmethod
+    def write(self, data: pd.DataFrame):
+        pass
+
+    @abstractmethod
+    def read(self) -> pd.DataFrame:
+        pass
+class Parquet(Loader):
 	def __init__(self, path: str):
 		self.path = path
 

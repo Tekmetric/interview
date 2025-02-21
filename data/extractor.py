@@ -1,9 +1,15 @@
 
+from abc import ABC, abstractmethod
 import asyncio
 import aiohttp
 import requests
 
-class Extractor:
+class Extractor(ABC):
+    @abstractmethod
+    def fetch_pages(self, page: int = 0, page_size: int = 20, limit: int = 1) -> list[list[dict]]:
+        pass
+
+class NasaApi(Extractor):
     def __init__(self, browse_api_url: str, api_key: str):
         self.browse_api_url = browse_api_url
         self.api_key = api_key

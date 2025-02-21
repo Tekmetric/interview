@@ -1,4 +1,4 @@
-package com.interview.util;
+package com.interview.shared.util;
 
 public final class ConvertUtil {
     private ConvertUtil() {

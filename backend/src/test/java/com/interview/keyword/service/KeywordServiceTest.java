@@ -24,10 +24,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.interview.exceptions.NotFoundException;
-import com.interview.exceptions.UniqueConstraintViolationException;
 import com.interview.keyword.model.Keyword;
 import com.interview.keyword.repository.IKeywordRepository;
+import com.interview.shared.exceptions.NotFoundException;
+import com.interview.shared.exceptions.UniqueConstraintViolationException;
 
 @ExtendWith(MockitoExtension.class)
 public class KeywordServiceTest {

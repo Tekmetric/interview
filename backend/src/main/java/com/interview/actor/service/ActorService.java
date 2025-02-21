@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.interview.actor.model.Actor;
 import com.interview.actor.repository.IActorRepository;
-import com.interview.exceptions.NotFoundException;
-import com.interview.exceptions.UniqueConstraintViolationException;
+import com.interview.shared.exceptions.NotFoundException;
+import com.interview.shared.exceptions.UniqueConstraintViolationException;
 
 import jakarta.transaction.Transactional;
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.interview.director.dto.DirectorDTO;
 import com.interview.director.model.Director;
 import com.interview.director.service.DirectorService;
-import com.interview.util.ConvertUtil;
+import com.interview.shared.util.ConvertUtil;
 
 import jakarta.validation.Valid;
 

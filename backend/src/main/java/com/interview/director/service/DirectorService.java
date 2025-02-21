@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.interview.director.model.Director;
 import com.interview.director.repository.IDirectorRepository;
-import com.interview.exceptions.NotFoundException;
-import com.interview.exceptions.UniqueConstraintViolationException;
+import com.interview.shared.exceptions.NotFoundException;
+import com.interview.shared.exceptions.UniqueConstraintViolationException;
 
 @Service
 public class DirectorService {

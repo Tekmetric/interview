@@ -2,8 +2,6 @@ package com.interview.movie.service;
 
 import com.interview.director.model.Director;
 import com.interview.director.service.DirectorService;
-import com.interview.exceptions.NotFoundException;
-import com.interview.exceptions.UniqueConstraintViolationException;
 
 import java.math.BigDecimal;
 import jakarta.transaction.Transactional;
@@ -18,6 +16,8 @@ import org.springframework.stereotype.Service;
 import com.interview.movie.model.Movie;
 import com.interview.movie.repository.IMovieRepository;
 import com.interview.movie.repository.MovieSpecification;
+import com.interview.shared.exceptions.NotFoundException;
+import com.interview.shared.exceptions.UniqueConstraintViolationException;
 
 @Service
 public class MovieService {
@@ -88,7 +88,7 @@ public class MovieService {
 
     public Page<Movie> getMoviesByFilter(final String genre, final String actorFirstName, final String actorLastName,
             final String keyword, final String language, final String directorFirstName, final String directorLastName,
-            final int releaseYear, final BigDecimal rating, final Pageable pageable) {
+            final Integer releaseYear, final BigDecimal rating, final Pageable pageable) {
 
         Specification<Movie> spec = Specification.where(MovieSpecification.hasGenre(genre))
                 .and(MovieSpecification.hasActor(actorFirstName, actorLastName))

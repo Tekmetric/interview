@@ -4,11 +4,11 @@ import com.interview.actor.model.Actor;
 import com.interview.director.model.Director;
 import com.interview.director.repository.IDirectorRepository;
 import com.interview.director.service.DirectorService;
-import com.interview.exceptions.NotFoundException;
-import com.interview.exceptions.UniqueConstraintViolationException;
 import com.interview.keyword.model.Keyword;
 import com.interview.movie.model.Movie;
 import com.interview.movie.repository.IMovieRepository;
+import com.interview.shared.exceptions.NotFoundException;
+import com.interview.shared.exceptions.UniqueConstraintViolationException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

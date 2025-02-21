@@ -2,8 +2,8 @@ package com.interview.actor.service;
 
 import com.interview.actor.model.Actor;
 import com.interview.actor.repository.IActorRepository;
-import com.interview.exceptions.NotFoundException;
-import com.interview.exceptions.UniqueConstraintViolationException;
+import com.interview.shared.exceptions.NotFoundException;
+import com.interview.shared.exceptions.UniqueConstraintViolationException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

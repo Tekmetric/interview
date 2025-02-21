@@ -1,6 +1,5 @@
 package com.interview.movie.controller;
 
-import com.interview.util.ConvertUtil;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.interview.movie.dto.MovieDTO;
 import com.interview.movie.model.Movie;
 import com.interview.movie.service.MovieService;
+import com.interview.shared.util.ConvertUtil;
 
 @RestController
 @Validated
@@ -116,7 +116,7 @@ public class MovieController {
             @RequestParam(required = false) String language,
             @RequestParam(required = false) String directorFirstName,
             @RequestParam(required = false) String directorLastName,
-            @RequestParam(required = false) int releaseYear,
+            @RequestParam(required = false) Integer releaseYear,
             @RequestParam(required = false) BigDecimal rating,
             Pageable pageable) {
 

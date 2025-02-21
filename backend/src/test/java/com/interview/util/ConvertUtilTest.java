@@ -12,6 +12,7 @@ import com.interview.director.dto.DirectorDTO;
 import com.interview.director.model.Director;
 import com.interview.movie.dto.MovieDTO;
 import com.interview.movie.model.Movie;
+import com.interview.shared.util.ConvertUtil;
 
 public class ConvertUtilTest {
     @Test

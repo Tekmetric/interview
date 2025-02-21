@@ -15,9 +15,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import com.interview.exceptions.NotFoundException;
-import com.interview.exceptions.UniqueConstraintViolationException;
-import com.interview.handlers.GlobalExceptionHandler;
+import com.interview.shared.exceptions.NotFoundException;
+import com.interview.shared.exceptions.UniqueConstraintViolationException;
+import com.interview.shared.handlers.GlobalExceptionHandler;
 
 public class GlobalExceptionHandlerTest {
     private final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();

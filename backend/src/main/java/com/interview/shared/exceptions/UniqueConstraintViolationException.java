@@ -1,4 +1,4 @@
-package com.interview.exceptions;
+package com.interview.shared.exceptions;
 
 public class UniqueConstraintViolationException extends RuntimeException {
     public UniqueConstraintViolationException(String message) {

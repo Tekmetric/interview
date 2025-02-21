@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.interview.keyword.dto.KeywordDTO;
 import com.interview.keyword.model.Keyword;
 import com.interview.keyword.service.KeywordService;
-import com.interview.util.ConvertUtil;
+import com.interview.shared.util.ConvertUtil;
 
 import jakarta.validation.Valid;
 

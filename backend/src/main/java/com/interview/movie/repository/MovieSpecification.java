@@ -14,7 +14,9 @@ public final class MovieSpecification {
     }
 
     public static Specification<Movie> hasGenre(String genre) {
-        return (root, query, cb) -> genre == null ? null : cb.equal(root.get("genre"), genre);
+        return (root, query, cb) -> genre == null
+                ? null
+                : cb.like(cb.lower(root.get("genre")), "%" + genre.toLowerCase() + "%");
     }
 
     public static Specification<Movie> hasActor(String firstName, String lastName) {
@@ -26,10 +28,12 @@ public final class MovieSpecification {
             Predicate predicate = cb.conjunction();
 
             if (firstName != null) {
-                predicate = cb.and(predicate, cb.equal(root.get("actors").get("firstName"), firstName));
+                predicate = cb.and(predicate,
+                        cb.like(cb.lower(root.get("actors").get("firstName")), "%" + firstName.toLowerCase() + "%"));
             }
             if (lastName != null) {
-                predicate = cb.and(predicate, cb.equal(root.get("actors").get("lastName"), lastName));
+                predicate = cb.and(predicate,
+                        cb.like(cb.lower(root.get("actors").get("lastName")), "%" + lastName.toLowerCase() + "%"));
             }
 
             return predicate;
@@ -45,10 +49,12 @@ public final class MovieSpecification {
             Predicate predicate = cb.conjunction();
 
             if (firstName != null) {
-                predicate = cb.and(predicate, cb.equal(root.get("director").get("firstName"), firstName));
+                predicate = cb.and(predicate,
+                        cb.like(cb.lower(root.get("director").get("firstName")), "%" + firstName.toLowerCase() + "%"));
             }
             if (lastName != null) {
-                predicate = cb.and(predicate, cb.equal(root.get("director").get("lastName"), lastName));
+                predicate = cb.and(predicate,
+                        cb.like(cb.lower(root.get("director").get("lastName")), "%" + lastName.toLowerCase() + "%"));
             }
 
             return predicate;
@@ -56,19 +62,26 @@ public final class MovieSpecification {
     }
 
     public static Specification<Movie> hasKeyword(String keyword) {
-        return (root, query, cb) -> keyword == null ? null : cb.equal(root.get("keywords").get("name"), keyword);
+        return (root, query, cb) -> keyword == null
+                ? null
+                : cb.like(cb.lower(root.get("keywords").get("name")), "%" + keyword.toLowerCase() + "%");
     }
 
     public static Specification<Movie> hasLanguage(String language) {
-        return (root, query, cb) -> language == null ? null : cb.equal(root.get("language"), language);
+        return (root, query, cb) -> language == null
+                ? null
+                : cb.like(cb.lower(root.get("language")), "%" + language.toLowerCase() + "%");
     }
 
     public static Specification<Movie> hasReleaseYear(Integer releaseYear) {
-        return (root, query, cb) -> releaseYear == null ? null : cb.equal(root.get("releaseYear"), releaseYear);
+        return (root, query, cb) -> releaseYear == null
+                ? null
+                : cb.equal(root.get("releaseYear"), releaseYear);
     }
 
     public static Specification<Movie> hasMinRating(BigDecimal minRating) {
-        return (root, query, cb) -> minRating == null ? null : cb.greaterThanOrEqualTo(root.get("rating"), minRating);
+        return (root, query, cb) -> minRating == null
+                ? null
+                : cb.greaterThanOrEqualTo(root.get("rating"), minRating);
     }
-
 }

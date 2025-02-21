@@ -12,10 +12,12 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.interview.movie.model.Movie;
 import com.interview.movie.repository.IMovieRepository;
+import com.interview.movie.repository.MovieSpecification;
 
 @Service
 public class MovieService {
@@ -47,7 +49,7 @@ public class MovieService {
 
     @Transactional
     @CacheEvict(value = "moviesList", allEntries = true)
-    public Movie saveMovie(final Movie movie) {
+    public Movie createMovie(final Movie movie) {
 
         movieRepository.findByTitle(movie.getTitle()).ifPresent(m -> {
             throw new UniqueConstraintViolationException("Movie already exists");
@@ -56,7 +58,7 @@ public class MovieService {
         Director director = movie.getDirector();
 
         if (director.getId() == null) {
-            director = directorService.saveDirector(director);
+            director = directorService.createDirector(director);
         }
 
         directorService.getDirectorById(director.getId());
@@ -84,32 +86,19 @@ public class MovieService {
         return movieRepository.save(existingMovie);
     }
 
-    public Page<Movie> getMoviesByGenre(final String genre, final Pageable pageable) {
-        return movieRepository.findByGenre(genre, pageable);
-    }
+    public Page<Movie> getMoviesByFilter(final String genre, final String actorFirstName, final String actorLastName,
+            final String keyword, final String language, final String directorFirstName, final String directorLastName,
+            final int releaseYear, final BigDecimal rating, final Pageable pageable) {
 
-    public Page<Movie> getMoviesByActor(final String firstName, final String lastName, final Pageable pageable) {
-        return movieRepository.findByActor(firstName, lastName, pageable);
-    }
+        Specification<Movie> spec = Specification.where(MovieSpecification.hasGenre(genre))
+                .and(MovieSpecification.hasActor(actorFirstName, actorLastName))
+                .and(MovieSpecification.hasKeyword(keyword))
+                .and(MovieSpecification.hasLanguage(language))
+                .and(MovieSpecification.hasDirector(directorFirstName, directorLastName))
+                .and(MovieSpecification.hasReleaseYear(releaseYear))
+                .and(MovieSpecification.hasMinRating(rating));
 
-    public Page<Movie> getMoviesByKeyword(final String keyword, final Pageable pageable) {
-        return movieRepository.findByKeyword(keyword, pageable);
-    }
-
-    public Page<Movie> getMoviesByLanguage(final String language, final Pageable pageable) {
-        return movieRepository.findByLanguage(language, pageable);
-    }
-
-    public Page<Movie> getMoviesByDirector(final String firstName, final String lastName, final Pageable pageable) {
-        return movieRepository.findByDirectorFirstNameLastName(firstName, lastName, pageable);
-    }
-
-    public Page<Movie> getMoviesByReleaseYear(final int releaseYear, final Pageable pageable) {
-        return movieRepository.findByReleaseYear(releaseYear, pageable);
-    }
-
-    public Page<Movie> getMoviesByMinRating(final BigDecimal rating, final Pageable pageable) {
-        return movieRepository.findByMinRating(rating, pageable);
+        return movieRepository.findAll(spec, pageable);
     }
 
 }

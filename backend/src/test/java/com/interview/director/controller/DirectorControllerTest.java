@@ -105,7 +105,7 @@ public class DirectorControllerTest {
         director.setFirstName("New");
         director.setLastName("Director");
 
-        when(directorService.saveDirector(any(Director.class))).thenReturn(director);
+        when(directorService.createDirector(any(Director.class))).thenReturn(director);
 
         ResponseEntity<DirectorDTO> response = restTemplate.postForEntity(baseUrl, directorDTO, DirectorDTO.class);
 

@@ -51,7 +51,7 @@ public class DirectorServiceTest {
     void testSaveDirector() {
         when(directorRepository.save(any(Director.class))).thenReturn(sampleDirector);
 
-        Director savedDirector = directorService.saveDirector(sampleDirector);
+        Director savedDirector = directorService.createDirector(sampleDirector);
 
         assertNotNull(savedDirector);
         assertEquals("John", savedDirector.getFirstName());
@@ -64,7 +64,7 @@ public class DirectorServiceTest {
                 .thenReturn(Optional.of(sampleDirector));
 
         UniqueConstraintViolationException exception = assertThrows(UniqueConstraintViolationException.class, () -> {
-            directorService.saveDirector(sampleDirector);
+            directorService.createDirector(sampleDirector);
         });
 
         assertEquals("Director already exists", exception.getMessage());

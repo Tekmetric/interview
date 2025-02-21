@@ -49,7 +49,7 @@ public class KeywordServiceTest {
     void testSaveKeyword() {
         when(keywordRepository.save(any(Keyword.class))).thenReturn(sampleKeyword);
 
-        Keyword savedKeyword = keywordService.saveKeyword(sampleKeyword);
+        Keyword savedKeyword = keywordService.createKeyword(sampleKeyword);
 
         assertNotNull(savedKeyword);
         assertEquals("keyword", savedKeyword.getName());
@@ -63,7 +63,7 @@ public class KeywordServiceTest {
                 .thenReturn(Optional.of(sampleKeyword));
 
         UniqueConstraintViolationException exception = assertThrows(UniqueConstraintViolationException.class, () -> {
-            keywordService.saveKeyword(sampleKeyword);
+            keywordService.createKeyword(sampleKeyword);
         });
 
         assertEquals("Keyword already exists", exception.getMessage());

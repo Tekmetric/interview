@@ -57,15 +57,16 @@ public class KeywordController {
     }
 
     /**
-     * Save keyword
+     * Create keyword
      * 
      * @param keywordDTO
      * @return
      */
     @PostMapping
-    public ResponseEntity<KeywordDTO> saveKeyword(@Valid @RequestBody KeywordDTO keywordDTO) {
+    public ResponseEntity<KeywordDTO> createKeyword(@Valid @RequestBody KeywordDTO keywordDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ConvertUtil.convertToDTO(keywordService.saveKeyword(new Keyword(keywordDTO)), KeywordDTO.class));
+                .body(ConvertUtil.convertToDTO(keywordService.createKeyword(new Keyword(keywordDTO)),
+                        KeywordDTO.class));
     }
 
     /**

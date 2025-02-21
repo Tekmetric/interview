@@ -24,7 +24,7 @@ public class ActorService {
 
     @Transactional
     @CacheEvict(value = "actorsList", allEntries = true)
-    public Actor saveActor(Actor actor) {
+    public Actor createActor(Actor actor) {
         actorRepository.findByFirstNameAndLastName(actor.getFirstName(), actor.getLastName())
                 .ifPresent(m -> {
                     throw new UniqueConstraintViolationException("Actor already exists");

@@ -45,7 +45,7 @@ class ActorServiceTest {
     void testSaveActor() {
         when(actorRepository.save(any(Actor.class))).thenReturn(sampleActor);
 
-        Actor savedActor = actorService.saveActor(sampleActor);
+        Actor savedActor = actorService.createActor(sampleActor);
 
         assertNotNull(savedActor);
         assertEquals("John", savedActor.getFirstName());
@@ -57,7 +57,7 @@ class ActorServiceTest {
         when(actorRepository.findByFirstNameAndLastName(anyString(), anyString())).thenReturn(Optional.of(sampleActor));
 
         UniqueConstraintViolationException exception = assertThrows(UniqueConstraintViolationException.class, () -> {
-            actorService.saveActor(sampleActor);
+            actorService.createActor(sampleActor);
         });
 
         assertEquals("Actor already exists", exception.getMessage());

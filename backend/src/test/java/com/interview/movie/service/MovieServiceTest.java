@@ -1,16 +1,19 @@
 package com.interview.movie.service;
 
+import com.interview.actor.model.Actor;
 import com.interview.director.model.Director;
 import com.interview.director.repository.IDirectorRepository;
 import com.interview.director.service.DirectorService;
 import com.interview.exceptions.NotFoundException;
 import com.interview.exceptions.UniqueConstraintViolationException;
+import com.interview.keyword.model.Keyword;
 import com.interview.movie.model.Movie;
 import com.interview.movie.repository.IMovieRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +51,8 @@ class MovieServiceTest {
 
     private Movie sampleMovie;
     private Director sampleDirector;
+    private Actor sampleActor;
+    private Keyword sampleKeyword;
 
     @BeforeEach
     void setUp() {
@@ -62,6 +69,16 @@ class MovieServiceTest {
         sampleMovie.setReleaseYear(2010);
         sampleMovie.setDuration(148);
         sampleMovie.setRating(new BigDecimal(8));
+
+        sampleActor = new Actor();
+        sampleActor.setFirstName("John");
+        sampleActor.setLastName("Doe");
+
+        sampleKeyword = new Keyword();
+        sampleKeyword.setName("keyword");
+
+        sampleMovie.setActors(List.of(sampleActor));
+        sampleMovie.setKeywords(List.of(sampleKeyword));
     }
 
     @Test
@@ -101,7 +118,7 @@ class MovieServiceTest {
     void testSaveMovie() {
         when(movieRepository.save(any(Movie.class))).thenReturn(sampleMovie);
 
-        Movie savedMovie = movieService.saveMovie(sampleMovie);
+        Movie savedMovie = movieService.createMovie(sampleMovie);
 
         assertNotNull(savedMovie);
         assertEquals("Inception", savedMovie.getTitle());
@@ -116,15 +133,15 @@ class MovieServiceTest {
         savedDirector.setId(1L);
 
         when(movieRepository.save(any(Movie.class))).thenReturn(sampleMovie);
-        when(directorService.saveDirector(any(Director.class))).thenReturn(savedDirector);
+        when(directorService.createDirector(any(Director.class))).thenReturn(savedDirector);
         when(directorService.getDirectorById(anyLong())).thenReturn(savedDirector);
 
-        Movie savedMovie = movieService.saveMovie(sampleMovie);
+        Movie savedMovie = movieService.createMovie(sampleMovie);
 
         assertNotNull(savedMovie);
         assertNotNull(savedMovie.getDirector());
         verify(movieRepository, times(1)).save(sampleMovie);
-        verify(directorService, times(1)).saveDirector(any(Director.class));
+        verify(directorService, times(1)).createDirector(any(Director.class));
         verify(directorService, times(1)).getDirectorById(anyLong());
     }
 
@@ -135,7 +152,7 @@ class MovieServiceTest {
                 .thenReturn(Optional.of(sampleMovie));
 
         UniqueConstraintViolationException exception = assertThrows(UniqueConstraintViolationException.class, () -> {
-            movieService.saveMovie(sampleMovie);
+            movieService.createMovie(sampleMovie);
         });
 
         assertEquals("Movie already exists", exception.getMessage());
@@ -190,101 +207,22 @@ class MovieServiceTest {
     }
 
     @Test
-    void testGetMoviesByGenre() {
+    void testGetMoviesFilter() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Movie> moviePage = new PageImpl<>(List.of(sampleMovie));
 
-        when(movieRepository.findByGenre("Sci-Fi", pageable)).thenReturn(moviePage);
+        when(movieRepository.findAll(ArgumentMatchers.<Specification<Movie>>any(), eq(pageable)))
+                .thenReturn(moviePage);
 
-        Page<Movie> result = movieService.getMoviesByGenre("Sci-Fi", pageable);
-
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(movieRepository, times(1)).findByGenre("Sci-Fi", pageable);
-    }
-
-    @Test
-    void testGetMoviesByDirector() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Movie> moviePage = new PageImpl<>(List.of(sampleMovie));
-
-        when(movieRepository.findByDirectorFirstNameLastName("Christopher", "Nolan", pageable)).thenReturn(moviePage);
-
-        Page<Movie> result = movieService.getMoviesByDirector("Christopher", "Nolan", pageable);
+        Page<Movie> result = movieService.getMoviesByFilter("Sci-Fi", sampleActor.getFirstName(),
+                sampleActor.getLastName(), sampleKeyword.getName(), sampleMovie.getLanguage(),
+                sampleDirector.getFirstName(), sampleDirector.getLastName(), sampleMovie.getReleaseYear(),
+                sampleMovie.getRating(),
+                pageable);
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
-        verify(movieRepository, times(1)).findByDirectorFirstNameLastName("Christopher", "Nolan", pageable);
+        assertEquals(result.getContent().get(0), sampleMovie);
+        verify(movieRepository, times(1)).findAll(ArgumentMatchers.<Specification<Movie>>any(), eq(pageable));
     }
-
-    @Test
-    void testGetMoviesByActor() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Movie> moviePage = new PageImpl<>(List.of(sampleMovie));
-
-        when(movieRepository.findByActor("John", "Doe", pageable)).thenReturn(moviePage);
-
-        Page<Movie> result = movieService.getMoviesByActor("John", "Doe", pageable);
-
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(movieRepository, times(1)).findByActor(anyString(), anyString(), any(Pageable.class));
-    }
-
-    @Test
-    void testGetMoviesByKeyword() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Movie> moviePage = new PageImpl<>(List.of(sampleMovie));
-
-        when(movieRepository.findByKeyword("keyword", pageable)).thenReturn(moviePage);
-
-        Page<Movie> result = movieService.getMoviesByKeyword("keyword", pageable);
-
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(movieRepository, times(1)).findByKeyword(anyString(), any(Pageable.class));
-    }
-
-    @Test
-    void testGetMoviesByReleaseYear() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Movie> moviePage = new PageImpl<>(List.of(sampleMovie));
-
-        when(movieRepository.findByReleaseYear(2010, pageable)).thenReturn(moviePage);
-
-        Page<Movie> result = movieService.getMoviesByReleaseYear(2010, pageable);
-
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(movieRepository, times(1)).findByReleaseYear(2010, pageable);
-    }
-
-    @Test
-    void getMoviesByMinRating() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Movie> moviePage = new PageImpl<>(List.of(sampleMovie));
-
-        when(movieRepository.findByMinRating(new BigDecimal(6), pageable)).thenReturn(moviePage);
-
-        Page<Movie> result = movieService.getMoviesByMinRating(new BigDecimal(6), pageable);
-
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(movieRepository, times(1)).findByMinRating(any(), any(Pageable.class));
-    }
-
-    @Test
-    void getMoviesByLanguage() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Movie> moviePage = new PageImpl<>(List.of(sampleMovie));
-
-        when(movieRepository.findByLanguage("English", pageable)).thenReturn(moviePage);
-
-        Page<Movie> result = movieService.getMoviesByLanguage("English", pageable);
-
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(movieRepository, times(1)).findByLanguage("English", pageable);
-    }
-
 }

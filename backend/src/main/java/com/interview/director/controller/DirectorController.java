@@ -56,15 +56,15 @@ public class DirectorController {
     }
 
     /**
-     * Save director
+     * Create director
      * 
      * @param director
      * @return
      */
     @PostMapping
-    public ResponseEntity<DirectorDTO> saveMovie(@Valid @RequestBody final DirectorDTO director) {
+    public ResponseEntity<DirectorDTO> createMovie(@Valid @RequestBody final DirectorDTO director) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ConvertUtil.convertToDTO(directorService.saveDirector(new Director(director)),
+                .body(ConvertUtil.convertToDTO(directorService.createDirector(new Director(director)),
                         DirectorDTO.class));
     }
 

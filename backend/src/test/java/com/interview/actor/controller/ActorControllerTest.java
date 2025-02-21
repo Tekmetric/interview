@@ -105,7 +105,7 @@ public class ActorControllerTest {
         actor.setFirstName("New");
         actor.setLastName("Actor");
 
-        when(actorService.saveActor(any(Actor.class))).thenReturn(actor);
+        when(actorService.createActor(any(Actor.class))).thenReturn(actor);
 
         ResponseEntity<ActorDTO> response = restTemplate.postForEntity(baseUrl, actorDTO, ActorDTO.class);
 

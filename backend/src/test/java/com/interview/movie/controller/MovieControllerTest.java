@@ -28,7 +28,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -139,7 +138,7 @@ public class MovieControllerTest {
 
         movie.setDirector(director);
 
-        when(movieService.saveMovie(any(Movie.class))).thenReturn(movie);
+        when(movieService.createMovie(any(Movie.class))).thenReturn(movie);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -204,201 +203,38 @@ public class MovieControllerTest {
     }
 
     @Test
-    void testGetMoviesByGenre() throws JsonMappingException, JsonProcessingException {
-        Movie movie = new Movie();
-        movie.setTitle("Test Movie");
-        movie.setGenre("Horror");
-        movie.setLanguage("English");
-
-        Director director = new Director();
-        director.setFirstName("Test");
-        director.setLastName("Director");
-
-        movie.setDirector(director);
-
-        Page<Movie> page = new PageImpl<>(List.of(movie));
-
-        when(movieService.getMoviesByGenre(anyString(), any(PageRequest.class))).thenReturn(page);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter/genre?value=Horror&page=0&size=10",
-                HttpMethod.GET,
-                null,
-                String.class);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(response.getBody());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, jsonNode.get("content").size());
-        assertEquals("Horror", jsonNode.get("content").get(0).get("genre").asText());
-    }
-
-    @Test
-    void testGetMoviesByLanguage() throws JsonMappingException, JsonProcessingException {
-        Movie movie = new Movie();
-        movie.setTitle("Test Movie");
-        movie.setGenre("Action");
-        movie.setLanguage("Chinese");
-
-        Director director = new Director();
-        director.setFirstName("Test");
-        director.setLastName("Director");
-
-        movie.setDirector(director);
-
-        Page<Movie> page = new PageImpl<>(List.of(movie));
-
-        when(movieService.getMoviesByLanguage(anyString(), any(PageRequest.class))).thenReturn(page);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter/language?value=Chinese&page=0&size=10",
-                HttpMethod.GET,
-                null,
-                String.class);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(response.getBody());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, jsonNode.get("content").size());
-        assertEquals("Chinese", jsonNode.get("content").get(0).get("language").asText());
-    }
-
-    @Test
-    void testGetMoviesByDirector() throws JsonMappingException, JsonProcessingException {
+    void testGetMoviesFilter() throws JsonMappingException, JsonProcessingException {
         Movie movie = new Movie();
         movie.setTitle("Test Movie");
         movie.setGenre("Action");
         movie.setLanguage("English");
+        movie.setRating(new BigDecimal(8));
+        movie.setReleaseYear(2010);
 
         Director director = new Director();
         director.setFirstName("Test");
         director.setLastName("Director");
-
-        movie.setDirector(director);
-
-        Page<Movie> page = new PageImpl<>(List.of(movie));
-
-        when(movieService.getMoviesByDirector(anyString(), anyString(), any(PageRequest.class))).thenReturn(page);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter/director?firstName=Test&lastName=Director&page=0&size=10",
-                HttpMethod.GET,
-                null,
-                String.class);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(response.getBody());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, jsonNode.get("content").size());
-        assertEquals("Test", jsonNode.get("content").get(0).get("director").get("firstName").asText());
-        assertEquals("Director", jsonNode.get("content").get(0).get("director").get("lastName").asText());
-    }
-
-    @Test
-    void testGetMoviesByActor() throws JsonMappingException, JsonProcessingException {
-        Movie movie = new Movie();
-        movie.setTitle("Test Movie");
-        movie.setGenre("Action");
-        movie.setLanguage("English");
-
-        Director director = new Director();
-        director.setFirstName("Test");
-        director.setLastName("Director");
-
-        movie.setDirector(director);
 
         Actor actor = new Actor();
         actor.setFirstName("Test");
         actor.setLastName("Actor");
 
-        movie.setActors(List.of(actor));
-
-        Page<Movie> page = new PageImpl<>(List.of(movie));
-
-        when(movieService.getMoviesByActor(anyString(), anyString(), any(PageRequest.class))).thenReturn(page);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter/actor?firstName=Test&lastName=Actor&page=0&size=10",
-                HttpMethod.GET,
-                null,
-                String.class);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(response.getBody());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, jsonNode.get("content").size());
-        assertEquals("Test", jsonNode.get("content").get(0).get("actors").get(0).get("firstName").asText());
-        assertEquals("Actor", jsonNode.get("content").get(0).get("actors").get(0).get("lastName").asText());
-
-    }
-
-    @Test
-    void testGetMoviesByKeyword() throws JsonMappingException, JsonProcessingException {
-        Movie movie = new Movie();
-        movie.setTitle("Test Movie");
-        movie.setGenre("Action");
-        movie.setLanguage("English");
-
-        Director director = new Director();
-        director.setFirstName("Test");
-        director.setLastName("Director");
-
-        movie.setDirector(director);
-
         Keyword keyword = new Keyword();
-        keyword.setName("woods");
+        keyword.setName("Action");
 
         movie.setKeywords(List.of(keyword));
-
-        Page<Movie> page = new PageImpl<>(List.of(movie));
-
-        when(movieService.getMoviesByKeyword(anyString(), any(PageRequest.class))).thenReturn(page);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter/keyword?value=woods&page=0&size=10",
-                HttpMethod.GET,
-                null,
-                String.class);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(response.getBody());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, jsonNode.get("content").size());
-
-        assertEquals("woods", jsonNode.get("content").get(0).get("keywords").get(0).get("name").asText());
-        assertEquals("Test Movie", jsonNode.get("content").get(0).get("title").asText());
-    }
-
-    @Test
-    void testGetMoviesByReleaseYear() throws JsonMappingException, JsonProcessingException {
-        Movie movie = new Movie();
-        movie.setTitle("Test Movie 2022");
-        movie.setGenre("Action");
-        movie.setLanguage("English");
-        movie.setReleaseYear(2022);
-
-        Director director = new Director();
-        director.setFirstName("Test");
-        director.setLastName("Director");
-
+        movie.setActors(List.of(actor));
         movie.setDirector(director);
 
         Page<Movie> page = new PageImpl<>(List.of(movie));
+        PageRequest pageable = PageRequest.of(0, 10);
 
-        when(movieService.getMoviesByReleaseYear(anyInt(), any(PageRequest.class))).thenReturn(page);
+        when(movieService.getMoviesByFilter(
+                anyString(), anyString(), anyString(), anyString(),
+                anyString(), anyString(), anyString(), anyInt(), any(), eq(pageable))).thenReturn(page);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter/release-year?value=2022&page=0&size=10",
+                baseUrl + "/filter?genre=Action&actorFirstName=Test&actorLastName=Actor&keyword=Action&language=English&directorFirstName=Test&directorLastName=Director&releaseYear=2010&rating=8&page=0&size=10",
                 HttpMethod.GET,
                 null,
                 String.class);
@@ -408,42 +244,28 @@ public class MovieControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+
         assertEquals(1, jsonNode.get("content").size());
-        assertEquals(2022, jsonNode.get("content").get(0).get("releaseYear").asInt());
-        assertEquals("Test Movie 2022", jsonNode.get("content").get(0).get("title").asText());
-    }
 
-    @Test
-    void testGetMoviesByRating() throws JsonMappingException, JsonProcessingException {
-        Movie movie = new Movie();
-        movie.setTitle("Test Movie");
-        movie.setGenre("Action");
-        movie.setLanguage("English");
-        movie.setRating(new BigDecimal(7.5));
+        JsonNode movieNode = jsonNode.get("content").get(0);
+        assertEquals(movie.getTitle(), movieNode.get("title").asText());
+        assertEquals(movie.getGenre(), movieNode.get("genre").asText());
+        assertEquals(movie.getLanguage(), movieNode.get("language").asText());
+        assertEquals(movie.getRating().intValue(), movieNode.get("rating").asInt());
+        assertEquals(movie.getReleaseYear(), movieNode.get("releaseYear").asInt());
 
-        Director director = new Director();
-        director.setFirstName("Test");
-        director.setLastName("Director");
+        JsonNode directorNode = movieNode.get("director");
+        assertNotNull(directorNode);
+        assertEquals(director.getFirstName(), directorNode.get("firstName").asText());
+        assertEquals(director.getLastName(), directorNode.get("lastName").asText());
 
-        movie.setDirector(director);
+        JsonNode actorNode = movieNode.get("actors").get(0);
+        assertNotNull(actorNode);
+        assertEquals(actor.getFirstName(), actorNode.get("firstName").asText());
+        assertEquals(actor.getLastName(), actorNode.get("lastName").asText());
 
-        Page<Movie> page = new PageImpl<>(List.of(movie));
-
-        when(movieService.getMoviesByMinRating(any(BigDecimal.class), any(PageRequest.class))).thenReturn(page);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                baseUrl + "/filter/rating?value=7.5&page=0&size=10",
-                HttpMethod.GET,
-                null,
-                String.class);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(response.getBody());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, jsonNode.get("content").size());
-        assertEquals(7.5, jsonNode.get("content").get(0).get("rating").asDouble());
-        assertEquals("Test Movie", jsonNode.get("content").get(0).get("title").asText());
+        JsonNode keywordNode = movieNode.get("keywords").get(0);
+        assertNotNull(keywordNode);
+        assertEquals(keyword.getName(), keywordNode.get("name").asText());
     }
 }

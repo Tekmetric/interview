@@ -24,7 +24,7 @@ public class DirectorService {
 
     @Transactional
     @CacheEvict(value = "directorList", allEntries = true)
-    public Director saveDirector(Director director) {
+    public Director createDirector(Director director) {
         directorRepository.findByFirstNameAndLastName(director.getFirstName(), director.getLastName())
                 .ifPresent(m -> {
                     throw new UniqueConstraintViolationException("Director already exists");

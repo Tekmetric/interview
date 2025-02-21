@@ -57,15 +57,15 @@ public class ActorController {
     }
 
     /**
-     * Save actor
+     * Create actor
      * 
      * @param actor
      * @return
      */
     @PostMapping
-    public ResponseEntity<ActorDTO> saveActor(@Valid @RequestBody final ActorDTO actor) {
+    public ResponseEntity<ActorDTO> createActor(@Valid @RequestBody final ActorDTO actor) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                ConvertUtil.convertToDTO(actorService.saveActor(new Actor(actor)), ActorDTO.class));
+                ConvertUtil.convertToDTO(actorService.createActor(new Actor(actor)), ActorDTO.class));
     }
 
     /**

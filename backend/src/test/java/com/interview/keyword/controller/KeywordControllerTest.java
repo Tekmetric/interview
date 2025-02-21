@@ -86,7 +86,7 @@ public class KeywordControllerTest {
         Keyword keyword = new Keyword();
         keyword.setName("New Keyword");
 
-        when(keywordService.saveKeyword(any(Keyword.class))).thenReturn(keyword);
+        when(keywordService.createKeyword(any(Keyword.class))).thenReturn(keyword);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -24,7 +24,7 @@ public class KeywordService {
 
     @Transactional
     @CacheEvict(value = "keywordList", allEntries = true)
-    public Keyword saveKeyword(Keyword keyword) {
+    public Keyword createKeyword(Keyword keyword) {
         keywordRepository.findByName(keyword.getName()).ifPresent(m -> {
             throw new UniqueConstraintViolationException("Keyword already exists");
         });

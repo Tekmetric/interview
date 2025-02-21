@@ -10,6 +10,19 @@ class Config:
     api_key = None
     browse_api_url = None
     storage_path = None
+    aggregation_rules = {
+        "close_approaches": {
+            "type": "count",
+            "column": "close_approach_data",
+            "path": "miss_distance.astronomical",
+            "threshold": 0.2,
+        },
+        "yearly_counts": {
+            "type": "count",
+            "column": "close_approach_data",
+            "path": "close_approach_year",
+        }
+    }
 
     def __init__(self):
         self.api_key = os.getenv("NASA_API_KEY")

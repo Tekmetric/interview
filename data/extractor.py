@@ -1,12 +1,13 @@
-
-from abc import ABC, abstractmethod
 import asyncio
 import aiohttp
 import requests
 
+from abc import ABC, abstractmethod
+from data import Pages
+
 class Extractor(ABC):
     @abstractmethod
-    def fetch_pages(self, page: int = 0, page_size: int = 20, limit: int = 1) -> list[list[dict]]:
+    def fetch_pages(self, page: int = 0, page_size: int = 20, limit: int = 1) -> Pages:
         pass
 
 class NasaApi(Extractor):
@@ -28,7 +29,7 @@ class NasaApi(Extractor):
             except Exception as e:
                 raise Exception(f"unexpected error: {str(e)}") from e
 
-    async def fetch_pages(self, page: int = 0, page_size: int = 20, limit: int = 1) -> list[list[dict]]:
+    async def fetch_pages(self, page: int = 0, page_size: int = 20, limit: int = 1) -> Pages:
         """ 
         Returns:
             list[list[dict]]: A list of pages, where each page contains a list of NEO dictionaries
@@ -45,4 +46,4 @@ class NasaApi(Extractor):
         print(f"waiting for {len(tasks)} tasks to complete")
         pages = await asyncio.gather(*tasks)
         print(f"tasks completed")
-        return pages
+        return Pages(pages)

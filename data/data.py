@@ -1,6 +1,14 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List, Dict
+
+
+@dataclass
+class Pages(List[List[Dict]]):
+    pages: List[List[Dict]]
+
+    def __post_init__(self):
+        super().__init__(self.pages)
 
 @dataclass
 class NEOData:
@@ -21,3 +29,6 @@ class NEOData:
     last_observation_date: Optional[str]
     observations_used: Optional[int]
     orbital_period: Optional[str]
+    closest_approach_miss_distance_astronomical: Optional[float]
+    closest_approach_year: Optional[int]
+    close_approach_data: List[Dict]

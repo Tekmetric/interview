@@ -1,12 +1,19 @@
+import pandas as pd
 from abc import ABC, abstractmethod
 from typing import Optional
-import pandas as pd
-from data import NEOData
+from data import NEOData, Pages
+from datetime import datetime
 
 class Transformer(ABC):
     @abstractmethod
-    def process(self, raw_data: list[list[dict]]) -> pd.DataFrame:
+    def process(self, raw_data: Pages) -> pd.DataFrame:
         pass
+
+def date_to_year(date: str) -> int:
+		try:
+			return datetime.strptime(date, "%Y-%m-%d").year
+		except ValueError:
+			return None
 
 class Standard(Transformer):
 	def process_estimated_diameter(self, estimated_diameter: dict) -> tuple[Optional[float], Optional[float]]:
@@ -15,17 +22,35 @@ class Standard(Transformer):
 		estimated_diameter_max = estimated_diameter_meters.get("estimated_diameter_max", None)
 
 		return estimated_diameter_min, estimated_diameter_max
-	
-	def process_close_approach_data(self, close_approach_data: dict) -> tuple[Optional[float], Optional[float], Optional[str]]:
-		if len(close_approach_data) == 0:
-			return None, None, None
 
-		first_entry = close_approach_data[0]
+	def process_close_approach_data(self, data: list[dict]) -> tuple[Optional[dict], Optional[float], Optional[float], Optional[str], Optional[float], Optional[int]]:
+		if len(data) == 0:
+			return None, None, None, None, None, None
+
+		# add closest_approach_year to list items 
+		data = [{**item, "close_approach_year": date_to_year(item.get("close_approach_date"))} for item in data]
+		# sort close approach data based on closest miss distance
+		close_approach_data_ascending = sorted(
+			data,
+			key=lambda x: x.get("miss_distance", {}).get("astronomical", float("inf"))
+		)
+
+		# extract information from closest approach
+		first_entry = close_approach_data_ascending[0]
 		closest_approach_miss_distance_in_kilometers = first_entry.get("miss_distance", {}).get("kilometers", None)
+		closest_approach_miss_distance_astronomical = float(first_entry.get("miss_distance", {}).get("astronomical", 0))
 		closest_approach_date = first_entry.get("close_approach_date", None)
 		relative_velocity = first_entry.get("relative_velocity", {}).get("kilometers_per_second", None)
+		closest_approach_year = first_entry.get("close_approach_year", None)		
 
-		return closest_approach_miss_distance_in_kilometers, relative_velocity, closest_approach_date
+		return (
+			close_approach_data_ascending,
+			closest_approach_miss_distance_in_kilometers,
+			relative_velocity,
+			closest_approach_date,
+			closest_approach_miss_distance_astronomical,
+			closest_approach_year
+		)
 	
 	def process_orbital_data(self, orbital_data: dict) -> tuple[Optional[str], Optional[str], Optional[int]]:
 		return (
@@ -36,7 +61,15 @@ class Standard(Transformer):
 
 	def process_neo_entry(self, entry: dict) -> NEOData:
 		estimated_diameter_min, estimated_diameter_max = self.process_estimated_diameter(entry.get("estimated_diameter", {}))
-		closest_approach_miss_distance_in_kilometers, closest_approach_date, relative_velocity = self.process_close_approach_data(entry.get("close_approach_data", {}))
+		close_approach_data = entry.get("close_approach_data", [])
+		(
+			close_approach_data,
+			closest_approach_miss_distance_in_kilometers,
+			relative_velocity,
+			closest_approach_date,
+			closest_approach_miss_distance_astronomical,
+			closest_approach_year
+		) = self.process_close_approach_data(close_approach_data)
 		first_observation_date, last_observation_date, observations_used = self.process_orbital_data(entry.get("orbital_data", {}))
 		orbital_period = entry.get("orbital_data", {}).get("orbital_period", None)
 
@@ -58,9 +91,12 @@ class Standard(Transformer):
       last_observation_date=last_observation_date,
       observations_used=observations_used,
       orbital_period=orbital_period,
+      closest_approach_miss_distance_astronomical=closest_approach_miss_distance_astronomical,
+      closest_approach_year=closest_approach_year,
+			close_approach_data=close_approach_data,
     )
 
-	def process(self, raw_data: list[list[dict]]) -> pd.DataFrame:
+	def process(self, raw_data: Pages) -> pd.DataFrame:
 		processed_data = []
 		for page_index, page in enumerate(raw_data):
 			for entry in page:
@@ -76,5 +112,6 @@ class Standard(Transformer):
 					continue
 
 		df = pd.DataFrame(processed_data)
+		df['closest_approach_year'] = df['closest_approach_year'].astype(pd.Int64Dtype())
 		
 		return df

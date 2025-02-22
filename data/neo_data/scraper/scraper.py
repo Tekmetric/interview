@@ -1,46 +1,24 @@
 from omegaconf import DictConfig
 from .data_processing import DataProcessor
-from .request_handler import RequestHandler
+from .data_gathering import DataHandler
 
-
-
+import threading
+import logging
 class Scraper:
-    """ The Scraper is responsible for scraping data from a range of pages and persisting it. To do so, it uses a given DataPersister and RequestHandler.
 
-    Attributes
-    ----------
-    cfg : DictConfig
-        Configuration object containing scraper settings.
-    persister : DataPersister
-        Object responsible for persisting the scraped data.
-    request_handler : RequestHandler
-        Object responsible for handling page requests.
-    Methods
-    -------
-    scrape():
-        Scrapes data from a range of pages and persists the data.
-    """
-
-    def __init__(self, cfg: DictConfig, persister: DataProcessor, request_handler: RequestHandler):
+    def __init__(self, cfg: DictConfig, data_processor: DataProcessor, data_handler: DataHandler):
         self.cfg = cfg
-        self.persister = persister
-        self.request_handler = request_handler
+        self.data_processor = data_processor
+        self.data_handler = data_handler
 
     def scrape(self):
-        """
-        Scrapes data from a range of pages defined in the configuration.
-        This method iterates over a range of pages specified by the `start_page` 
-        and `end_page` attributes in the scraper configuration. For each page, 
-        it fetches the data using the request handler and persists the data 
-        using the persister if data is successfully retrieved.
-        Returns:
-            None
-        """
+        producer = threading.Thread(target=self.data_handler.download_data, name="producer")
+        consumer = threading.Thread(target=self.data_processor.process_data, name="consumer")
 
-        start_page = self.cfg.scraper.request.start_page
-        end_page = self.cfg.scraper.request.end_page
-
-        for page in range(start_page, end_page):
-            data = self.request_handler.fetch_page(page)
-            if data:
-                self.persister.process_json_data(data)
+        logging.info("Starting data download...")
+        producer.start()
+        logging.info("Starting data processing...")
+        consumer.start()
+        producer.join()
+        consumer.join()
+        logging.info("Data scraping complete.")

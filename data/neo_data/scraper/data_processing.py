@@ -1,35 +1,51 @@
 from abc import ABC, abstractmethod
-import json
 from omegaconf import DictConfig
+from queue import Queue
+
+import logging
+import pandas as pd
 
 class DataProcessor(ABC):
-    """ 
+    """ The DataProcessor class serves as an interface for various implementations that can process NASA NEO data according to the rqeuirements of the application.
+    Attributes:
+        cfg (DictConfig): Configuration object containing data processing settings.
+        queue (Queue): A queue object to store processed data.
     """
 
-    def __init__(self, cfg: DictConfig):
+    def __init__(self, cfg: DictConfig, queue: Queue):
         self.cfg = cfg
+        self.queue = queue
 
     @abstractmethod
-    def process_json_data(self, json_data: dict):
+    def process_data(self):
+        """ Implementations of the DataProcessor class must implement this method to process the NEO data in the queue.
         """
-        Proocess the given JSON data dictionary according to it's implementation.
-        Args:
-            json_data (dict): A string containing JSON data to be persisted.
-        """
-
         pass
 
 
 class PrintProcessor(DataProcessor):
-    """A class used to process NEO data by printing it to console."""
-    
-    def process_json_data(self, json_data: dict):
-        print(f"data type: {type(json_data)}")
-        print("-----------------------------")
-        print(json_data)
+    """ The PrintProcessor class is a simple implementation of the DataProcessor interface that prints the data to the console.
+    """
 
-class DataFrameProcessor(DataProcessor):
-    """A class used to process NEO data. The data is passed as a JSON string and converted to a Pandas DataFrame before being written to the file."""
+    def process_data(self):
+        """ Prints the NEO data from the queue to the console.
+        """
+        logging.info("Processing data...")
+        while True:
+            item = self.queue.get()
+            if item is None:
+                break
+            print("-----------------------------------")
+            print(item["page"])
+            print("-----------------------------------")
+            self.queue.task_done()
     
-    def process_json_data(self, json_data: dict):
+
+class PandasDFProcessor(DataProcessor):
+    """ The PandasDFProcessor class is an implementation of the DataProcessor interface that processes the data into a pandas DataFrame.
+    """
+
+    def process_data(self):
+        """ Processes the NEO data from the queue into a pandas DataFrame.
+        """
         pass

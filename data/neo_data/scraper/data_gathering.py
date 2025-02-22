@@ -1,21 +1,22 @@
+from queue import Queue
 import requests
 import logging
 from omegaconf import DictConfig
+from abc import ABC, abstractmethod
 
-class RequestHandler:
-    """RequestHandler is responsible for handling requests to the NASA NEO Web Service API.
-    Attributes:
-        cfg (DictConfig): Configuration object containing API details.
-    Methods:
-        __init__(cfg: DictConfig):
-            Initializes the RequestHandler with the given configuration.
-        _build_paged_request(page: int) -> dict:
-            Builds a dictionary representing a paged request with the given page number.
-        fetch_page(page: int) -> dict:
-    """
-
-    def __init__(self, cfg: DictConfig):
+class DataHandler(ABC):
+    def __init__(self, cfg: DictConfig, queue: Queue):
+        self.queue = queue
         self.cfg = cfg
+
+    @abstractmethod
+    def download_data(self):
+        pass
+
+
+class RequestsDataHandler(DataHandler):
+    """ The RequestsDataHandler uses the http requests library in order to fetch data from the NASA NEO Web Service API.
+    """
 
     def _build_paged_request(self, page: int):
         """
@@ -31,11 +32,9 @@ class RequestHandler:
             "page": page,
             "size": self.cfg.scraper.request.page_size
         }
-        
-
-    def fetch_page(self, page: int):
-        """
-        Fetches a specific page of data from the configured scraper endpoint.
+    
+    def _fetch_paged_data(self, page: int) -> dict:
+        """ Fetches one page of NEO data from the NASA NEO Web Service API.
         Args:
             page (int): The page number to fetch.
         Returns:
@@ -51,3 +50,18 @@ class RequestHandler:
             logging.error(f"Error fetching NEO page: {e}")
 
         return response.json()
+
+    def download_data(self):
+        """ Downloads data from the NASA NEO Web Service API using the requests library as it is confgured in the configuration file.
+        Resulting data is added to the queue for further processing.
+        """
+
+        start_page = self.cfg.scraper.request.start_page
+        end_page = self.cfg.scraper.request.end_page
+
+        for page in range(start_page, end_page):
+            data = self._fetch_paged_data(page)
+            if data:
+                self.queue.put(data)
+                logging.info(f"Data fetched for page {page}")
+        self.queue.put(None)  # Signal the end of the data stream

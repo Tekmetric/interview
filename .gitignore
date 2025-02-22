@@ -12,4 +12,9 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+
+# ignore any .api files
 .api
+
+# ignore hydra output logs
+outputs/

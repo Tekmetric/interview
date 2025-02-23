@@ -1,20 +1,31 @@
 from abc import ABC, abstractmethod
 import pandas as pd
+import os
+
+
+def apply_suffix_to_path(path:str, suffix: str):
+		if suffix:
+			return f"{path}_{suffix}.parquet"
+		return f"{path}.parquet"
 
 class Loader(ABC):
     @abstractmethod
-    def write(self, data: pd.DataFrame):
+    def write(self, data: pd.DataFrame, path: str):
         pass
 
     @abstractmethod
-    def read(self) -> pd.DataFrame:
+    def read(self, path) -> pd.DataFrame:
         pass
-class Parquet(Loader):
-	def __init__(self, path: str):
-		self.path = path
 
-	def write(self, data: pd.DataFrame):
-		data.to_parquet(self.path)
+class ParquetFileSystem(Loader):
+	EXT = ".parquet"
 
-	def read(self) -> pd.DataFrame:
-		return pd.read_parquet(self.path)
+	def concat_file_path(self, path: str, filename: str) -> str:
+		return f"{path}{os.sep}{filename}{self.EXT}"
+
+	def write(self, data: pd.DataFrame, path: str, filename:str):
+		os.makedirs(path, exist_ok=True)
+		data.to_parquet(self.concat_file_path(path, filename))
+
+	def read(self, path: str, filename: str) -> pd.DataFrame:
+		return pd.read_parquet(self.concat_file_path(path, filename))

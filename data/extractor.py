@@ -32,7 +32,7 @@ class NasaApi(Extractor):
     async def fetch_pages(self, page: int = 0, page_size: int = 20, limit: int = 1) -> Pages:
         """ 
         Returns:
-            list[list[dict]]: A list of pages, where each page contains a list of NEO dictionaries
+            Pages: A list of pages containing the neo data
         """
         print(f"fetching {limit} pages with size {page_size} starting from page {page}")
         urls = []

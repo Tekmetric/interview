@@ -1,13 +1,22 @@
 import pandas as pd
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Dict, List, Optional
 from data import NEOData, Pages
 from datetime import datetime
 
-class Transformer(ABC):
-    @abstractmethod
-    def process(self, raw_data: Pages) -> pd.DataFrame:
-        pass
+def get_nested_value(nested:dict, path:str, default=None) -> any:
+    """
+    Get value from nested dict based on a path.
+    """
+    keys = path.split('.')
+    value = nested
+    for key in keys:
+        if not isinstance(value, dict):
+            return None
+        value = value.get(key)
+        if not value:
+            return None
+    return value
 
 def date_to_year(date: str) -> int:
 		try:
@@ -15,7 +24,25 @@ def date_to_year(date: str) -> int:
 		except ValueError:
 			return None
 
+def count_approaches_under_threshold(approaches, threshold, path) -> int:
+	count = 0
+	for approach in approaches:
+		value = get_nested_value(approach, path, float("inf"))
+		if float(value) < threshold:
+			count += 1
+	return count
+
+class Transformer(ABC):
+    @abstractmethod
+    def process(self, raw_data: Pages) -> pd.DataFrame:
+        pass
+
 class Standard(Transformer):
+	aggregation_rules: Dict[str, dict]
+
+	def __init__(self, aggregation_rules: Dict[str, dict]) -> None:
+		self.aggregation_rules = aggregation_rules
+		
 	def process_estimated_diameter(self, estimated_diameter: dict) -> tuple[Optional[float], Optional[float]]:
 		estimated_diameter_meters = estimated_diameter.get("meters", {})
 		estimated_diameter_min = estimated_diameter_meters.get("estimated_diameter_min", None)
@@ -95,8 +122,48 @@ class Standard(Transformer):
       closest_approach_year=closest_approach_year,
 			close_approach_data=close_approach_data,
     )
+	
+	def aggregation_close_approaches_under_threshold(self, df: pd.DataFrame) -> pd.DataFrame:
+		rule = self.aggregation_rules["total_approaches_under_threshold"]
+		# total approaches under threshold per item
+		df["total_approaches_under_threshold"] =  df[rule["column"]].apply(
+			lambda x: count_approaches_under_threshold(x, rule["threshold"], rule["path"]) if x is not None else 0,
+		)
+		# total approaches under threshold for all items
+		return pd.DataFrame([int(df["total_approaches_under_threshold"].sum())], columns=["count"])
+	
 
-	def process(self, raw_data: Pages) -> pd.DataFrame:
+	def aggregation_approach_yearly_counts(self, df: pd.DataFrame) -> pd.DataFrame:
+		rule = self.aggregation_rules["approach_yearly_counts"]
+		# approach years per item
+		df["approach_yearly_counts"] =  df[rule["column"]].apply(
+			lambda approaches: [
+				approach.get('close_approach_year')
+        for approach in (approaches or [])
+        if approach.get('close_approach_year')
+			]
+		)
+		# merge all years in a single list with int items
+		all_years = []
+		for year_list in df["approach_yearly_counts"]:
+			for year in year_list:
+				all_years.append(int(year))
+		
+		# count how many times each year appears in list order by year ASC
+		df = pd.DataFrame(pd.Series(all_years).value_counts().sort_index())
+		df.index = df.index.astype(int)
+		df.index.name = 'year'
+		df.columns = ['count']
+		
+		return df
+
+	def aggregations_pre_compute(self, df: pd.DataFrame) -> tuple[int, pd.DataFrame]:
+		return self.aggregation_close_approaches_under_threshold(df), self.aggregation_approach_yearly_counts(df)
+	
+	def clean(self, df: pd.DataFrame, columns_to_keep: list) -> pd.DateOffset:
+		return df[columns_to_keep]
+
+	def process(self, raw_data: Pages, columns_to_keep: List) -> tuple[pd.DataFrame, tuple[pd.DataFrame, pd.DataFrame]]:
 		processed_data = []
 		for page_index, page in enumerate(raw_data):
 			for entry in page:
@@ -114,4 +181,4 @@ class Standard(Transformer):
 		df = pd.DataFrame(processed_data)
 		df['closest_approach_year'] = df['closest_approach_year'].astype(pd.Int64Dtype())
 		
-		return df
+		return self.clean(df, columns_to_keep), self.aggregations_pre_compute(df)

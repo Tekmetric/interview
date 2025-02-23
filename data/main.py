@@ -7,6 +7,7 @@ import asyncio
 
 config = Config.load()
 
+
 async def main():
     extractor = NasaApi(
         browse_api_url=config.extractor.url,
@@ -18,13 +19,18 @@ async def main():
     loader = ParquetFileSystem()
 
     raw_data = await extractor.fetch_pages(page=0, page_size=2, limit=2)
-    df, [total_approaches_under_threshold, approach_yearly_counts] = transformer.process(
-        raw_data=raw_data, 
+    [raw_data, total_approaches_under_threshold, approach_yearly_counts]  = transformer.process(
+        raw_data=raw_data,
         columns_to_keep=config.transformer.columns_to_return,
     )
+
+    if raw_data.empty:
+        print("empty dataframe")
+        return
+
     # write raw data
     loader.write(
-        data=df, 
+        data=raw_data,
         path=config.loader.storage_path_raw,
         filename="raw_data",
     )
@@ -46,11 +52,11 @@ async def main():
     )
     print("file_data length: ", len(file_data))
 
-    df = loader.read(
+    raw_data = loader.read(
         path=config.loader.storage_path_raw,
         filename="raw_data",
     )
-    print("Available columns:", df.columns.tolist())
+    print("Available columns:", raw_data.columns.tolist())
 
 if __name__ == "__main__":
     asyncio.run(main())

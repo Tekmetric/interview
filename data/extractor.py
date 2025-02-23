@@ -1,14 +1,15 @@
 import asyncio
 import aiohttp
 import requests
-
 from abc import ABC, abstractmethod
 from data import Pages
+
 
 class Extractor(ABC):
     @abstractmethod
     def fetch_pages(self, page: int = 0, page_size: int = 20, limit: int = 1) -> Pages:
         pass
+
 
 class NasaApi(Extractor):
     def __init__(self, browse_api_url: str, api_key: str):
@@ -30,7 +31,7 @@ class NasaApi(Extractor):
                 raise Exception(f"unexpected error: {str(e)}") from e
 
     async def fetch_pages(self, page: int = 0, page_size: int = 20, limit: int = 1) -> Pages:
-        """ 
+        """
         Returns:
             Pages: A list of pages containing the neo data
         """
@@ -45,5 +46,5 @@ class NasaApi(Extractor):
             tasks.append(asyncio.create_task(self.fetch_page(url)))
         print(f"waiting for {len(tasks)} tasks to complete")
         pages = await asyncio.gather(*tasks)
-        print(f"tasks completed")
+        print("tasks completed")
         return Pages(pages)

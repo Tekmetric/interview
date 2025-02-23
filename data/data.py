@@ -10,6 +10,7 @@ class Pages(List[List[Dict]]):
     def __post_init__(self):
         super().__init__(self.pages)
 
+
 @dataclass
 class NEOData:
     id: str

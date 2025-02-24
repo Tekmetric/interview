@@ -1,13 +1,13 @@
 import pyarrow as pa
 import pyarrow.parquet as pq
-import requests
 
 from data.config import logger
+from data.nasa_client import NASAClient
+
 
 if __name__ == "__main__":
-    URL = "https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=DEMO_KEY"
-    response = requests.get(URL)
-    data = response.json()
+    nasa_client = NASAClient.from_env()
+    data = nasa_client.neo.browse()
 
     near_earth_objects = data["near_earth_objects"]
     records = []

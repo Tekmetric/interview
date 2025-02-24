@@ -1,11 +1,12 @@
+import time
 import pandas as pd
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from typing import Any, Dict, Optional
 from data import NEOData, Pages
 from datetime import datetime
 
 
-def get_nested_value(nested: dict, path: str, default=None) -> any:
+def get_nested_value(nested: dict, path: str, default: Any=None) -> Any:
     """
     Get value from nested dict based on a path.
     """
@@ -13,14 +14,14 @@ def get_nested_value(nested: dict, path: str, default=None) -> any:
     value = nested
     for key in keys:
         if not isinstance(value, dict):
-            return None
-        value = value.get(key)
+            return default
+        value = value.get(key, default)
         if not value:
-            return None
+            return default
     return value
 
 
-def date_to_year(date: str) -> int:
+def date_to_year(date: str) -> Optional[int]:
     try:
         return datetime.strptime(date, "%Y-%m-%d").year
     except ValueError:
@@ -38,7 +39,7 @@ def count_approaches_under_threshold(approaches, threshold, path) -> int:
 
 class Transformer(ABC):
     @abstractmethod
-    def process(self, raw_data: Pages, columns_to_keep: List) -> pd.DataFrame:
+    def process(self, raw_data: Pages) -> pd.DataFrame:
         pass
 
 
@@ -96,43 +97,6 @@ class Standard(Transformer):
             orbital_data.get("observations_used", None)
         )
 
-    def process_neo_entry(self, entry: dict) -> NEOData:
-        estimated_diameter_min, estimated_diameter_max = self.process_estimated_diameter(entry.get("estimated_diameter", {}))
-        close_approach_data = entry.get("close_approach_data", [])
-        (
-            close_approach_data,
-            closest_approach_miss_distance_in_kilometers,
-            relative_velocity,
-            closest_approach_date,
-            closest_approach_miss_distance_astronomical,
-            closest_approach_year
-        ) = self.process_close_approach_data(close_approach_data)
-        first_obs_date, last_obs_date, observations_used = self.process_orbital_data(entry.get("orbital_data", {}))
-        orbital_period = entry.get("orbital_data", {}).get("orbital_period", None)
-
-        return NEOData(
-            id=str(entry["id"]),
-            neo_reference_id=str(entry["neo_reference_id"]),
-            name=str(entry["name"]),
-            name_limited=entry.get("name_limited", None),
-            designation=str(entry["designation"]),
-            nasa_jpl_url=str(entry["nasa_jpl_url"]),
-            absolute_magnitude_h=float(entry["absolute_magnitude_h"]),
-            is_potentially_hazardous_asteroid=bool(entry["is_potentially_hazardous_asteroid"]),
-            minimum_estimated_diameter_in_meters=estimated_diameter_min,
-            maximum_estimated_diameter_in_meters=estimated_diameter_max,
-            closest_approach_miss_distance_in_kilometers=closest_approach_miss_distance_in_kilometers,
-            closest_approach_date=closest_approach_date,
-            closest_approach_relative_velocity_in_kilometers_per_second=relative_velocity,
-            first_observation_date=first_obs_date,
-            last_observation_date=last_obs_date,
-            observations_used=observations_used,
-            orbital_period=orbital_period,
-            closest_approach_miss_distance_astronomical=closest_approach_miss_distance_astronomical,
-            closest_approach_year=closest_approach_year,
-            close_approach_data=close_approach_data,
-        )
-
     @staticmethod
     def aggregation_close_approaches_under_threshold(df: pd.DataFrame, rule: dict) -> pd.DataFrame:
         # total approaches under threshold per item
@@ -166,18 +130,66 @@ class Standard(Transformer):
 
         return df
 
-    def aggregations_pre_compute(self, df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
-        return (
-            self.aggregation_close_approaches_under_threshold(df, self.aggregation_rules["total_approaches_under_threshold"]),
-            self.aggregation_approach_yearly_counts(df, self.aggregation_rules["approach_yearly_counts"]),
-        )
-
     @staticmethod
     def clean(df: pd.DataFrame, columns_to_keep: list) -> pd.DataFrame:
-        return df
         return df[columns_to_keep]
 
-    def process(self, raw_data: Pages, columns_to_keep: List) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def compute_aggregations(self, df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+        return (
+            self.aggregation_close_approaches_under_threshold(
+                df,
+                self.aggregation_rules["total_approaches_under_threshold"],
+            ),
+            self.aggregation_approach_yearly_counts(
+                df,
+                self.aggregation_rules["approach_yearly_counts"],
+            ),
+        )
+
+    def process_neo_entry(self, entry: dict) -> NEOData:
+        estimated_diameter_min, estimated_diameter_max = self.process_estimated_diameter(entry.get("estimated_diameter", {}))
+        close_approach_data = entry.get("close_approach_data", [])
+        (
+            close_approach_data,
+            closest_approach_miss_distance_in_kilometers,
+            relative_velocity,
+            closest_approach_date,
+            closest_approach_miss_distance_astronomical,
+            closest_approach_year,
+        ) = self.process_close_approach_data(close_approach_data)
+
+        (
+            first_obs_date, 
+            last_obs_date, 
+            observations_used,
+        ) = self.process_orbital_data(entry.get("orbital_data", {}))
+
+        orbital_period = entry.get("orbital_data", {}).get("orbital_period", None)
+
+        return NEOData(
+            id=str(entry["id"]),
+            neo_reference_id=str(entry["neo_reference_id"]),
+            name=str(entry["name"]),
+            name_limited=entry.get("name_limited", None),
+            designation=str(entry["designation"]),
+            nasa_jpl_url=str(entry["nasa_jpl_url"]),
+            absolute_magnitude_h=float(entry["absolute_magnitude_h"]),
+            is_potentially_hazardous_asteroid=bool(entry["is_potentially_hazardous_asteroid"]),
+            minimum_estimated_diameter_in_meters=estimated_diameter_min,
+            maximum_estimated_diameter_in_meters=estimated_diameter_max,
+            closest_approach_miss_distance_in_kilometers=closest_approach_miss_distance_in_kilometers,
+            closest_approach_date=closest_approach_date,
+            closest_approach_relative_velocity_in_kilometers_per_second=relative_velocity,
+            first_observation_date=first_obs_date,
+            last_observation_date=last_obs_date,
+            observations_used=observations_used,
+            orbital_period=orbital_period,
+            closest_approach_miss_distance_astronomical=closest_approach_miss_distance_astronomical,
+            closest_approach_year=closest_approach_year,
+            close_approach_data=close_approach_data,
+        )
+
+    def process(self, raw_data: Pages) -> pd.DataFrame:
         processed_data = []
         for page_index, page in enumerate(raw_data):
             for entry in page:
@@ -191,12 +203,9 @@ class Standard(Transformer):
                     }
                     print(f"Skipping entry: {log_entry}")
                     continue
-        
         if not processed_data:
             return pd.DataFrame()
         df = pd.DataFrame(processed_data)
         df['closest_approach_year'] = df['closest_approach_year'].astype(pd.Int64Dtype())
 
-        total_approaches_under_threshold, approach_yearly_counts = self.aggregations_pre_compute(df)
-
-        return self.clean(df, columns_to_keep), total_approaches_under_threshold, approach_yearly_counts
+        return df

@@ -35,14 +35,12 @@ class NasaApi(Extractor):
         Returns:
             Pages: A list of pages containing the neo data
         """
-        print(f"fetching {limit} pages with size {page_size} starting from page {page}")
         urls = []
         for i in range(limit):
             urls.append(f"{self.browse_api_url}?api_key={self.api_key}&page={page + i}&size={page_size}")
 
         tasks = []
         for url in urls:
-            print(f"appending task for page {url}")
             tasks.append(asyncio.create_task(self.fetch_page(url)))
         print(f"waiting for {len(tasks)} tasks to complete")
         pages = await asyncio.gather(*tasks)

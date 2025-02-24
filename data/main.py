@@ -1,4 +1,5 @@
 # This is the entry point of the script.
+import time
 from loader import ParquetFileSystem
 from transformer import Standard
 from extractor import NasaApi
@@ -18,19 +19,43 @@ async def main():
     )
     loader = ParquetFileSystem()
 
-    raw_data = await extractor.fetch_pages(page=0, page_size=2, limit=2)
-    [raw_data, total_approaches_under_threshold, approach_yearly_counts]  = transformer.process(
-        raw_data=raw_data,
-        columns_to_keep=config.transformer.columns_to_return,
-    )
+    # fetch first 200 neos
+    limit = 10
+    page_size = 20
+    start_page = 0
+    print(f"fetching {limit} pages with size {page_size} starting from page {start_page} ...")
+    start = time.time()
+    raw_data = await extractor.fetch_pages(page=start_page, page_size=page_size, limit=limit)
+    print(f"fetch took: {time.time() - start}")
 
-    if raw_data.empty:
+    # transform data from neos pages to dataframe
+    start = time.time()
+    print(f"processing pages data ...")
+    processed_data = transformer.process(
+        raw_data=raw_data,
+    )
+    print(f"process took: {time.time() - start}")
+    if processed_data.empty:
         print("empty dataframe")
         return
 
-    # write raw data
+    # compute aggregations
+    start = time.time()
+    print(f"computing aggregations  ...")
+    total_approaches_under_threshold, approach_yearly_counts = transformer.compute_aggregations(processed_data)
+    print(f"aggregations took: {time.time() - start}")
+    
+    # clean data to be stored
+    start = time.time()
+    storable_data = transformer.clean(
+        df=processed_data, 
+        columns_to_keep=config.transformer.columns_to_return,
+    )
+    print(f"clean took: {time.time() - start}")
+
+    # write data
     loader.write(
-        data=raw_data,
+        data=storable_data,
         path=config.loader.storage_path_raw,
         filename="raw_data",
     )
@@ -50,13 +75,12 @@ async def main():
         path=config.loader.storage_path_raw,
         filename="raw_data",
     )
-    print("file_data length: ", len(file_data))
+    print("neos count in file: ", len(file_data))
 
     raw_data = loader.read(
         path=config.loader.storage_path_raw,
         filename="raw_data",
     )
-    print("Available columns:", raw_data.columns.tolist())
 
 if __name__ == "__main__":
     asyncio.run(main())

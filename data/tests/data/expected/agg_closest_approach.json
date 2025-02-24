@@ -1,0 +1,40 @@
+[
+    {
+        "id": "2001943",
+        "neo_reference_id": "2001943",
+        "name": "1943 Anteros (1973 EC)",
+        "name_limited": "Anteros",
+        "designation": "1943",
+        "nasa_jpl_url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=2001943",
+        "absolute_magnitude_h": 15.69,
+        "estimated_diameter_min_meters": 1934.4387204589,
+        "estimated_diameter_max_meters": 4325.5364772538,
+        "is_potentially_hazardous_asteroid": false,
+        "close_approach_date": "2050-05-20",
+        "close_approach_miss_distance_kilometers": "9518794.0165065340",
+        "close_approach_velocity_kilometers_per_second": "5.4511566191",
+        "first_observation_date": "1973-03-10",
+        "last_observation_date": "2024-04-10",
+        "observations_used": 5765,
+        "orbital_period": "624.8168568146249"
+    },
+    {
+        "id": "2001980",
+        "neo_reference_id": "2001980",
+        "name": "1980 Tezcatlipoca (1950 LA)",
+        "name_limited": "Tezcatlipoca",
+        "designation": "1980",
+        "nasa_jpl_url": "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=2001980",
+        "absolute_magnitude_h": 13.82,
+        "estimated_diameter_min_meters": 4576.7266723128,
+        "estimated_diameter_max_meters": 10233.8719537278,
+        "is_potentially_hazardous_asteroid": false,
+        "close_approach_date": null,
+        "close_approach_miss_distance_kilometers": null,
+        "close_approach_velocity_kilometers_per_second": null,
+        "first_observation_date": "1950-06-19",
+        "last_observation_date": "2025-02-18",
+        "observations_used": 8019,
+        "orbital_period": "816.3131500366128"
+    }
+]

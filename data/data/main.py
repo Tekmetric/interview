@@ -1,9 +1,12 @@
+from decimal import Decimal
+
 import pyarrow as pa
 import pyarrow.parquet as pq
 
 from data.config import logger
 from data.nasa_client import NASAClient
 from data.process import map_neo_api_entry
+from data.schemas import neo_schema
 
 
 def main():
@@ -16,7 +19,7 @@ def main():
         record = map_neo_api_entry(entry)
         records.append(record)
 
-    table = pa.Table.from_pylist(records)
+    table = pa.Table.from_pylist(records, schema=neo_schema)
     output_path = "output.parquet"
     logger.info(f"writing_output path={output_path}")
     pq.write_table(table, "output.parquet")

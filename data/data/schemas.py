@@ -7,7 +7,7 @@ neo_schema = pa.schema(
         pa.field("id", pa.string()),
         pa.field("neo_reference_id", pa.string()),
         pa.field("name", pa.string()),
-        pa.field("name_limited", pa.string()),
+        pa.field("name_limited", pa.string(), nullable=True),
         pa.field("designation", pa.string()),
         pa.field("nasa_jpl_url", pa.string()),
         pa.field("absolute_magnitude_h", pa.float32()),

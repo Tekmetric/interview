@@ -1,7 +1,7 @@
 from collections import Counter
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Iterable
 
 from data.config import logger, MISS_THRESHOLD_ASTR
 
@@ -58,7 +58,7 @@ def map_neo_api_entry(entry: dict) -> dict:
         "id": obj_id,
         "neo_reference_id": entry["neo_reference_id"],
         "name": entry["name"],
-        "name_limited": entry["name_limited"],
+        "name_limited": entry.get("name_limited"),
         "designation": entry["designation"],
         "nasa_jpl_url": entry["nasa_jpl_url"],
         "absolute_magnitude_h": entry["absolute_magnitude_h"],
@@ -111,3 +111,17 @@ class CloseApproachMetrics:
                 (self.near_miss_approaches_count, other.near_miss_approaches_count)
             ),
         )
+
+
+def process_neo_responses(neo_responses: Iterable[dict]):
+    """Map neo response and compute metrics."""
+    records = []
+    metrics = CloseApproachMetrics()
+
+    for neo_response in neo_responses:
+        neo_list = neo_response["near_earth_objects"]
+        for obj in neo_list:
+            close_approaches = obj["close_approach_data"]
+            metrics += CloseApproachMetrics.fill_from_api_data(close_approaches)
+            records.append(map_neo_api_entry(obj))
+    return records, metrics

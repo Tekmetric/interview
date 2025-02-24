@@ -30,3 +30,6 @@ NASA_API_URL = os.getenv("NASA_API_URL", "https://api.nasa.gov/")
 NASA_API_KEY = os.getenv("NEO_API_KEY", "DEMO_KEY")
 
 MISS_THRESHOLD_ASTR = float(os.getenv("MISS_THRESHOLD_ASTR", 0.2))
+START_PAGE = int(os.getenv("START_PAGE", 0))
+END_PAGE = int(os.getenv("END_PAGE", 9))
+PAGES_PER_BATCH = int(os.getenv("PAGES_PER_BATCH", 3))

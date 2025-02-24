@@ -29,3 +29,7 @@ neo_schema = pa.schema(
         pa.field("orbital_period", DECIMAL_TYPE),
     ]
 )
+yearly_count_schema = pa.schema(
+    [pa.field("year", pa.int8()), pa.field("num_close_approaches", pa.int32())]
+)
+totals_schema = pa.schema([pa.field("num_close_approaches", pa.int32())])

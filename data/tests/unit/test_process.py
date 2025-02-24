@@ -1,8 +1,9 @@
+from collections import Counter
 from decimal import Decimal
 
 import pytest
 
-from data.process import map_neo_api_entry, _get_closest_approach
+from data.process import map_neo_api_entry, _get_closest_approach, CloseApproachMetrics
 
 CLOSE_APPROACH_DATA = [
     {
@@ -36,6 +37,23 @@ CLOSE_APPROACH_DATA = [
             "lunar": "183.4078760325",
             "kilometers": "70533232.893794475",
             "miles": "43827318.620434755",
+        },
+        "orbiting_body": "Earth",
+    },
+    {
+        "close_approach_date": "2007-03-14",
+        "close_approach_date_full": "2007-Mar-14 13:14",
+        "epoch_date_close_approach": -1950259560000,
+        "relative_velocity": {
+            "kilometers_per_second": "10.7701740589",
+            "kilometers_per_hour": "38772.6266119612",
+            "miles_per_hour": "24091.8023523044",
+        },
+        "miss_distance": {
+            "astronomical": "0.1839122074",
+            "lunar": "71.5418486786",
+            "kilometers": "27512874.494038238",
+            "miles": "17095707.4721061644",
         },
         "orbiting_body": "Earth",
     },
@@ -175,3 +193,32 @@ def test_get_closest_approach__chooses_first_with_min_distance(approach, expecte
     closest = _get_closest_approach(approaches)
 
     assert closest == _make_approach(*expected)
+
+
+@pytest.mark.parametrize(
+    "close_approaches, expected",
+    (([], (0, {})), (CLOSE_APPROACH_DATA, (2, {"2007": 2, "2011": 1}))),
+)
+def test_metrics_are_computed_from_close_approaches(close_approaches, expected):
+    metrics = CloseApproachMetrics.fill_from_api_data(close_approaches)
+
+    assert (
+        metrics.near_miss_approaches_count,
+        dict(metrics.yearly_approaches),
+    ) == expected
+
+
+def test_can_add_metrics():
+    m1 = CloseApproachMetrics()
+    m2 = CloseApproachMetrics(
+        yearly_approaches=Counter({2023: 5, 2024: 4}), near_miss_approaches_count=2
+    )
+    m3 = CloseApproachMetrics(
+        yearly_approaches=Counter({2024: 3}), near_miss_approaches_count=1
+    )
+
+    expected = CloseApproachMetrics(
+        yearly_approaches=Counter({2023: 5, 2024: 7}), near_miss_approaches_count=3
+    )
+
+    assert m1 + m2 + m3 == expected

@@ -28,3 +28,5 @@ if CACHE_REQUESTS:
 
 NASA_API_URL = os.getenv("NASA_API_URL", "https://api.nasa.gov/")
 NASA_API_KEY = os.getenv("NEO_API_KEY", "DEMO_KEY")
+
+MISS_THRESHOLD_ASTR = float(os.getenv("MISS_THRESHOLD_ASTR", 0.2))

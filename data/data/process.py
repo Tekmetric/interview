@@ -1,7 +1,9 @@
+from collections import Counter
+from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Optional
 
-from data.config import logger
+from data.config import logger, MISS_THRESHOLD_ASTR
 
 _CLOSEST_MISS_KM_KEY = "closest_approach_miss_distance_kilometers"
 _CLOSEST_DATE_KEY = "closest_approach_date"
@@ -73,3 +75,39 @@ def map_neo_api_entry(entry: dict) -> dict:
     }
     logger.debug(f"mapped_record record={record}")
     return record
+
+
+@dataclass
+class CloseApproachMetrics:
+    """Defines metrics to extract on top of NEO objects.
+
+    yearly_encounters: Number of close approaches per year
+    total_under_threshold: Total close approaches under
+    """
+
+    miss_threshold_astr: float = MISS_THRESHOLD_ASTR
+    yearly_approaches: Counter = field(default_factory=Counter)
+    near_miss_approaches_count: int = 0
+
+    @classmethod
+    def fill_from_api_data(cls, close_approaches: list[dict]) -> "CloseApproachMetrics":
+        near_miss_approaches_count = 0
+        yearly_approaches = Counter()
+        for approach in close_approaches:
+            if float(approach["miss_distance"]["astronomical"]) < 0.2:
+                near_miss_approaches_count += 1
+            year = approach["close_approach_date"].split("-")[0]
+            yearly_approaches[year] += 1
+
+        return cls(
+            yearly_approaches=yearly_approaches,
+            near_miss_approaches_count=near_miss_approaches_count,
+        )
+
+    def __add__(self, other):
+        return CloseApproachMetrics(
+            yearly_approaches=self.yearly_approaches + other.yearly_approaches,
+            near_miss_approaches_count=sum(
+                (self.near_miss_approaches_count, other.near_miss_approaches_count)
+            ),
+        )

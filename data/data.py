@@ -1,5 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
+import json
 from typing import Optional, List, Dict
 
 
@@ -9,6 +10,10 @@ class Pages(List[List[Dict]]):
 
     def __post_init__(self):
         super().__init__(self.pages)
+
+    def to_bytes(self) -> bytes:
+        # convert pages to json string
+        return json.dumps(self.pages).encode('utf-8')
 
 
 @dataclass

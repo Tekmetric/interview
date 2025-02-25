@@ -16,10 +16,13 @@ class ExtractorConfig:
 
     @classmethod
     def from_env(cls):
-        return cls(
-            url=os.getenv("NASA_BROWSE_API_URL", ""),
-            api_key=os.getenv("NASA_API_KEY", "")
-        )
+        api_key = os.getenv("NASA_API_KEY", None)
+        if not api_key:
+            raise ValueError("NASA_API_KEY not found in env")
+        url = os.getenv("NASA_BROWSE_API_URL", None)
+        if not url:
+            raise ValueError("NASA_BROWSE_API_URL found in env")
+        return cls(url=url, api_key=api_key)
 
 
 @dataclass
@@ -66,13 +69,24 @@ class TransformerConfig:
 @dataclass
 class LoaderConfig:
     storage_path_raw: str
+    storage_path_processed: str
     storage_path_aggregations: str
 
     @classmethod
     def from_env(cls):
+        path_raw = os.getenv("STORAGE_PATH_RAW", None)
+        if not path_raw:
+            raise ValueError("STORAGE_PATH_RAW not found in env")
+        path_processed = os.getenv("STORAGE_PATH_PROCESSED", None)
+        if not path_processed:
+            raise ValueError("STORAGE_PATH_PROCESSED not found in env")
+        path_aggregations = os.getenv("STORAGE_PATH_AGGREGATIONS", None)
+        if not path_aggregations:
+            raise ValueError("STORAGE_PATH_AGGREGATIONS not found in env")
         return cls(
-            storage_path_raw=os.getenv("STORAGE_PATH_RAW", ""),
-            storage_path_aggregations=os.getenv("STORAGE_PATH_AGGREGATIONS", ""),
+            storage_path_raw=path_raw,
+            storage_path_processed=path_processed,
+            storage_path_aggregations=path_aggregations,
         )
 
 

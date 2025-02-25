@@ -1,12 +1,11 @@
-import time
 import pandas as pd
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from data import NEOData, Pages
 from datetime import datetime
 
 
-def get_nested_value(nested: dict, path: str, default: Any=None) -> Any:
+def get_nested_value(nested: dict, path: str, default: Any = None) -> Any:
     """
     Get value from nested dict based on a path.
     """
@@ -40,6 +39,15 @@ def count_approaches_under_threshold(approaches, threshold, path) -> int:
 class Transformer(ABC):
     @abstractmethod
     def process(self, raw_data: Pages) -> pd.DataFrame:
+        pass
+
+    @abstractmethod
+    def compute_aggregations(self, df: pd.DataFrame) -> list[pd.DataFrame]:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def clean(df: pd.DataFrame, columns_to_keep: List[str]) -> pd.DataFrame:
         pass
 
 
@@ -103,8 +111,11 @@ class Standard(Transformer):
         df["total_approaches_under_threshold"] = df[rule["column"]].apply(
             lambda x: count_approaches_under_threshold(x, rule["threshold"], rule["path"]) if x is not None else 0,
         )
-        # total approaches under threshold for all items
-        return pd.DataFrame([int(df["total_approaches_under_threshold"].sum())], columns=["count"])
+
+        # total approaches under threshold for all items        
+        df = pd.DataFrame([int(df["total_approaches_under_threshold"].sum())], columns=["count"])
+        df.aggregation_name = "total_approaches_under_threshold"
+        return df
 
     @staticmethod
     def aggregation_approach_yearly_counts(df: pd.DataFrame, rule: dict) -> pd.DataFrame:
@@ -127,6 +138,7 @@ class Standard(Transformer):
         df.index = df.index.astype(int)
         df.index.name = 'year'
         df.columns = ['count']
+        df.aggregation_name = "approach_yearly_counts"
 
         return df
 

@@ -7,7 +7,7 @@ from data import Pages
 
 class Extractor(ABC):
     @abstractmethod
-    def fetch_pages(self, page: int = 0, page_size: int = 20, limit: int = 1) -> Pages:
+    async def fetch_pages(self, page: int = 0, page_size: int = 20, limit: int = 1) -> Pages:
         pass
 
 
@@ -16,7 +16,8 @@ class NasaApi(Extractor):
         self.browse_api_url = browse_api_url
         self.api_key = api_key
 
-    async def fetch_page(self, url: str) -> dict:
+    @staticmethod
+    async def fetch_page(url: str) -> dict:
         async with aiohttp.ClientSession() as session:
             try:
                 response = await session.get(url)
@@ -42,7 +43,7 @@ class NasaApi(Extractor):
         tasks = []
         for url in urls:
             tasks.append(asyncio.create_task(self.fetch_page(url)))
-        print(f"waiting for {len(tasks)} tasks to complete")
+        print(f"[fetch_pages]: waiting for {len(tasks)} tasks to complete")
         pages = await asyncio.gather(*tasks)
-        print("tasks completed")
+        print(f"[fetch_pages]: completed")
         return Pages(pages)

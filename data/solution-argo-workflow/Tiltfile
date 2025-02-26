@@ -1,0 +1,12 @@
+load('ext://namespace', 'namespace_create', 'namespace_inject')
+
+ARGO_WORKFLOWS_VERSION='v3.6.4'
+
+# setup Argo Workflows and port forward
+namespace_create('argo')
+k8s_yaml(namespace_inject(
+    local('curl -sSL https://github.com/argoproj/argo-workflows/releases/download/'+ ARGO_WORKFLOWS_VERSION + '/quick-start-minimal.yaml'),
+    'argo',
+))
+k8s_resource(workload='argo-server', port_forwards="2746:2746", links=['https://localhost:2746'])
+k8s_resource(workload='minio', port_forwards="9000:9000")

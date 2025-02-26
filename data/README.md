@@ -37,3 +37,7 @@ To save our data, we'll write it out to the local filesystem as if we're saving 
 
 ### Submitting your coding exercise
 Once you have finished your script, please create a PR into Tekmetric/interview. Don't forget to update the gitignore if that is required!
+
+# Solution
+
+Check [SOLUTION.md](SOLUTION.md)

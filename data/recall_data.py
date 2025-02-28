@@ -2,7 +2,7 @@ import hydra
 import logging
 from omegaconf import DictConfig
 from neo_data.scraper.scraper import Scraper
-from neo_data.scraper.data_processing import PrintProcessor
+from neo_data.scraper.data_processing import PandasDFProcessor
 from neo_data.scraper.data_gathering import RequestsDataHandler
 from queue import Queue
 
@@ -13,7 +13,7 @@ def recall_data(cfg: DictConfig) -> None:
 
     queue = Queue()
     data_handler = RequestsDataHandler(cfg, queue)
-    data_processor = PrintProcessor(cfg, queue)
+    data_processor = PandasDFProcessor(cfg, queue)
     
     scraper = Scraper(cfg, data_processor, data_handler)
     scraper.scrape()

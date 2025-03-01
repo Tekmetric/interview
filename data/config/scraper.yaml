@@ -7,5 +7,5 @@ scraper:
     end_page: 10
 
   persist:
-    root_dir: "data/neo"
-    file_suffix: "_neo_data.parquet"
+    root_dir: "neos"
+    file_name: "neo_data.parquet"

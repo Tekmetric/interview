@@ -6,6 +6,7 @@ import logging
 import pandas as pd
 import numpy as np
 from enum import Enum
+import os
 
 class COL_NAMES(str, Enum):
     ID: str = "id"
@@ -73,8 +74,8 @@ APPROACH_COLS = [
         COL_NAMES.ID,
         APPROACH.CLOSE_APPROACH_DATE,
         APPROACH.RELATIVE_VELOCITY,
-        APPROACH.ASTRONOMICAL,
         APPROACH.KILOMETERS,
+        APPROACH.ASTRONOMICAL,
 ]
 
 class DataProcessor(ABC):
@@ -91,14 +92,12 @@ class DataProcessor(ABC):
 
     @abstractmethod
     def process_data(self):
-        """ Implementations of the DataProcessor class must implement this method to process the NEO data in the queue.
-        """
+        """Implementations of the DataProcessor class must implement this method to process the NEO data in the queue."""
         pass
 
 
 class PrintProcessor(DataProcessor):
-    """ The PrintProcessor class is a simple implementation of the DataProcessor interface that prints the data to the console.
-    """
+    """The PrintProcessor class is a simple implementation of the DataProcessor interface that prints the data to the console."""
 
     def process_data(self):
         """ Prints the NEO data from the queue to the console.
@@ -115,8 +114,7 @@ class PrintProcessor(DataProcessor):
     
 
 class PandasDFProcessor(DataProcessor):
-    """ The PandasDFProcessor class is an implementation of the DataProcessor interface that processes the data into a pandas DataFrame.
-    """
+    """The PandasDFProcessor class is an implementation of the DataProcessor interface that processes the data into a pandas DataFrame."""
 
     def __init__(self, cfg: DictConfig, queue: Queue):
         super().__init__(cfg, queue)
@@ -125,6 +123,14 @@ class PandasDFProcessor(DataProcessor):
         self.aggregated_data = None
 
     def _add_neo_row(self, neo_item: dict):
+        """Adds a new row to the neo_data DataFrame with information from the given neo_item dictionary which comes from the NASA NEO Service API call.
+        Parameters:
+        neo_item (dict): A dictionary containing Near-Earth Object (NEO) data. The dictionary is expected to have keys
+                         corresponding to the column names defined in COL_NAMES, DIAMETER, and ORBIT enums.
+        Returns:
+        None
+        """
+
         neo_row = [
             neo_item.get(COL_NAMES.ID.value, PLACEHOLDERS.STR_NO_VAL.value),
             neo_item.get(COL_NAMES.NEO_REFERENCE_ID.value, PLACEHOLDERS.STR_NO_VAL.value),
@@ -145,6 +151,16 @@ class PandasDFProcessor(DataProcessor):
         self.neo_data = pd.concat([self.neo_data, neo_row_df], ignore_index=True)
 
     def _add_approach_row(self, neo_id: str, approach_item: dict):
+        """Adds a new row to the neo_approach_data DataFrame with information from the given approach_item dictionary which comes from the 
+        NASA NEO Service API call.
+        Parameters:
+        neo_id (str): The Near-Earth Object (NEO) ID.
+        approach_item (dict): A dictionary containing NEO approach data. The dictionary is expected to have keys
+                              corresponding to the column names defined in APPROACH enum.
+        Returns:
+        None
+        """
+
         approach_row = [
             neo_id,
             approach_item.get(APPROACH.CLOSE_APPROACH_DATE.value, PLACEHOLDERS.STR_NO_VAL.value),
@@ -157,24 +173,46 @@ class PandasDFProcessor(DataProcessor):
         self.neo_approach_data = pd.concat([self.neo_approach_data, approach_row_df], ignore_index=True)
 
     def _process_approach_data(self, neo_item: dict):
-        """ Processes the NEO approach data from the queue into a pandas DataFrame.
-        """
+        """Processes the NEO approach data from the queue into a pandas DataFrame."""
         approach_data = neo_item.get(APPROACH.CLOSE_APPROACH_DATA.value, [])
         neo_id = neo_item.get(COL_NAMES.ID.value, PLACEHOLDERS.STR_NO_VAL.value)
         for approach_item in approach_data:
             self._add_approach_row(neo_id, approach_item)
 
     def _process_neo_data(self, item: dict):
-        """ Processes the NEO data from the queue into a pandas DataFrame.
-        """
+        """Processes the NEO data from the queue into a pandas DataFrame."""
         neo_list = item["near_earth_objects"]
         for neo_item in neo_list:
             self._add_neo_row(neo_item)
             self._process_approach_data(neo_item)
 
+    def _process_closest_approach_data(self):
+        """Processes the closest approach data from the neo_approach_data DataFrame and merges it to the neo_data DataFrame."""
+        self.neo_approach_data[APPROACH.KILOMETERS.value] = pd.to_numeric(self.neo_approach_data[APPROACH.KILOMETERS.value], errors='coerce')
+        self.neo_approach_data[APPROACH.ASTRONOMICAL.value] = pd.to_numeric(self.neo_approach_data[APPROACH.ASTRONOMICAL.value], errors='coerce')
+
+        closest_approaches = self.neo_approach_data.loc[self.neo_approach_data.groupby(COL_NAMES.ID)[APPROACH.KILOMETERS].idxmin()]
+        closest_approaches = closest_approaches.reset_index(drop=True)
+        closest_approaches = closest_approaches.rename(columns={APPROACH.KILOMETERS: COL_NAMES.CLOSEST_MISS_DISTANCE.value})
+        closest_approaches = closest_approaches.rename(columns={APPROACH.CLOSE_APPROACH_DATE: COL_NAMES.CLOSEST_APPROACH_DATE.value})
+        closest_approaches = closest_approaches.rename(columns={APPROACH.RELATIVE_VELOCITY: COL_NAMES.CLOSEST_RELATIVE_VELOCITY.value})
+        closest_approaches = closest_approaches.drop(columns=[APPROACH.ASTRONOMICAL])
+        
+        # Some NEOs do not have any close approach data, so merging using left join to preserve all NEOs
+        self.neo_data = pd.merge(self.neo_data, closest_approaches, on=COL_NAMES.ID, how='left')
+
+    def _save_data(self):
+        # TODO - set the proper directory path
+        current_working_directory = os.getcwd()
+        logging.info(f"Current working directory: {current_working_directory}")
+        data_dir = os.path.join(current_working_directory, self.cfg.scraper.persist.root_dir)
+        logging.info(f"Data directory: {data_dir}")
+        os.makedirs(data_dir, exist_ok=True)
+        neo_file_path = os.path.join(data_dir, self.cfg.scraper.persist.file_name)
+        self.neo_data.to_parquet(neo_file_path, index=False)
+
     def process_data(self):
-        """ Processes the NEO data from the queue into a pandas DataFrame.
-        """
+        """Processes the NEO data from the queue into a pandas DataFrame."""
         logging.info("Processing data...")
         while True:
             item = self.queue.get()
@@ -186,8 +224,11 @@ class PandasDFProcessor(DataProcessor):
         logging.info(f"Processed neo data length: {len(self.neo_data)}")
         logging.info(f"Processed approach data length: {len(self.neo_approach_data)}")
         logging.info("Data processing complete.")
-        print(self.neo_data.dtypes)
         print(self.neo_data.head())
         print("===================================")
-        print(self.neo_approach_data.dtypes)
         print(self.neo_approach_data.head())
+        print("===================================")
+        self._process_closest_approach_data()
+        self._save_data()
+        print("neo data length: ", len(self.neo_data))
+        print(self.neo_data.head())

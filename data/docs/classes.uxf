@@ -1,1 +1,45 @@
-<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level></diagram>
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>120</x><y>50</y><w>210</w><h>120</h></coordinates><panel_attributes>&lt;&lt;Scraper&gt;&gt;
+Package::neo_data.scraper.scraper
+--
+-cfg: ConfigDict
+-data_processor: DataProcessor
+-data_handler: DataHandler
+--
+#scrape()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>40</x><y>290</y><w>260</w><h>160</h></coordinates><panel_attributes>&lt;&lt;DataProcessor&gt;&gt;
+Package::neo_data.scraper.data_processing
+--
+-cfg: ConfigDict
+-queue: Queue
+--
+#process_data()
+#run_processing()
+/+save_data()/
+/+do_aggregations()/
+/+process_neo_item(item: dict)/</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>460</x><y>300</y><w>270</w><h>110</h></coordinates><panel_attributes>&lt;&lt;DataHandler&gt;&gt;
+Package::neo_data.scraper.data_gathering
+--
+-cfg: ConfigDict
+-queue: Queue
+--
+/+download_data()/</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>120</x><y>160</y><w>110</w><h>150</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>90;10;10;130</additional_attributes></element><element><id>Relation</id><coordinates><x>220</x><y>160</y><w>350</w><h>160</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;330;140</additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>650</y><w>260</w><h>160</h></coordinates><panel_attributes>&lt;&lt;PandasDFProcessor&gt;&gt;
+Package::neo_data.scraper.data_processing
+--
+-cfg: ConfigDict
+-queue: Queue
+--
+#save_data()
+#do_aggregations()
+#process_neo_item(item:dict)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>460</x><y>470</y><w>270</w><h>110</h></coordinates><panel_attributes>&lt;&lt;RequestsDataHandler&gt;&gt;
+Package::neo_data.scraper.data_gathering
+--
+-cfg: ConfigDict
+-queue: Queue
+--
+#download_data()</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>570</x><y>400</y><w>40</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;20;70</additional_attributes></element><element><id>Relation</id><coordinates><x>110</x><y>440</y><w>80</w><h>230</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>60;10;10;210</additional_attributes></element><element><id>UMLClass</id><coordinates><x>280</x><y>650</y><w>260</w><h>160</h></coordinates><panel_attributes>&lt;&lt;PrintProcessor&gt;&gt;
+Package::neo_data.scraper.data_processing
+--
+-cfg: ConfigDict
+-queue: Queue
+--
+#process_neo_item(item:dict)</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>190</x><y>440</y><w>210</w><h>230</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;190;210</additional_attributes></element></diagram>

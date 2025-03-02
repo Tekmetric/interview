@@ -29,6 +29,32 @@
     - The total number of times our 200 near earth objects approached closer than 0.2 astronomical units (found as miss_distance.astronomical)
     - The number of close approaches recorded in each year present in the data
 
+# Installation and Running
+In order to run the data scraping utility, you will need to have a Python environment where dependencies can be handled by [Poetry](https://python-poetry.org/).
+Run the following commands within the data directory of the project
+
+Commands:
+```sh
+poetry install
+python recall_data.py scraper.request.api_key=<your NASA API key>
+```
+
+# Application components
+In order to support the above requirements, some specific application components should be created.
+
+1. Handling data requests to the NEO API.
+This should be done via a DataHandler component. The NEO Service API is a REST API and using the browse API call we get paged results. The
+RequestsDataHandler component will only request one page at a time and return the result. Currently we are using the [Requests](https://docs.python-requests.org/en/latest/) library as the particular implementation here. This can be replaced by something else, especially an async requests framework if we need to scale.
+
+2. Handling the resulting data from the NEO API. 
+The resulting JSON response containing the browse request data needs to be processed in order to save the required information about the asteroids and
+required aggregations as well. There should be a component for this, called DataProcessor.
+
+3. Putting it all together.
+The NEO data scraping application is structured as a publisher-subscriber setup.
+Currently a simple Python queue is used as the communication transport between the
+publisher and subscriber. The publisher will be an implementation of the DataHandler interface while the subscriber will be an implementation of the DataProcessor interface. The scraper module contains the Scraper class which creates 2 threads, one for the subscriber, one for the producer, effectively decoupling them.
+We could imagine this is a basic scaffold for a more scalable setup in which instead of using threads, one could use microservices that implement the DataHandler and DataProcessor contract while using a more scalable transport such as Rabbit MQ or Zero MQ.
 
 # Example of NEO result
 ```json
@@ -385,14 +411,3 @@
     "is_sentry_object": false
 }
 ```
-
-# Application components
-In order to support the above requirements, some specific application components should be created.
-
-1. Handling HTTP requests
-This should be done via a RequestHandler component. The NEO Service API is a REST API and using the browse API call we get paged results. The
-RequestHandler component will only request one page at a time and return the result. TODO - async handling of requests may be an option, in order
-to scale further. Look into async HTTP request handling.
-
-2. The resulting JSON response containing the browse request data needs to be processed in order to save some information about the asteroids and
-to do some aggregations as well. There should be a component for this, called ResponseProcessor

@@ -28,6 +28,7 @@ class COL_NAMES(str, Enum):
     CLOSEST_RELATIVE_VELOCITY: str = "closest_relative_velocity"
     YEAR: str = "year"
     CLOSE_APPROACH_COUNT: str = "close_approach_count"
+    NEO_COUNT: str = "neo_count"
 
 
 class DIAMETER(str, Enum):
@@ -143,6 +144,7 @@ class PandasDFProcessor(DataProcessor):
         self.neo_data = pd.DataFrame(columns=[col.value for col in NEO_COLS])
         self.neo_approach_data = pd.DataFrame(columns=[col.value for col in APPROACH_COLS])
         self.close_approach_count = 0
+        self.yearly_approach_counts = None
 
     def _add_neo_row(self, neo_item: dict):
         """Adds a new row to the neo_data DataFrame with information from the given neo_item dictionary which comes from the NASA NEO Service API call.
@@ -152,7 +154,6 @@ class PandasDFProcessor(DataProcessor):
         Returns:
         None
         """
-
         neo_row = [
             neo_item.get(COL_NAMES.ID.value, PLACEHOLDERS.STR_NO_VAL.value),
             neo_item.get(COL_NAMES.NEO_REFERENCE_ID.value, PLACEHOLDERS.STR_NO_VAL.value),
@@ -182,7 +183,6 @@ class PandasDFProcessor(DataProcessor):
         Returns:
         None
         """
-
         approach_row = [
             neo_id,
             approach_item.get(APPROACH.CLOSE_APPROACH_DATE.value, PLACEHOLDERS.STR_NO_VAL.value),
@@ -196,7 +196,6 @@ class PandasDFProcessor(DataProcessor):
 
     def _process_approach_data(self, neo_item: dict):
         """Processes the NEO approach data from the queue into a pandas DataFrame."""
-        print(f"approach data for neo item: {neo_item}")
         approach_data = neo_item.get(APPROACH.CLOSE_APPROACH_DATA.value, [])
         neo_id = neo_item.get(COL_NAMES.ID.value, PLACEHOLDERS.STR_NO_VAL.value)
         for approach_item in approach_data:
@@ -224,6 +223,13 @@ class PandasDFProcessor(DataProcessor):
         """
         self.close_approach_count = (self.neo_approach_data[APPROACH.ASTRONOMICAL] <= threshold).sum()
         logging.info(f"Total number of close approaches within {threshold} astronomical units is: {self.close_approach_count}.")
+    
+    def _yearly_approach_count(self):
+        """Calculates the number of close approaches per year and stores the values in self.yearly_approach_counts."""
+        self.neo_approach_data[COL_NAMES.YEAR.value] = pd.to_datetime(self.neo_approach_data[APPROACH.CLOSE_APPROACH_DATE.value]).dt.year
+        self.yearly_approach_counts = self.neo_approach_data.groupby(COL_NAMES.YEAR.value).size().reset_index(name=COL_NAMES.CLOSE_APPROACH_COUNT.value)
+        logging.info("Yearly close approach counts:")
+        logging.info(self.yearly_approach_counts.head())
 
     def process_neo_item(self, item: dict):
         """Processes the NEO data from the queue into a pandas DataFrame."""
@@ -234,24 +240,34 @@ class PandasDFProcessor(DataProcessor):
 
     def do_aggregations(self):
         """Performs aggregations on the processed data."""
-        print(self.neo_data.head())
-        print("===================================")
-        print(self.neo_approach_data.head())
-        print("===================================")
+        logging.debug(self.neo_data.head())
+        logging.debug("===================================")
+        logging.debug(self.neo_approach_data.head())
+        logging.debug("===================================")
 
         self._process_closest_approach_data()
         self._filtered_approach_count()
+        self._yearly_approach_count()
 
-        print("neo data length: ", len(self.neo_data))
-        print(self.neo_data.head())
+        logging.debug("neo data length: ", len(self.neo_data))
+        logging.debug(self.neo_data.head())
 
 
     def save_data(self):
-        # TODO - set the proper directory path
-        current_working_directory = os.getcwd()
-        logging.info(f"Current working directory: {current_working_directory}")
-        data_dir = os.path.join(current_working_directory, self.cfg.scraper.persist.root_dir)
+        """Saves the processed data to parquet/text files. This includes the neo data, the yearly approach counts and the total close approach count."""
+        data_dir = os.path.join(self.cfg.scraper.persist.output_dir, self.cfg.scraper.persist.root_dir)
         logging.info(f"Data directory: {data_dir}")
         os.makedirs(data_dir, exist_ok=True)
-        neo_file_path = os.path.join(data_dir, self.cfg.scraper.persist.file_name)
+
+        neo_file_path = os.path.join(data_dir, self.cfg.scraper.persist.neo_data_file)
         self.neo_data.to_parquet(neo_file_path, index=False)
+
+        yearly_approach_file_path = os.path.join(data_dir, self.cfg.scraper.persist.yearly_approach_file)
+        self.yearly_approach_counts.to_parquet(yearly_approach_file_path, index=False)
+
+        approach_count_file_path = os.path.join(data_dir, self.cfg.scraper.persist.approach_count_file)
+        approach_count_df = pd.DataFrame([[self.close_approach_count, len(self.neo_data)]],
+                                        index=[0],
+                                        columns=[COL_NAMES.CLOSE_APPROACH_COUNT.value, COL_NAMES.NEO_COUNT.value])
+        approach_count_df.to_parquet(approach_count_file_path, index=False)
+        print(approach_count_df.head())

@@ -21,3 +21,6 @@ outputs/
 
 # ignore notebook checkpoints
 .ipynb_checkpoints/
+
+# ignore locally stored data
+neo_store/

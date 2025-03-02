@@ -13,7 +13,7 @@ class Scraper:
 
     def scrape(self):
         producer = threading.Thread(target=self.data_handler.download_data, name="producer")
-        consumer = threading.Thread(target=self.data_processor.process_data, name="consumer")
+        consumer = threading.Thread(target=self.data_processor.run_processing, name="consumer")
 
         logging.info("Starting data download...")
         producer.start()

@@ -81,6 +81,8 @@ APPROACH_COLS = [
 class DataProcessor(ABC):
     """ The DataProcessor class serves as an interface for various implementations that can process NASA NEO data according to the rqeuirements
     of the application.
+    As it is designed now, the DataProcessor requires a queue object from which it reads the data to process. A better design would be to instead
+    use some sort of data transport wrapper object which abstracts the method of data transport (e.g. queue, file, etc.) from the DataProcessor.
     Attributes:
         cfg (DictConfig): Configuration object containing data processing settings.
         queue (Queue): A queue object to store processed data.
@@ -91,27 +93,47 @@ class DataProcessor(ABC):
         self.queue = queue
 
     @abstractmethod
-    def process_data(self):
-        """Implementations of the DataProcessor class must implement this method to process the NEO data in the queue."""
+    def save_data(self):
+        """Saves the processed data to a file."""
         pass
+    
+    @abstractmethod
+    def do_aggregations(self):
+        """Performs aggregations on the processed data."""
+        pass
+    
+    @abstractmethod
+    def process_neo_item(self, item: dict):
+        """Processes a single NEO item. Its implementation should take care of accumulating the neo data and approach data."""
+        pass
+    
+    def process_data(self):
+        """Processes the data from the queue."""
+        logging.info("Processing data...")
+
+        while True:
+            item = self.queue.get()
+            if item is None:
+                break
+            self.process_neo_item(item)
+            self.queue.task_done()
+
+        logging.info("Data processing complete.")
+    
+    def run_processing(self):
+        """Runs the data processing."""
+        self.process_data()
+        self.do_aggregations()
+        self.save_data()
 
 
 class PrintProcessor(DataProcessor):
     """The PrintProcessor class is a simple implementation of the DataProcessor interface that prints the data to the console."""
 
-    def process_data(self):
-        """ Prints the NEO data from the queue to the console.
-        """
-        logging.info("Processing data...")
-        while True:
-            item = self.queue.get()
-            if item is None:
-                break
-            print("-----------------------------------")
-            print(item["page"])
-            print("-----------------------------------")
-            self.queue.task_done()
-    
+    def process_neo_item(self, item):
+        print("-----------------------------------")
+        print(item["page"])
+        print("-----------------------------------")    
 
 class PandasDFProcessor(DataProcessor):
     """The PandasDFProcessor class is an implementation of the DataProcessor interface that processes the data into a pandas DataFrame."""
@@ -120,7 +142,7 @@ class PandasDFProcessor(DataProcessor):
         super().__init__(cfg, queue)
         self.neo_data = pd.DataFrame(columns=[col.value for col in NEO_COLS])
         self.neo_approach_data = pd.DataFrame(columns=[col.value for col in APPROACH_COLS])
-        self.aggregated_data = None
+        self.close_approach_count = 0
 
     def _add_neo_row(self, neo_item: dict):
         """Adds a new row to the neo_data DataFrame with information from the given neo_item dictionary which comes from the NASA NEO Service API call.
@@ -174,17 +196,11 @@ class PandasDFProcessor(DataProcessor):
 
     def _process_approach_data(self, neo_item: dict):
         """Processes the NEO approach data from the queue into a pandas DataFrame."""
+        print(f"approach data for neo item: {neo_item}")
         approach_data = neo_item.get(APPROACH.CLOSE_APPROACH_DATA.value, [])
         neo_id = neo_item.get(COL_NAMES.ID.value, PLACEHOLDERS.STR_NO_VAL.value)
         for approach_item in approach_data:
             self._add_approach_row(neo_id, approach_item)
-
-    def _process_neo_data(self, item: dict):
-        """Processes the NEO data from the queue into a pandas DataFrame."""
-        neo_list = item["near_earth_objects"]
-        for neo_item in neo_list:
-            self._add_neo_row(neo_item)
-            self._process_approach_data(neo_item)
 
     def _process_closest_approach_data(self):
         """Processes the closest approach data from the neo_approach_data DataFrame and merges it to the neo_data DataFrame."""
@@ -201,7 +217,36 @@ class PandasDFProcessor(DataProcessor):
         # Some NEOs do not have any close approach data, so merging using left join to preserve all NEOs
         self.neo_data = pd.merge(self.neo_data, closest_approaches, on=COL_NAMES.ID, how='left')
 
-    def _save_data(self):
+    def _filtered_approach_count(self, threshold: float = 0.2):
+        """Calculates the number of close approaches that are within the given threshold distance and stores the value in self.close_approach_count.
+        Parameters:
+        threshold (float): The distance threshold in kilometers.
+        """
+        self.close_approach_count = (self.neo_approach_data[APPROACH.ASTRONOMICAL] <= threshold).sum()
+        logging.info(f"Total number of close approaches within {threshold} astronomical units is: {self.close_approach_count}.")
+
+    def process_neo_item(self, item: dict):
+        """Processes the NEO data from the queue into a pandas DataFrame."""
+        neo_list = item["near_earth_objects"]
+        for neo_item in neo_list:
+            self._add_neo_row(neo_item)
+            self._process_approach_data(neo_item)
+
+    def do_aggregations(self):
+        """Performs aggregations on the processed data."""
+        print(self.neo_data.head())
+        print("===================================")
+        print(self.neo_approach_data.head())
+        print("===================================")
+
+        self._process_closest_approach_data()
+        self._filtered_approach_count()
+
+        print("neo data length: ", len(self.neo_data))
+        print(self.neo_data.head())
+
+
+    def save_data(self):
         # TODO - set the proper directory path
         current_working_directory = os.getcwd()
         logging.info(f"Current working directory: {current_working_directory}")
@@ -210,25 +255,3 @@ class PandasDFProcessor(DataProcessor):
         os.makedirs(data_dir, exist_ok=True)
         neo_file_path = os.path.join(data_dir, self.cfg.scraper.persist.file_name)
         self.neo_data.to_parquet(neo_file_path, index=False)
-
-    def process_data(self):
-        """Processes the NEO data from the queue into a pandas DataFrame."""
-        logging.info("Processing data...")
-        while True:
-            item = self.queue.get()
-            if item is None:
-                break
-            self._process_neo_data(item)
-            self.queue.task_done()
-        
-        logging.info(f"Processed neo data length: {len(self.neo_data)}")
-        logging.info(f"Processed approach data length: {len(self.neo_approach_data)}")
-        logging.info("Data processing complete.")
-        print(self.neo_data.head())
-        print("===================================")
-        print(self.neo_approach_data.head())
-        print("===================================")
-        self._process_closest_approach_data()
-        self._save_data()
-        print("neo data length: ", len(self.neo_data))
-        print(self.neo_data.head())

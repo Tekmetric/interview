@@ -5,6 +5,21 @@ from .data_gathering import DataHandler
 import threading
 import logging
 class Scraper:
+    """A class used to scrape data by managing the download and processing of data using multithreading.
+    Attributes
+    ----------
+    cfg : DictConfig
+        Configuration settings for the scraper.
+    data_processor : DataProcessor
+        An instance responsible for processing the downloaded data.
+    data_handler : DataHandler
+        An instance responsible for handling data download.
+    Methods
+    -------
+    __init__(cfg: DictConfig, data_processor: DataProcessor, data_handler: DataHandler)
+        Initializes the Scraper with configuration, data processor, and data handler.
+    scrape()
+    """
 
     def __init__(self, cfg: DictConfig, data_processor: DataProcessor, data_handler: DataHandler):
         self.cfg = cfg

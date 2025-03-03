@@ -49,8 +49,12 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         </Typography>
       )}
       {numSelected > 0 && (
-        <Tooltip title="Delete">
-          <IconButton onClick={() => onDeleteAll()}>
+        <Tooltip title="Remove all">
+          <IconButton
+            aria-label="Uncheck all symbols"
+            data-testid="uncheck-all-symbols"
+            onClick={() => onDeleteAll()}
+          >
             <DeleteIcon />
           </IconButton>
         </Tooltip>

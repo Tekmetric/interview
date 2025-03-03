@@ -158,6 +158,8 @@ const StockTable = ({
                     <TableCell align="left">{indicators?.sentiment}</TableCell>
                     <TableCell padding="checkbox">
                       <IconButton
+                        aria-label="Remove symbol"
+                        data-testid="remove-symbol"
                         onClick={(event) => handleDelete(event, row.symbol)}
                       >
                         <DeleteIcon />
@@ -169,13 +171,15 @@ const StockTable = ({
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={10}>
-                    <LinearProgress />
+                    <LinearProgress data-testid="is-loading-component" />
                   </TableCell>
                 </TableRow>
               ) : rows.length === 0 ? (
                 <TableRow sx={{ height: 50 }}>
                   <TableCell colSpan={10}>
-                    <Typography align="center">No data to display</Typography>
+                    <Typography align="center" data-testid="no-data-label">
+                      No data to display
+                    </Typography>
                   </TableCell>
                 </TableRow>
               ) : (

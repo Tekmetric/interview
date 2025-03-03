@@ -75,7 +75,14 @@ const StockHistoricalDataAggregator = ({
 
   return (
     <Box
-      sx={{ width: "100%", height: 400 }}
+      sx={{
+        width: "100%",
+        height: 400,
+        border: "1px solid",
+        borderColor: (theme) => theme.palette.divider,
+        pt: 2,
+        pr: 2,
+      }}
       display="flex"
       flexDirection="column"
       position={"relative"}

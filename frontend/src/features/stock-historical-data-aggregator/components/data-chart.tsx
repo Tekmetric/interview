@@ -32,13 +32,13 @@ const DataChart = (props: DataChartProps) => {
               x2="0"
               y2="1"
             >
-              <stop offset="0%" stopColor="#8884d8" stopOpacity={0.2} />
-              <stop offset="100%" stopColor="#8884d8" stopOpacity={0} />
+              <stop offset="0%" stopColor={theme.palette.primary.main} stopOpacity={0.2} />
+              <stop offset="100%" stopColor={theme.palette.primary.main} stopOpacity={0} />
             </linearGradient>
           ))}
         </defs>
         <XAxis dataKey="date" hide />
-        <YAxis />
+        <YAxis orientation="right" width={40} strokeWidth={0.5} />
         <Tooltip
           labelFormatter={(label) => format(new Date(label), DATE_FORMAT)}
           contentStyle={{
@@ -54,7 +54,7 @@ const DataChart = (props: DataChartProps) => {
             type="monotone"
             dataKey={symbol}
             name={symbol}
-            stroke="#8884d8"
+            stroke={theme.palette.primary.main}
             fillOpacity={1}
             fill={`url(#color${symbol})`}
             dot={false}

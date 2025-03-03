@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Paper, { PaperProps } from "@mui/material/Paper";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import Grid2 from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import parse from "autosuggest-highlight/parse";
@@ -20,7 +19,7 @@ const CustomPaper = (props: PaperProps) => {
 
 type StockSearchProps = {
   onOptionSelect: (option: SymbolData) => void;
-}
+};
 
 const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
   const [inputValue, setInputValue] = useState("");
@@ -61,13 +60,13 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
       includeInputInList
       filterSelectedOptions
       noOptionsText="Nothing found"
-      onInputChange={(event, newInputValue) => {
+      onInputChange={(_event, newInputValue) => {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Search for a company"
+          label="Search for a company or symbol"
           fullWidth
           error={!!error}
           helperText={error ? "Error fetching data" : ""}
@@ -90,12 +89,7 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
             onClick={() => onOptionSelect(option)}
           >
             <Grid2 container sx={{ alignItems: "center" }}>
-              <Grid2 sx={{ display: "flex", width: 44 }}>
-                <LocationOnIcon sx={{ color: "text.secondary" }} />
-              </Grid2>
-              <Grid2
-                sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}
-              >
+              <Grid2 sx={{ wordWrap: "break-word" }}>
                 {parts.map(
                   (
                     part: { text: string; highlight: boolean },

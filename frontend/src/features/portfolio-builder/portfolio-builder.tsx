@@ -11,13 +11,20 @@ const PortfolioBuilder = () => {
   const [addedStocks, setAddedStocks] = useState<SymbolData[]>([]);
 
   const handleOptionSelect = (option: SymbolData) => {
-    setAddedStocks((prevOptions) => [...prevOptions, option]);
+    setAddedStocks((prevOptions) => {
+      if (prevOptions.some((stock) => stock.symbol === option.symbol)) {
+        return prevOptions;
+      }
+      return [...prevOptions, option];
+    });
   };
+
   const handleDelete = (symbol: string) => {
     setAddedStocks((prevStocks) =>
       prevStocks.filter((stock) => stock.symbol !== symbol)
     );
   };
+
   const handleDeleteAll = () => {
     setAddedStocks([]);
   };
@@ -28,6 +35,7 @@ const PortfolioBuilder = () => {
       setAddedStocks(JSON.parse(storedStocks));
     }
   }, []);
+
   useEffect(() => {
     localStorage.setItem("addedStocks", JSON.stringify(addedStocks));
   }, [addedStocks]);

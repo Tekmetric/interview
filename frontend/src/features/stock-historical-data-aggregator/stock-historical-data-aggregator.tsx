@@ -73,6 +73,10 @@ const StockHistoricalDataAggregator = ({
 
   const formattedChartData = Object.values(chartData);
 
+  if (!formattedChartData.length) {
+    return null;
+  }
+
   return (
     <Box
       sx={{

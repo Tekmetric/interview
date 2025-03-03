@@ -75,8 +75,7 @@ export async function GET(request: NextRequest) {
     if (!messageContent) {
       return new Response(
         JSON.stringify({
-          error:
-            "No proper response was provided, or the response is not in the expected format",
+          error: API_STATUS_TOKENS.errors.openAINoResponse,
         }),
         {
           status: 500,

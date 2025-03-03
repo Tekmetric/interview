@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from "@/config/api-endpoints";
 import { useState, useEffect } from "react";
 
 export type Indicator = {
@@ -19,6 +20,9 @@ export type UseFetchSymbolInsightResult = {
   error: string | null;
 };
 
+const failedToFetchDataMessage = "Failed to fetch data";
+const unknownErrorMessage = "An unknown error occurred";
+
 const useFetchSymbolInsight = (
   symbols: string[]
 ): UseFetchSymbolInsightResult => {
@@ -33,9 +37,10 @@ const useFetchSymbolInsight = (
 
       try {
         const query = symbols.map((symbol) => `query=${symbol}`).join("&");
-        const response = await fetch(`/api/openai/get-symbol-insight?${query}`);
+        const response = await fetch(API_ENDPOINTS.getSymbolInsight(query));
+
         if (!response.ok) {
-          throw new Error("Failed to fetch data");
+          throw new Error(failedToFetchDataMessage);
         }
         const result = await response.json();
         setData(result);
@@ -43,7 +48,7 @@ const useFetchSymbolInsight = (
         if (err instanceof Error) {
           setError(err.message);
         } else {
-          setError("An unknown error occurred");
+          setError(unknownErrorMessage);
         }
       } finally {
         setIsLoading(false);

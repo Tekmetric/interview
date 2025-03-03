@@ -1,4 +1,4 @@
-import Superscript from "@/components/superscript/superscript";
+import Superscript from "@/components/superscript";
 import { useFetchAggregatedSentiment } from "@/lib/api/hooks/get/useFetchAggregatedSentiment";
 import { Box, Typography } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";

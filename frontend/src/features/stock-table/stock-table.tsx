@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from "react";
+import { Fragment, MouseEvent, useState } from "react";
 import { SymbolData } from "@/lib/api/hooks/get/useFetchSymbols";
 import {
   Box,
@@ -8,17 +8,13 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Checkbox,
-  IconButton,
-  LinearProgress,
   Typography,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import useFetchSymbolInsight from "@/lib/api/hooks/get/useFetchSymbolInsight";
 import { getComparator, Order } from "./utils/sort";
 import EnhancedTableToolbar from "./components/toolbar";
 import EnhancedTableHead from "./components/table-head";
-import Superscript from "@/components/superscript";
+import CustomTableRow from "./components/table-row";
 
 type StockTableProps = {
   data: SymbolData[];
@@ -100,6 +96,7 @@ const StockTable = ({
 
   const getIndicators = (symbol: string) => {
     const insight = insights?.find((insight) => insight.symbol === symbol);
+
     return insight ? insight.indicators : null;
   };
 
@@ -127,68 +124,20 @@ const StockTable = ({
                 const indicators = getIndicators(row.symbol);
 
                 return (
-                  <TableRow
-                    hover
-                    onClick={() => handleSelect(row.symbol)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.symbol}
-                    selected={isItemSelected}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox color="primary" checked={isItemSelected} />
-                    </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    >
-                      {row.description}
-                    </TableCell>
-                    <TableCell align="left">{row.symbol}</TableCell>
-                    <TableCell align="left">{row.type}</TableCell>
-                    <TableCell align="left">
-                      {indicators?.bestEntry}
-                      {indicators?.bestEntry && <Superscript>[AI]</Superscript>}
-                    </TableCell>
-                    <TableCell align="left">
-                      {indicators?.risk3Y}
-                      {indicators?.risk3Y && <Superscript>[AI]</Superscript>}
-                    </TableCell>
-                    <TableCell align="left">
-                      {indicators?.estimated3Y}
-                      {indicators?.estimated3Y && <Superscript>[AI]</Superscript>}
-                    </TableCell>
-                    <TableCell align="left">
-                      {indicators?.yield}
-                      {indicators?.yield && <Superscript>[AI]</Superscript>}
-                    </TableCell>
-                    <TableCell align="left">
-                      {indicators?.sentiment}
-                      {indicators?.sentiment && <Superscript>[AI]</Superscript>}
-                    </TableCell>
-                    <TableCell padding="checkbox">
-                      <IconButton
-                        aria-label="Remove symbol"
-                        data-testid="remove-symbol"
-                        onClick={(event) => handleDelete(event, row.symbol)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
+                  <Fragment key={row.symbol}>
+                    <CustomTableRow
+                      isItemSelected={isItemSelected}
+                      labelId={labelId}
+                      indicators={indicators}
+                      isLoading={isLoading}
+                      row={row}
+                      handleSelect={handleSelect}
+                      handleDelete={handleDelete}
+                    />
+                  </Fragment>
                 );
               })}
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={10}>
-                    <LinearProgress data-testid="is-loading-component" />
-                  </TableCell>
-                </TableRow>
-              ) : rows.length === 0 ? (
+              {!isLoading && rows.length === 0 ? (
                 <TableRow sx={{ height: 50 }}>
                   <TableCell colSpan={10}>
                     <Typography align="center" data-testid="no-data-label">

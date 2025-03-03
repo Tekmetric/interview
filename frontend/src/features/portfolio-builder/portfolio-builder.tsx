@@ -5,8 +5,12 @@ import { SymbolData } from "@/lib/api/hooks/get/useFetchSymbols";
 import StockSearch from "@/features/stock-search";
 import StockTable from "@/features/stock-table";
 import StockHistoricalDataAggregator from "@/features/stock-historical-data-aggregator";
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import StockAggregatedSentiment from "@/features/stock-aggregated-sentiment";
+import InfoIcon from "@mui/icons-material/Info";
+
+const informMesssage =
+  "Please select at least one stock in the table to begin the evaluation.";
 
 const PortfolioBuilder = () => {
   const [selectedSymbols, setSelectedSymbols] = useState<string[]>([]);
@@ -51,6 +55,14 @@ const PortfolioBuilder = () => {
         onDelete={handleDelete}
         onDeleteAll={handleDeleteAll}
       />
+      {addedStocks?.length > 0 && !selectedSymbols?.length && (
+        <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+          <InfoIcon color="success" sx={{ mr: 1 }} />
+          <Typography variant="body1" color="success.main">
+            {informMesssage}
+          </Typography>
+        </Box>
+      )}
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={2}

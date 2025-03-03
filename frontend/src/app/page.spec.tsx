@@ -14,5 +14,5 @@ test("Page", () => {
   expect(screen.getByText("Portfolio Builder")).toBeInTheDocument();
 
   // Check for the footer
-  expect(screen.getByText("Footer")).toBeInTheDocument();
+  expect(screen.getByTestId("page-footer")).toBeInTheDocument();
 });

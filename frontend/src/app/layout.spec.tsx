@@ -10,7 +10,7 @@ vi.mock("next/font/google", () => ({
 }));
 
 describe("RootLayout", () => {
-  test("renders children correctly", () => {
+  test("Render children correctly", () => {
     render(
       <RootLayout>
         <div data-testid="child-element">Child Element</div>
@@ -21,7 +21,7 @@ describe("RootLayout", () => {
     expect(screen.getByText("Child Element")).toBeInTheDocument();
   });
 
-  test("applies the correct HTML structure", () => {
+  test("Apply the correct HTML structure", () => {
     render(
       <RootLayout>
         <div data-testid="child-element">Child Element</div>
@@ -36,7 +36,7 @@ describe("RootLayout", () => {
     expect(bodyElement).toHaveClass("--font-roboto");
   });
 
-  test("includes ThemeProvider and CssBaseline", () => {
+  test("Include ThemeProvider and CssBaseline", () => {
     render(
       <RootLayout>
         <div data-testid="child-element">Child Element</div>

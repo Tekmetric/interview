@@ -18,6 +18,7 @@ import useFetchSymbolInsight from "@/lib/api/hooks/get/useFetchSymbolInsight";
 import { getComparator, Order } from "./utils/sort";
 import EnhancedTableToolbar from "./components/toolbar";
 import EnhancedTableHead from "./components/table-head";
+import Superscript from "@/components/superscript";
 
 type StockTableProps = {
   data: SymbolData[];
@@ -149,13 +150,26 @@ const StockTable = ({
                     </TableCell>
                     <TableCell align="left">{row.symbol}</TableCell>
                     <TableCell align="left">{row.type}</TableCell>
-                    <TableCell align="left">{indicators?.bestEntry}</TableCell>
-                    <TableCell align="left">{indicators?.risk3Y}</TableCell>
+                    <TableCell align="left">
+                      {indicators?.bestEntry}
+                      {indicators?.bestEntry && <Superscript>[AI]</Superscript>}
+                    </TableCell>
+                    <TableCell align="left">
+                      {indicators?.risk3Y}
+                      {indicators?.risk3Y && <Superscript>[AI]</Superscript>}
+                    </TableCell>
                     <TableCell align="left">
                       {indicators?.estimated3Y}
+                      {indicators?.estimated3Y && <Superscript>[AI]</Superscript>}
                     </TableCell>
-                    <TableCell align="left">{indicators?.yield}</TableCell>
-                    <TableCell align="left">{indicators?.sentiment}</TableCell>
+                    <TableCell align="left">
+                      {indicators?.yield}
+                      {indicators?.yield && <Superscript>[AI]</Superscript>}
+                    </TableCell>
+                    <TableCell align="left">
+                      {indicators?.sentiment}
+                      {indicators?.sentiment && <Superscript>[AI]</Superscript>}
+                    </TableCell>
                     <TableCell padding="checkbox">
                       <IconButton
                         aria-label="Remove symbol"

@@ -20,10 +20,14 @@ export default function Home() {
       </Stack>
       <Box
         component="footer"
-        sx={{ mt: 4, display: "flex", justifyContent: "center", overflowX: "hidden" }} // Prevent horizontal scrolling
-      >
-        Footer
-      </Box>
+        sx={{
+          mt: 4,
+          display: "flex",
+          justifyContent: "center",
+          overflowX: "hidden",
+        }}
+        data-testid="page-footer"
+      ></Box>
     </Container>
   );
 }

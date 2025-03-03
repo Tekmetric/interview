@@ -18,7 +18,7 @@ const CustomPaper = (props: PaperProps) => {
   return <Paper {...props}>{props.children}</Paper>;
 };
 
-interface StockSearchProps {
+type StockSearchProps = {
   onOptionSelect: (option: SymbolData) => void;
 }
 
@@ -50,7 +50,7 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
 
   return (
     <Autocomplete
-      sx={{ width: 300 }}
+      sx={{ maxWidth: 300, width: "100%" }}
       getOptionLabel={(option) => option.description}
       filterOptions={(x) => x}
       slots={{

@@ -1,21 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SymbolData } from "@/lib/api/hooks/get/useFetchSymbols";
-import StockSearch from "./stock-search/stock-search";
-import StockTable from "./stock-table/stock-table";
+import StockSearch from "@/features/stock-search";
+import StockTable from "@/features/stock-table";
+import StockHistoricalDataAggregator from "@/features/stock-historical-data-aggregator";
 
 const PortfolioBuilder = () => {
-  const [selectedOptions, setSelectedOptions] = useState<SymbolData[]>([]);
+  const [selectedSymbols, setSelectedSymbols] = useState<string[]>([]);
+  const [addedStocks, setAddedStocks] = useState<SymbolData[]>([]);
+
   const handleOptionSelect = (option: SymbolData) => {
-    setSelectedOptions((prevOptions) => [...prevOptions, option]);
+    setAddedStocks((prevOptions) => [...prevOptions, option]);
   };
+  const handleDelete = (symbol: string) => {
+    setAddedStocks((prevStocks) =>
+      prevStocks.filter((stock) => stock.symbol !== symbol)
+    );
+  };
+  const handleDeleteAll = () => {
+    setAddedStocks([]);
+  };
+
+  useEffect(() => {
+    const storedStocks = localStorage.getItem("addedStocks");
+    if (storedStocks) {
+      setAddedStocks(JSON.parse(storedStocks));
+    }
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("addedStocks", JSON.stringify(addedStocks));
+  }, [addedStocks]);
 
   return (
     <>
       <StockSearch onOptionSelect={handleOptionSelect} />
-      <StockTable data={selectedOptions} />
+      <StockTable
+        data={addedStocks}
+        setSelectedSymbols={setSelectedSymbols}
+        onDelete={handleDelete}
+        onDeleteAll={handleDeleteAll}
+      />
+      <StockHistoricalDataAggregator selectedSymbols={selectedSymbols} />
     </>
   );
 };
+
 export default PortfolioBuilder;

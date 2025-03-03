@@ -14,18 +14,18 @@ interface ApiSymbolData {
 
 const useFetchSymbols = (query: string) => {
   const [data, setData] = useState<ApiSymbolData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!query) {
       setData(null);
-      setLoading(false);
+      setIsLoading(false);
       return;
     }
 
     const fetchData = async () => {
-      setLoading(true);
+      setIsLoading(true);
       setError(null);
 
       const url = `/api/fin/get-symbols?query=${encodeURIComponent(query)}`;
@@ -36,7 +36,7 @@ const useFetchSymbols = (query: string) => {
           throw new Error(`Error: ${response.statusText}`);
         }
         const result = await response.json();
-        
+
         setData(result);
       } catch (err: unknown) {
         if (err instanceof Error) {
@@ -45,14 +45,14 @@ const useFetchSymbols = (query: string) => {
           setError("An unknown error occurred");
         }
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, [query]);
 
-  return { data, loading, error };
+  return { data, isLoading, error };
 };
 
 export default useFetchSymbols;

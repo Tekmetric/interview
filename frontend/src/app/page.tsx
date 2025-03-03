@@ -1,15 +1,15 @@
-import PortfolioBuilder from "@/features/portfolio-builder/portfolio-builder";
+import PortfolioBuilder from "@/features/portfolio-builder";
 import { Container, Stack, Typography, Box } from "@mui/material";
 
 export default function Home() {
   return (
     <Container
-      maxWidth="md"
       sx={{
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         padding: 3,
+        maxWidth: "100%",
       }}
     >
       <Stack spacing={2} alignItems="center">
@@ -20,7 +20,7 @@ export default function Home() {
       </Stack>
       <Box
         component="footer"
-        sx={{ mt: 4, display: "flex", justifyContent: "center" }}
+        sx={{ mt: 4, display: "flex", justifyContent: "center", overflowX: "hidden" }} // Prevent horizontal scrolling
       >
         Footer
       </Box>

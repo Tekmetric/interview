@@ -14,7 +14,7 @@ interface ApiSymbolData {
 
 const useFetchSymbols = (query: string) => {
   const [data, setData] = useState<ApiSymbolData | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

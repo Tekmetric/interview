@@ -12,7 +12,14 @@ import { debounce } from "@mui/material/utils";
 import useFetchSymbols, {
   SymbolData,
 } from "@/lib/api/hooks/get/useFetchSymbols";
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  HTMLAttributes,
+  SyntheticEvent,
+} from "react";
 
 const CustomPaper = (props: PaperProps) => {
   return <Paper {...props}>{props.children}</Paper>;
@@ -28,6 +35,15 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
 
   const { data, isLoading, error } = useFetchSymbols(debouncedInputValue);
   const options: SymbolData[] = data ? data.result : [];
+
+  const handleInputChange = useCallback(
+    (_event: SyntheticEvent<Element, Event>, newInputValue: string) => {
+      debounce(() => {
+        setInputValue(newInputValue);
+      }, 300)();
+    },
+    []
+  );
 
   const debouncedFetch = useMemo(
     () =>
@@ -48,22 +64,67 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
     };
   }, [inputValue, debouncedFetch]);
 
+  const renderOption = useCallback(
+    (optionProps: HTMLAttributes<HTMLLIElement>, option: SymbolData) => {
+      const matches = Array.from(
+        option.description.matchAll(new RegExp(inputValue, "gi"))
+      );
+
+      const parts = parse(
+        option.description,
+        matches.map((match) => [match.index, match.index + match[0].length])
+      );
+
+      return (
+        <li
+          {...optionProps}
+          key={`${option.symbol}-${option.description}`}
+          onClick={() => onOptionSelect(option)}
+        >
+          <Grid2 container sx={{ alignItems: "center" }}>
+            <Grid2 sx={{ wordWrap: "break-word" }}>
+              {parts.map(
+                (part: { text: string; highlight: boolean }, index: number) => (
+                  <Box
+                    key={index}
+                    component="span"
+                    sx={{
+                      fontWeight: part.highlight
+                        ? "fontWeightBold"
+                        : "fontWeightRegular",
+                    }}
+                  >
+                    {part.text}
+                  </Box>
+                )
+              )}
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                {option.symbol}
+              </Typography>
+            </Grid2>
+          </Grid2>
+        </li>
+      );
+    },
+    [inputValue, onOptionSelect]
+  );
+
   return (
     <Box sx={{ position: "relative", maxWidth: 300, width: "100%" }}>
       <Autocomplete
-        getOptionLabel={(option) => option.description}
+        freeSolo
+        getOptionLabel={(option) =>
+          typeof option === "string" ? option : option.description
+        }
         filterOptions={(x) => x}
         slots={{
           paper: CustomPaper,
         }}
         options={options || []}
-        autoComplete
         includeInputInList
         filterSelectedOptions
         noOptionsText="Nothing found"
-        onInputChange={(_event, newInputValue) => {
-          setInputValue(newInputValue);
-        }}
+        onInputChange={handleInputChange}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -73,50 +134,7 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
             helperText={error ? "Error fetching data" : ""}
           />
         )}
-        renderOption={(optionProps, option: SymbolData) => {
-          const matches = Array.from(
-            option.description.matchAll(new RegExp(inputValue, "gi"))
-          );
-
-          const parts = parse(
-            option.description,
-            matches.map((match) => [match.index, match.index + match[0].length])
-          );
-
-          return (
-            <li
-              {...optionProps}
-              key={`${option.symbol}-${option.description}`}
-              onClick={() => onOptionSelect(option)}
-            >
-              <Grid2 container sx={{ alignItems: "center" }}>
-                <Grid2 sx={{ wordWrap: "break-word" }}>
-                  {parts.map(
-                    (
-                      part: { text: string; highlight: boolean },
-                      index: number
-                    ) => (
-                      <Box
-                        key={index}
-                        component="span"
-                        sx={{
-                          fontWeight: part.highlight
-                            ? "fontWeightBold"
-                            : "fontWeightRegular",
-                        }}
-                      >
-                        {part.text}
-                      </Box>
-                    )
-                  )}
-                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    {option.symbol}
-                  </Typography>
-                </Grid2>
-              </Grid2>
-            </li>
-          );
-        }}
+        renderOption={renderOption}
       />
       {isLoading && (
         <LinearProgress

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { DATE_FORMAT } from "@/lib/constants/global";
 import LoadingOverlay from "./components/loading-overlay";
 import RangeSelect from "./components/range-select";
-import DataChart from "./components/data-chart";
+import DataChart from "@/components/data-chart";
 
 type StockHistoricalDataProps = {
   selectedSymbols: string[];

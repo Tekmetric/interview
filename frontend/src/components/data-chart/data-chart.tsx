@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   AreaChart,
   Area,
@@ -10,7 +11,8 @@ import {
 import { format } from "date-fns";
 import { DATE_FORMAT } from "@/lib/constants/global";
 import theme from "@/theme";
-import NoDataLabel from "./no-data-label";
+import NoDataLabel from "@/components/data-chart/components/no-data-label";
+import getRandomColor from "@/lib/utils/get-random-color";
 
 type DataChartProps = {
   formattedChartData: { date: string; [key: string]: number | string }[];
@@ -20,6 +22,14 @@ type DataChartProps = {
 
 const DataChart = (props: DataChartProps) => {
   const { formattedChartData, selectedSymbols, isLoading } = props;
+
+  const chartLineColors = useMemo(() => {
+    const colorMap: { [key: string]: string } = {};
+    selectedSymbols.forEach((symbol) => {
+      colorMap[symbol] = getRandomColor();
+    });
+    return colorMap;
+  }, [selectedSymbols]);
 
   if ((!isLoading && !formattedChartData) || formattedChartData.length === 0) {
     return <NoDataLabel />;
@@ -38,16 +48,8 @@ const DataChart = (props: DataChartProps) => {
               x2="0"
               y2="1"
             >
-              <stop
-                offset="0%"
-                stopColor={theme.palette.primary.main}
-                stopOpacity={0.2}
-              />
-              <stop
-                offset="100%"
-                stopColor={theme.palette.primary.main}
-                stopOpacity={0}
-              />
+              <stop offset="0%" stopColor={chartLineColors[symbol]} stopOpacity={0.2} />
+              <stop offset="100%" stopColor={chartLineColors[symbol]} stopOpacity={0} />
             </linearGradient>
           ))}
         </defs>
@@ -60,6 +62,20 @@ const DataChart = (props: DataChartProps) => {
             borderColor: theme.palette.divider,
           }}
           itemStyle={{ color: theme.palette.text.primary }}
+          formatter={(value, name) => (
+            <span>
+              <span
+                style={{
+                  display: "inline-block",
+                  width: "10px",
+                  height: "10px",
+                  backgroundColor: chartLineColors[name as string],
+                  marginRight: "5px",
+                }}
+              ></span>
+              {value}
+            </span>
+          )}
         />
         <Legend />
         {selectedSymbols.map((symbol) => (
@@ -68,7 +84,7 @@ const DataChart = (props: DataChartProps) => {
             type="monotone"
             dataKey={symbol}
             name={symbol}
-            stroke={theme.palette.primary.main}
+            stroke={chartLineColors[symbol]}
             fillOpacity={1}
             fill={`url(#color${symbol})`}
             dot={false}

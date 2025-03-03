@@ -73,7 +73,7 @@ const StockHistoricalDataAggregator = ({
 
   const formattedChartData = Object.values(chartData);
 
-  if (!formattedChartData.length) {
+  if (!selectedSymbols.length) {
     return null;
   }
 
@@ -93,7 +93,7 @@ const StockHistoricalDataAggregator = ({
     >
       <LoadingOverlay isLoading={isLoading} />
       <RangeSelect
-        isVisible={formattedChartData?.length > 0}
+        isVisible={!isLoading && selectedSymbols.length > 0}
         range={range}
         setRange={setRange}
       />
@@ -102,6 +102,7 @@ const StockHistoricalDataAggregator = ({
         <DataChart
           formattedChartData={formattedChartData}
           selectedSymbols={selectedSymbols}
+          isLoading={isLoading}
         />
       </Box>
     </Box>

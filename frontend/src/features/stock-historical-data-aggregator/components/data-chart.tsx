@@ -10,14 +10,20 @@ import {
 import { format } from "date-fns";
 import { DATE_FORMAT } from "@/lib/constants/global";
 import theme from "@/theme";
+import NoDataLabel from "./no-data-label";
 
 type DataChartProps = {
   formattedChartData: { date: string; [key: string]: number | string }[];
   selectedSymbols: string[];
+  isLoading: boolean;
 };
 
 const DataChart = (props: DataChartProps) => {
-  const { formattedChartData, selectedSymbols } = props;
+  const { formattedChartData, selectedSymbols, isLoading } = props;
+
+  if ((!isLoading && !formattedChartData) || formattedChartData.length === 0) {
+    return <NoDataLabel />;
+  }
 
   return (
     <ResponsiveContainer>
@@ -32,8 +38,16 @@ const DataChart = (props: DataChartProps) => {
               x2="0"
               y2="1"
             >
-              <stop offset="0%" stopColor={theme.palette.primary.main} stopOpacity={0.2} />
-              <stop offset="100%" stopColor={theme.palette.primary.main} stopOpacity={0} />
+              <stop
+                offset="0%"
+                stopColor={theme.palette.primary.main}
+                stopOpacity={0.2}
+              />
+              <stop
+                offset="100%"
+                stopColor={theme.palette.primary.main}
+                stopOpacity={0}
+              />
             </linearGradient>
           ))}
         </defs>

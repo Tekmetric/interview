@@ -1,27 +1,30 @@
-import React, { Component } from 'react';
-//import logo from './logo.svg';
- 
+import React from 'react';
+import LandingPage from './pages/LandingPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import IndividualAnimePage from './pages/IndividualAnimePage';
+import { AnimeListPage } from './pages/AnimeListPage';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <h2>Welcome to the interview app!</h2>
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
+const queryClient = new QueryClient();
 
-        <or>
-          <li>Fetch Data from a public API <a href="https://github.com/toddmotto/public-apis">Samples</a></li>
-          <li>Display data from API onto your page (Table, List, etc.)</li>
-          <li>Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)</li> 
-        </or>   
-       
-        </header>
-      </div>
-    );
-  }
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Header />
+          <div className='container m-auto my-6 min-h-[calc(100vh-224px)]'>
+            <Routes>
+              <Route path="/top/:filter" element={<AnimeListPage />} />
+              <Route path="/:id" element={<IndividualAnimePage />} />
+              <Route path="/" element={<LandingPage />} />
+            </Routes>
+          </div>
+        <Footer />
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
 }
 
 export default App;

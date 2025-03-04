@@ -1,5 +1,4 @@
-import { Copyright, Facebook, Instagram, X } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Copyright } from '@mui/icons-material';
 
 export const Footer = () => {
   return (

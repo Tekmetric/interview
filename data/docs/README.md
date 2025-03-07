@@ -41,6 +41,7 @@ python recall_data.py scraper.request.api_key=<your NASA API key>
 
 # Application components
 In order to support the above requirements, some specific application components should be created.
+In the directory containing this README file, there also is a `clases.uxf` file containing UML diagrams for the basic classes in the project. This is readable with the [UMLet VS Code plugin](https://marketplace.visualstudio.com/items?itemName=umlet.umlet) or the standalone [UMLet application](https://www.umlet.com/).
 
 1. Handling data requests to the NEO API.
 This should be done via a DataHandler component. The NEO Service API is a REST API and using the browse API call we get paged results. The
@@ -54,6 +55,9 @@ required aggregations as well. There should be a component for this, called Data
 The NEO data scraping application is structured as a publisher-subscriber setup.
 Currently a simple Python queue is used as the communication transport between the
 publisher and subscriber. The publisher will be an implementation of the DataHandler interface while the subscriber will be an implementation of the DataProcessor interface. The scraper module contains the Scraper class which creates 2 threads, one for the subscriber, one for the producer, effectively decoupling them.
+Everything is tied together using the [Hydra](https://hydra.cc/) config framework as the method of passing the configurable items for the application.
+
+4. Further improvements.
 We could imagine this is a basic scaffold for a more scalable setup in which instead of using threads, one could use microservices that implement the DataHandler and DataProcessor contract while using a more scalable transport such as Rabbit MQ or Zero MQ.
 
 # Example of NEO result

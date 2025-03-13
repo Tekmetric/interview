@@ -11,7 +11,7 @@ const Image = ({ src, alt, className = '', ...rest }: ImageProps) => {
   return (
     <>
       {!imageLoaded && (
-        <div className="absolute flex h-64 w-full animate-pulse items-center justify-center bg-gray-300">
+        <div className="absolute flex h-full w-full animate-pulse items-center justify-center bg-gray-300">
           <svg
             className="h-20 w-20 text-gray-200 dark:text-gray-600"
             aria-hidden="true"

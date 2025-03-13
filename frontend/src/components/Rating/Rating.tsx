@@ -3,9 +3,10 @@ import { Star } from 'lucide-react';
 interface RatingProps {
   rating: number;
   reviewsCount: number;
+  showRatingValue?: boolean;
 }
 
-const Rating = ({ rating, reviewsCount }: RatingProps) => {
+const Rating = ({ rating, reviewsCount, showRatingValue }: RatingProps) => {
   const clampedRating = Math.max(0, Math.min(5, rating));
   const stars = [1, 2, 3, 4, 5];
 
@@ -48,8 +49,13 @@ const Rating = ({ rating, reviewsCount }: RatingProps) => {
         );
       })}
 
+      {showRatingValue && (
+        <span className="ml-2 text-sm text-gray-600">{rating}</span>
+      )}
       {reviewsCount > 0 && (
-        <span className="ml-2 text-sm text-gray-600">({reviewsCount})</span>
+        <span className="ml-2 text-sm text-gray-600">
+          ({reviewsCount} reviews)
+        </span>
       )}
     </div>
   );

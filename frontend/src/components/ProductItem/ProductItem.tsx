@@ -3,6 +3,7 @@ import React from 'react';
 import { Product } from '../../types/Product.ts';
 import Rating from '../Rating/Rating.tsx';
 import Image from '../Image/Image.tsx';
+import { Link } from 'react-router';
 
 interface ProductItemProps {
   product: Product;
@@ -10,7 +11,10 @@ interface ProductItemProps {
 
 const ProductItem = ({ product }: ProductItemProps) => {
   return (
-    <div className="flex w-full cursor-pointer flex-col gap-2">
+    <Link
+      to={`/product/${product.id}`}
+      className="flex w-full cursor-pointer flex-col gap-2 focus:shadow-sm focus:outline-none"
+    >
       <div className="relative flex items-center justify-center border border-gray-300 bg-white">
         <Image
           src={product.thumbnail}
@@ -26,7 +30,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
         />
         <span className="text-sm text-neutral-500">${product.price}</span>
       </div>
-    </div>
+    </Link>
   );
 };
 

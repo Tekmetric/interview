@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import { lazy, Suspense } from 'react';
 import Layout from '../layouts/Layout.tsx';
+import Loader from '../components/Loader/Loader.tsx';
 
 const ProductsPage = lazy(() => import('./ProductsPage/ProductsPage.tsx'));
 
@@ -13,7 +14,7 @@ const AppRoutes = () => {
         {
           index: true,
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loader />}>
               <ProductsPage />
             </Suspense>
           ),

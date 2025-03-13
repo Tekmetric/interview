@@ -1,15 +1,19 @@
 import { useMemo } from 'react';
 
 import ProductsGrid from '../../components/ProductsGrid/ProductsGrid.tsx';
+import { useFilter } from '../../providers/FilterProvider.tsx';
+import Filter from '../../components/Filter/Filter.tsx';
 import { getProducts } from '../../api/product.ts';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 const ProductsPage = () => {
+  const { searchTerm } = useFilter();
   const { data, fetchNextPage, isLoading, hasNextPage, isFetching, error } =
     useInfiniteQuery({
-      queryKey: ['products'],
-      queryFn: getProducts,
+      queryKey: ['products', searchTerm],
+      queryFn: ({ pageParam }) =>
+        getProducts({ pageParam, search: searchTerm }),
       initialPageParam: 0,
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 5, // 5 minutes
@@ -29,14 +33,15 @@ const ProductsPage = () => {
   );
 
   if (error) return <div>Error loading products</div>;
-  if (isLoading) return <div>Loading products...</div>;
 
   return (
     <div className="flex h-full flex-col gap-5">
+      <Filter />
       <ProductsGrid
         products={allProducts}
         showLoadMore={hasNextPage}
         isFetching={isFetching}
+        isLoading={isLoading}
         fetchNextPage={fetchNextPage}
       />
     </div>

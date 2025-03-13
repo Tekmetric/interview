@@ -11,7 +11,7 @@ interface ProductItemProps {
 const ProductItem = ({ product }: ProductItemProps) => {
   return (
     <div className="flex w-full cursor-pointer flex-col gap-2">
-      <div className="relative flex items-center justify-center border border-[#e5e7eb] bg-white">
+      <div className="relative flex items-center justify-center border border-gray-300 bg-white">
         <Image
           src={product.thumbnail}
           alt={product.title}

@@ -10,6 +10,9 @@ import {
   FetchNextPageOptions,
   InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
+import Loader from '../Loader/Loader.tsx';
+import { PackageSearch } from 'lucide-react';
+import Button from '../Button/Button.tsx';
 
 interface CellProps {
   columnIndex: number;
@@ -57,6 +60,7 @@ interface ProductsGridProps {
   products: Product[];
   showLoadMore: boolean;
   isFetching: boolean;
+  isLoading: boolean;
   fetchNextPage: (
     options?: FetchNextPageOptions
   ) => Promise<InfiniteQueryObserverResult>;
@@ -66,6 +70,7 @@ const ProductsGrid = ({
   products,
   showLoadMore,
   isFetching,
+  isLoading,
   fetchNextPage,
 }: ProductsGridProps) => {
   const gridOuterRef = useRef<FixedSizeGrid>(null);
@@ -138,6 +143,23 @@ const ProductsGrid = ({
     });
   };
 
+  if (isLoading)
+    return (
+      <div className="flex h-full w-full items-center justify-center text-center">
+        <Loader />
+      </div>
+    );
+  if (!products.length)
+    return (
+      <div className="mx-auto flex h-full w-full max-w-[640px] flex-col items-center justify-center gap-5">
+        <PackageSearch className="h-[64px] w-[64px] shrink-0 text-gray-500" />
+        <span className="text-center text-lg text-gray-500">
+          We're sorry, your search had no results. Check if you spelled it
+          correctly or try searching using another term.
+        </span>
+      </div>
+    );
+
   return (
     <>
       <div className="flex-grow">
@@ -163,13 +185,13 @@ const ProductsGrid = ({
       </div>
       {showLoadMore && (
         <div className="flex justify-center">
-          <button
+          <Button
             onClick={loadMoreProducts}
             disabled={isFetching}
-            className="rounded px-4 py-2 disabled:bg-blue-300"
+            isLoading={isFetching}
           >
-            {isFetching ? 'Loading...' : 'Load More Products'}
-          </button>
+            {isFetching ? 'Loading Products...' : 'Load More Products'}
+          </Button>
         </div>
       )}
     </>

@@ -10,7 +10,7 @@ const Loader = ({ className, ...others }: LoaderProps) => {
     <svg
       aria-hidden="true"
       className={twMerge(
-        'inline h-12 w-12 animate-spin fill-green-500 text-gray-200',
+        'inline h-6 w-6 animate-spin fill-green-500 text-gray-200',
         className
       )}
       viewBox="0 0 100 101"

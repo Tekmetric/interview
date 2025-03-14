@@ -1,14 +1,15 @@
 import { NavLink } from 'react-router';
 import LogoIcon from '../Icons/LogoIcon.tsx';
+import ShoppingCart from '../CartDetail/ShoppingCart.tsx';
 
 const Header = () => {
   return (
     <div className="flex w-full border-b bg-white">
       <div className="mx-auto flex w-full max-w-[1280px] items-center gap-1 p-2">
         <LogoIcon className="flex h-[56px] shrink-0" />
-        <nav className="px-5">
+        <nav className="flex w-full items-center px-5">
           <NavLink
-            to={'/'}
+            to="/"
             className={({ isActive }) =>
               isActive
                 ? 'underline decoration-[2px] underline-offset-[3px]'
@@ -17,6 +18,7 @@ const Header = () => {
           >
             PRODUCTS
           </NavLink>
+          <ShoppingCart />
         </nav>
       </div>
     </div>

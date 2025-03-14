@@ -4,6 +4,7 @@ import { Product } from '../../types/Product.ts';
 import Rating from '../Rating/Rating.tsx';
 import Image from '../Image/Image.tsx';
 import { Link } from 'react-router';
+import { NumericFormat } from 'react-number-format';
 
 interface ProductItemProps {
   product: Product;
@@ -28,7 +29,17 @@ const ProductItem = ({ product }: ProductItemProps) => {
           rating={product.rating}
           reviewsCount={product.reviews?.length}
         />
-        <span className="text-sm text-neutral-500">${product.price}</span>
+        <span className="text-sm text-neutral-500">
+          <NumericFormat
+            value={product.price}
+            displayType="text"
+            thousandSeparator
+            decimalSeparator="."
+            decimalScale={2}
+            fixedDecimalScale
+            prefix="$"
+          />
+        </span>
       </div>
     </Link>
   );

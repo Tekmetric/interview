@@ -21,7 +21,7 @@ const Button = ({
   >
     {isLoading ? (
       <>
-        <Loader className="mr-3 h-6 w-6" />
+        <Loader className="mr-3" />
         {props.children}
       </>
     ) : (

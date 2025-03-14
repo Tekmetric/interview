@@ -1,8 +1,12 @@
-import Image from '../Image/Image.tsx';
-import Rating from '../Rating/Rating.tsx';
-import { twMerge } from 'tailwind-merge';
-import Button from '../Button/Button.tsx';
+import { useNavigate } from 'react-router';
+
+import { useCart, useUpdateCart } from '../../hooks/useCart.tsx';
 import { Product } from '../../types/Product.ts';
+import Rating from '../Rating/Rating.tsx';
+import Button from '../Button/Button.tsx';
+import Image from '../Image/Image.tsx';
+
+import { twMerge } from 'tailwind-merge';
 
 const getAvailabilityStatusColor = (availabilityStatus: string) => {
   switch (availabilityStatus) {
@@ -20,6 +24,37 @@ interface ProductDetailProps {
 }
 
 const ProductDetail = ({ product }: ProductDetailProps) => {
+  const { cart } = useCart();
+  const navigate = useNavigate();
+  const { mutate: updateCart } = useUpdateCart();
+
+  const handleAddToCart = async () => {
+    const previousQuantity =
+      cart.products.find((item) => item.id === product.id)?.quantity ?? 0;
+
+    updateCart(
+      {
+        userId: 77,
+        products: [
+          // due to  how dummyjson api handles mock carts we need to provide previous items too
+          ...cart.products.map((product) => ({
+            id: product.id,
+            quantity: product.quantity,
+          })),
+          {
+            id: product.id,
+            quantity: previousQuantity + 1,
+          },
+        ],
+      },
+      {
+        onSuccess: () => {
+          navigate('/cart');
+        },
+      }
+    );
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <span className="text-xl font-semibold text-neutral-800 md:text-2xl">
@@ -54,7 +89,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
           )}
           <div className="my-5 flex flex-col md:my-auto">
             <span className="text-[48px] text-green-500">${product.price}</span>
-            <Button>Add to cart</Button>
+            <Button onClick={handleAddToCart}>Add to cart</Button>
           </div>
           {product.returnPolicy && (
             <span className="mt-auto text-base text-neutral-400">

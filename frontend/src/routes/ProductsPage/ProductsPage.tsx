@@ -1,30 +1,14 @@
 import { useMemo } from 'react';
-
 import ProductsGrid from '../../components/ProductsGrid/ProductsGrid.tsx';
 import { useFilter } from '../../providers/FilterProvider.tsx';
 import Filter from '../../components/Filter/Filter.tsx';
-import { getProducts } from '../../api/product.ts';
-
-import { useInfiniteQuery } from '@tanstack/react-query';
+import usePaginatedProducts from '../../hooks/usePaginatedProducts.tsx';
+import ProductsError from '../../components/ProductsGrid/ProductsError.tsx';
 
 const ProductsPage = () => {
   const { searchTerm } = useFilter();
-  const { data, fetchNextPage, isLoading, hasNextPage, isFetching, error } =
-    useInfiniteQuery({
-      queryKey: ['products', searchTerm],
-      queryFn: ({ pageParam }) =>
-        getProducts({ pageParam, search: searchTerm }),
-      initialPageParam: 0,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      getNextPageParam: (lastPage, _allPages, lastPageParam) => {
-        if (lastPage.products.length + lastPage.skip >= lastPage.total) {
-          return undefined;
-        }
-
-        return lastPageParam + lastPage.limit;
-      },
-    });
+  const { data, fetchNextPage, isFetching, hasNextPage, isLoading, error } =
+    usePaginatedProducts(searchTerm);
 
   // Flatten all products from all pages
   const allProducts = useMemo(
@@ -32,7 +16,7 @@ const ProductsPage = () => {
     [data]
   );
 
-  if (error) return <div>Error loading products</div>;
+  if (error) return <ProductsError />;
 
   return (
     <div className="flex h-full flex-col gap-5">

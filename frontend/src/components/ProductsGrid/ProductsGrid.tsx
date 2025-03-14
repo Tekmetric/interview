@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import ProductItem from '../ProductItem/ProductItem.tsx';
+import ProductItem from './ProductItem.tsx';
 import { Product } from '../../types/Product.ts';
 
 import { areEqual, FixedSizeGrid } from 'react-window';
@@ -10,9 +10,9 @@ import {
   FetchNextPageOptions,
   InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
-import Loader from '../Loader/Loader.tsx';
-import { PackageSearch } from 'lucide-react';
 import Button from '../Button/Button.tsx';
+import { ProductsGridSkeleton } from './ProductsSkeleton.tsx';
+import ProductsNotFound from './ProductsNotFound.tsx';
 
 interface CellProps {
   columnIndex: number;
@@ -143,22 +143,12 @@ const ProductsGrid = ({
     });
   };
 
-  if (isLoading)
-    return (
-      <div className="flex h-full w-full items-center justify-center text-center">
-        <Loader />
-      </div>
-    );
-  if (!products.length)
-    return (
-      <div className="mx-auto flex h-full w-full max-w-[640px] flex-col items-center justify-center gap-5">
-        <PackageSearch className="h-[64px] w-[64px] shrink-0 text-gray-500" />
-        <span className="text-center text-lg text-gray-500">
-          We're sorry, your search had no results. Check if you spelled it
-          correctly or try searching using another term.
-        </span>
-      </div>
-    );
+  if (isLoading) {
+    return <ProductsGridSkeleton />;
+  }
+  if (!products.length) {
+    return <ProductsNotFound />;
+  }
 
   return (
     <>

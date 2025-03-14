@@ -30,7 +30,6 @@ const Image = ({ src, alt, className = '', ...rest }: ImageProps) => {
         className={className}
         onLoad={() => setImageLoaded(true)}
         {...rest}
-        // className="h-[300px] w-auto sm:h-auto sm:w-full"
       />
     </>
   );

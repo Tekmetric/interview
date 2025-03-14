@@ -6,6 +6,11 @@ type Request = {
   headers?: { [key in string]: string };
 };
 
+type PostRequest = {
+  url: string;
+  body: any;
+};
+
 export const request = async ({ url, params }: Request) => {
   const queryString = qs.stringify(params, { encode: false });
   const finalUrl = queryString ? `${url}?${queryString}` : url;
@@ -15,6 +20,41 @@ export const request = async ({ url, params }: Request) => {
     headers: {
       'Content-Type': 'application/json',
     },
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText ?? response.status.toString());
+  }
+
+  return response.json();
+};
+
+export const postRequest = async ({ url, body }: PostRequest) => {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText ?? response.status.toString());
+  }
+
+  return response.json();
+};
+
+export const putRequest = async ({ url, body }: PostRequest) => {
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      merge: true, // this will include existing products in the cart
+      ...body,
+    }),
   });
 
   if (!response.ok) {

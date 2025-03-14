@@ -59,7 +59,7 @@ const CartItem = ({ item, onUpdateCart }: CartItemProps) => {
       </div>
       <Link
         to={`/product/${item.id}`}
-        className="text-bs font-medium md:text-lg"
+        className="text-bs font-medium hover:underline hover:decoration-[2px] hover:underline-offset-[3px] md:text-lg"
       >
         {item.title}
       </Link>
@@ -78,7 +78,7 @@ const CartItem = ({ item, onUpdateCart }: CartItemProps) => {
         <div className="flex items-center gap-2.5">
           <button
             className={twMerge(
-              'flex h-7.5 w-7.5 cursor-pointer items-center justify-center rounded-full bg-gray-200',
+              'flex h-7.5 w-7.5 cursor-pointer items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300',
               item.quantity === 1 && 'pointer-events-none bg-gray-100'
             )}
             onClick={() => updateQuantity(item.quantity - 1)}
@@ -89,14 +89,14 @@ const CartItem = ({ item, onUpdateCart }: CartItemProps) => {
           </button>
           <span className="text-lg">{item.quantity}</span>
           <button
-            className="flex h-7.5 w-7.5 cursor-pointer items-center justify-center rounded-full bg-gray-200"
+            className="flex h-7.5 w-7.5 cursor-pointer items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300"
             onClick={() => updateQuantity(item.quantity + 1)}
           >
             <Plus className="w-4" />
           </button>
         </div>
         <button
-          className="flex cursor-pointer text-sm text-neutral-500"
+          className="flex cursor-pointer text-sm text-neutral-500 hover:underline hover:decoration-[1px] hover:underline-offset-[3px]"
           onClick={() => updateQuantity(0)}
         >
           Remove

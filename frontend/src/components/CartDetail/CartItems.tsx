@@ -4,6 +4,7 @@ import Image from '../Image/Image.tsx';
 import { NumericFormat } from 'react-number-format';
 import { Minus, Plus } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
+import { Link } from 'react-router';
 
 interface CartItemsProps {
   cartItems: CartProduct[];
@@ -56,7 +57,12 @@ const CartItem = ({ item, onUpdateCart }: CartItemProps) => {
       <div className="relative">
         <Image src={item.thumbnail} alt={item.title} className="h-20 w-20" />
       </div>
-      <span className="text-bs font-medium md:text-lg">{item.title}</span>
+      <Link
+        to={`/product/${item.id}`}
+        className="text-bs font-medium md:text-lg"
+      >
+        {item.title}
+      </Link>
       <div className="ml-auto flex flex-col items-end gap-4">
         <span className="text-lg font-medium">
           <NumericFormat

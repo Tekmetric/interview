@@ -4,6 +4,7 @@ import { lazy, Suspense } from 'react';
 import ProductsSkeleton from '../components/ProductsGrid/ProductsSkeleton.tsx';
 import ProductSkeleton from '../components/ProductDetail/ProductSkeleton.tsx';
 import CartSkeleton from '../components/CartDetail/CartSkeleton.tsx';
+import NotFoundPage from './NotFoundPage/NotFoundPage.tsx';
 import Layout from '../layouts/Layout.tsx';
 
 const ProductsPage = lazy(() => import('./ProductsPage/ProductsPage.tsx'));
@@ -39,6 +40,10 @@ const AppRoutes = () => {
               <CartPage />
             </Suspense>
           ),
+        },
+        {
+          path: '*',
+          element: <NotFoundPage />,
         },
       ],
     },

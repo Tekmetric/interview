@@ -24,7 +24,7 @@ export const useGetCartInitialData = () => {
   } = useQuery({
     queryKey: ['cart', CART_ID],
     queryFn: () => getCart(CART_ID),
-    staleTime: 5000,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   return { cart, isLoading, error };

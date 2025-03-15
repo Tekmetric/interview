@@ -5,7 +5,7 @@ export interface Cart {
   total: number;
   totalProducts: number;
   totalQuantity: number;
-  userId: number;
+  userId?: number;
 }
 
 export interface CartProduct {

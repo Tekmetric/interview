@@ -11,12 +11,12 @@ interface CartItemsProps {
 }
 
 const CartItems = ({ cartItems }: CartItemsProps) => {
-  const { mutate } = useUpdateCart();
+  const { mutate: updateCart } = useUpdateCart();
 
   return (
     <div className="flex w-full flex-col gap-5">
       {cartItems.map((item) => (
-        <CartItem key={item.id} item={item} onUpdateCart={mutate} />
+        <CartItem key={item.id} item={item} onUpdateCart={updateCart} />
       ))}
     </div>
   );
@@ -34,12 +34,10 @@ const CartItem = ({ item, onUpdateCart }: CartItemProps) => {
       userId: 77,
       products: [
         // due to  how dummyjson api handles mock carts we need to provide previous items too
-        ...cart.products
-          .filter((product) => product.id !== item.id)
-          .map((product) => ({
-            id: product.id,
-            quantity: product.quantity,
-          })),
+        ...cart.products.map((product) => ({
+          id: product.id,
+          quantity: product.quantity,
+        })),
         {
           id: item.id,
           quantity: value,
@@ -66,7 +64,7 @@ const CartItem = ({ item, onUpdateCart }: CartItemProps) => {
       <div className="ml-auto flex flex-col items-end gap-4">
         <span className="text-lg font-medium">
           <NumericFormat
-            value={item.price}
+            value={item.total}
             displayType="text"
             thousandSeparator
             decimalSeparator="."

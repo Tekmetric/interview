@@ -1,5 +1,12 @@
 import { Cart } from '../types/Cart.ts';
-import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useGetCartInitialData } from '../hooks/useCart.tsx';
 
 export interface CartContextType {
@@ -15,9 +22,18 @@ interface CartProviderProps {
   children: ReactNode;
 }
 
+const emptyCart: Cart = {
+  id: 0,
+  products: [],
+  total: 0,
+  discountedTotal: 0,
+  totalProducts: 0,
+  totalQuantity: 0,
+};
+
 export const CartProvider = ({ children }: CartProviderProps) => {
   const { cart: initialCartData, error } = useGetCartInitialData();
-  const [cart, setCart] = useState<Cart | undefined>(undefined);
+  const [cart, setCart] = useState<Cart>(emptyCart);
 
   useEffect(() => {
     if (!error && initialCartData) {
@@ -25,13 +41,13 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     }
   }, [error, initialCartData]);
 
-  const updateCartContext = (cart: Cart) => {
+  const updateCartContext = useCallback((cart: Cart) => {
     setCart(cart);
-  };
+  }, []);
 
   const contextValue = useMemo(
-    () => ({ cart: cart as Cart, updateCartContext }),
-    [cart]
+    () => ({ cart, updateCartContext }),
+    [cart, updateCartContext]
   );
 
   return (

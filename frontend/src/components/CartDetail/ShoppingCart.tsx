@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { useCart } from '../../hooks/useCart.tsx';
-import { ShoppingCart as ShoppingCartIcon } from 'lucide-react';
 import { Link } from 'react-router';
+
+import { useCart } from '../../hooks/useCart.tsx';
+
+import { ShoppingCart as ShoppingCartIcon } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
 const ShoppingCart = () => {

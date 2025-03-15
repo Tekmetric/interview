@@ -1,9 +1,10 @@
+import { Link } from 'react-router';
 import React from 'react';
 
 import { Product } from '../../types/Product.ts';
 import Rating from '../Rating/Rating.tsx';
 import Image from '../Image/Image.tsx';
-import { Link } from 'react-router';
+
 import { NumericFormat } from 'react-number-format';
 
 interface ProductItemProps {

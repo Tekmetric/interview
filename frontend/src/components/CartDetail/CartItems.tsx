@@ -1,10 +1,12 @@
+import { Link } from 'react-router';
+
 import { CartProduct, UpdateCartItemsPayload } from '../../types/Cart.ts';
 import { useCart, useUpdateCart } from '../../hooks/useCart.tsx';
 import Image from '../Image/Image.tsx';
+
 import { NumericFormat } from 'react-number-format';
 import { Minus, Plus } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
-import { Link } from 'react-router';
 
 interface CartItemsProps {
   cartItems: CartProduct[];

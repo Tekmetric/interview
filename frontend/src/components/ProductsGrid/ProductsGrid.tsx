@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import ProductItem from './ProductItem.tsx';
+import { ProductsGridSkeleton } from './ProductsSkeleton.tsx';
+import ProductsNotFound from './ProductsNotFound.tsx';
 import { Product } from '../../types/Product.ts';
+import ProductItem from './ProductItem.tsx';
+import Button from '../Button/Button.tsx';
 
 import { areEqual, FixedSizeGrid } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -10,9 +13,6 @@ import {
   FetchNextPageOptions,
   InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
-import Button from '../Button/Button.tsx';
-import { ProductsGridSkeleton } from './ProductsSkeleton.tsx';
-import ProductsNotFound from './ProductsNotFound.tsx';
 
 interface CellProps {
   columnIndex: number;

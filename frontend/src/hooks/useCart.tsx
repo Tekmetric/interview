@@ -1,7 +1,9 @@
 import { useContext } from 'react';
+
 import { CartContext, CartContextType } from '../providers/CartProvider.tsx';
 import { UpdateCartItemsPayload } from '../types/Cart.ts';
 import { getCart, updateCart } from '../api/cart.ts';
+
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 const CART_ID = '10'; // mocked an existing cart id

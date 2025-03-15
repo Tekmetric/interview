@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
+
+import ProductsError from '../../components/ProductsGrid/ProductsError.tsx';
 import ProductsGrid from '../../components/ProductsGrid/ProductsGrid.tsx';
+import usePaginatedProducts from '../../hooks/usePaginatedProducts.tsx';
 import { useFilter } from '../../providers/FilterProvider.tsx';
 import Filter from '../../components/Filter/Filter.tsx';
-import usePaginatedProducts from '../../hooks/usePaginatedProducts.tsx';
-import ProductsError from '../../components/ProductsGrid/ProductsError.tsx';
 
 const ProductsPage = () => {
   const { searchTerm } = useFilter();

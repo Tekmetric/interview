@@ -1,9 +1,10 @@
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import { lazy, Suspense } from 'react';
-import Layout from '../layouts/Layout.tsx';
+
+import ProductsSkeleton from '../components/ProductsGrid/ProductsSkeleton.tsx';
 import ProductSkeleton from '../components/ProductDetail/ProductSkeleton.tsx';
 import CartSkeleton from '../components/CartDetail/CartSkeleton.tsx';
-import ProductsSkeleton from '../components/ProductsGrid/ProductsSkeleton.tsx';
+import Layout from '../layouts/Layout.tsx';
 
 const ProductsPage = lazy(() => import('./ProductsPage/ProductsPage.tsx'));
 const ProductPage = lazy(() => import('./ProductPage/ProductPage.tsx'));

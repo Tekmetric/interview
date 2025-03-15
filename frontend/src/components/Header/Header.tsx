@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router';
-import LogoIcon from '../Icons/LogoIcon.tsx';
+
 import ShoppingCart from '../CartDetail/ShoppingCart.tsx';
+import LogoIcon from '../Icons/LogoIcon.tsx';
 
 const Header = () => {
   return (

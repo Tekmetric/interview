@@ -1,7 +1,7 @@
 import PaymentSummary from '../../components/CartDetail/PaymentSummary.tsx';
 import CartItems from '../../components/CartDetail/CartItems.tsx';
-import { useCart } from '../../hooks/useCart.tsx';
 import EmptyCart from '../../components/CartDetail/EmptyCart.tsx';
+import { useCart } from '../../hooks/useCart.tsx';
 
 const CartPage = () => {
   const { cart } = useCart();

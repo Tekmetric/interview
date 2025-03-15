@@ -1,7 +1,8 @@
 import { useParams } from 'react-router';
-import ProductDetail from '../../components/ProductDetail/ProductDetail.tsx';
+
 import ProductNotFound from '../../components/ProductDetail/ProductNotFound.tsx';
 import ProductSkeleton from '../../components/ProductDetail/ProductSkeleton.tsx';
+import ProductDetail from '../../components/ProductDetail/ProductDetail.tsx';
 import useProduct from '../../hooks/useProduct.tsx';
 
 const ProductPage = () => {

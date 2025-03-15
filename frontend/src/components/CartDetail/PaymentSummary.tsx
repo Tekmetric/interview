@@ -1,6 +1,7 @@
 import { Cart } from '../../types/Cart.ts';
-import { NumericFormat } from 'react-number-format';
 import Button from '../Button/Button.tsx';
+
+import { NumericFormat } from 'react-number-format';
 
 interface PaymentSummaryProps {
   cart: Cart;

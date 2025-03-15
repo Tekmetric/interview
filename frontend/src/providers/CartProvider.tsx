@@ -1,4 +1,3 @@
-import { Cart } from '../types/Cart.ts';
 import {
   createContext,
   ReactNode,
@@ -7,7 +6,9 @@ import {
   useMemo,
   useState,
 } from 'react';
+
 import { useGetCartInitialData } from '../hooks/useCart.tsx';
+import { Cart } from '../types/Cart.ts';
 
 export interface CartContextType {
   cart: Cart;

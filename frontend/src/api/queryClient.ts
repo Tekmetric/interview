@@ -1,4 +1,4 @@
-import * as qs from 'qs';
+import { stringify } from 'qs';
 
 type Request = {
   url: string;
@@ -12,7 +12,7 @@ type PostRequest = {
 };
 
 export const request = async ({ url, params }: Request) => {
-  const queryString = qs.stringify(params, { encode: false });
+  const queryString = stringify(params, { encode: false });
   const finalUrl = queryString ? `${url}?${queryString}` : url;
 
   const response = await fetch(finalUrl, {

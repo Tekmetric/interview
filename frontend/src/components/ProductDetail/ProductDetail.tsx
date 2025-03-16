@@ -26,7 +26,7 @@ interface ProductDetailProps {
 const ProductDetail = ({ product }: ProductDetailProps) => {
   const { cart } = useCart();
   const navigate = useNavigate();
-  const { mutate: updateCart } = useUpdateCart();
+  const { mutate: updateCart, isPending } = useUpdateCart();
 
   const handleAddToCart = async () => {
     const previousQuantity =
@@ -89,7 +89,9 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
           )}
           <div className="my-5 flex flex-col md:my-auto">
             <span className="text-[48px] text-green-500">${product.price}</span>
-            <Button onClick={handleAddToCart}>Add to cart</Button>
+            <Button isLoading={isPending} onClick={handleAddToCart}>
+              Add to cart
+            </Button>
           </div>
           {product.returnPolicy && (
             <span className="mt-auto text-base text-neutral-400">

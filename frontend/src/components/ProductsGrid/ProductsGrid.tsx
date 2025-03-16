@@ -108,7 +108,7 @@ const ProductsGrid = ({
 
     if (!gridScrollableContainer) return;
 
-    const scrollPosition = rowIndex * rowHeight + 200;
+    const scrollPosition = rowIndex * rowHeight - rowHeight / 2; // subtract half of the rowHeight to keep in view part of the previous row
 
     gridScrollableContainer.scrollTo({
       top: scrollPosition,
@@ -120,9 +120,9 @@ const ProductsGrid = ({
   useEffect(() => {
     if (newDataLoaded) {
       const columnCount = getColumnCount(windowWidth);
-      const previousLastItemIndex = prevProductCountRef.current - 1;
+      const previousLastItemIndex = prevProductCountRef.current;
       // Determine which row to scroll to (one row past the previous last row)
-      const targetRow = Math.floor(previousLastItemIndex / columnCount);
+      const targetRow = Math.ceil(previousLastItemIndex / columnCount);
 
       // Wait for the grid to update with new items
       setTimeout(() => {

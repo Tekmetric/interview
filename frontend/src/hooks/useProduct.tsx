@@ -9,6 +9,7 @@ const useProduct = (id?: string) => {
   } = useQuery({
     queryKey: ['product', id],
     queryFn: () => getProduct(id!),
+    refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: !!id,
     retry: 1,

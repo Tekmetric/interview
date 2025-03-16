@@ -12,7 +12,7 @@ type PostRequest = {
 };
 
 export const request = async ({ url, params }: Request) => {
-  const queryString = stringify(params, { encode: false });
+  const queryString = stringify(params);
   const finalUrl = queryString ? `${url}?${queryString}` : url;
 
   const response = await fetch(finalUrl, {

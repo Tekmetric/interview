@@ -13,3 +13,5 @@ qa/playwright/.cache/
 # ignoring the .idea folder
 .idea
 .DS_Store
+.env
+node_modules

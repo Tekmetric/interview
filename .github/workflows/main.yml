@@ -1,11 +1,11 @@
-name: Java CI with Maven
+name: Build & Test Backend
 
 on:
   push:
     branches: [ master ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:

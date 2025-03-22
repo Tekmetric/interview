@@ -33,6 +33,10 @@ jobs:
       working-directory: ./backend
       run: ./mvnw spotless:check
       
+    - name: Compile
+      working-directory: ./backend
+      run: ./mvnw compile
+
     - name: Run tests
       working-directory: ./backend
       run: ./mvnw test

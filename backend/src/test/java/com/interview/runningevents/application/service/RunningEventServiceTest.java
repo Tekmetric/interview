@@ -378,4 +378,166 @@ class RunningEventServiceTest {
         assertThat(exception.getMessage()).contains("Query cannot be null");
         verify(runningEventRepository, never()).findAll(any());
     }
+
+    // Update Running Event Tests
+
+    @Test
+    void shouldUpdateRunningEventSuccessfully() {
+        // Given
+        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+
+        RunningEvent existingEvent = RunningEvent.builder()
+                .id(1L)
+                .name("Original Name")
+                .dateTime(futureTime)
+                .location("Original Location")
+                .description("Original Description")
+                .build();
+
+        RunningEvent updatedEvent = RunningEvent.builder()
+                .id(1L)
+                .name("Updated Name")
+                .dateTime(futureTime)
+                .location("Updated Location")
+                .description("Updated Description")
+                .build();
+
+        when(runningEventRepository.existsById(1L)).thenReturn(true);
+        when(runningEventRepository.save(any(RunningEvent.class))).thenReturn(updatedEvent);
+
+        // When
+        Optional<RunningEvent> result = runningEventService.updateRunningEvent(updatedEvent);
+
+        // Then
+        assertTrue(result.isPresent());
+        assertEquals("Updated Name", result.get().getName());
+        assertEquals("Updated Location", result.get().getLocation());
+        assertEquals("Updated Description", result.get().getDescription());
+
+        verify(runningEventRepository).existsById(1L);
+        verify(runningEventRepository).save(updatedEvent);
+    }
+
+    @Test
+    void shouldReturnEmptyOptionalWhenUpdatingNonExistentEvent() {
+        // Given
+        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+
+        RunningEvent nonExistentEvent = RunningEvent.builder()
+                .id(99L)
+                .name("Event Name")
+                .dateTime(futureTime)
+                .location("Event Location")
+                .build();
+
+        when(runningEventRepository.existsById(99L)).thenReturn(false);
+
+        // When
+        Optional<RunningEvent> result = runningEventService.updateRunningEvent(nonExistentEvent);
+
+        // Then
+        assertFalse(result.isPresent());
+
+        verify(runningEventRepository).existsById(99L);
+        verify(runningEventRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingWithNullId() {
+        // Given
+        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+
+        RunningEvent eventWithNullId = RunningEvent.builder()
+                .id(null)
+                .name("Event Name")
+                .dateTime(futureTime)
+                .location("Event Location")
+                .build();
+
+        // When/Then
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            runningEventService.updateRunningEvent(eventWithNullId);
+        });
+
+        assertThat(exception.getMessage()).contains("ID cannot be null");
+        verify(runningEventRepository, never()).existsById(any());
+        verify(runningEventRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingWithInvalidData() {
+        // Given
+        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+
+        // Create an event with a name that exceeds max length
+        String tooLongName = "X".repeat(101);
+        RunningEvent invalidEvent = RunningEvent.builder()
+                .id(1L)
+                .name(tooLongName)
+                .dateTime(futureTime)
+                .location("Event Location")
+                .build();
+
+        when(runningEventRepository.existsById(1L)).thenReturn(true);
+
+        // When/Then
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            runningEventService.updateRunningEvent(invalidEvent);
+        });
+
+        assertThat(exception.getMessage()).contains("Invalid running event");
+        verify(runningEventRepository).existsById(1L);
+        verify(runningEventRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldUpdatePartialFieldsSuccessfully() {
+        // Given
+        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+
+        RunningEvent partialUpdate = RunningEvent.builder()
+                .id(1L)
+                .name("Updated Name")
+                .dateTime(futureTime)
+                .location("Updated Location")
+                // Description and furtherInformation left null
+                .build();
+
+        RunningEvent savedEvent = RunningEvent.builder()
+                .id(1L)
+                .name("Updated Name")
+                .dateTime(futureTime)
+                .location("Updated Location")
+                .description(null)
+                .furtherInformation(null)
+                .build();
+
+        when(runningEventRepository.existsById(1L)).thenReturn(true);
+        when(runningEventRepository.save(any(RunningEvent.class))).thenReturn(savedEvent);
+
+        // When
+        Optional<RunningEvent> result = runningEventService.updateRunningEvent(partialUpdate);
+
+        // Then
+        assertTrue(result.isPresent());
+        assertEquals("Updated Name", result.get().getName());
+        assertEquals("Updated Location", result.get().getLocation());
+        assertNull(result.get().getDescription());
+        assertNull(result.get().getFurtherInformation());
+
+        verify(runningEventRepository).existsById(1L);
+        verify(runningEventRepository).save(partialUpdate);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingNullEvent() {
+        // When/Then
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            runningEventService.updateRunningEvent(null);
+        });
+
+        assertThat(exception.getMessage()).contains("cannot be null");
+        verify(runningEventRepository, never()).existsById(any());
+        verify(runningEventRepository, never()).save(any());
+    }
 }

@@ -11,17 +11,21 @@ import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
 import com.interview.runningevents.application.port.in.ListRunningEventsUseCase;
+import com.interview.runningevents.application.port.in.UpdateRunningEventUseCase;
 import com.interview.runningevents.application.port.out.RunningEventRepository;
 import com.interview.runningevents.domain.model.RunningEvent;
 
 /**
  * Service implementation for running event use cases.
  * Implements the use case interfaces and coordinates the business logic
- * for creating, retrieving, and listing running events.
+ * for creating, retrieving, listing, and updating running events.
  */
 @Service
 public class RunningEventService
-        implements CreateRunningEventUseCase, GetRunningEventUseCase, ListRunningEventsUseCase {
+        implements CreateRunningEventUseCase,
+                GetRunningEventUseCase,
+                ListRunningEventsUseCase,
+                UpdateRunningEventUseCase {
 
     private final RunningEventRepository runningEventRepository;
 
@@ -71,6 +75,33 @@ public class RunningEventService
     public PaginatedResult<RunningEvent> listRunningEvents(RunningEventQuery query) {
         validateQuery(query);
         return runningEventRepository.findAll(query);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public Optional<RunningEvent> updateRunningEvent(RunningEvent runningEvent) {
+        if (runningEvent == null) {
+            throw new ValidationException("Running event cannot be null");
+        }
+
+        if (runningEvent.getId() == null) {
+            throw new ValidationException("ID cannot be null when updating a running event");
+        }
+
+        // Check if the event exists
+        if (!runningEventRepository.existsById(runningEvent.getId())) {
+            return Optional.empty();
+        }
+
+        // Validate the updated event
+        validateRunningEvent(runningEvent);
+
+        // Save the updated event
+        RunningEvent updatedEvent = runningEventRepository.save(runningEvent);
+        return Optional.of(updatedEvent);
     }
 
     /**

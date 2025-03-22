@@ -540,4 +540,46 @@ class RunningEventServiceTest {
         verify(runningEventRepository, never()).existsById(any());
         verify(runningEventRepository, never()).save(any());
     }
+
+    // Delete Running Event Tests
+
+    @Test
+    void shouldDeleteRunningEventSuccessfully() {
+        // Given
+        when(runningEventRepository.existsById(1L)).thenReturn(true);
+
+        // When
+        boolean result = runningEventService.deleteRunningEvent(1L);
+
+        // Then
+        assertTrue(result);
+        verify(runningEventRepository).existsById(1L);
+        verify(runningEventRepository).deleteById(1L);
+    }
+
+    @Test
+    void shouldReturnFalseWhenDeletingNonExistentEvent() {
+        // Given
+        when(runningEventRepository.existsById(99L)).thenReturn(false);
+
+        // When
+        boolean result = runningEventService.deleteRunningEvent(99L);
+
+        // Then
+        assertFalse(result);
+        verify(runningEventRepository).existsById(99L);
+        verify(runningEventRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDeletingWithNullId() {
+        // When/Then
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            runningEventService.deleteRunningEvent(null);
+        });
+
+        assertThat(exception.getMessage()).contains("ID cannot be null");
+        verify(runningEventRepository, never()).existsById(any());
+        verify(runningEventRepository, never()).deleteById(any());
+    }
 }

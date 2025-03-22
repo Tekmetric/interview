@@ -9,6 +9,7 @@ import com.interview.runningevents.application.exception.ValidationException;
 import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
+import com.interview.runningevents.application.port.in.DeleteRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
 import com.interview.runningevents.application.port.in.ListRunningEventsUseCase;
 import com.interview.runningevents.application.port.in.UpdateRunningEventUseCase;
@@ -18,14 +19,15 @@ import com.interview.runningevents.domain.model.RunningEvent;
 /**
  * Service implementation for running event use cases.
  * Implements the use case interfaces and coordinates the business logic
- * for creating, retrieving, listing, and updating running events.
+ * for creating, retrieving, listing, updating, and deleting running events.
  */
 @Service
 public class RunningEventService
         implements CreateRunningEventUseCase,
                 GetRunningEventUseCase,
                 ListRunningEventsUseCase,
-                UpdateRunningEventUseCase {
+                UpdateRunningEventUseCase,
+                DeleteRunningEventUseCase {
 
     private final RunningEventRepository runningEventRepository;
 
@@ -102,6 +104,25 @@ public class RunningEventService
         // Save the updated event
         RunningEvent updatedEvent = runningEventRepository.save(runningEvent);
         return Optional.of(updatedEvent);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public boolean deleteRunningEvent(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null when deleting a running event");
+        }
+
+        // Check if the event exists before deleting
+        if (!runningEventRepository.existsById(id)) {
+            return false;
+        }
+
+        runningEventRepository.deleteById(id);
+        return true;
     }
 
     /**

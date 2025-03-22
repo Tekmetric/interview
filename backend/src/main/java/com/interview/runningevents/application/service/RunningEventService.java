@@ -6,18 +6,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.interview.runningevents.application.exception.ValidationException;
+import com.interview.runningevents.application.model.PaginatedResult;
+import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
+import com.interview.runningevents.application.port.in.ListRunningEventsUseCase;
 import com.interview.runningevents.application.port.out.RunningEventRepository;
 import com.interview.runningevents.domain.model.RunningEvent;
 
 /**
  * Service implementation for running event use cases.
  * Implements the use case interfaces and coordinates the business logic
- * for creating and retrieving running events.
+ * for creating, retrieving, and listing running events.
  */
 @Service
-public class RunningEventService implements CreateRunningEventUseCase, GetRunningEventUseCase {
+public class RunningEventService
+        implements CreateRunningEventUseCase, GetRunningEventUseCase, ListRunningEventsUseCase {
 
     private final RunningEventRepository runningEventRepository;
 
@@ -60,6 +64,40 @@ public class RunningEventService implements CreateRunningEventUseCase, GetRunnin
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public PaginatedResult<RunningEvent> listRunningEvents(RunningEventQuery query) {
+        validateQuery(query);
+        return runningEventRepository.findAll(query);
+    }
+
+    /**
+     * Validates a running event query parameters.
+     *
+     * @param query The query to validate
+     * @throws IllegalArgumentException if the query parameters are invalid
+     */
+    private void validateQuery(RunningEventQuery query) {
+        if (query == null) {
+            throw new IllegalArgumentException("Query cannot be null");
+        }
+
+        if (query.getPage() != null && query.getPage() < 0) {
+            throw new IllegalArgumentException("Page number cannot be negative");
+        }
+
+        if (query.getPageSize() != null && query.getPageSize() <= 0) {
+            throw new IllegalArgumentException("Page size must be greater than zero");
+        }
+
+        if (query.getFromDate() != null && query.getToDate() != null && query.getFromDate() > query.getToDate()) {
+            throw new IllegalArgumentException("From date cannot be after to date");
+        }
+    }
+
+    /**
      * Validates a running event according to business rules.
      *
      * @param runningEvent The running event to validate
@@ -71,7 +109,8 @@ public class RunningEventService implements CreateRunningEventUseCase, GetRunnin
         }
 
         if (!runningEvent.isValid()) {
-            throw new ValidationException("Invalid running event: check required fields, field lengths");
+            throw new ValidationException(
+                    "Invalid running event: check required fields, field lengths, and ensure the event date is in the future");
         }
     }
 }

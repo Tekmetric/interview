@@ -1,4 +1,4 @@
-package com.interview.runningevents.application.port.in;
+package com.interview.runningevents.application.model;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,5 +1,7 @@
 package com.interview.runningevents.application.port.in;
 
+import com.interview.runningevents.application.model.PaginatedResult;
+import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.domain.model.RunningEvent;
 
 /**

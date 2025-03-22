@@ -2,8 +2,8 @@ package com.interview.runningevents.application.port.out;
 
 import java.util.Optional;
 
-import com.interview.runningevents.application.port.in.PaginatedResult;
-import com.interview.runningevents.application.port.in.RunningEventQuery;
+import com.interview.runningevents.application.model.PaginatedResult;
+import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.domain.model.RunningEvent;
 
 /**

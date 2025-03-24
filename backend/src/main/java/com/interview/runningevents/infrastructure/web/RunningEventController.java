@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.interview.runningevents.application.exception.RunningEventNotFoundException;
 import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
+import com.interview.runningevents.application.port.in.DeleteRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
 import com.interview.runningevents.application.port.in.ListRunningEventsUseCase;
 import com.interview.runningevents.application.port.in.UpdateRunningEventUseCase;
@@ -40,6 +42,7 @@ public class RunningEventController {
     private final GetRunningEventUseCase getRunningEventUseCase;
     private final ListRunningEventsUseCase listRunningEventsUseCase;
     private final UpdateRunningEventUseCase updateRunningEventUseCase;
+    private final DeleteRunningEventUseCase deleteRunningEventUseCase;
     private final RunningEventDTOMapper dtoMapper;
 
     /**
@@ -49,6 +52,7 @@ public class RunningEventController {
      * @param getRunningEventUseCase Use case for retrieving running events
      * @param listRunningEventsUseCase Use case for listing running events
      * @param updateRunningEventUseCase Use case for updating running events
+     * @param deleteRunningEventUseCase Use case for deleting running events
      * @param dtoMapper Mapper for converting between domain objects and DTOs
      */
     public RunningEventController(
@@ -56,11 +60,13 @@ public class RunningEventController {
             GetRunningEventUseCase getRunningEventUseCase,
             ListRunningEventsUseCase listRunningEventsUseCase,
             UpdateRunningEventUseCase updateRunningEventUseCase,
+            DeleteRunningEventUseCase deleteRunningEventUseCase,
             RunningEventDTOMapper dtoMapper) {
         this.createRunningEventUseCase = createRunningEventUseCase;
         this.getRunningEventUseCase = getRunningEventUseCase;
         this.listRunningEventsUseCase = listRunningEventsUseCase;
         this.updateRunningEventUseCase = updateRunningEventUseCase;
+        this.deleteRunningEventUseCase = deleteRunningEventUseCase;
         this.dtoMapper = dtoMapper;
     }
 
@@ -180,5 +186,26 @@ public class RunningEventController {
         RunningEventResponseDTO responseDTO = dtoMapper.toResponseDTO(updatedEvent);
 
         return ResponseEntity.ok(responseDTO);
+    }
+
+    /**
+     * Deletes a running event.
+     *
+     * @param id The ID of the running event to delete
+     * @return HTTP 204 No Content on successful deletion
+     * @throws RunningEventNotFoundException If the event is not found
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRunningEvent(@PathVariable Long id) {
+        // Try to delete the event
+        boolean deleted = deleteRunningEventUseCase.deleteRunningEvent(id);
+
+        // If the deletion was not successful (event not found), throw an exception
+        if (!deleted) {
+            throw new RunningEventNotFoundException(id);
+        }
+
+        // Return 204 No Content for successful deletion
+        return ResponseEntity.noContent().build();
     }
 }

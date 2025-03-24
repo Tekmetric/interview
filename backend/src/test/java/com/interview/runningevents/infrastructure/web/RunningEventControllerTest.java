@@ -4,7 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -36,6 +39,7 @@ import com.interview.runningevents.application.exception.ValidationException;
 import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
+import com.interview.runningevents.application.port.in.DeleteRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
 import com.interview.runningevents.application.port.in.ListRunningEventsUseCase;
 import com.interview.runningevents.application.port.in.UpdateRunningEventUseCase;
@@ -64,6 +68,9 @@ public class RunningEventControllerTest {
 
     @MockBean
     private UpdateRunningEventUseCase updateRunningEventUseCase;
+
+    @MockBean
+    private DeleteRunningEventUseCase deleteRunningEventUseCase;
 
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
@@ -578,5 +585,36 @@ public class RunningEventControllerTest {
         assertThat(capturedEvent.getDateTime()).isEqualTo(eventTime.toEpochMilli());
         assertThat(capturedEvent.getLocation()).isEqualTo("Updated Location");
         assertThat(capturedEvent.getDescription()).isEqualTo("Updated Description");
+    }
+
+    @Test
+    public void shouldDeleteRunningEventSuccessfully() throws Exception {
+        // Given
+        Long eventId = 1L;
+
+        when(deleteRunningEventUseCase.deleteRunningEvent(eventId)).thenReturn(true);
+
+        // When & Then
+        mockMvc.perform(delete("/api/events/{id}", eventId)).andExpect(status().isNoContent());
+
+        // Verify the correct ID was passed to the use case
+        verify(deleteRunningEventUseCase).deleteRunningEvent(eq(eventId));
+    }
+
+    @Test
+    public void shouldReturn404WhenDeletingNonExistentEvent() throws Exception {
+        // Given
+        Long nonExistentId = 999L;
+
+        when(deleteRunningEventUseCase.deleteRunningEvent(nonExistentId)).thenReturn(false);
+
+        // When & Then
+        mockMvc.perform(delete("/api/events/{id}", nonExistentId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Running event not found with ID: 999")));
+
+        // Verify the correct ID was passed to the use case
+        verify(deleteRunningEventUseCase).deleteRunningEvent(eq(nonExistentId));
     }
 }

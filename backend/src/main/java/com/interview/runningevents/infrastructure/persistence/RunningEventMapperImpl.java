@@ -1,11 +1,14 @@
 package com.interview.runningevents.infrastructure.persistence;
 
+import org.springframework.stereotype.Component;
+
 import com.interview.runningevents.domain.model.RunningEvent;
 
 /**
- * Mapper class to convert between RunningEvent domain model and RunningEventEntity JPA entity.
+ * Mapper implementation for converting between RunningEvent domain model and RunningEventEntity JPA entity.
  */
-public class RunningEventMapper {
+@Component
+public class RunningEventMapperImpl {
 
     /**
      * Maps a domain model RunningEvent to a JPA entity RunningEventEntity.
@@ -13,7 +16,7 @@ public class RunningEventMapper {
      * @param runningEvent The domain model object to map
      * @return The mapped JPA entity
      */
-    public static RunningEventEntity toEntity(RunningEvent runningEvent) {
+    public RunningEventEntity toEntity(RunningEvent runningEvent) {
         if (runningEvent == null) {
             return null;
         }
@@ -34,7 +37,7 @@ public class RunningEventMapper {
      * @param entity The JPA entity to map
      * @return The mapped domain model object
      */
-    public static RunningEvent toDomain(RunningEventEntity entity) {
+    public RunningEvent toDomain(RunningEventEntity entity) {
         if (entity == null) {
             return null;
         }

@@ -13,16 +13,17 @@ import com.interview.runningevents.application.port.out.RunningEventRepository;
 import com.interview.runningevents.domain.model.RunningEvent;
 
 /**
- * Implementation of the RunningEventRepository port that adapts to the
- * Spring Data JPA repository.
+ * Implementation of the RunningEventRepository port that uses JPA for persistence.
  */
 @Component
-public class RunningEventRepositoryAdapter implements RunningEventRepository {
+public class RunningEventRepositoryImpl implements RunningEventRepository {
 
     private final RunningEventJpaRepository jpaRepository;
+    private final RunningEventMapperImpl mapper;
 
-    public RunningEventRepositoryAdapter(RunningEventJpaRepository jpaRepository) {
+    public RunningEventRepositoryImpl(RunningEventJpaRepository jpaRepository, RunningEventMapperImpl mapper) {
         this.jpaRepository = jpaRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -31,9 +32,9 @@ public class RunningEventRepositoryAdapter implements RunningEventRepository {
             throw new IllegalArgumentException("Running event cannot be null");
         }
 
-        RunningEventEntity entity = RunningEventMapper.toEntity(runningEvent);
+        RunningEventEntity entity = mapper.toEntity(runningEvent);
         RunningEventEntity savedEntity = jpaRepository.save(entity);
-        return RunningEventMapper.toDomain(savedEntity);
+        return mapper.toDomain(savedEntity);
     }
 
     @Override
@@ -42,7 +43,7 @@ public class RunningEventRepositoryAdapter implements RunningEventRepository {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        return jpaRepository.findById(id).map(RunningEventMapper::toDomain);
+        return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
@@ -66,7 +67,7 @@ public class RunningEventRepositoryAdapter implements RunningEventRepository {
 
         // Map entities to domain objects
         return new PaginatedResult<>(
-                page.getContent().stream().map(RunningEventMapper::toDomain).collect(Collectors.toList()),
+                page.getContent().stream().map(mapper::toDomain).collect(Collectors.toList()),
                 page.getTotalElements(),
                 query.getPage(),
                 query.getPageSize(),

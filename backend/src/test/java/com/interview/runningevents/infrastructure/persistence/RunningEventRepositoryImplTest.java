@@ -26,15 +26,17 @@ import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.domain.model.RunningEvent;
 
-public class RunningEventRepositoryAdapterTest {
+public class RunningEventRepositoryImplTest {
 
     private RunningEventJpaRepository jpaRepository;
-    private RunningEventRepositoryAdapter adapter;
+    private RunningEventMapperImpl mapper;
+    private RunningEventRepositoryImpl repository;
 
     @BeforeEach
     void setUp() {
         jpaRepository = mock(RunningEventJpaRepository.class);
-        adapter = new RunningEventRepositoryAdapter(jpaRepository);
+        mapper = mock(RunningEventMapperImpl.class);
+        repository = new RunningEventRepositoryImpl(jpaRepository, mapper);
     }
 
     @Test
@@ -48,7 +50,12 @@ public class RunningEventRepositoryAdapterTest {
                 .location("Test Location")
                 .build();
 
-        RunningEventEntity entity = RunningEventMapper.toEntity(domainEvent);
+        RunningEventEntity entity = RunningEventEntity.builder()
+                .name("Test Event")
+                .dateTime(futureTime)
+                .location("Test Location")
+                .build();
+
         RunningEventEntity savedEntity = RunningEventEntity.builder()
                 .id(1L)
                 .name("Test Event")
@@ -56,54 +63,67 @@ public class RunningEventRepositoryAdapterTest {
                 .location("Test Location")
                 .build();
 
-        when(jpaRepository.save(any(RunningEventEntity.class))).thenReturn(savedEntity);
-
-        // When
-        RunningEvent result = adapter.save(domainEvent);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L);
-
-        ArgumentCaptor<RunningEventEntity> entityCaptor = ArgumentCaptor.forClass(RunningEventEntity.class);
-        verify(jpaRepository, times(1)).save(entityCaptor.capture());
-
-        RunningEventEntity capturedEntity = entityCaptor.getValue();
-        assertThat(capturedEntity.getName()).isEqualTo("Test Event");
-        assertThat(capturedEntity.getDateTime()).isEqualTo(futureTime);
-        assertThat(capturedEntity.getLocation()).isEqualTo("Test Location");
-    }
-
-    @Test
-    void shouldThrowExceptionWhenSavingNullEvent() {
-        // When/Then
-        assertThrows(IllegalArgumentException.class, () -> adapter.save(null));
-        verify(jpaRepository, never()).save(any());
-    }
-
-    @Test
-    void shouldFindRunningEventById() {
-        // Given
-        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
-
-        RunningEventEntity entity = RunningEventEntity.builder()
+        RunningEvent savedDomainEvent = RunningEvent.builder()
                 .id(1L)
                 .name("Test Event")
                 .dateTime(futureTime)
                 .location("Test Location")
                 .build();
 
-        when(jpaRepository.findById(1L)).thenReturn(Optional.of(entity));
+        when(mapper.toEntity(domainEvent)).thenReturn(entity);
+        when(jpaRepository.save(entity)).thenReturn(savedEntity);
+        when(mapper.toDomain(savedEntity)).thenReturn(savedDomainEvent);
 
         // When
-        Optional<RunningEvent> result = adapter.findById(1L);
+        RunningEvent result = repository.save(domainEvent);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(1L);
+
+        verify(mapper, times(1)).toEntity(domainEvent);
+        verify(jpaRepository, times(1)).save(entity);
+        verify(mapper, times(1)).toDomain(savedEntity);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSavingNullEvent() {
+        // When/Then
+        assertThrows(IllegalArgumentException.class, () -> repository.save(null));
+        verify(jpaRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldFindRunningEventById() {
+        // Given
+        Long eventId = 1L;
+        RunningEventEntity entity = RunningEventEntity.builder()
+                .id(eventId)
+                .name("Test Event")
+                .dateTime(Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli())
+                .location("Test Location")
+                .build();
+
+        RunningEvent domainEvent = RunningEvent.builder()
+                .id(eventId)
+                .name("Test Event")
+                .dateTime(Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli())
+                .location("Test Location")
+                .build();
+
+        when(jpaRepository.findById(eventId)).thenReturn(Optional.of(entity));
+        when(mapper.toDomain(entity)).thenReturn(domainEvent);
+
+        // When
+        Optional<RunningEvent> result = repository.findById(eventId);
 
         // Then
         assertThat(result).isPresent();
-        assertThat(result.get().getId()).isEqualTo(1L);
+        assertThat(result.get().getId()).isEqualTo(eventId);
         assertThat(result.get().getName()).isEqualTo("Test Event");
 
-        verify(jpaRepository, times(1)).findById(1L);
+        verify(jpaRepository, times(1)).findById(eventId);
+        verify(mapper, times(1)).toDomain(entity);
     }
 
     @Test
@@ -112,49 +132,64 @@ public class RunningEventRepositoryAdapterTest {
         when(jpaRepository.findById(99L)).thenReturn(Optional.empty());
 
         // When
-        Optional<RunningEvent> result = adapter.findById(99L);
+        Optional<RunningEvent> result = repository.findById(99L);
 
         // Then
         assertThat(result).isEmpty();
         verify(jpaRepository, times(1)).findById(99L);
+        verify(mapper, never()).toDomain(any());
     }
 
     @Test
     void shouldThrowExceptionWhenFindingByNullId() {
         // When/Then
-        assertThrows(IllegalArgumentException.class, () -> adapter.findById(null));
+        assertThrows(IllegalArgumentException.class, () -> repository.findById(null));
         verify(jpaRepository, never()).findById(any());
     }
 
     @Test
     void shouldFindAllRunningEvents() {
         // Given
-        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        RunningEventQuery query =
+                RunningEventQuery.builder().page(0).pageSize(10).build();
 
         RunningEventEntity entity1 = RunningEventEntity.builder()
                 .id(1L)
                 .name("Event 1")
-                .dateTime(futureTime)
+                .dateTime(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli())
                 .location("Location 1")
                 .build();
 
         RunningEventEntity entity2 = RunningEventEntity.builder()
                 .id(2L)
                 .name("Event 2")
-                .dateTime(futureTime + 1000)
+                .dateTime(Instant.now().plus(2, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location 2")
+                .build();
+
+        RunningEvent domainEvent1 = RunningEvent.builder()
+                .id(1L)
+                .name("Event 1")
+                .dateTime(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location 1")
+                .build();
+
+        RunningEvent domainEvent2 = RunningEvent.builder()
+                .id(2L)
+                .name("Event 2")
+                .dateTime(Instant.now().plus(2, ChronoUnit.DAYS).toEpochMilli())
                 .location("Location 2")
                 .build();
 
         List<RunningEventEntity> entities = List.of(entity1, entity2);
         Page<RunningEventEntity> page = new PageImpl<>(entities, PageRequest.of(0, 10), 2);
 
-        RunningEventQuery query =
-                RunningEventQuery.builder().page(0).pageSize(10).build();
-
         when(jpaRepository.findAllByOrderByDateTime(any(Pageable.class))).thenReturn(page);
+        when(mapper.toDomain(entity1)).thenReturn(domainEvent1);
+        when(mapper.toDomain(entity2)).thenReturn(domainEvent2);
 
         // When
-        PaginatedResult<RunningEvent> result = adapter.findAll(query);
+        PaginatedResult<RunningEvent> result = repository.findAll(query);
 
         // Then
         assertThat(result).isNotNull();
@@ -163,13 +198,9 @@ public class RunningEventRepositoryAdapterTest {
         assertThat(result.getPage()).isEqualTo(0);
         assertThat(result.getPageSize()).isEqualTo(10);
 
-        // Verify the correct pagination was used
-        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        verify(jpaRepository, times(1)).findAllByOrderByDateTime(pageableCaptor.capture());
-
-        Pageable capturedPageable = pageableCaptor.getValue();
-        assertThat(capturedPageable.getPageNumber()).isEqualTo(0);
-        assertThat(capturedPageable.getPageSize()).isEqualTo(10);
+        verify(jpaRepository, times(1)).findAllByOrderByDateTime(any(Pageable.class));
+        verify(mapper, times(1)).toDomain(entity1);
+        verify(mapper, times(1)).toDomain(entity2);
     }
 
     @Test
@@ -190,13 +221,12 @@ public class RunningEventRepositoryAdapterTest {
                 .thenReturn(emptyPage);
 
         // When
-        PaginatedResult<RunningEvent> result = adapter.findAll(query);
+        PaginatedResult<RunningEvent> result = repository.findAll(query);
 
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getItems()).isEmpty();
 
-        // Verify the correct parameters were passed
         ArgumentCaptor<Long> fromDateCaptor = ArgumentCaptor.forClass(Long.class);
         ArgumentCaptor<Long> toDateCaptor = ArgumentCaptor.forClass(Long.class);
 
@@ -211,7 +241,7 @@ public class RunningEventRepositoryAdapterTest {
     @Test
     void shouldThrowExceptionWhenFindingAllWithNullQuery() {
         // When/Then
-        assertThrows(IllegalArgumentException.class, () -> adapter.findAll(null));
+        assertThrows(IllegalArgumentException.class, () -> repository.findAll(null));
         verify(jpaRepository, never()).findAllByOrderByDateTime(any());
         verify(jpaRepository, never()).findByDateTimeBetweenOrderByDateTime(any(), any(), any());
     }
@@ -222,7 +252,7 @@ public class RunningEventRepositoryAdapterTest {
         when(jpaRepository.existsById(1L)).thenReturn(true);
 
         // When
-        boolean result = adapter.deleteById(1L);
+        boolean result = repository.deleteById(1L);
 
         // Then
         assertThat(result).isTrue();
@@ -236,7 +266,7 @@ public class RunningEventRepositoryAdapterTest {
         when(jpaRepository.existsById(99L)).thenReturn(false);
 
         // When
-        boolean result = adapter.deleteById(99L);
+        boolean result = repository.deleteById(99L);
 
         // Then
         assertThat(result).isFalse();
@@ -247,7 +277,7 @@ public class RunningEventRepositoryAdapterTest {
     @Test
     void shouldThrowExceptionWhenDeletingWithNullId() {
         // When/Then
-        assertThrows(IllegalArgumentException.class, () -> adapter.deleteById(null));
+        assertThrows(IllegalArgumentException.class, () -> repository.deleteById(null));
         verify(jpaRepository, never()).existsById(any());
         verify(jpaRepository, never()).deleteById(any());
     }
@@ -259,8 +289,8 @@ public class RunningEventRepositoryAdapterTest {
         when(jpaRepository.existsById(99L)).thenReturn(false);
 
         // When/Then
-        assertThat(adapter.existsById(1L)).isTrue();
-        assertThat(adapter.existsById(99L)).isFalse();
+        assertThat(repository.existsById(1L)).isTrue();
+        assertThat(repository.existsById(99L)).isFalse();
 
         verify(jpaRepository, times(1)).existsById(1L);
         verify(jpaRepository, times(1)).existsById(99L);
@@ -269,7 +299,7 @@ public class RunningEventRepositoryAdapterTest {
     @Test
     void shouldThrowExceptionWhenCheckingExistenceWithNullId() {
         // When/Then
-        assertThrows(IllegalArgumentException.class, () -> adapter.existsById(null));
+        assertThrows(IllegalArgumentException.class, () -> repository.existsById(null));
         verify(jpaRepository, never()).existsById(any());
     }
 }

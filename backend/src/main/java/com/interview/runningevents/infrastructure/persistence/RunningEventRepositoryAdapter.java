@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.interview.runningevents.application.model.PaginatedResult;
@@ -52,17 +51,18 @@ public class RunningEventRepositoryAdapter implements RunningEventRepository {
             throw new IllegalArgumentException("Query cannot be null");
         }
 
-        // Create sort order based on query parameters
-        Sort sort = Sort.by(
-                "ASC".equalsIgnoreCase(query.getSortDirection()) ? Sort.Direction.ASC : Sort.Direction.DESC,
-                query.getSortBy());
-
         // Create pageable request
-        PageRequest pageRequest = PageRequest.of(query.getPage(), query.getPageSize(), sort);
+        PageRequest pageRequest = PageRequest.of(query.getPage(), query.getPageSize());
+
+        Page<RunningEventEntity> page;
 
         // Execute query with date range filter if specified
-        Page<RunningEventEntity> page =
-                jpaRepository.findByDateRange(query.getFromDate(), query.getToDate(), pageRequest);
+        if (query.getFromDate() != null && query.getToDate() != null) {
+            page = jpaRepository.findByDateTimeBetweenOrderByDateTime(
+                    query.getFromDate(), query.getToDate(), pageRequest);
+        } else {
+            page = jpaRepository.findAllByOrderByDateTime(pageRequest);
+        }
 
         // Map entities to domain objects
         return new PaginatedResult<>(

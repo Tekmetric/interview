@@ -144,38 +144,35 @@ public class RunningEventEntityTest {
         // When & Then
         // Find events from now to far future
         List<RunningEventEntity> futureEvents = repository
-                .findByDateRange(present, farFuture, org.springframework.data.domain.Pageable.unpaged())
+                .findByDateTimeBetweenOrderByDateTime(
+                        present, farFuture, org.springframework.data.domain.Pageable.unpaged())
                 .getContent();
+        assertThat(futureEvents).hasSize(3);
+        // Verify ordering is by dateTime ascending
+        assertThat(futureEvents).extracting("dateTime").isSorted();
         assertThat(futureEvents)
-                .hasSize(3)
                 .extracting("name")
-                .containsExactlyInAnyOrder("Present Event", "Future Event", "Far Future Event");
+                .containsExactly("Present Event", "Future Event", "Far Future Event");
 
         // Find events in a specific range
         List<RunningEventEntity> rangeEvents = repository
-                .findByDateRange(present, future, org.springframework.data.domain.Pageable.unpaged())
+                .findByDateTimeBetweenOrderByDateTime(
+                        present, future, org.springframework.data.domain.Pageable.unpaged())
                 .getContent();
-        assertThat(rangeEvents)
-                .hasSize(2)
-                .extracting("name")
-                .containsExactlyInAnyOrder("Present Event", "Future Event");
+        assertThat(rangeEvents).hasSize(2);
+        // Verify ordering is by dateTime ascending
+        assertThat(rangeEvents).extracting("dateTime").isSorted();
+        assertThat(rangeEvents).extracting("name").containsExactly("Present Event", "Future Event");
 
-        // Find events with only a lower bound
-        List<RunningEventEntity> lowerBoundEvents = repository
-                .findByDateRange(future, null, org.springframework.data.domain.Pageable.unpaged())
+        // Find all events ordered by date time
+        List<RunningEventEntity> allEvents = repository
+                .findAllByOrderByDateTime(org.springframework.data.domain.Pageable.unpaged())
                 .getContent();
-        assertThat(lowerBoundEvents)
-                .hasSize(2)
+        assertThat(allEvents).hasSize(4);
+        // Verify ordering is by dateTime ascending
+        assertThat(allEvents).extracting("dateTime").isSorted();
+        assertThat(allEvents)
                 .extracting("name")
-                .containsExactlyInAnyOrder("Future Event", "Far Future Event");
-
-        // Find events with only an upper bound
-        List<RunningEventEntity> upperBoundEvents = repository
-                .findByDateRange(null, present, org.springframework.data.domain.Pageable.unpaged())
-                .getContent();
-        assertThat(upperBoundEvents)
-                .hasSize(2)
-                .extracting("name")
-                .containsExactlyInAnyOrder("Past Event", "Present Event");
+                .containsExactly("Past Event", "Present Event", "Future Event", "Far Future Event");
     }
 }

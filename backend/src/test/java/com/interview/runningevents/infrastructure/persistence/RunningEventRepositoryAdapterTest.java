@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.model.RunningEventQuery;
@@ -149,14 +148,10 @@ public class RunningEventRepositoryAdapterTest {
         List<RunningEventEntity> entities = List.of(entity1, entity2);
         Page<RunningEventEntity> page = new PageImpl<>(entities, PageRequest.of(0, 10), 2);
 
-        RunningEventQuery query = RunningEventQuery.builder()
-                .page(0)
-                .pageSize(10)
-                .sortBy("dateTime")
-                .sortDirection("ASC")
-                .build();
+        RunningEventQuery query =
+                RunningEventQuery.builder().page(0).pageSize(10).build();
 
-        when(jpaRepository.findByDateRange(any(), any(), any(Pageable.class))).thenReturn(page);
+        when(jpaRepository.findAllByOrderByDateTime(any(Pageable.class))).thenReturn(page);
 
         // When
         PaginatedResult<RunningEvent> result = adapter.findAll(query);
@@ -168,15 +163,13 @@ public class RunningEventRepositoryAdapterTest {
         assertThat(result.getPage()).isEqualTo(0);
         assertThat(result.getPageSize()).isEqualTo(10);
 
-        // Verify the correct sort order and pagination was used
+        // Verify the correct pagination was used
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        verify(jpaRepository, times(1)).findByDateRange(any(), any(), pageableCaptor.capture());
+        verify(jpaRepository, times(1)).findAllByOrderByDateTime(pageableCaptor.capture());
 
         Pageable capturedPageable = pageableCaptor.getValue();
         assertThat(capturedPageable.getPageNumber()).isEqualTo(0);
         assertThat(capturedPageable.getPageSize()).isEqualTo(10);
-        assertThat(capturedPageable.getSort().getOrderFor("dateTime").getDirection())
-                .isEqualTo(Sort.Direction.ASC);
     }
 
     @Test
@@ -193,8 +186,7 @@ public class RunningEventRepositoryAdapterTest {
                 .build();
 
         Page<RunningEventEntity> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
-        when(jpaRepository.findByDateRange(
-                        fromDate, toDate, PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "dateTime"))))
+        when(jpaRepository.findByDateTimeBetweenOrderByDateTime(fromDate, toDate, PageRequest.of(0, 10)))
                 .thenReturn(emptyPage);
 
         // When
@@ -209,7 +201,8 @@ public class RunningEventRepositoryAdapterTest {
         ArgumentCaptor<Long> toDateCaptor = ArgumentCaptor.forClass(Long.class);
 
         verify(jpaRepository, times(1))
-                .findByDateRange(fromDateCaptor.capture(), toDateCaptor.capture(), any(Pageable.class));
+                .findByDateTimeBetweenOrderByDateTime(
+                        fromDateCaptor.capture(), toDateCaptor.capture(), any(Pageable.class));
 
         assertThat(fromDateCaptor.getValue()).isEqualTo(fromDate);
         assertThat(toDateCaptor.getValue()).isEqualTo(toDate);
@@ -219,7 +212,8 @@ public class RunningEventRepositoryAdapterTest {
     void shouldThrowExceptionWhenFindingAllWithNullQuery() {
         // When/Then
         assertThrows(IllegalArgumentException.class, () -> adapter.findAll(null));
-        verify(jpaRepository, never()).findByDateRange(any(), any(), any());
+        verify(jpaRepository, never()).findAllByOrderByDateTime(any());
+        verify(jpaRepository, never()).findByDateTimeBetweenOrderByDateTime(any(), any(), any());
     }
 
     @Test

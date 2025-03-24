@@ -1,5 +1,6 @@
 package com.interview.runningevents.infrastructure.web;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,10 +15,14 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,8 +32,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.interview.runningevents.application.exception.ValidationException;
+import com.interview.runningevents.application.model.PaginatedResult;
+import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
+import com.interview.runningevents.application.port.in.ListRunningEventsUseCase;
 import com.interview.runningevents.domain.model.RunningEvent;
 import com.interview.runningevents.infrastructure.web.dto.RunningEventDTOMapper;
 import com.interview.runningevents.infrastructure.web.dto.RunningEventRequestDTO;
@@ -48,6 +56,9 @@ public class RunningEventControllerTest {
 
     @MockBean
     private GetRunningEventUseCase getRunningEventUseCase;
+
+    @MockBean
+    private ListRunningEventsUseCase listRunningEventsUseCase;
 
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
@@ -203,5 +214,166 @@ public class RunningEventControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status", is(500)))
                 .andExpect(jsonPath("$.message", is("An unexpected error occurred. Please try again later.")));
+    }
+
+    @Test
+    public void shouldListRunningEventsSuccessfully() throws Exception {
+        // Given
+        Instant now = Instant.now();
+        Instant future1 = now.plus(10, ChronoUnit.DAYS);
+        Instant future2 = now.plus(20, ChronoUnit.DAYS);
+
+        RunningEvent event1 = RunningEvent.builder()
+                .id(1L)
+                .name("Event 1")
+                .dateTime(future1.toEpochMilli())
+                .location("Location 1")
+                .build();
+
+        RunningEvent event2 = RunningEvent.builder()
+                .id(2L)
+                .name("Event 2")
+                .dateTime(future2.toEpochMilli())
+                .location("Location 2")
+                .build();
+
+        List<RunningEvent> events = Arrays.asList(event1, event2);
+        PaginatedResult<RunningEvent> paginatedResult = PaginatedResult.of(events, 10, 0, 5);
+
+        when(listRunningEventsUseCase.listRunningEvents(any(RunningEventQuery.class)))
+                .thenReturn(paginatedResult);
+
+        // When & Then
+        mockMvc.perform(get("/api/events").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items", notNullValue()))
+                .andExpect(jsonPath("$.items.length()", is(2)))
+                .andExpect(jsonPath("$.items[0].id", is(1)))
+                .andExpect(jsonPath("$.items[0].name", is("Event 1")))
+                .andExpect(jsonPath("$.items[1].id", is(2)))
+                .andExpect(jsonPath("$.items[1].name", is("Event 2")))
+                .andExpect(jsonPath("$.totalItems", is(10)))
+                .andExpect(jsonPath("$.page", is(0)))
+                .andExpect(jsonPath("$.pageSize", is(5)))
+                .andExpect(jsonPath("$.totalPages", is(2)))
+                .andExpect(jsonPath("$.hasPrevious", is(false)))
+                .andExpect(jsonPath("$.hasNext", is(true)));
+    }
+
+    @Test
+    public void shouldApplyPaginationParameters() throws Exception {
+        // Given
+        RunningEvent event = RunningEvent.builder()
+                .id(5L)
+                .name("Event 5")
+                .dateTime(Instant.now().plus(10, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location 5")
+                .build();
+
+        List<RunningEvent> events = Arrays.asList(event);
+        PaginatedResult<RunningEvent> paginatedResult = PaginatedResult.of(events, 20, 2, 10);
+
+        // Capture the query to verify parameters are correctly passed
+        ArgumentCaptor<RunningEventQuery> queryCaptor = ArgumentCaptor.forClass(RunningEventQuery.class);
+        when(listRunningEventsUseCase.listRunningEvents(queryCaptor.capture())).thenReturn(paginatedResult);
+
+        // When & Then
+        mockMvc.perform(get("/api/events")
+                        .param("page", "2")
+                        .param("size", "10")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items.length()", is(1)))
+                .andExpect(jsonPath("$.items[0].id", is(5)))
+                .andExpect(jsonPath("$.page", is(2)))
+                .andExpect(jsonPath("$.pageSize", is(10)));
+
+        // Verify the pagination parameters were correctly passed to the use case
+        RunningEventQuery capturedQuery = queryCaptor.getValue();
+        assertThat(capturedQuery.getPage()).isEqualTo(2);
+        assertThat(capturedQuery.getPageSize()).isEqualTo(10);
+    }
+
+    @Test
+    public void shouldApplyDateFilters() throws Exception {
+        // Given
+        RunningEvent event = RunningEvent.builder()
+                .id(1L)
+                .name("Event in Range")
+                .dateTime(Instant.now().plus(15, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location 1")
+                .build();
+
+        List<RunningEvent> events = Arrays.asList(event);
+        PaginatedResult<RunningEvent> paginatedResult = PaginatedResult.of(events, 1, 0, 20);
+
+        // Capture the query to verify filter parameters
+        ArgumentCaptor<RunningEventQuery> queryCaptor = ArgumentCaptor.forClass(RunningEventQuery.class);
+        when(listRunningEventsUseCase.listRunningEvents(queryCaptor.capture())).thenReturn(paginatedResult);
+
+        // Define filter date range
+        Long startDate = Instant.now().plus(10, ChronoUnit.DAYS).toEpochMilli();
+        Long endDate = Instant.now().plus(20, ChronoUnit.DAYS).toEpochMilli();
+
+        // When & Then
+        mockMvc.perform(get("/api/events")
+                        .param("startDate", startDate.toString())
+                        .param("endDate", endDate.toString())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items.length()", is(1)))
+                .andExpect(jsonPath("$.items[0].name", is("Event in Range")))
+                .andExpect(jsonPath("$.totalItems", is(1)));
+
+        // Verify the date filter parameters were correctly passed to the use case
+        RunningEventQuery capturedQuery = queryCaptor.getValue();
+        assertThat(capturedQuery.getFromDate()).isEqualTo(startDate);
+        assertThat(capturedQuery.getToDate()).isEqualTo(endDate);
+    }
+
+    @Test
+    public void shouldHandleEmptyResults() throws Exception {
+        // Given
+        List<RunningEvent> emptyList = Collections.emptyList();
+        PaginatedResult<RunningEvent> emptyResult = PaginatedResult.of(emptyList, 0, 0, 20);
+
+        when(listRunningEventsUseCase.listRunningEvents(any(RunningEventQuery.class)))
+                .thenReturn(emptyResult);
+
+        // When & Then
+        mockMvc.perform(get("/api/events").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items", notNullValue()))
+                .andExpect(jsonPath("$.items.length()", is(0)))
+                .andExpect(jsonPath("$.totalItems", is(0)))
+                .andExpect(jsonPath("$.totalPages", is(0)))
+                .andExpect(jsonPath("$.hasPrevious", is(false)))
+                .andExpect(jsonPath("$.hasNext", is(false)));
+    }
+
+    @Test
+    public void shouldApplySortingParameters() throws Exception {
+        // Given
+        List<RunningEvent> events = Arrays.asList(
+                RunningEvent.builder().id(1L).name("Event A").build(),
+                RunningEvent.builder().id(2L).name("Event B").build());
+        PaginatedResult<RunningEvent> result = PaginatedResult.of(events, 2, 0, 10);
+
+        // Capture the query to verify sort parameters
+        ArgumentCaptor<RunningEventQuery> queryCaptor = ArgumentCaptor.forClass(RunningEventQuery.class);
+        when(listRunningEventsUseCase.listRunningEvents(queryCaptor.capture())).thenReturn(result);
+
+        // When & Then
+        mockMvc.perform(get("/api/events")
+                        .param("sortBy", "name")
+                        .param("sortDir", "DESC")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items.length()", is(2)));
+
+        // Verify the sort parameters were correctly passed to the use case
+        RunningEventQuery capturedQuery = queryCaptor.getValue();
+        assertThat(capturedQuery.getSortBy()).isEqualTo("name");
+        assertThat(capturedQuery.getSortDirection()).isEqualTo("DESC");
     }
 }

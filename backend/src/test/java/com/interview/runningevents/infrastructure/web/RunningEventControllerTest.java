@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,6 +38,7 @@ import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
 import com.interview.runningevents.application.port.in.ListRunningEventsUseCase;
+import com.interview.runningevents.application.port.in.UpdateRunningEventUseCase;
 import com.interview.runningevents.domain.model.RunningEvent;
 import com.interview.runningevents.infrastructure.web.dto.RunningEventDTOMapper;
 import com.interview.runningevents.infrastructure.web.dto.RunningEventRequestDTO;
@@ -59,6 +61,9 @@ public class RunningEventControllerTest {
 
     @MockBean
     private ListRunningEventsUseCase listRunningEventsUseCase;
+
+    @MockBean
+    private UpdateRunningEventUseCase updateRunningEventUseCase;
 
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
@@ -375,5 +380,203 @@ public class RunningEventControllerTest {
         RunningEventQuery capturedQuery = queryCaptor.getValue();
         assertThat(capturedQuery.getSortBy()).isEqualTo("name");
         assertThat(capturedQuery.getSortDirection()).isEqualTo("DESC");
+    }
+
+    @Test
+    public void shouldUpdateRunningEventSuccessfully() throws Exception {
+        // Given
+        Long eventId = 1L;
+        Instant eventTime = Instant.now().plus(30, ChronoUnit.DAYS);
+        String formattedTime = DATE_FORMATTER.format(eventTime);
+
+        RunningEvent existingEvent = RunningEvent.builder()
+                .id(eventId)
+                .name("Original Name")
+                .dateTime(Instant.now().plus(20, ChronoUnit.DAYS).toEpochMilli())
+                .location("Original Location")
+                .description("Original Description")
+                .build();
+
+        RunningEventRequestDTO updateRequestDTO = RunningEventRequestDTO.builder()
+                .name("Updated Name")
+                .dateTime(eventTime.toEpochMilli())
+                .location("Updated Location")
+                .description("Updated Description")
+                .furtherInformation("Updated Further Information")
+                .build();
+
+        RunningEvent updatedEvent = RunningEvent.builder()
+                .id(eventId)
+                .name("Updated Name")
+                .dateTime(eventTime.toEpochMilli())
+                .location("Updated Location")
+                .description("Updated Description")
+                .furtherInformation("Updated Further Information")
+                .build();
+
+        // Mock the dependencies
+        when(getRunningEventUseCase.getRunningEventById(eventId)).thenReturn(Optional.of(existingEvent));
+
+        when(updateRunningEventUseCase.updateRunningEvent(any(RunningEvent.class)))
+                .thenReturn(Optional.of(updatedEvent));
+
+        // When & Then
+        mockMvc.perform(put("/api/events/{id}", eventId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequestDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.name", is("Updated Name")))
+                .andExpect(jsonPath("$.dateTime", is(eventTime.toEpochMilli())))
+                .andExpect(jsonPath("$.location", is("Updated Location")))
+                .andExpect(jsonPath("$.description", is("Updated Description")))
+                .andExpect(jsonPath("$.furtherInformation", is("Updated Further Information")))
+                .andExpect(jsonPath("$.formattedDateTime", is(formattedTime)));
+    }
+
+    @Test
+    public void shouldReturn404WhenUpdatingNonExistentEvent() throws Exception {
+        // Given
+        Long nonExistentId = 999L;
+        Instant eventTime = Instant.now().plus(30, ChronoUnit.DAYS);
+
+        RunningEventRequestDTO updateRequestDTO = RunningEventRequestDTO.builder()
+                .name("Updated Name")
+                .dateTime(eventTime.toEpochMilli())
+                .location("Updated Location")
+                .description("Updated Description")
+                .build();
+
+        // Mock the dependencies
+        when(getRunningEventUseCase.getRunningEventById(nonExistentId)).thenReturn(Optional.empty());
+
+        // When & Then
+        mockMvc.perform(put("/api/events/{id}", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequestDTO)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Running event not found with ID: 999")));
+    }
+
+    @Test
+    public void shouldRejectUpdateWithInvalidData() throws Exception {
+        // Given
+        Long eventId = 1L;
+
+        RunningEvent existingEvent = RunningEvent.builder()
+                .id(eventId)
+                .name("Original Name")
+                .dateTime(Instant.now().plus(20, ChronoUnit.DAYS).toEpochMilli())
+                .location("Original Location")
+                .build();
+
+        RunningEventRequestDTO invalidDTO = RunningEventRequestDTO.builder()
+                .name("") // Empty name - should fail validation
+                .dateTime(null) // Null dateTime - should fail validation
+                .location("Updated Location")
+                .build();
+
+        // Mock the dependencies
+        when(getRunningEventUseCase.getRunningEventById(eventId)).thenReturn(Optional.of(existingEvent));
+
+        // When & Then
+        mockMvc.perform(put("/api/events/{id}", eventId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.message", is("Validation failed. Check 'errors' field for details.")))
+                .andExpect(jsonPath("$.errors", notNullValue()))
+                .andExpect(jsonPath("$.errors.length()", is(2)))
+                .andExpect(jsonPath("$.errors[?(@.field == 'name')].message").exists())
+                .andExpect(
+                        jsonPath("$.errors[?(@.field == 'dateTime')].message").exists());
+    }
+
+    @Test
+    public void shouldRejectUpdateWithValidationException() throws Exception {
+        // Given
+        Long eventId = 1L;
+        Instant pastTime = Instant.now().minus(1, ChronoUnit.DAYS);
+
+        RunningEvent existingEvent = RunningEvent.builder()
+                .id(eventId)
+                .name("Original Name")
+                .dateTime(Instant.now().plus(20, ChronoUnit.DAYS).toEpochMilli())
+                .location("Original Location")
+                .build();
+
+        RunningEventRequestDTO requestDTO = RunningEventRequestDTO.builder()
+                .name("Updated Name")
+                .dateTime(pastTime.toEpochMilli()) // Past date - should trigger domain validation
+                .location("Updated Location")
+                .build();
+
+        // Mock the dependencies
+        when(getRunningEventUseCase.getRunningEventById(eventId)).thenReturn(Optional.of(existingEvent));
+
+        when(updateRunningEventUseCase.updateRunningEvent(any(RunningEvent.class)))
+                .thenThrow(new ValidationException("Event date must be in the future"));
+
+        // When & Then
+        mockMvc.perform(put("/api/events/{id}", eventId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.message", is("Event date must be in the future")));
+    }
+
+    @Test
+    public void shouldVerifyCorrectParametersPassedToUpdateUseCase() throws Exception {
+        // Given
+        Long eventId = 1L;
+        Instant eventTime = Instant.now().plus(30, ChronoUnit.DAYS);
+
+        RunningEvent existingEvent = RunningEvent.builder()
+                .id(eventId)
+                .name("Original Name")
+                .dateTime(Instant.now().plus(20, ChronoUnit.DAYS).toEpochMilli())
+                .location("Original Location")
+                .build();
+
+        RunningEventRequestDTO updateRequestDTO = RunningEventRequestDTO.builder()
+                .name("Updated Name")
+                .dateTime(eventTime.toEpochMilli())
+                .location("Updated Location")
+                .description("Updated Description")
+                .build();
+
+        RunningEvent updatedEvent = RunningEvent.builder()
+                .id(eventId)
+                .name("Updated Name")
+                .dateTime(eventTime.toEpochMilli())
+                .location("Updated Location")
+                .description("Updated Description")
+                .build();
+
+        // Capture the domain event passed to the use case
+        ArgumentCaptor<RunningEvent> eventCaptor = ArgumentCaptor.forClass(RunningEvent.class);
+
+        // Mock the dependencies
+        when(getRunningEventUseCase.getRunningEventById(eventId)).thenReturn(Optional.of(existingEvent));
+
+        when(updateRunningEventUseCase.updateRunningEvent(eventCaptor.capture()))
+                .thenReturn(Optional.of(updatedEvent));
+
+        // When
+        mockMvc.perform(put("/api/events/{id}", eventId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequestDTO)))
+                .andExpect(status().isOk());
+
+        // Then
+        RunningEvent capturedEvent = eventCaptor.getValue();
+        assertThat(capturedEvent.getId()).isEqualTo(eventId);
+        assertThat(capturedEvent.getName()).isEqualTo("Updated Name");
+        assertThat(capturedEvent.getDateTime()).isEqualTo(eventTime.toEpochMilli());
+        assertThat(capturedEvent.getLocation()).isEqualTo("Updated Location");
+        assertThat(capturedEvent.getDescription()).isEqualTo("Updated Description");
     }
 }

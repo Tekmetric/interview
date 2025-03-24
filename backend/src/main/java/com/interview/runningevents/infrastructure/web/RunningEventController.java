@@ -1,11 +1,13 @@
 package com.interview.runningevents.infrastructure.web;
 
 import java.net.URI;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +19,7 @@ import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
 import com.interview.runningevents.application.port.in.ListRunningEventsUseCase;
+import com.interview.runningevents.application.port.in.UpdateRunningEventUseCase;
 import com.interview.runningevents.domain.model.RunningEvent;
 import com.interview.runningevents.infrastructure.web.dto.PaginatedResponseDTO;
 import com.interview.runningevents.infrastructure.web.dto.RunningEventDTOMapper;
@@ -36,6 +39,7 @@ public class RunningEventController {
     private final CreateRunningEventUseCase createRunningEventUseCase;
     private final GetRunningEventUseCase getRunningEventUseCase;
     private final ListRunningEventsUseCase listRunningEventsUseCase;
+    private final UpdateRunningEventUseCase updateRunningEventUseCase;
     private final RunningEventDTOMapper dtoMapper;
 
     /**
@@ -44,16 +48,19 @@ public class RunningEventController {
      * @param createRunningEventUseCase Use case for creating running events
      * @param getRunningEventUseCase Use case for retrieving running events
      * @param listRunningEventsUseCase Use case for listing running events
+     * @param updateRunningEventUseCase Use case for updating running events
      * @param dtoMapper Mapper for converting between domain objects and DTOs
      */
     public RunningEventController(
             CreateRunningEventUseCase createRunningEventUseCase,
             GetRunningEventUseCase getRunningEventUseCase,
             ListRunningEventsUseCase listRunningEventsUseCase,
+            UpdateRunningEventUseCase updateRunningEventUseCase,
             RunningEventDTOMapper dtoMapper) {
         this.createRunningEventUseCase = createRunningEventUseCase;
         this.getRunningEventUseCase = getRunningEventUseCase;
         this.listRunningEventsUseCase = listRunningEventsUseCase;
+        this.updateRunningEventUseCase = updateRunningEventUseCase;
         this.dtoMapper = dtoMapper;
     }
 
@@ -140,6 +147,37 @@ public class RunningEventController {
 
         // Convert to response DTO
         PaginatedResponseDTO<RunningEventResponseDTO> responseDTO = dtoMapper.toPaginatedResponseDTO(result);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    /**
+     * Updates an existing running event.
+     *
+     * @param id The ID of the running event to update
+     * @param requestDTO The updated running event data
+     * @return HTTP 200 OK with the updated event data
+     * @throws RunningEventNotFoundException If the event is not found
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<RunningEventResponseDTO> updateRunningEvent(
+            @PathVariable Long id, @Valid @RequestBody RunningEventRequestDTO requestDTO) {
+
+        // First check if the event exists
+        getRunningEventUseCase.getRunningEventById(id).orElseThrow(() -> new RunningEventNotFoundException(id));
+
+        // Convert DTO to domain model and set the ID
+        RunningEvent eventToUpdate = dtoMapper.toDomain(requestDTO);
+        eventToUpdate.setId(id);
+
+        // Update the event using the use case
+        Optional<RunningEvent> updatedEventOptional = updateRunningEventUseCase.updateRunningEvent(eventToUpdate);
+
+        // This should never be empty since we checked existence above, but just to be safe
+        RunningEvent updatedEvent = updatedEventOptional.orElseThrow(() -> new RunningEventNotFoundException(id));
+
+        // Convert updated domain model back to response DTO
+        RunningEventResponseDTO responseDTO = dtoMapper.toResponseDTO(updatedEvent);
 
         return ResponseEntity.ok(responseDTO);
     }

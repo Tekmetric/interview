@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Standard DTO for API error responses.
+ * Enhanced to provide a more consistent and detailed error structure.
  */
 @Data
 @NoArgsConstructor
@@ -22,6 +23,11 @@ public class ErrorResponseDTO {
      * HTTP status code.
      */
     private int status;
+
+    /**
+     * Error type description.
+     */
+    private String error;
 
     /**
      * Error message.
@@ -43,20 +49,34 @@ public class ErrorResponseDTO {
      * Detailed validation errors, if applicable.
      */
     @Builder.Default
-    private List<ValidationErrorDTO> errors = new ArrayList<>();
+    private List<ValidationErrorDTO> details = new ArrayList<>();
 
     /**
-     * Add a validation error to the errors list.
+     * Add a validation error to the details list.
      *
      * @param field The field that has the validation error
      * @param message The validation error message
      * @return This ErrorResponseDTO instance for method chaining
      */
     public ErrorResponseDTO addValidationError(String field, String message) {
-        if (errors == null) {
-            errors = new ArrayList<>();
+        if (details == null) {
+            details = new ArrayList<>();
         }
-        errors.add(new ValidationErrorDTO(field, message));
+        details.add(new ValidationErrorDTO(field, message));
+        return this;
+    }
+
+    /**
+     * Add a general error message to the details list.
+     *
+     * @param message The error message
+     * @return This ErrorResponseDTO instance for method chaining
+     */
+    public ErrorResponseDTO addDetail(String message) {
+        if (details == null) {
+            details = new ArrayList<>();
+        }
+        details.add(new ValidationErrorDTO(null, message));
         return this;
     }
 
@@ -69,6 +89,7 @@ public class ErrorResponseDTO {
     public static class ValidationErrorDTO {
         /**
          * Field name with the validation error.
+         * Can be null for general errors.
          */
         private String field;
 

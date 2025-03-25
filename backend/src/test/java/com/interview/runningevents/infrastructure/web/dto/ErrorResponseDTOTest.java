@@ -13,16 +13,18 @@ public class ErrorResponseDTOTest {
         // Given
         ErrorResponseDTO dto = ErrorResponseDTO.builder()
                 .status(400)
-                .message("Bad Request")
+                .error("Bad Request")
+                .message("Validation failed")
                 .path("/api/running-events")
                 .build();
 
         // Then
         assertThat(dto.getStatus()).isEqualTo(400);
-        assertThat(dto.getMessage()).isEqualTo("Bad Request");
+        assertThat(dto.getError()).isEqualTo("Bad Request");
+        assertThat(dto.getMessage()).isEqualTo("Validation failed");
         assertThat(dto.getPath()).isEqualTo("/api/running-events");
         assertThat(dto.getTimestamp()).isGreaterThan(0);
-        assertThat(dto.getErrors()).isEmpty();
+        assertThat(dto.getDetails()).isEmpty();
     }
 
     @Test
@@ -30,6 +32,7 @@ public class ErrorResponseDTOTest {
         // Given
         ErrorResponseDTO dto = ErrorResponseDTO.builder()
                 .status(400)
+                .error("Bad Request")
                 .message("Validation Error")
                 .path("/api/running-events")
                 .build();
@@ -39,11 +42,33 @@ public class ErrorResponseDTOTest {
         dto.addValidationError("dateTime", "Date and time is required");
 
         // Then
-        assertThat(dto.getErrors()).hasSize(2);
-        assertThat(dto.getErrors().get(0).getField()).isEqualTo("name");
-        assertThat(dto.getErrors().get(0).getMessage()).isEqualTo("Name is required");
-        assertThat(dto.getErrors().get(1).getField()).isEqualTo("dateTime");
-        assertThat(dto.getErrors().get(1).getMessage()).isEqualTo("Date and time is required");
+        assertThat(dto.getDetails()).hasSize(2);
+        assertThat(dto.getDetails().get(0).getField()).isEqualTo("name");
+        assertThat(dto.getDetails().get(0).getMessage()).isEqualTo("Name is required");
+        assertThat(dto.getDetails().get(1).getField()).isEqualTo("dateTime");
+        assertThat(dto.getDetails().get(1).getMessage()).isEqualTo("Date and time is required");
+    }
+
+    @Test
+    public void shouldAddGeneralErrorDetails() {
+        // Given
+        ErrorResponseDTO dto = ErrorResponseDTO.builder()
+                .status(400)
+                .error("Bad Request")
+                .message("Validation Error")
+                .path("/api/running-events")
+                .build();
+
+        // When
+        dto.addDetail("This is a general error message");
+        dto.addDetail("This is another general error message");
+
+        // Then
+        assertThat(dto.getDetails()).hasSize(2);
+        assertThat(dto.getDetails().get(0).getField()).isNull();
+        assertThat(dto.getDetails().get(0).getMessage()).isEqualTo("This is a general error message");
+        assertThat(dto.getDetails().get(1).getField()).isNull();
+        assertThat(dto.getDetails().get(1).getMessage()).isEqualTo("This is another general error message");
     }
 
     @Test
@@ -51,30 +76,32 @@ public class ErrorResponseDTOTest {
         // Given/When
         ErrorResponseDTO dto = ErrorResponseDTO.builder()
                 .status(400)
+                .error("Bad Request")
                 .message("Validation Error")
                 .path("/api/running-events")
                 .build()
                 .addValidationError("name", "Name is required")
-                .addValidationError("location", "Location is required");
+                .addDetail("General error message");
 
         // Then
-        assertThat(dto.getErrors()).hasSize(2);
-        assertThat(dto.getErrors().get(0).getField()).isEqualTo("name");
-        assertThat(dto.getErrors().get(1).getField()).isEqualTo("location");
+        assertThat(dto.getDetails()).hasSize(2);
+        assertThat(dto.getDetails().get(0).getField()).isEqualTo("name");
+        assertThat(dto.getDetails().get(1).getField()).isNull();
     }
 
     @Test
-    public void shouldInitializeErrorsIfNull() {
+    public void shouldInitializeDetailsIfNull() {
         // Given
         ErrorResponseDTO dto = new ErrorResponseDTO();
-        dto.setErrors(null);
+        dto.setDetails(null);
 
         // When
         dto.addValidationError("name", "Name is required");
+        dto.addDetail("General error message");
 
         // Then
-        assertThat(dto.getErrors()).isNotNull();
-        assertThat(dto.getErrors()).hasSize(1);
+        assertThat(dto.getDetails()).isNotNull();
+        assertThat(dto.getDetails()).hasSize(2);
     }
 
     @Test
@@ -93,5 +120,25 @@ public class ErrorResponseDTOTest {
         // Then
         assertThat(errorDto.getField()).isEqualTo("location");
         assertThat(errorDto.getMessage()).isEqualTo("Location is required");
+    }
+
+    @Test
+    public void shouldSetAndGetProperties() {
+        // Given
+        ErrorResponseDTO dto = new ErrorResponseDTO();
+
+        // When
+        dto.setStatus(404);
+        dto.setError("Not Found");
+        dto.setMessage("Resource not found");
+        dto.setTimestamp(1234567890L);
+        dto.setPath("/api/events/999");
+
+        // Then
+        assertThat(dto.getStatus()).isEqualTo(404);
+        assertThat(dto.getError()).isEqualTo("Not Found");
+        assertThat(dto.getMessage()).isEqualTo("Resource not found");
+        assertThat(dto.getTimestamp()).isEqualTo(1234567890L);
+        assertThat(dto.getPath()).isEqualTo("/api/events/999");
     }
 }

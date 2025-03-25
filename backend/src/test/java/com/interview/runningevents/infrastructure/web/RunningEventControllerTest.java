@@ -138,12 +138,12 @@ public class RunningEventControllerTest {
                         .content(objectMapper.writeValueAsString(invalidDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.message", is("Validation failed. Check 'errors' field for details.")))
-                .andExpect(jsonPath("$.errors", notNullValue()))
-                .andExpect(jsonPath("$.errors.length()", is(2)))
-                .andExpect(jsonPath("$.errors[?(@.field == 'name')].message").exists())
+                .andExpect(jsonPath("$.message", is("Validation failed. Check 'details' field for more information.")))
+                .andExpect(jsonPath("$.details", notNullValue()))
+                .andExpect(jsonPath("$.details.length()", is(2)))
+                .andExpect(jsonPath("$.details[?(@.field == 'name')].message").exists())
                 .andExpect(
-                        jsonPath("$.errors[?(@.field == 'dateTime')].message").exists());
+                        jsonPath("$.details[?(@.field == 'dateTime')].message").exists());
     }
 
     @Test
@@ -494,12 +494,12 @@ public class RunningEventControllerTest {
                         .content(objectMapper.writeValueAsString(invalidDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.message", is("Validation failed. Check 'errors' field for details.")))
-                .andExpect(jsonPath("$.errors", notNullValue()))
-                .andExpect(jsonPath("$.errors.length()", is(2)))
-                .andExpect(jsonPath("$.errors[?(@.field == 'name')].message").exists())
+                .andExpect(jsonPath("$.message", is("Validation failed. Check 'details' field for more information.")))
+                .andExpect(jsonPath("$.details", notNullValue()))
+                .andExpect(jsonPath("$.details.length()", is(2)))
+                .andExpect(jsonPath("$.details[?(@.field == 'name')].message").exists())
                 .andExpect(
-                        jsonPath("$.errors[?(@.field == 'dateTime')].message").exists());
+                        jsonPath("$.details[?(@.field == 'dateTime')].message").exists());
     }
 
     @Test

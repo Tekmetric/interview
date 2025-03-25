@@ -1,0 +1,293 @@
+{
+  "info": {
+    "_postman_id": "a23b8c45-d678-9e01-2f34-g5h6i7j8k9l0",
+    "name": "Running Events API",
+    "description": "A collection for testing the Running Events API which provides CRUD operations for managing running events.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Running Event",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Summer Marathon 2025\",\n    \"dateTime\": {{futureDate}},\n    \"location\": \"Central Park, New York\",\n    \"description\": \"Annual summer marathon through the scenic Central Park. Open to runners of all levels.\",\n    \"furtherInformation\": \"Water stations every 2 miles. Registration closes 2 weeks before the event.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/events",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events"
+          ]
+        },
+        "description": "Creates a new running event with the provided details."
+      },
+      "response": []
+    },
+    {
+      "name": "Get Running Event by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events/{{eventId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events",
+            "{{eventId}}"
+          ]
+        },
+        "description": "Retrieves a specific running event by its ID."
+      },
+      "response": []
+    },
+    {
+      "name": "List All Running Events",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events"
+          ]
+        },
+        "description": "Retrieves a list of all running events."
+      },
+      "response": []
+    },
+    {
+      "name": "List Running Events (with pagination)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Retrieves a paginated list of running events."
+      },
+      "response": []
+    },
+    {
+      "name": "List Running Events (with date filter)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events?startDate={{startDate}}&endDate={{endDate}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events"
+          ],
+          "query": [
+            {
+              "key": "startDate",
+              "value": "{{startDate}}"
+            },
+            {
+              "key": "endDate",
+              "value": "{{endDate}}"
+            }
+          ]
+        },
+        "description": "Retrieves running events within a specific date range."
+      },
+      "response": []
+    },
+    {
+      "name": "List Running Events (with sorting)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events?sortBy=dateTime&sortDir=DESC",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events"
+          ],
+          "query": [
+            {
+              "key": "sortBy",
+              "value": "dateTime"
+            },
+            {
+              "key": "sortDir",
+              "value": "DESC"
+            }
+          ]
+        },
+        "description": "Retrieves running events sorted by a specified field and direction."
+      },
+      "response": []
+    },
+    {
+      "name": "Update Running Event",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Updated Marathon 2025\",\n    \"dateTime\": {{futureDate}},\n    \"location\": \"Updated Location\",\n    \"description\": \"This is an updated description for the event.\",\n    \"furtherInformation\": \"Updated further information about the event.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/events/{{eventId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events",
+            "{{eventId}}"
+          ]
+        },
+        "description": "Updates an existing running event with the provided details."
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Running Event",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/events/{{eventId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events",
+            "{{eventId}}"
+          ]
+        },
+        "description": "Deletes a specific running event by its ID."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Invalid Running Event (Validation Test)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"\",\n    \"dateTime\": null,\n    \"location\": \"\",\n    \"description\": \"This event is missing required fields and should fail validation.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/events",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events"
+          ]
+        },
+        "description": "Tests API validation by attempting to create an invalid running event (missing required fields)."
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Compute future date (30 days from now) for valid event creation",
+          "const futureDate = new Date();",
+          "futureDate.setDate(futureDate.getDate() + 30);",
+          "pm.environment.set('futureDate', futureDate.getTime());",
+          "",
+          "// Compute date range for filtering (next 90 days)",
+          "const now = new Date();",
+          "const startDate = now.getTime();",
+          "",
+          "const endDate = new Date();",
+          "endDate.setDate(endDate.getDate() + 90);",
+          "",
+          "pm.environment.set('startDate', startDate);",
+          "pm.environment.set('endDate', endDate.getTime());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Store event ID from create response for subsequent requests",
+          "if (pm.response.code === 201 && pm.info.requestName === \"Create Running Event\") {",
+          "    const responseJson = pm.response.json();",
+          "    if (responseJson && responseJson.id) {",
+          "        pm.environment.set('eventId', responseJson.id);",
+          "        console.log('Saved event ID: ' + responseJson.id);",
+          "    }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "eventId",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+}

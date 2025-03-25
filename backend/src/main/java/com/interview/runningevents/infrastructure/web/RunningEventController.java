@@ -30,6 +30,13 @@ import com.interview.runningevents.infrastructure.web.dto.RunningEventRequestDTO
 import com.interview.runningevents.infrastructure.web.dto.RunningEventResponseDTO;
 import com.interview.runningevents.infrastructure.web.validation.DateValidator;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 /**
@@ -37,6 +44,7 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/events")
+@Tag(name = "Running Events", description = "API for managing running events")
 public class RunningEventController {
 
     private final CreateRunningEventUseCase createRunningEventUseCase;
@@ -50,11 +58,11 @@ public class RunningEventController {
      * Creates a new RunningEventController with the required dependencies.
      *
      * @param createRunningEventUseCase Use case for creating running events
-     * @param getRunningEventUseCase Use case for retrieving running events
-     * @param listRunningEventsUseCase Use case for listing running events
+     * @param getRunningEventUseCase    Use case for retrieving running events
+     * @param listRunningEventsUseCase  Use case for listing running events
      * @param updateRunningEventUseCase Use case for updating running events
      * @param deleteRunningEventUseCase Use case for deleting running events
-     * @param dtoMapper Mapper for converting between domain objects and DTOs
+     * @param dtoMapper                 Mapper for converting between domain objects and DTOs
      */
     public RunningEventController(
             CreateRunningEventUseCase createRunningEventUseCase,
@@ -78,6 +86,20 @@ public class RunningEventController {
      * @return HTTP 201 Created with the created event data and location header
      */
     @PostMapping
+    @Operation(
+            summary = "Create a new running event",
+            description = "Creates a new running event with the provided data")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "201",
+                        description = "Event created successfully",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = RunningEventResponseDTO.class))),
+                @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
+            })
     public ResponseEntity<RunningEventResponseDTO> createRunningEvent(
             @Valid @RequestBody RunningEventRequestDTO requestDTO) {
 
@@ -111,7 +133,20 @@ public class RunningEventController {
      * @throws RunningEventNotFoundException If the event is not found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<RunningEventResponseDTO> getRunningEvent(@PathVariable Long id) {
+    @Operation(summary = "Get a running event by ID", description = "Retrieves a specific running event by its ID")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Successfully retrieved the event",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = RunningEventResponseDTO.class))),
+                @ApiResponse(responseCode = "404", description = "Event not found", content = @Content)
+            })
+    public ResponseEntity<RunningEventResponseDTO> getRunningEvent(
+            @Parameter(description = "ID of the running event to retrieve", required = true) @PathVariable Long id) {
         RunningEvent event =
                 getRunningEventUseCase.getRunningEventById(id).orElseThrow(() -> new RunningEventNotFoundException(id));
 
@@ -123,21 +158,44 @@ public class RunningEventController {
      * Lists running events with optional filtering and pagination.
      *
      * @param fromDate Optional minimum date for filtering events in format yyyy-MM-dd HH:mm
-     * @param toDate Optional maximum date for filtering events in format yyyy-MM-dd HH:mm
-     * @param page Page number (0-based, defaults to 0)
-     * @param size Page size (defaults to 20)
-     * @param sortBy Field to sort by (id, name, or dateTime; defaults to "dateTime")
-     * @param sortDir Sort direction ("ASC" or "DESC", defaults to "ASC")
+     * @param toDate   Optional maximum date for filtering events in format yyyy-MM-dd HH:mm
+     * @param page     Page number (0-based, defaults to 0)
+     * @param size     Page size (defaults to 20)
+     * @param sortBy   Field to sort by (id, name, or dateTime; defaults to "dateTime")
+     * @param sortDir  Sort direction ("ASC" or "DESC", defaults to "ASC")
      * @return HTTP 200 OK with paginated list of events
      */
     @GetMapping
+    @Operation(
+            summary = "List running events",
+            description = "Retrieves a list of running events with filtering and pagination options")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Successfully retrieved the events",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = PaginatedResponseDTO.class))),
+                @ApiResponse(responseCode = "400", description = "Invalid query parameters", content = @Content)
+            })
     public ResponseEntity<PaginatedResponseDTO<RunningEventResponseDTO>> listRunningEvents(
-            @RequestParam(required = false) String fromDate,
-            @RequestParam(required = false) String toDate,
-            @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "20") Integer size,
-            @RequestParam(required = false, defaultValue = "dateTime") String sortBy,
-            @RequestParam(required = false, defaultValue = "ASC") String sortDir) {
+            @Parameter(description = "Minimum date (yyyy-MM-ddTHH:mm) for filtering events")
+                    @RequestParam(required = false)
+                    String fromDate,
+            @Parameter(description = "Maximum date (yyyy-MM-ddTHH:mm) for filtering events")
+                    @RequestParam(required = false)
+                    String toDate,
+            @Parameter(description = "Page number (0-based)") @RequestParam(required = false, defaultValue = "0")
+                    Integer page,
+            @Parameter(description = "Page size") @RequestParam(required = false, defaultValue = "20") Integer size,
+            @Parameter(description = "Field to sort by (id, name, or dateTime)")
+                    @RequestParam(required = false, defaultValue = "dateTime")
+                    String sortBy,
+            @Parameter(description = "Sort direction (ASC or DESC)")
+                    @RequestParam(required = false, defaultValue = "ASC")
+                    String sortDir) {
 
         // Validate query parameters
         QueryParamValidator.validateSortField(sortBy);
@@ -171,14 +229,30 @@ public class RunningEventController {
     /**
      * Updates an existing running event.
      *
-     * @param id The ID of the running event to update
+     * @param id         The ID of the running event to update
      * @param requestDTO The updated running event data
      * @return HTTP 200 OK with the updated event data
      * @throws RunningEventNotFoundException If the event is not found
      */
     @PutMapping("/{id}")
+    @Operation(
+            summary = "Update a running event",
+            description = "Updates an existing running event with the provided data")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Event updated successfully",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = RunningEventResponseDTO.class))),
+                @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
+                @ApiResponse(responseCode = "404", description = "Event not found", content = @Content)
+            })
     public ResponseEntity<RunningEventResponseDTO> updateRunningEvent(
-            @PathVariable Long id, @Valid @RequestBody RunningEventRequestDTO requestDTO) {
+            @Parameter(description = "ID of the running event to update", required = true) @PathVariable Long id,
+            @Valid @RequestBody RunningEventRequestDTO requestDTO) {
 
         // Validate that the date is in the future
         DateValidator.validateFutureDate(requestDTO.getDateTime());
@@ -210,7 +284,14 @@ public class RunningEventController {
      * @throws RunningEventNotFoundException If the event is not found
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRunningEvent(@PathVariable Long id) {
+    @Operation(summary = "Delete a running event", description = "Deletes a running event by its ID")
+    @ApiResponses(
+            value = {
+                @ApiResponse(responseCode = "204", description = "Event deleted successfully", content = @Content),
+                @ApiResponse(responseCode = "404", description = "Event not found", content = @Content)
+            })
+    public ResponseEntity<Void> deleteRunningEvent(
+            @Parameter(description = "ID of the running event to delete", required = true) @PathVariable Long id) {
         // Try to delete the event
         boolean deleted = deleteRunningEventUseCase.deleteRunningEvent(id);
 

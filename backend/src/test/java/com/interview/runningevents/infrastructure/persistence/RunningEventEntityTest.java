@@ -144,8 +144,7 @@ public class RunningEventEntityTest {
         // When & Then
         // Find events from now to far future
         List<RunningEventEntity> futureEvents = repository
-                .findByDateTimeBetweenOrderByDateTime(
-                        present, farFuture, org.springframework.data.domain.Pageable.unpaged())
+                .findByDateTimeBetween(present, farFuture, org.springframework.data.domain.Pageable.unpaged())
                 .getContent();
         assertThat(futureEvents).hasSize(3);
         // Verify ordering is by dateTime ascending
@@ -156,8 +155,7 @@ public class RunningEventEntityTest {
 
         // Find events in a specific range
         List<RunningEventEntity> rangeEvents = repository
-                .findByDateTimeBetweenOrderByDateTime(
-                        present, future, org.springframework.data.domain.Pageable.unpaged())
+                .findByDateTimeBetween(present, future, org.springframework.data.domain.Pageable.unpaged())
                 .getContent();
         assertThat(rangeEvents).hasSize(2);
         // Verify ordering is by dateTime ascending
@@ -166,7 +164,7 @@ public class RunningEventEntityTest {
 
         // Find all events ordered by date time
         List<RunningEventEntity> allEvents = repository
-                .findAllByOrderByDateTime(org.springframework.data.domain.Pageable.unpaged())
+                .findAll(org.springframework.data.domain.Pageable.unpaged())
                 .getContent();
         assertThat(allEvents).hasSize(4);
         // Verify ordering is by dateTime ascending

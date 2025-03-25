@@ -44,6 +44,7 @@ public class RunningEventQueryDTO {
 
     /**
      * Sort direction (ASC or DESC).
+     * This is a string in the DTO and will be converted to the enum in the service layer.
      */
     @Builder.Default
     private String sortDirection = "ASC";

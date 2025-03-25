@@ -102,4 +102,22 @@ public class RunningEventQueryDTOTest {
         assertThat(dto.getSortBy()).isEqualTo("description");
         assertThat(dto.getSortDirection()).isEqualTo("DESC");
     }
+
+    @Test
+    public void shouldUseAllArgsConstructorWithSortDirection() {
+        // Given
+        Long fromDate = Instant.now().toEpochMilli();
+        Long toDate = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+
+        // When
+        RunningEventQueryDTO dto = new RunningEventQueryDTO(fromDate, toDate, 1, 15, "name", "DESC");
+
+        // Then
+        assertThat(dto.getFromDate()).isEqualTo(fromDate);
+        assertThat(dto.getToDate()).isEqualTo(toDate);
+        assertThat(dto.getPage()).isEqualTo(1);
+        assertThat(dto.getPageSize()).isEqualTo(15);
+        assertThat(dto.getSortBy()).isEqualTo("name");
+        assertThat(dto.getSortDirection()).isEqualTo("DESC");
+    }
 }

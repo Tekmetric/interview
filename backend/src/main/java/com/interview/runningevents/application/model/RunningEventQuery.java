@@ -45,8 +45,8 @@ public class RunningEventQuery {
 
     /**
      * Direction to sort results (ASC or DESC).
-     * Defaults to "ASC" if not specified.
+     * Defaults to ASC if not specified.
      */
     @Builder.Default
-    private String sortDirection = "ASC";
+    private SortDirection sortDirection = SortDirection.ASC;
 }

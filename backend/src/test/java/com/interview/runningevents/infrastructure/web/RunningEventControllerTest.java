@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.interview.runningevents.application.exception.ValidationException;
 import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.model.RunningEventQuery;
+import com.interview.runningevents.application.model.SortDirection;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
 import com.interview.runningevents.application.port.in.DeleteRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
@@ -386,7 +387,7 @@ public class RunningEventControllerTest {
         // Verify the sort parameters were correctly passed to the use case
         RunningEventQuery capturedQuery = queryCaptor.getValue();
         assertThat(capturedQuery.getSortBy()).isEqualTo("name");
-        assertThat(capturedQuery.getSortDirection()).isEqualTo("DESC");
+        assertThat(capturedQuery.getSortDirection()).isEqualTo(SortDirection.DESC);
     }
 
     @Test

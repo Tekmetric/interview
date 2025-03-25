@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.model.RunningEventQuery;
+import com.interview.runningevents.application.model.SortDirection;
 import com.interview.runningevents.domain.model.RunningEvent;
 
 /**
@@ -118,13 +119,16 @@ public class RunningEventDTOMapper {
             return RunningEventQuery.builder().build();
         }
 
+        // Parse the sort direction string to enum
+        SortDirection sortDirection = SortDirection.fromString(queryDTO.getSortDirection());
+
         return RunningEventQuery.builder()
                 .fromDate(queryDTO.getFromDate())
                 .toDate(queryDTO.getToDate())
                 .page(queryDTO.getPage() != null ? queryDTO.getPage() : 0)
                 .pageSize(queryDTO.getPageSize() != null ? queryDTO.getPageSize() : 20)
                 .sortBy(queryDTO.getSortBy() != null ? queryDTO.getSortBy() : "dateTime")
-                .sortDirection(queryDTO.getSortDirection() != null ? queryDTO.getSortDirection() : "ASC")
+                .sortDirection(sortDirection)
                 .build();
     }
 

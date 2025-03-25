@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.interview.runningevents.application.exception.RunningEventNotFoundException;
+import com.interview.runningevents.application.exception.ValidationException;
 import com.interview.runningevents.application.model.PaginatedResult;
+import com.interview.runningevents.application.model.SortDirection;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
 import com.interview.runningevents.application.port.in.DeleteRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
@@ -134,6 +136,11 @@ public class RunningEventController {
             @RequestParam(required = false, defaultValue = "20") Integer size,
             @RequestParam(required = false, defaultValue = "dateTime") String sortBy,
             @RequestParam(required = false, defaultValue = "ASC") String sortDir) {
+
+        // Validate sort direction
+        if (sortDir != null && !SortDirection.isValid(sortDir)) {
+            throw new ValidationException("Invalid sort direction. Must be ASC or DESC.");
+        }
 
         // Create query DTO from request parameters
         RunningEventQueryDTO queryDTO = RunningEventQueryDTO.builder()

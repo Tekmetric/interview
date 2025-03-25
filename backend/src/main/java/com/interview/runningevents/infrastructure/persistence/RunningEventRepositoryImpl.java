@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.model.RunningEventQuery;
+import com.interview.runningevents.application.model.SortDirection;
 import com.interview.runningevents.application.port.out.RunningEventRepository;
 import com.interview.runningevents.domain.model.RunningEvent;
 
@@ -52,17 +53,22 @@ public class RunningEventRepositoryImpl implements RunningEventRepository {
             throw new IllegalArgumentException("Query cannot be null");
         }
 
-        // Create pageable request
-        PageRequest pageRequest = PageRequest.of(query.getPage(), query.getPageSize());
+        // Create pageable request with sort direction
+        org.springframework.data.domain.Sort.Direction direction = query.getSortDirection() == SortDirection.DESC
+                ? org.springframework.data.domain.Sort.Direction.DESC
+                : org.springframework.data.domain.Sort.Direction.ASC;
+
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(direction, "dateTime");
+
+        PageRequest pageRequest = PageRequest.of(query.getPage(), query.getPageSize(), sort);
 
         Page<RunningEventEntity> page;
 
         // Execute query with date range filter if specified
         if (query.getFromDate() != null && query.getToDate() != null) {
-            page = jpaRepository.findByDateTimeBetweenOrderByDateTime(
-                    query.getFromDate(), query.getToDate(), pageRequest);
+            page = jpaRepository.findByDateTimeBetween(query.getFromDate(), query.getToDate(), pageRequest);
         } else {
-            page = jpaRepository.findAllByOrderByDateTime(pageRequest);
+            page = jpaRepository.findAll(pageRequest);
         }
 
         // Map entities to domain objects

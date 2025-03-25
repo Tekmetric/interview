@@ -95,8 +95,7 @@ public class RunningEventJpaRepositoryTest {
         Long endDate = Instant.now().plus(15, ChronoUnit.DAYS).toEpochMilli();
 
         // When
-        Page<RunningEventEntity> result =
-                repository.findByDateTimeBetweenOrderByDateTime(startDate, endDate, PageRequest.of(0, 10));
+        Page<RunningEventEntity> result = repository.findByDateTimeBetween(startDate, endDate, PageRequest.of(0, 10));
 
         // Then
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -110,7 +109,7 @@ public class RunningEventJpaRepositoryTest {
     public void shouldReturnEventsOrderedByDateTime() {
         // When
         List<RunningEventEntity> events =
-                repository.findAllByOrderByDateTime(PageRequest.of(0, 10)).getContent();
+                repository.findAll(PageRequest.of(0, 10)).getContent();
 
         // Then
         assertThat(events).extracting("dateTime").isSorted();
@@ -126,8 +125,8 @@ public class RunningEventJpaRepositoryTest {
         PageRequest secondPage = PageRequest.of(1, 2);
 
         // When
-        Page<RunningEventEntity> firstPageResult = repository.findAllByOrderByDateTime(firstPage);
-        Page<RunningEventEntity> secondPageResult = repository.findAllByOrderByDateTime(secondPage);
+        Page<RunningEventEntity> firstPageResult = repository.findAll(firstPage);
+        Page<RunningEventEntity> secondPageResult = repository.findAll(secondPage);
 
         // Then
         assertThat(firstPageResult.getTotalElements()).isEqualTo(5);

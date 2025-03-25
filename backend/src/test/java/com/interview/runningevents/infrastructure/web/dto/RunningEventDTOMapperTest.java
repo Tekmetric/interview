@@ -11,9 +11,12 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.model.RunningEventQuery;
+import com.interview.runningevents.application.model.SortDirection;
 import com.interview.runningevents.domain.model.RunningEvent;
 
 public class RunningEventDTOMapperTest {
@@ -191,7 +194,7 @@ public class RunningEventDTOMapperTest {
         assertThat(queryModel.getPage()).isEqualTo(2);
         assertThat(queryModel.getPageSize()).isEqualTo(15);
         assertThat(queryModel.getSortBy()).isEqualTo("name");
-        assertThat(queryModel.getSortDirection()).isEqualTo("DESC");
+        assertThat(queryModel.getSortDirection()).isEqualTo(SortDirection.DESC);
     }
 
     @Test
@@ -213,7 +216,7 @@ public class RunningEventDTOMapperTest {
         assertThat(queryModel.getPage()).isEqualTo(0); // Default value
         assertThat(queryModel.getPageSize()).isEqualTo(20); // Default value
         assertThat(queryModel.getSortBy()).isEqualTo("dateTime"); // Default value
-        assertThat(queryModel.getSortDirection()).isEqualTo("ASC"); // Default value
+        assertThat(queryModel.getSortDirection()).isEqualTo(SortDirection.ASC); // Default value
     }
 
     @Test
@@ -265,5 +268,86 @@ public class RunningEventDTOMapperTest {
         assertThat(mapper.updateDomainFromDTO(null, null)).isNull();
         assertThat(mapper.toQueryModel(null)).isNotNull(); // Should provide defaults
         assertThat(mapper.toPaginatedResponseDTO(null)).isNull();
+    }
+
+    @Test
+    void shouldMapSortDirectionAsc() {
+        // Given
+        RunningEventQueryDTO queryDTO =
+                RunningEventQueryDTO.builder().sortDirection("ASC").build();
+
+        // When
+        RunningEventQuery queryModel = mapper.toQueryModel(queryDTO);
+
+        // Then
+        assertThat(queryModel.getSortDirection()).isEqualTo(SortDirection.ASC);
+    }
+
+    @Test
+    void shouldMapSortDirectionDesc() {
+        // Given
+        RunningEventQueryDTO queryDTO =
+                RunningEventQueryDTO.builder().sortDirection("DESC").build();
+
+        // When
+        RunningEventQuery queryModel = mapper.toQueryModel(queryDTO);
+
+        // Then
+        assertThat(queryModel.getSortDirection()).isEqualTo(SortDirection.DESC);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"asc", "Asc", "ASC"})
+    void shouldMapCaseInsensitiveAscValues(String direction) {
+        // Given
+        RunningEventQueryDTO queryDTO =
+                RunningEventQueryDTO.builder().sortDirection(direction).build();
+
+        // When
+        RunningEventQuery queryModel = mapper.toQueryModel(queryDTO);
+
+        // Then
+        assertThat(queryModel.getSortDirection()).isEqualTo(SortDirection.ASC);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"desc", "Desc", "DESC"})
+    void shouldMapCaseInsensitiveDescValues(String direction) {
+        // Given
+        RunningEventQueryDTO queryDTO =
+                RunningEventQueryDTO.builder().sortDirection(direction).build();
+
+        // When
+        RunningEventQuery queryModel = mapper.toQueryModel(queryDTO);
+
+        // Then
+        assertThat(queryModel.getSortDirection()).isEqualTo(SortDirection.DESC);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid", "ASCENDING", "DESCENDING", "", "123"})
+    void shouldMapInvalidValuesToAsc(String direction) {
+        // Given
+        RunningEventQueryDTO queryDTO =
+                RunningEventQueryDTO.builder().sortDirection(direction).build();
+
+        // When
+        RunningEventQuery queryModel = mapper.toQueryModel(queryDTO);
+
+        // Then
+        assertThat(queryModel.getSortDirection()).isEqualTo(SortDirection.ASC);
+    }
+
+    @Test
+    void shouldMapNullValueToAsc() {
+        // Given
+        RunningEventQueryDTO queryDTO =
+                RunningEventQueryDTO.builder().sortDirection(null).build();
+
+        // When
+        RunningEventQuery queryModel = mapper.toQueryModel(queryDTO);
+
+        // Then
+        assertThat(queryModel.getSortDirection()).isEqualTo(SortDirection.ASC);
     }
 }

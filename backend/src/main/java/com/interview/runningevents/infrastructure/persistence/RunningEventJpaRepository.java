@@ -12,20 +12,13 @@ import org.springframework.stereotype.Repository;
 public interface RunningEventJpaRepository extends JpaRepository<RunningEventEntity, Long> {
 
     /**
-     * Find running events within a date range ordered by date and time.
+     * Find running events within a date range.
+     * The order is specified in the Pageable parameter.
      *
      * @param startDate The minimum date (inclusive)
      * @param endDate The maximum date (inclusive)
-     * @param pageable Pagination information
+     * @param pageable Pagination and sort information
      * @return A page of running events within the date range
      */
-    Page<RunningEventEntity> findByDateTimeBetweenOrderByDateTime(Long startDate, Long endDate, Pageable pageable);
-
-    /**
-     * Find all running events ordered by date and time.
-     *
-     * @param pageable Pagination information
-     * @return A page of running events
-     */
-    Page<RunningEventEntity> findAllByOrderByDateTime(Pageable pageable);
+    Page<RunningEventEntity> findByDateTimeBetween(Long startDate, Long endDate, Pageable pageable);
 }

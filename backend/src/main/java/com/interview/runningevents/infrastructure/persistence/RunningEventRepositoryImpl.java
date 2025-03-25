@@ -58,7 +58,10 @@ public class RunningEventRepositoryImpl implements RunningEventRepository {
                 ? org.springframework.data.domain.Sort.Direction.DESC
                 : org.springframework.data.domain.Sort.Direction.ASC;
 
-        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(direction, "dateTime");
+        // Use the sortBy field from the query, defaulting to "dateTime" if null
+        String sortField = query.getSortBy() != null ? query.getSortBy() : "dateTime";
+
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(direction, sortField);
 
         PageRequest pageRequest = PageRequest.of(query.getPage(), query.getPageSize(), sort);
 

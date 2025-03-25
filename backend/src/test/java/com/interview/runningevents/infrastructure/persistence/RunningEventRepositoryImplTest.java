@@ -367,6 +367,121 @@ public class RunningEventRepositoryImplTest {
     }
 
     @Test
+    void shouldSortBySpecifiedField() {
+        // Given
+        RunningEventQuery query = RunningEventQuery.builder()
+                .page(0)
+                .pageSize(10)
+                .sortBy("name")
+                .sortDirection(SortDirection.ASC)
+                .build();
+
+        RunningEventEntity entity1 = RunningEventEntity.builder()
+                .id(1L)
+                .name("Alpha Event")
+                .dateTime(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location 1")
+                .build();
+
+        RunningEventEntity entity2 = RunningEventEntity.builder()
+                .id(2L)
+                .name("Beta Event")
+                .dateTime(Instant.now().plus(2, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location 2")
+                .build();
+
+        List<RunningEventEntity> entities = List.of(entity1, entity2);
+        Page<RunningEventEntity> page = new PageImpl<>(entities, PageRequest.of(0, 10), 2);
+
+        when(jpaRepository.findAll(any(Pageable.class))).thenReturn(page);
+        when(mapper.toDomain(any(RunningEventEntity.class))).thenAnswer(i -> {
+            RunningEventEntity entity = i.getArgument(0);
+            return RunningEvent.builder()
+                    .id(entity.getId())
+                    .name(entity.getName())
+                    .dateTime(entity.getDateTime())
+                    .location(entity.getLocation())
+                    .build();
+        });
+
+        // When
+        PaginatedResult<RunningEvent> result = repository.findAll(query);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getItems()).hasSize(2);
+
+        // Verify that the correct sort parameters were passed to the repository
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(jpaRepository, times(1)).findAll(pageableCaptor.capture());
+
+        Pageable capturedPageable = pageableCaptor.getValue();
+        assertThat(capturedPageable.getSort().getOrderFor("name").getDirection())
+                .isEqualTo(Sort.Direction.ASC);
+    }
+
+    @Test
+    void shouldSortBySpecifiedFieldWithDateFilter() {
+        // Given
+        Long fromDate = Instant.now().toEpochMilli();
+        Long toDate = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+
+        RunningEventQuery query = RunningEventQuery.builder()
+                .fromDate(fromDate)
+                .toDate(toDate)
+                .page(0)
+                .pageSize(10)
+                .sortBy("location")
+                .sortDirection(SortDirection.DESC)
+                .build();
+
+        Page<RunningEventEntity> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
+        when(jpaRepository.findByDateTimeBetween(eq(fromDate), eq(toDate), any(Pageable.class)))
+                .thenReturn(emptyPage);
+
+        // When
+        PaginatedResult<RunningEvent> result = repository.findAll(query);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getItems()).isEmpty();
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(jpaRepository, times(1)).findByDateTimeBetween(eq(fromDate), eq(toDate), pageableCaptor.capture());
+
+        // Verify sort is by location in descending order
+        Pageable capturedPageable = pageableCaptor.getValue();
+        assertThat(capturedPageable.getSort().getOrderFor("location").getDirection())
+                .isEqualTo(Sort.Direction.DESC);
+    }
+
+    @Test
+    void shouldDefaultToDateTimeWhenSortByIsNull() {
+        // Given
+        RunningEventQuery query = RunningEventQuery.builder()
+                .page(0)
+                .pageSize(10)
+                .sortBy(null) // Explicitly set to null
+                .sortDirection(SortDirection.ASC)
+                .build();
+
+        Page<RunningEventEntity> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
+        when(jpaRepository.findAll(any(Pageable.class))).thenReturn(emptyPage);
+
+        // When
+        repository.findAll(query);
+
+        // Then
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(jpaRepository, times(1)).findAll(pageableCaptor.capture());
+
+        Pageable capturedPageable = pageableCaptor.getValue();
+        assertThat(capturedPageable.getSort().getOrderFor("dateTime")).isNotNull();
+        assertThat(capturedPageable.getSort().getOrderFor("dateTime").getDirection())
+                .isEqualTo(Sort.Direction.ASC);
+    }
+
+    @Test
     void shouldThrowExceptionWhenFindingAllWithNullQuery() {
         // When/Then
         assertThrows(IllegalArgumentException.class, () -> repository.findAll(null));

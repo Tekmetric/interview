@@ -156,4 +156,117 @@ public class RunningEventJpaRepositorySortTest {
             assertThat(events.get(i - 1).getDateTime()).isLessThanOrEqualTo(toDate);
         }
     }
+
+    @Test
+    public void shouldSortByNameAscending() {
+        // Given - clear and setup with events that have different names
+        repository.deleteAll();
+
+        repository.save(RunningEventEntity.builder()
+                .name("B Marathon")
+                .dateTime(Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location B")
+                .build());
+
+        repository.save(RunningEventEntity.builder()
+                .name("A Marathon")
+                .dateTime(Instant.now().plus(40, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location A")
+                .build());
+
+        repository.save(RunningEventEntity.builder()
+                .name("C Marathon")
+                .dateTime(Instant.now().plus(20, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location C")
+                .build());
+
+        // When - sort by name ascending
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
+        Page<RunningEventEntity> result = repository.findAll(pageRequest);
+        List<RunningEventEntity> events = result.getContent();
+
+        // Then - should be ordered by name alphabetically
+        assertThat(events).hasSize(3);
+        assertThat(events).extracting("name").containsExactly("A Marathon", "B Marathon", "C Marathon");
+    }
+
+    @Test
+    public void shouldSortByNameDescending() {
+        // Given - clear and setup with events that have different names
+        repository.deleteAll();
+
+        repository.save(RunningEventEntity.builder()
+                .name("B Marathon")
+                .dateTime(Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location B")
+                .build());
+
+        repository.save(RunningEventEntity.builder()
+                .name("A Marathon")
+                .dateTime(Instant.now().plus(40, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location A")
+                .build());
+
+        repository.save(RunningEventEntity.builder()
+                .name("C Marathon")
+                .dateTime(Instant.now().plus(20, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location C")
+                .build());
+
+        // When - sort by name descending
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "name"));
+        Page<RunningEventEntity> result = repository.findAll(pageRequest);
+        List<RunningEventEntity> events = result.getContent();
+
+        // Then - should be ordered by name in reverse alphabetical order
+        assertThat(events).hasSize(3);
+        assertThat(events).extracting("name").containsExactly("C Marathon", "B Marathon", "A Marathon");
+    }
+
+    @Test
+    public void shouldSortByLocationWithDateFilter() {
+        // Given - clear and setup
+        repository.deleteAll();
+
+        Long present = Instant.now().toEpochMilli();
+        Long future30Days = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        Long future60Days = Instant.now().plus(60, ChronoUnit.DAYS).toEpochMilli();
+
+        // Events in filter range (between present and future30Days)
+        repository.save(RunningEventEntity.builder()
+                .name("Event B")
+                .dateTime(Instant.now().plus(15, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location B")
+                .build());
+
+        repository.save(RunningEventEntity.builder()
+                .name("Event A")
+                .dateTime(Instant.now().plus(10, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location A")
+                .build());
+
+        // Event outside filter range
+        repository.save(RunningEventEntity.builder()
+                .name("Event C")
+                .dateTime(Instant.now().plus(45, ChronoUnit.DAYS).toEpochMilli())
+                .location("Location C")
+                .build());
+
+        // When - find events in date range, sorted by location
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "location"));
+        Page<RunningEventEntity> result = repository.findByDateTimeBetween(present, future30Days, pageRequest);
+        List<RunningEventEntity> events = result.getContent();
+
+        // Then - should only include events in the date range, sorted by location
+        assertThat(events).hasSize(2);
+        assertThat(events).extracting("name").containsExactly("Event A", "Event B");
+
+        // Same test with descending order
+        pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "location"));
+        result = repository.findByDateTimeBetween(present, future30Days, pageRequest);
+        events = result.getContent();
+
+        assertThat(events).hasSize(2);
+        assertThat(events).extracting("name").containsExactly("Event B", "Event A");
+    }
 }

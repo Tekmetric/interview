@@ -18,7 +18,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.interview.runningevents.application.exception.RunningEventNotFoundException;
 import com.interview.runningevents.application.exception.ValidationException;
 import com.interview.runningevents.application.model.PaginatedResult;
-import com.interview.runningevents.application.model.SortDirection;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
 import com.interview.runningevents.application.port.in.DeleteRunningEventUseCase;
 import com.interview.runningevents.application.port.in.GetRunningEventUseCase;
@@ -124,9 +123,10 @@ public class RunningEventController {
      * @param endDate Optional maximum date for filtering events (inclusive)
      * @param page Page number (0-based, defaults to 0)
      * @param size Page size (defaults to 20)
-     * @param sortBy Field to sort by (defaults to "dateTime")
+     * @param sortBy Field to sort by (id, name, or dateTime; defaults to "dateTime")
      * @param sortDir Sort direction ("ASC" or "DESC", defaults to "ASC")
      * @return HTTP 200 OK with paginated list of events
+     * @throws ValidationException if sort parameters are invalid
      */
     @GetMapping
     public ResponseEntity<PaginatedResponseDTO<RunningEventResponseDTO>> listRunningEvents(
@@ -137,10 +137,9 @@ public class RunningEventController {
             @RequestParam(required = false, defaultValue = "dateTime") String sortBy,
             @RequestParam(required = false, defaultValue = "ASC") String sortDir) {
 
-        // Validate sort direction
-        if (sortDir != null && !SortDirection.isValid(sortDir)) {
-            throw new ValidationException("Invalid sort direction. Must be ASC or DESC.");
-        }
+        // Validate query parameters
+        QueryParamValidator.validateSortField(sortBy);
+        QueryParamValidator.validateSortDirection(sortDir);
 
         // Create query DTO from request parameters
         RunningEventQueryDTO queryDTO = RunningEventQueryDTO.builder()

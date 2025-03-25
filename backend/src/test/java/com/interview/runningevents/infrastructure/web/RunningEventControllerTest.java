@@ -47,6 +47,7 @@ import com.interview.runningevents.application.port.in.UpdateRunningEventUseCase
 import com.interview.runningevents.domain.model.RunningEvent;
 import com.interview.runningevents.infrastructure.web.dto.RunningEventDTOMapper;
 import com.interview.runningevents.infrastructure.web.dto.RunningEventRequestDTO;
+import com.interview.runningevents.infrastructure.web.util.DateTimeConverter;
 
 @WebMvcTest(RunningEventController.class)
 @Import({RunningEventDTOMapper.class})
@@ -89,7 +90,7 @@ public class RunningEventControllerTest {
 
         RunningEventRequestDTO requestDTO = RunningEventRequestDTO.builder()
                 .name("Test Marathon")
-                .dateTime(eventTime.toEpochMilli())
+                .dateTime(DateTimeConverter.fromTimestamp(eventTime.toEpochMilli()))
                 .location("Test Location")
                 .description("Test Description")
                 .furtherInformation("Further Information")
@@ -116,11 +117,10 @@ public class RunningEventControllerTest {
                 .andExpect(header().string("Location", "http://localhost/api/events/1"))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("Test Marathon")))
-                .andExpect(jsonPath("$.dateTime", is(eventTime.toEpochMilli())))
+                .andExpect(jsonPath("$.dateTime", is(DateTimeConverter.fromTimestamp(eventTime.toEpochMilli()))))
                 .andExpect(jsonPath("$.location", is("Test Location")))
                 .andExpect(jsonPath("$.description", is("Test Description")))
-                .andExpect(jsonPath("$.furtherInformation", is("Further Information")))
-                .andExpect(jsonPath("$.formattedDateTime", is(formattedTime)));
+                .andExpect(jsonPath("$.furtherInformation", is("Further Information")));
     }
 
     @Test
@@ -153,7 +153,8 @@ public class RunningEventControllerTest {
 
         RunningEventRequestDTO requestDTO = RunningEventRequestDTO.builder()
                 .name("Test Marathon")
-                .dateTime(pastTime.toEpochMilli()) // Past date - should trigger domain validation
+                .dateTime(DateTimeConverter.fromTimestamp(
+                        pastTime.toEpochMilli())) // Past date - should trigger domain validation
                 .location("Test Location")
                 .build();
 
@@ -192,11 +193,10 @@ public class RunningEventControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("Test Marathon")))
-                .andExpect(jsonPath("$.dateTime", is(eventTime.toEpochMilli())))
+                .andExpect(jsonPath("$.dateTime", is(DateTimeConverter.fromTimestamp(eventTime.toEpochMilli()))))
                 .andExpect(jsonPath("$.location", is("Test Location")))
                 .andExpect(jsonPath("$.description", is("Test Description")))
-                .andExpect(jsonPath("$.furtherInformation", is("Further Information")))
-                .andExpect(jsonPath("$.formattedDateTime", is(formattedTime)));
+                .andExpect(jsonPath("$.furtherInformation", is("Further Information")));
     }
 
     @Test
@@ -324,14 +324,16 @@ public class RunningEventControllerTest {
         ArgumentCaptor<RunningEventQuery> queryCaptor = ArgumentCaptor.forClass(RunningEventQuery.class);
         when(listRunningEventsUseCase.listRunningEvents(queryCaptor.capture())).thenReturn(paginatedResult);
 
-        // Define filter date range
-        Long startDate = Instant.now().plus(10, ChronoUnit.DAYS).toEpochMilli();
-        Long endDate = Instant.now().plus(20, ChronoUnit.DAYS).toEpochMilli();
+        // Define filter date range as ISO-8601 formatted strings
+        String fromDateString = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(10, ChronoUnit.DAYS).toEpochMilli());
+        String toDateString = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(20, ChronoUnit.DAYS).toEpochMilli());
 
-        // When & Then
+        // When
         mockMvc.perform(get("/api/events")
-                        .param("startDate", startDate.toString())
-                        .param("endDate", endDate.toString())
+                        .param("fromDate", fromDateString)
+                        .param("toDate", toDateString)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items.length()", is(1)))
@@ -340,8 +342,13 @@ public class RunningEventControllerTest {
 
         // Verify the date filter parameters were correctly passed to the use case
         RunningEventQuery capturedQuery = queryCaptor.getValue();
-        assertThat(capturedQuery.getFromDate()).isEqualTo(startDate);
-        assertThat(capturedQuery.getToDate()).isEqualTo(endDate);
+
+        // Convert the test ISO-8601 strings back to timestamps for comparison
+        Long expectedFromDate = DateTimeConverter.toTimestamp(fromDateString);
+        Long expectedToDate = DateTimeConverter.toTimestamp(toDateString);
+
+        assertThat(capturedQuery.getFromDate()).isEqualTo(expectedFromDate);
+        assertThat(capturedQuery.getToDate()).isEqualTo(expectedToDate);
     }
 
     @Test
@@ -407,7 +414,7 @@ public class RunningEventControllerTest {
 
         RunningEventRequestDTO updateRequestDTO = RunningEventRequestDTO.builder()
                 .name("Updated Name")
-                .dateTime(eventTime.toEpochMilli())
+                .dateTime(DateTimeConverter.fromTimestamp(eventTime.toEpochMilli()))
                 .location("Updated Location")
                 .description("Updated Description")
                 .furtherInformation("Updated Further Information")
@@ -435,11 +442,10 @@ public class RunningEventControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("Updated Name")))
-                .andExpect(jsonPath("$.dateTime", is(eventTime.toEpochMilli())))
+                .andExpect(jsonPath("$.dateTime", is(DateTimeConverter.fromTimestamp(eventTime.toEpochMilli()))))
                 .andExpect(jsonPath("$.location", is("Updated Location")))
                 .andExpect(jsonPath("$.description", is("Updated Description")))
-                .andExpect(jsonPath("$.furtherInformation", is("Updated Further Information")))
-                .andExpect(jsonPath("$.formattedDateTime", is(formattedTime)));
+                .andExpect(jsonPath("$.furtherInformation", is("Updated Further Information")));
     }
 
     @Test
@@ -450,7 +456,7 @@ public class RunningEventControllerTest {
 
         RunningEventRequestDTO updateRequestDTO = RunningEventRequestDTO.builder()
                 .name("Updated Name")
-                .dateTime(eventTime.toEpochMilli())
+                .dateTime(DateTimeConverter.fromTimestamp(eventTime.toEpochMilli()))
                 .location("Updated Location")
                 .description("Updated Description")
                 .build();
@@ -517,7 +523,8 @@ public class RunningEventControllerTest {
 
         RunningEventRequestDTO requestDTO = RunningEventRequestDTO.builder()
                 .name("Updated Name")
-                .dateTime(pastTime.toEpochMilli()) // Past date - should trigger domain validation
+                .dateTime(DateTimeConverter.fromTimestamp(
+                        pastTime.toEpochMilli())) // Past date - should trigger domain validation
                 .location("Updated Location")
                 .build();
 
@@ -540,7 +547,8 @@ public class RunningEventControllerTest {
     public void shouldVerifyCorrectParametersPassedToUpdateUseCase() throws Exception {
         // Given
         Long eventId = 1L;
-        Instant eventTime = Instant.now().plus(30, ChronoUnit.DAYS);
+        String eventTime = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         RunningEvent existingEvent = RunningEvent.builder()
                 .id(eventId)
@@ -551,7 +559,7 @@ public class RunningEventControllerTest {
 
         RunningEventRequestDTO updateRequestDTO = RunningEventRequestDTO.builder()
                 .name("Updated Name")
-                .dateTime(eventTime.toEpochMilli())
+                .dateTime(eventTime)
                 .location("Updated Location")
                 .description("Updated Description")
                 .build();
@@ -559,7 +567,7 @@ public class RunningEventControllerTest {
         RunningEvent updatedEvent = RunningEvent.builder()
                 .id(eventId)
                 .name("Updated Name")
-                .dateTime(eventTime.toEpochMilli())
+                .dateTime(DateTimeConverter.toTimestamp(eventTime))
                 .location("Updated Location")
                 .description("Updated Description")
                 .build();
@@ -583,7 +591,7 @@ public class RunningEventControllerTest {
         RunningEvent capturedEvent = eventCaptor.getValue();
         assertThat(capturedEvent.getId()).isEqualTo(eventId);
         assertThat(capturedEvent.getName()).isEqualTo("Updated Name");
-        assertThat(capturedEvent.getDateTime()).isEqualTo(eventTime.toEpochMilli());
+        assertThat(capturedEvent.getDateTime()).isEqualTo(DateTimeConverter.toTimestamp(eventTime));
         assertThat(capturedEvent.getLocation()).isEqualTo("Updated Location");
         assertThat(capturedEvent.getDescription()).isEqualTo("Updated Description");
     }

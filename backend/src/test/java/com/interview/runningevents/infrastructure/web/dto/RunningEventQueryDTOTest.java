@@ -7,13 +7,16 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
 
+import com.interview.runningevents.infrastructure.web.util.DateTimeConverter;
+
 public class RunningEventQueryDTOTest {
 
     @Test
     public void shouldCreateWithAllFields() {
         // Given
-        Long fromDate = Instant.now().toEpochMilli();
-        Long toDate = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        String fromDate = DateTimeConverter.fromTimestamp(Instant.now().toEpochMilli());
+        String toDate = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         RunningEventQueryDTO dto = RunningEventQueryDTO.builder()
                 .fromDate(fromDate)
@@ -83,8 +86,9 @@ public class RunningEventQueryDTOTest {
     public void shouldSupportSetters() {
         // Given
         RunningEventQueryDTO dto = new RunningEventQueryDTO();
-        Long fromDate = Instant.now().toEpochMilli();
-        Long toDate = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        String fromDate = DateTimeConverter.fromTimestamp(Instant.now().toEpochMilli());
+        String toDate = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         // When
         dto.setFromDate(fromDate);
@@ -106,8 +110,9 @@ public class RunningEventQueryDTOTest {
     @Test
     public void shouldUseAllArgsConstructorWithSortDirection() {
         // Given
-        Long fromDate = Instant.now().toEpochMilli();
-        Long toDate = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        String fromDate = DateTimeConverter.fromTimestamp(Instant.now().toEpochMilli());
+        String toDate = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         // When
         RunningEventQueryDTO dto = new RunningEventQueryDTO(fromDate, toDate, 1, 15, "name", "DESC");

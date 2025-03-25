@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.interview.runningevents.infrastructure.web.util.DateTimeConverter;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -21,7 +23,8 @@ public class RunningEventRequestDTOTest {
     @Test
     public void shouldCreateValidDTO() {
         // Given
-        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        String futureTime = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         RunningEventRequestDTO dto = RunningEventRequestDTO.builder()
                 .name("Test Marathon")
@@ -67,7 +70,8 @@ public class RunningEventRequestDTOTest {
     @Test
     public void shouldFailValidationWithTooLongFields() {
         // Given
-        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        String futureTime = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         RunningEventRequestDTO dto = RunningEventRequestDTO.builder()
                 .name("A".repeat(101)) // Too long name
@@ -99,7 +103,8 @@ public class RunningEventRequestDTOTest {
     @Test
     public void shouldWorkWithEmptyOptionalFields() {
         // Given
-        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        String futureTime = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         RunningEventRequestDTO dto = RunningEventRequestDTO.builder()
                 .name("Test Marathon")

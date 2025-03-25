@@ -18,7 +18,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"name\": \"Summer Marathon 2025\",\n    \"dateTime\": {{futureDate}},\n    \"location\": \"Central Park, New York\",\n    \"description\": \"Annual summer marathon through the scenic Central Park. Open to runners of all levels.\",\n    \"furtherInformation\": \"Water stations every 2 miles. Registration closes 2 weeks before the event.\"\n}"
+          "raw": "{\n    \"name\": \"Summer Marathon 2025\",\n    \"dateTime\": \"{{futureDate}}\",\n    \"location\": \"Central Park, New York\",\n    \"description\": \"Annual summer marathon through the scenic Central Park. Open to runners of all levels.\",\n    \"furtherInformation\": \"Water stations every 2 miles. Registration closes 2 weeks before the event.\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/events",
@@ -108,7 +108,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/events?startDate={{startDate}}&endDate={{endDate}}",
+          "raw": "{{baseUrl}}/api/events?fromDate={{startDate}}&toDate={{endDate}}",
           "host": [
             "{{baseUrl}}"
           ],
@@ -118,11 +118,11 @@
           ],
           "query": [
             {
-              "key": "startDate",
+              "key": "fromDate",
               "value": "{{startDate}}"
             },
             {
-              "key": "endDate",
+              "key": "toDate",
               "value": "{{endDate}}"
             }
           ]
@@ -172,7 +172,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"name\": \"Updated Marathon 2025\",\n    \"dateTime\": {{futureDate}},\n    \"location\": \"Updated Location\",\n    \"description\": \"This is an updated description for the event.\",\n    \"furtherInformation\": \"Updated further information about the event.\"\n}"
+          "raw": "{\n    \"name\": \"Updated Marathon 2025\",\n    \"dateTime\": \"{{futureDate}}\",\n    \"location\": \"Updated Location\",\n    \"description\": \"This is an updated description for the event.\",\n    \"furtherInformation\": \"Updated further information about the event.\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/events/{{eventId}}",
@@ -221,7 +221,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"name\": \"\",\n    \"dateTime\": null,\n    \"location\": \"\",\n    \"description\": \"This event is missing required fields and should fail validation.\"\n}"
+          "raw": "{\n    \"name\": \"\",\n    \"dateTime\": \"\",\n    \"location\": \"\",\n    \"description\": \"This event is missing required fields and should fail validation.\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/events",
@@ -236,6 +236,62 @@
         "description": "Tests API validation by attempting to create an invalid running event (missing required fields)."
       },
       "response": []
+    },
+    {
+      "name": "Create Event with Invalid Date Format",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Event with Bad Date\",\n    \"dateTime\": \"2025/04/30T14:30\",\n    \"location\": \"Test Location\",\n    \"description\": \"This event has an invalid date format and should fail validation.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/events",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events"
+          ]
+        },
+        "description": "Tests API validation by attempting to create an event with an invalid date format."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Event with Past Date",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Event with Past Date\",\n    \"dateTime\": \"{{pastDate}}\",\n    \"location\": \"Test Location\",\n    \"description\": \"This event has a date in the past and should fail validation.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/events",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "events"
+          ]
+        },
+        "description": "Tests API validation by attempting to create an event with a date in the past."
+      },
+      "response": []
     }
   ],
   "event": [
@@ -244,20 +300,41 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "// Compute future date (30 days from now) for valid event creation",
+          "// Generate formatted date strings for testing",
+          "",
+          "// Future date (30 days from now)",
           "const futureDate = new Date();",
           "futureDate.setDate(futureDate.getDate() + 30);",
-          "pm.environment.set('futureDate', futureDate.getTime());",
+          "const futureDateFormatted = formatDate(futureDate);",
+          "pm.environment.set('futureDate', futureDateFormatted);",
           "",
-          "// Compute date range for filtering (next 90 days)",
+          "// Past date (30 days ago)",
+          "const pastDate = new Date();",
+          "pastDate.setDate(pastDate.getDate() - 30);",
+          "const pastDateFormatted = formatDate(pastDate);",
+          "pm.environment.set('pastDate', pastDateFormatted);",
+          "",
+          "// Current date (for start of date range)",
           "const now = new Date();",
-          "const startDate = now.getTime();",
+          "const startDateFormatted = formatDate(now);",
+          "pm.environment.set('startDate', startDateFormatted);",
           "",
+          "// End date (90 days from now)",
           "const endDate = new Date();",
           "endDate.setDate(endDate.getDate() + 90);",
+          "const endDateFormatted = formatDate(endDate);",
+          "pm.environment.set('endDate', endDateFormatted);",
           "",
-          "pm.environment.set('startDate', startDate);",
-          "pm.environment.set('endDate', endDate.getTime());"
+          "// Helper function to format date as yyyy-MM-ddTHH:mm",
+          "function formatDate(date) {",
+          "    const year = date.getFullYear();",
+          "    const month = String(date.getMonth() + 1).padStart(2, '0');",
+          "    const day = String(date.getDate()).padStart(2, '0');",
+          "    const hours = String(date.getHours()).padStart(2, '0');",
+          "    const minutes = String(date.getMinutes()).padStart(2, '0');",
+          "    ",
+          "    return `${year}-${month}-${day}T${hours}:${minutes}`;",
+          "}"
         ]
       }
     },

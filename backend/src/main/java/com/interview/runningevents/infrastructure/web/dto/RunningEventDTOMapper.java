@@ -1,8 +1,5 @@
 package com.interview.runningevents.infrastructure.web.dto;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,15 +9,13 @@ import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.application.model.SortDirection;
 import com.interview.runningevents.domain.model.RunningEvent;
+import com.interview.runningevents.infrastructure.web.util.DateTimeConverter;
 
 /**
  * Mapper for converting between RunningEvent domain objects and DTOs.
  */
 @Component
 public class RunningEventDTOMapper {
-
-    private static final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
 
     /**
      * Converts a domain RunningEvent to a RunningEventResponseDTO.
@@ -33,20 +28,16 @@ public class RunningEventDTOMapper {
             return null;
         }
 
-        String formattedDateTime = null;
-        if (event.getDateTime() != null) {
-            Instant instant = Instant.ofEpochMilli(event.getDateTime());
-            formattedDateTime = DATE_FORMATTER.format(instant);
-        }
+        // Convert timestamp to formatted date string
+        String formattedDateTime = DateTimeConverter.fromTimestamp(event.getDateTime());
 
         return RunningEventResponseDTO.builder()
                 .id(event.getId())
                 .name(event.getName())
-                .dateTime(event.getDateTime())
+                .dateTime(formattedDateTime)
                 .location(event.getLocation())
                 .description(event.getDescription())
                 .furtherInformation(event.getFurtherInformation())
-                .formattedDateTime(formattedDateTime)
                 .build();
     }
 
@@ -77,9 +68,12 @@ public class RunningEventDTOMapper {
             return null;
         }
 
+        // Convert date string to timestamp
+        Long timestamp = DateTimeConverter.toTimestamp(requestDTO.getDateTime());
+
         return RunningEvent.builder()
                 .name(requestDTO.getName())
-                .dateTime(requestDTO.getDateTime())
+                .dateTime(timestamp)
                 .location(requestDTO.getLocation())
                 .description(requestDTO.getDescription())
                 .furtherInformation(requestDTO.getFurtherInformation())
@@ -99,8 +93,11 @@ public class RunningEventDTOMapper {
             return existingEvent;
         }
 
+        // Convert date string to timestamp
+        Long timestamp = DateTimeConverter.toTimestamp(requestDTO.getDateTime());
+
         existingEvent.setName(requestDTO.getName());
-        existingEvent.setDateTime(requestDTO.getDateTime());
+        existingEvent.setDateTime(timestamp);
         existingEvent.setLocation(requestDTO.getLocation());
         existingEvent.setDescription(requestDTO.getDescription());
         existingEvent.setFurtherInformation(requestDTO.getFurtherInformation());
@@ -119,12 +116,16 @@ public class RunningEventDTOMapper {
             return RunningEventQuery.builder().build();
         }
 
+        // Convert date strings to timestamps if present
+        Long fromTimestamp = DateTimeConverter.toTimestamp(queryDTO.getFromDate());
+        Long toTimestamp = DateTimeConverter.toTimestamp(queryDTO.getToDate());
+
         // Parse the sort direction string to enum
         SortDirection sortDirection = SortDirection.fromString(queryDTO.getSortDirection());
 
         return RunningEventQuery.builder()
-                .fromDate(queryDTO.getFromDate())
-                .toDate(queryDTO.getToDate())
+                .fromDate(fromTimestamp)
+                .toDate(toTimestamp)
                 .page(queryDTO.getPage() != null ? queryDTO.getPage() : 0)
                 .pageSize(queryDTO.getPageSize() != null ? queryDTO.getPageSize() : 20)
                 .sortBy(queryDTO.getSortBy() != null ? queryDTO.getSortBy() : "dateTime")

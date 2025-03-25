@@ -16,11 +16,8 @@ public class RunningEventResponseDTO {
 
     private Long id;
     private String name;
-    private Long dateTime;
+    private String dateTime;
     private String location;
     private String description;
     private String furtherInformation;
-
-    // Additional fields that could be useful in responses
-    private String formattedDateTime;
 }

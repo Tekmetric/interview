@@ -3,8 +3,6 @@ package com.interview.runningevents.infrastructure.web.dto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
@@ -18,12 +16,11 @@ import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.model.RunningEventQuery;
 import com.interview.runningevents.application.model.SortDirection;
 import com.interview.runningevents.domain.model.RunningEvent;
+import com.interview.runningevents.infrastructure.web.util.DateTimeConverter;
 
 public class RunningEventDTOMapperTest {
 
     private RunningEventDTOMapper mapper;
-    private static final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
 
     @BeforeEach
     public void setUp() {
@@ -34,7 +31,6 @@ public class RunningEventDTOMapperTest {
     public void shouldMapDomainToResponseDTO() {
         // Given
         Instant eventTime = Instant.now().plus(30, ChronoUnit.DAYS);
-        String expectedFormattedTime = DATE_FORMATTER.format(eventTime);
 
         RunningEvent event = RunningEvent.builder()
                 .id(1L)
@@ -52,11 +48,10 @@ public class RunningEventDTOMapperTest {
         assertThat(dto).isNotNull();
         assertThat(dto.getId()).isEqualTo(1L);
         assertThat(dto.getName()).isEqualTo("Test Marathon");
-        assertThat(dto.getDateTime()).isEqualTo(eventTime.toEpochMilli());
+        assertThat(dto.getDateTime()).isEqualTo(DateTimeConverter.fromTimestamp(eventTime.toEpochMilli()));
         assertThat(dto.getLocation()).isEqualTo("Test Location");
         assertThat(dto.getDescription()).isEqualTo("Test Description");
         assertThat(dto.getFurtherInformation()).isEqualTo("Further Information");
-        assertThat(dto.getFormattedDateTime()).isEqualTo(expectedFormattedTime);
     }
 
     @Test
@@ -75,13 +70,13 @@ public class RunningEventDTOMapperTest {
         // Then
         assertThat(dto).isNotNull();
         assertThat(dto.getDateTime()).isNull();
-        assertThat(dto.getFormattedDateTime()).isNull();
     }
 
     @Test
     public void shouldMapRequestDTOToDomain() {
         // Given
-        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        String futureTime = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         RunningEventRequestDTO requestDTO = RunningEventRequestDTO.builder()
                 .name("Test Marathon")
@@ -98,7 +93,7 @@ public class RunningEventDTOMapperTest {
         assertThat(domain).isNotNull();
         assertThat(domain.getId()).isNull(); // ID should not be set when creating from DTO
         assertThat(domain.getName()).isEqualTo("Test Marathon");
-        assertThat(domain.getDateTime()).isEqualTo(futureTime);
+        assertThat(domain.getDateTime()).isEqualTo(DateTimeConverter.toTimestamp(futureTime));
         assertThat(domain.getLocation()).isEqualTo("Test Location");
         assertThat(domain.getDescription()).isEqualTo("Test Description");
         assertThat(domain.getFurtherInformation()).isEqualTo("Further Information");
@@ -107,7 +102,8 @@ public class RunningEventDTOMapperTest {
     @Test
     public void shouldUpdateDomainFromDTO() {
         // Given
-        Long futureTime = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        String futureTime = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         RunningEvent existingEvent = RunningEvent.builder()
                 .id(1L)
@@ -133,7 +129,7 @@ public class RunningEventDTOMapperTest {
         assertThat(updatedEvent).isNotNull();
         assertThat(updatedEvent.getId()).isEqualTo(1L); // ID should be preserved
         assertThat(updatedEvent.getName()).isEqualTo("Updated Name");
-        assertThat(updatedEvent.getDateTime()).isEqualTo(futureTime);
+        assertThat(updatedEvent.getDateTime()).isEqualTo(DateTimeConverter.toTimestamp(futureTime));
         assertThat(updatedEvent.getLocation()).isEqualTo("Updated Location");
         assertThat(updatedEvent.getDescription()).isEqualTo("Updated Description");
         assertThat(updatedEvent.getFurtherInformation()).isEqualTo("Updated Further Information");
@@ -172,8 +168,9 @@ public class RunningEventDTOMapperTest {
     @Test
     public void shouldMapQueryDTOToQueryModel() {
         // Given
-        Long fromDate = Instant.now().toEpochMilli();
-        Long toDate = Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli();
+        String fromDate = DateTimeConverter.fromTimestamp(Instant.now().toEpochMilli());
+        String toDate = DateTimeConverter.fromTimestamp(
+                Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         RunningEventQueryDTO queryDTO = RunningEventQueryDTO.builder()
                 .fromDate(fromDate)
@@ -189,8 +186,8 @@ public class RunningEventDTOMapperTest {
 
         // Then
         assertThat(queryModel).isNotNull();
-        assertThat(queryModel.getFromDate()).isEqualTo(fromDate);
-        assertThat(queryModel.getToDate()).isEqualTo(toDate);
+        assertThat(queryModel.getFromDate()).isEqualTo(DateTimeConverter.toTimestamp(fromDate));
+        assertThat(queryModel.getToDate()).isEqualTo(DateTimeConverter.toTimestamp(toDate));
         assertThat(queryModel.getPage()).isEqualTo(2);
         assertThat(queryModel.getPageSize()).isEqualTo(15);
         assertThat(queryModel.getSortBy()).isEqualTo("name");
@@ -201,8 +198,8 @@ public class RunningEventDTOMapperTest {
     public void shouldProvideDefaultValuesForQueryDTOWithNulls() {
         // Given
         RunningEventQueryDTO queryDTO = RunningEventQueryDTO.builder()
-                .fromDate(123L)
-                .toDate(456L)
+                .fromDate(DateTimeConverter.fromTimestamp(123456L))
+                .toDate(DateTimeConverter.fromTimestamp(789101L))
                 // Null page, pageSize, sortBy, and sortDirection
                 .build();
 
@@ -211,8 +208,8 @@ public class RunningEventDTOMapperTest {
 
         // Then
         assertThat(queryModel).isNotNull();
-        assertThat(queryModel.getFromDate()).isEqualTo(123L);
-        assertThat(queryModel.getToDate()).isEqualTo(456L);
+        assertThat(queryModel.getFromDate()).isEqualTo(120000L);
+        assertThat(queryModel.getToDate()).isEqualTo(780000L);
         assertThat(queryModel.getPage()).isEqualTo(0); // Default value
         assertThat(queryModel.getPageSize()).isEqualTo(20); // Default value
         assertThat(queryModel.getSortBy()).isEqualTo("dateTime"); // Default value

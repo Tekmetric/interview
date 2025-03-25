@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 public class RunningEventQueryDTO {
 
     /**
-     * Minimum date (Unix timestamp in milliseconds) for filtering events.
+     * Minimum date in format yyyy-MM-dd HH:mm for filtering events.
      */
-    private Long fromDate;
+    private String fromDate;
 
     /**
-     * Maximum date (Unix timestamp in milliseconds) for filtering events.
+     * Maximum date in format yyyy-MM-dd HH:mm for filtering events.
      */
-    private Long toDate;
+    private String toDate;
 
     /**
      * The page number (0-based) for pagination.

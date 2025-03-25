@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.interview.runningevents.application.exception.RunningEventNotFoundException;
-import com.interview.runningevents.application.exception.ValidationException;
 import com.interview.runningevents.application.model.PaginatedResult;
 import com.interview.runningevents.application.port.in.CreateRunningEventUseCase;
 import com.interview.runningevents.application.port.in.DeleteRunningEventUseCase;
@@ -29,6 +28,7 @@ import com.interview.runningevents.infrastructure.web.dto.RunningEventDTOMapper;
 import com.interview.runningevents.infrastructure.web.dto.RunningEventQueryDTO;
 import com.interview.runningevents.infrastructure.web.dto.RunningEventRequestDTO;
 import com.interview.runningevents.infrastructure.web.dto.RunningEventResponseDTO;
+import com.interview.runningevents.infrastructure.web.validation.DateValidator;
 
 import jakarta.validation.Valid;
 
@@ -81,6 +81,9 @@ public class RunningEventController {
     public ResponseEntity<RunningEventResponseDTO> createRunningEvent(
             @Valid @RequestBody RunningEventRequestDTO requestDTO) {
 
+        // Validate that the date is in the future
+        DateValidator.validateFutureDate(requestDTO.getDateTime());
+
         // Convert DTO to domain model
         RunningEvent eventToCreate = dtoMapper.toDomain(requestDTO);
 
@@ -119,19 +122,18 @@ public class RunningEventController {
     /**
      * Lists running events with optional filtering and pagination.
      *
-     * @param startDate Optional minimum date for filtering events (inclusive)
-     * @param endDate Optional maximum date for filtering events (inclusive)
+     * @param fromDate Optional minimum date for filtering events in format yyyy-MM-dd HH:mm
+     * @param toDate Optional maximum date for filtering events in format yyyy-MM-dd HH:mm
      * @param page Page number (0-based, defaults to 0)
      * @param size Page size (defaults to 20)
      * @param sortBy Field to sort by (id, name, or dateTime; defaults to "dateTime")
      * @param sortDir Sort direction ("ASC" or "DESC", defaults to "ASC")
      * @return HTTP 200 OK with paginated list of events
-     * @throws ValidationException if sort parameters are invalid
      */
     @GetMapping
     public ResponseEntity<PaginatedResponseDTO<RunningEventResponseDTO>> listRunningEvents(
-            @RequestParam(required = false) Long startDate,
-            @RequestParam(required = false) Long endDate,
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "20") Integer size,
             @RequestParam(required = false, defaultValue = "dateTime") String sortBy,
@@ -141,10 +143,13 @@ public class RunningEventController {
         QueryParamValidator.validateSortField(sortBy);
         QueryParamValidator.validateSortDirection(sortDir);
 
+        // Validate date range if provided
+        DateValidator.validateDateRange(fromDate, toDate);
+
         // Create query DTO from request parameters
         RunningEventQueryDTO queryDTO = RunningEventQueryDTO.builder()
-                .fromDate(startDate)
-                .toDate(endDate)
+                .fromDate(fromDate)
+                .toDate(toDate)
                 .page(page)
                 .pageSize(size)
                 .sortBy(sortBy)
@@ -174,6 +179,9 @@ public class RunningEventController {
     @PutMapping("/{id}")
     public ResponseEntity<RunningEventResponseDTO> updateRunningEvent(
             @PathVariable Long id, @Valid @RequestBody RunningEventRequestDTO requestDTO) {
+
+        // Validate that the date is in the future
+        DateValidator.validateFutureDate(requestDTO.getDateTime());
 
         // First check if the event exists
         getRunningEventUseCase.getRunningEventById(id).orElseThrow(() -> new RunningEventNotFoundException(id));

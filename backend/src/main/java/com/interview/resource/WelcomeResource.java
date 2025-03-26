@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class WelcomeResource {
@@ -27,8 +28,30 @@ public class WelcomeResource {
         return customerService.getAllCustomers();
     }
 
+    @GetMapping("/customer/{id}")
+    public ResponseEntity<CustomerDTO> getEmployeeById(@PathVariable Long id) {
+        Optional<CustomerDTO> employee = customerService.getCustomerById(id);
+        return employee.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/customer")
     public CustomerDTO createCustomer( @RequestBody CustomerDTO customerDTO) {
         return customerService.saveCustomer(customerDTO);
+    }
+
+    @PutMapping("/customer/{id}")
+    public ResponseEntity<CustomerDTO> updateEmployee(@PathVariable Long id, @RequestBody CustomerDTO employeeDTO) {
+        try {
+            CustomerDTO updatedEmployee = customerService.updateCustomer(id, employeeDTO);
+            return ResponseEntity.ok(updatedEmployee);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/customer/{id}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+        customerService.deleteCustomer(id);
+        return ResponseEntity.noContent().build();
     }
 }

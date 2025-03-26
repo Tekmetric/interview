@@ -1,4 +1,4 @@
 -- Provide SQL scripts here
-INSERT INTO customer (id, email) VALUES
- (1, 'john.doe@example.com'),
- (2, 'foo.bar@example.com');
+INSERT INTO customer (email) VALUES
+ ( 'john.doe@example.com'),
+ ( 'foo.bar@example.com');

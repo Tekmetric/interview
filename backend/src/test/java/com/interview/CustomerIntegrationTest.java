@@ -1,7 +1,6 @@
 package com.interview;
 
 import com.interview.model.CustomerDTO;
-import com.interview.resource.WelcomeResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

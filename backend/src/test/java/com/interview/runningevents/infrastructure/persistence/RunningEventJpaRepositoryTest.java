@@ -13,9 +13,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 @DataJpaTest
 @ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class RunningEventJpaRepositoryTest {
 
     @Autowired

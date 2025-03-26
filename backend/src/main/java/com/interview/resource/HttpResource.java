@@ -36,9 +36,9 @@ public class HttpResource {
     @Operation(summary = "Retrieve a customer by ID.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully updated customer record"), @ApiResponse(code = 404, message = "Customer was not found.")})
     @GetMapping("/customer/{id}")
-    public ResponseEntity<CustomerDTO> getEmployeeById(@PathVariable Long id) {
-        Optional<CustomerDTO> employee = customerService.getCustomerById(id);
-        return employee.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
+        Optional<CustomerDTO> customer = customerService.getCustomerById(id);
+        return customer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Operation(summary = "Create a new customer record.")
@@ -50,10 +50,10 @@ public class HttpResource {
     @Operation(summary = "Update a customer record by ID.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully updated customer record"), @ApiResponse(code = 404, message = "Customer was not found.")})
     @PutMapping("/customer/{id}")
-    public ResponseEntity<CustomerDTO> updateEmployee(@PathVariable Long id, @RequestBody CustomerDTO employeeDTO) {
+    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
         try {
-            CustomerDTO updatedEmployee = customerService.updateCustomer(id, employeeDTO);
-            return ResponseEntity.ok(updatedEmployee);
+            CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDTO);
+            return ResponseEntity.ok(updatedCustomer);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -61,7 +61,7 @@ public class HttpResource {
 
     @Operation(summary = "Delete a customer by Id.")
     @DeleteMapping("/customer/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
         return ResponseEntity.noContent().build();
     }

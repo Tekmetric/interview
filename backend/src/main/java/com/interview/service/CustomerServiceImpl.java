@@ -35,18 +35,18 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public CustomerDTO saveCustomer(CustomerDTO employeeDTO) {
-        Customer employee = convertToEntity(employeeDTO);
-        Customer savedEmployee = customerRepository.save(employee);
-        return convertToDTO(savedEmployee);
+    public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
+        Customer customer = convertToEntity(customerDTO);
+        Customer savedCustomer = customerRepository.save(customer);
+        return convertToDTO(savedCustomer);
     }
 
     @Override
-    public CustomerDTO updateCustomer(Long id, CustomerDTO employeeDTO) {
+    public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
         Customer customer = customerRepository.findById(id).orElseThrow();
-        customer.setEmail(employeeDTO.getEmail());
-        Customer updatedEmployee = customerRepository.save(customer);
-        return convertToDTO(updatedEmployee);
+        customer.setEmail(customerDTO.getEmail());
+        Customer updatedCustomer = customerRepository.save(customer);
+        return convertToDTO(updatedCustomer);
     }
 
     @Override
@@ -59,9 +59,9 @@ public class CustomerServiceImpl implements CustomerService{
         return new CustomerDTO(customer.getId(), customer.getEmail());
     }
 
-    private Customer convertToEntity(CustomerDTO employeeDTO) {
+    private Customer convertToEntity(CustomerDTO customerDTO) {
         Customer customer = new Customer();
-        customer.setEmail(employeeDTO.getEmail());
+        customer.setEmail(customerDTO.getEmail());
         return customer;
     }
 }

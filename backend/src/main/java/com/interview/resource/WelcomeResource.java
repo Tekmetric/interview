@@ -28,13 +28,14 @@ public class WelcomeResource {
     }
 
     @Operation(summary = "List all customers in data store.")
-    @ApiResponses(value = { @ApiResponse( code = 200, message = "Successfully listed all customers")})
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully listed all customers")})
     @GetMapping("/customers")
     public List<CustomerDTO> getAllCustomers() {
         return customerService.getAllCustomers();
     }
 
     @Operation(summary = "Retrieve a customer by ID.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully updated customer record"), @ApiResponse(code = 404, message = "Customer was not found.")})
     @GetMapping("/customer/{id}")
     public ResponseEntity<CustomerDTO> getEmployeeById(@PathVariable Long id) {
         Optional<CustomerDTO> employee = customerService.getCustomerById(id);
@@ -43,11 +44,12 @@ public class WelcomeResource {
 
     @Operation(summary = "Create a new customer record.")
     @PostMapping("/customer")
-    public CustomerDTO createCustomer( @RequestBody CustomerDTO customerDTO) {
+    public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
         return customerService.saveCustomer(customerDTO);
     }
 
     @Operation(summary = "Update a customer record by ID.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully updated customer record"), @ApiResponse(code = 404, message = "Customer was not found.")})
     @PutMapping("/customer/{id}")
     public ResponseEntity<CustomerDTO> updateEmployee(@PathVariable Long id, @RequestBody CustomerDTO employeeDTO) {
         try {

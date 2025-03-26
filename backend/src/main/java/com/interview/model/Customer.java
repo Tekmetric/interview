@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-
+/**
+ * Represents the Customer entity in the database.
+ * The data model could include a variety of other attributes, such as first/last name, phone number address, as well
+ * as relations to other tables (eg orders).
+ */
 @Entity
 @Table(name = "customer", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
 public class Customer {

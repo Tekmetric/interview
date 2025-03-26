@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The service class implements the business logic for customer CRUD operations. The data model is not exposed beyond
+ * this service layer, to ensure the HTTP controller only handles requests and responses.
+ */
 @Service
 public class CustomerServiceImpl implements CustomerService{
 

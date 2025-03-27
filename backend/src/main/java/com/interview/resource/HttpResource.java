@@ -5,6 +5,9 @@ import com.interview.service.CustomerService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +18,7 @@ import java.util.Optional;
 public class HttpResource {
 
     private final CustomerService customerService;
+    Logger logger = LoggerFactory.getLogger(HttpResource.class);
 
     public HttpResource(CustomerService customerService) {
         this.customerService = customerService;
@@ -43,8 +47,13 @@ public class HttpResource {
 
     @Operation(summary = "Create a new customer record.")
     @PostMapping("/customer")
-    public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
-        return customerService.saveCustomer(customerDTO);
+    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO customerDTO) {
+        try {
+            return ResponseEntity.ok(customerService.saveCustomer(customerDTO));
+        } catch (Exception e) {
+            logger.error("Could not add customer", e);
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @Operation(summary = "Update a customer record by ID.")
@@ -54,6 +63,9 @@ public class HttpResource {
         try {
             CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDTO);
             return ResponseEntity.ok(updatedCustomer);
+        } catch (DataIntegrityViolationException exception) {
+            logger.error("Cannot update customer due to not unique keys " + customerDTO, exception);
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }

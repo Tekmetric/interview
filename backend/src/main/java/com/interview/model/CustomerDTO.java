@@ -13,28 +13,26 @@ import lombok.Setter;
  * to play nice this time with IDE)
  */
 @Data
+@Getter @Setter
 public class CustomerDTO {
     private Long id;
     private String email;
+    private String name;
+    private String address;
 
-    public CustomerDTO(Long id, String email) {
+    public CustomerDTO() {}
+
+    public CustomerDTO(Long id, String email, String name, String address) {
         this.id = id;
         this.email = email;
+        this.name = name;
+        this.address = address;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
+    public CustomerDTO(String email, String name, String address) {
         this.email = email;
+        this.name = name;
+        this.address = address;
     }
+
 }

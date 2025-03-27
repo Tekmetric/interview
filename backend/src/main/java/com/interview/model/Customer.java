@@ -10,27 +10,19 @@ import lombok.Setter;
  * as relations to other tables (eg orders).
  */
 @Entity
-@Table(name = "customer", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
+@Table(name = "customer", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"}), @UniqueConstraint(columnNames = "email")})
+@Getter
+@Setter
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private Long id;
-
+    @Column(nullable = false)
     private String email;
+    @Column
+    private String name;
+    @Column
+    private String address;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

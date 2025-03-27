@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * this service layer, to ensure the HTTP controller only handles requests and responses.
  */
 @Service
-public class CustomerServiceImpl implements CustomerService{
+public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
 
@@ -56,12 +56,15 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     private CustomerDTO convertToDTO(Customer customer) {
-        return new CustomerDTO(customer.getId(), customer.getEmail());
+        return new CustomerDTO(customer.getId(), customer.getEmail(), customer.getName(), customer.getAddress());
     }
 
     private Customer convertToEntity(CustomerDTO customerDTO) {
         Customer customer = new Customer();
         customer.setEmail(customerDTO.getEmail());
+        customer.setName(customerDTO.getName());
+        customer.setAddress(customerDTO.getAddress());
+        customer.setId(customerDTO.getId());
         return customer;
     }
 }

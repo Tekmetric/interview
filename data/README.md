@@ -89,7 +89,7 @@ pytest tests/test_fetch_neo.py
 
 ## Data Structure
 
-The pipeline creates the following directory structure:
+The pipeline creates the following directory structure within the current folder:
 
 ```
 data/
@@ -140,7 +140,3 @@ The pipeline is designed to be modular and extensible:
 - **Missing Files**: If the verification script reports missing files, check that the pipeline script completed successfully and that the correct directory structure exists.
 - **API Key Issues**: Ensure your API key is correctly set in either the config file or environment variable.
 
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.

@@ -2,3 +2,5 @@ venv/
 data/
 config.json
 scratch-paper.txt
+src/__pycache__/
+tests/__pycache__/

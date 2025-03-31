@@ -1,0 +1,11 @@
+pandas
+pyarrow
+requests
+numpy
+torch
+matplotlib
+scikit-learn
+tqdm
+jupyterlab
+seaborn
+jupyter_server

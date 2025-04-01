@@ -17,21 +17,24 @@ import lombok.Setter;
 public class CustomerDTO {
     private Long id;
     private String email;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String address;
 
     public CustomerDTO() {}
 
-    public CustomerDTO(Long id, String email, String name, String address) {
+    public CustomerDTO(Long id, String email, String firstName, String lastName, String address) {
         this.id = id;
         this.email = email;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.address = address;
     }
 
-    public CustomerDTO(String email, String name, String address) {
+    public CustomerDTO(String email, String firstName, String lastName, String address) {
         this.email = email;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.address = address;
     }
 

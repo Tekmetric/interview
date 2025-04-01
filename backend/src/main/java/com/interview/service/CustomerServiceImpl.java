@@ -45,6 +45,10 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
         Customer customer = customerRepository.findById(id).orElseThrow();
         customer.setEmail(customerDTO.getEmail());
+        customer.setFirstName(customerDTO.getFirstName());
+        customer.setLastName(customerDTO.getLastName());
+        customer.setAddress(customerDTO.getAddress());
+
         Customer updatedCustomer = customerRepository.save(customer);
         return convertToDTO(updatedCustomer);
     }
@@ -56,13 +60,14 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private CustomerDTO convertToDTO(Customer customer) {
-        return new CustomerDTO(customer.getId(), customer.getEmail(), customer.getName(), customer.getAddress());
+        return new CustomerDTO(customer.getId(), customer.getEmail(), customer.getFirstName(), customer.getLastName(), customer.getAddress());
     }
 
     private Customer convertToEntity(CustomerDTO customerDTO) {
         Customer customer = new Customer();
         customer.setEmail(customerDTO.getEmail());
-        customer.setName(customerDTO.getName());
+        customer.setFirstName(customerDTO.getFirstName());
+        customer.setLastName(customerDTO.getLastName());
         customer.setAddress(customerDTO.getAddress());
         customer.setId(customerDTO.getId());
         return customer;

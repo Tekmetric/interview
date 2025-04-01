@@ -10,7 +10,7 @@ import lombok.Setter;
  * as relations to other tables (eg orders).
  */
 @Entity
-@Table(name = "customer", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"}), @UniqueConstraint(columnNames = "email")})
+@Table(name = "customer", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 @Getter
 @Setter
 public class Customer {
@@ -20,8 +20,10 @@ public class Customer {
     private Long id;
     @Column(nullable = false)
     private String email;
-    @Column
-    private String name;
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
     @Column
     private String address;
 

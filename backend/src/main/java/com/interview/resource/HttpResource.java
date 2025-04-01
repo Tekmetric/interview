@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +34,17 @@ public class HttpResource {
 
     @Operation(summary = "List all customers in data store.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully listed all customers")})
-    @GetMapping("/customers")
+    @GetMapping("/customers/all")
     public List<CustomerDTO> getAllCustomers() {
         return customerService.getAllCustomers();
+    }
+
+    @Operation(summary = "Paginated endpoint for retrieving customers")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully listed all customers")})
+    @GetMapping("/customers")
+    public Page<CustomerDTO> getCustomers(@RequestParam(defaultValue = "0", name = "page") int page,
+                                       @RequestParam(defaultValue = "10", name = "size") int size) {
+        return customerService.getCustomers(page, size);
     }
 
     @Operation(summary = "Retrieve a customer by ID.")

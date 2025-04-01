@@ -37,3 +37,6 @@ This is an open ended exercise for you to showcase what you know! We encourage y
 
 ### Submitting your coding exercise
 Once you have finished the coding exercise please create a PR into Tekmetric/interview
+
+### Implementation Notes
+Using a standard Spring Boot 3-layer architecture: Controller (HttpResource class), Service (CustomerService) and Repository (CustomerRepository)

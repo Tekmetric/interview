@@ -25,7 +25,7 @@ public class CustomerIntegrationTest {
     public void testCreate() {
         CustomerDTO newResource = new CustomerDTO("news@cnbsc.com", "Mary Cooper", "34 SE Highway, Holliston, MA");
         ResponseEntity<CustomerDTO> response = restTemplate.postForEntity("http://localhost:" + port + "/customer", newResource, CustomerDTO.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getId());
     }
@@ -34,7 +34,7 @@ public class CustomerIntegrationTest {
     public void testCreateFailDuplicateEmail() {
         CustomerDTO customer1 = new CustomerDTO("mekanic@auto.com", "Bob Cooper", "34 SE Highway, Holliston, MA");
         ResponseEntity<CustomerDTO> response = restTemplate.postForEntity("http://localhost:" + port + "/customer", customer1, CustomerDTO.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getId());
 

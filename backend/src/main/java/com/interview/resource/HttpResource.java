@@ -7,18 +7,19 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
 public class HttpResource {
 
     private final CustomerService customerService;
-    Logger logger = LoggerFactory.getLogger(HttpResource.class);
+    private final Logger logger = LoggerFactory.getLogger(HttpResource.class);
 
     public HttpResource(CustomerService customerService) {
         this.customerService = customerService;
@@ -46,10 +47,11 @@ public class HttpResource {
     }
 
     @Operation(summary = "Create a new customer record.")
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Successfully created customer record"), @ApiResponse(code = 400, message = "Bad request.")})
     @PostMapping("/customer")
     public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO customerDTO) {
         try {
-            return ResponseEntity.ok(customerService.saveCustomer(customerDTO));
+            return new ResponseEntity<>(customerService.saveCustomer(customerDTO), HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error("Could not add customer", e);
             return ResponseEntity.badRequest().build();
@@ -63,11 +65,11 @@ public class HttpResource {
         try {
             CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDTO);
             return ResponseEntity.ok(updatedCustomer);
-        } catch (DataIntegrityViolationException exception) {
-            logger.error("Cannot update customer due to not unique keys " + customerDTO, exception);
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
+        } catch (Exception exception) {             //including duplicate key - DataIntegrityViolationException
+            logger.error("Cannot update customer due to bad request " + customerDTO, exception);
+            return ResponseEntity.badRequest().build();
         }
     }
 

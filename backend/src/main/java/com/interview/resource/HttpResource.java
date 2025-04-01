@@ -68,7 +68,7 @@ public class HttpResource {
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception exception) {             //including duplicate key - DataIntegrityViolationException
-            logger.error("Cannot update customer due to bad request " + customerDTO, exception);
+            logger.error("Cannot update customer due to bad request {}", customerDTO, exception);
             return ResponseEntity.badRequest().build();
         }
     }

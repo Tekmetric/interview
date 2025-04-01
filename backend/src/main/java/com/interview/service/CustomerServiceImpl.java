@@ -6,6 +6,7 @@ import com.interview.repository.CustomerRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,8 +34,18 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Page<CustomerDTO> getCustomers(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<CustomerDTO> getCustomers(int page, int size, String sortBy, String sortDirection) {
+
+        Sort sort = Sort.by(Sort.Order.by(sortBy));
+
+        // If descending order is specified, we reverse the sort direction
+        sort = switch (sortDirection.toLowerCase()) {
+            case "asc" -> sort.ascending();
+            case "desc" -> sort.descending();
+            default -> sort.ascending();
+        };
+
+        Pageable pageable = PageRequest.of(page, size, sort);
         return customerRepository.findAll(pageable).map(this::convertToDTO);
     }
 

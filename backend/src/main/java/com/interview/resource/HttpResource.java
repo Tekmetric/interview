@@ -40,11 +40,13 @@ public class HttpResource {
     }
 
     @Operation(summary = "Paginated endpoint for retrieving customers")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully listed all customers")})
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully listed the requested page for customers.")})
     @GetMapping("/customers")
     public Page<CustomerDTO> getCustomers(@RequestParam(defaultValue = "0", name = "page") int page,
-                                       @RequestParam(defaultValue = "10", name = "size") int size) {
-        return customerService.getCustomers(page, size);
+                                          @RequestParam(defaultValue = "10", name = "size") int size,
+                                          @RequestParam(defaultValue = "email", name = "sortBy") String sortBy,
+                                          @RequestParam(defaultValue = "asc", name = "direction") String sortDirection) {
+        return customerService.getCustomers(page, size, sortBy, sortDirection);
     }
 
     @Operation(summary = "Retrieve a customer by ID.")

@@ -1,5 +1,36 @@
 # Java Spring Boot API Coding Exercise
 
+
+### Implementation Notes
+#### Application Architecture
+This application follows the Standard 3-Layer Architecture in Spring Boot:
+
+Controller Layer: Handles incoming HTTP requests and returns responses. It maps HTTP requests to service methods.
+
+Service Layer: Contains the business logic. It is responsible for processing the data and interacting with the repository layer.
+
+Repository/Data Layer: Manages database operations using Spring Data JPA to persist and retrieve entities.
+
+#### Key Features:
+DTOs for Separation of Concerns: We use DTOs (Data Transfer Objects) to decouple the domain model (entities) from the API layer. This allows both the internal data model and the external-facing API to evolve independently without tight coupling.
+
+Database Initialization Script: A script is provided to initialize the database with predefined data and enforce data integrity by setting uniqueness constraints on keys to maintain consistent data.
+
+Unit and Integration Testing:
+
+Unit Tests are written for the service layer, using Mockito for mocking database interactions, ensuring business logic works as expected.
+
+Integration Tests verify the correctness of API endpoints by testing the controller and service layers in conjunction.
+
+OpenAPI Documentation (Swagger): The API is documented using Swagger for easy visualization of available endpoints, parameters, and responses. This makes the API easier to consume and maintain.
+Available at http://localhost:8080/swagger-ui/index.html
+
+Sorted & Paginated Endpoint: A sorted and paginated endpoint is provided for entity retrieval, allowing clients to query large datasets efficiently and with flexibility in sorting.
+GET customers/
+
+Actuator for Health & Metrics: The Spring Boot Actuator is included for monitoring the application's health and providing essential metrics. This ensures the application is running smoothly and provides insights into its performance.
+GET localhost:8080/actuator/metrics
+
 ## Steps to get started:
 
 #### Prerequisites
@@ -37,6 +68,3 @@ This is an open ended exercise for you to showcase what you know! We encourage y
 
 ### Submitting your coding exercise
 Once you have finished the coding exercise please create a PR into Tekmetric/interview
-
-### Implementation Notes
-Using a standard Spring Boot 3-layer architecture: Controller (HttpResource class), Service (CustomerService) and Repository (CustomerRepository)

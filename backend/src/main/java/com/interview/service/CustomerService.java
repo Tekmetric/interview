@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface CustomerService {
 
     List<CustomerDTO> getAllCustomers();
-    Page<CustomerDTO> getCustomers(int page, int size);
+    Page<CustomerDTO> getCustomers(int page, int size, String sortBy, String sortDirection);
     Optional<CustomerDTO> getCustomerById(Long id);
     CustomerDTO saveCustomer(CustomerDTO customerDTO);
     CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO);

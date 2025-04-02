@@ -3,6 +3,9 @@ package com.interview.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +21,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "customer", uniqueConstraints = {@UniqueConstraint(columnNames = "email")}, indexes = @Index(name = "birth_year_idx", columnList = "birth_year"))
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 public class Customer {
@@ -35,5 +39,11 @@ public class Customer {
     private String address;
     @Column(name = "birth_year")
     private Short birthYear;
+    @CreatedDate
+    @Column(nullable = false, updatable = false, name = "created_at")
+    private LocalDateTime createdAt;
+    @LastModifiedDate
+    @Column(name = "last_modified_at")
+    private LocalDateTime lastModifiedAt;
 
 }

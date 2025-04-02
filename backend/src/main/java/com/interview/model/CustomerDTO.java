@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
  * Data transfer object that maps the model stored in the database with the representation used by the web endpoints.
  * Having a separate entity model and an endpoint model decouples the application layers (storage versus presentation interface)
@@ -21,16 +23,20 @@ public class CustomerDTO {
     private String lastName;
     private String address;
     private Short birthYear;
+    private LocalDateTime lastModifiedAt;
+    private LocalDateTime createdAt;
 
     public CustomerDTO() {}
 
-    public CustomerDTO(Long id, String email, String firstName, String lastName, String address, Short birthYear) {
+    public CustomerDTO(Long id, String email, String firstName, String lastName, String address, Short birthYear, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.birthYear = birthYear;
+        this.createdAt = createdAt;
+        this.lastModifiedAt = lastModifiedAt;
     }
 
     public CustomerDTO(String email, String firstName, String lastName, String address, Short birthYear) {

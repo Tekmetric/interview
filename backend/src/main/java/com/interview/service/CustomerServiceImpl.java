@@ -82,7 +82,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private CustomerDTO convertToDTO(Customer customer) {
-        return new CustomerDTO(customer.getId(), customer.getEmail(), customer.getFirstName(), customer.getLastName(), customer.getAddress(), customer.getBirthYear());
+        return new CustomerDTO(customer.getId(), customer.getEmail(), customer.getFirstName(), customer.getLastName(),
+                customer.getAddress(), customer.getBirthYear(), customer.getCreatedAt(), customer.getLastModifiedAt());
     }
 
     private Customer convertToEntity(CustomerDTO customerDTO) {

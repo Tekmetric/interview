@@ -6,7 +6,9 @@ CREATE TABLE customer (
                           email VARCHAR(100) UNIQUE,
                           first_name VARCHAR(255),
                           last_name VARCHAR(255),
-                          address VARCHAR(1000)
+                          address VARCHAR(1000),
+                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                          last_modified_at TIMESTAMP
 );
 
 INSERT INTO customer (email, first_name, last_name) VALUES

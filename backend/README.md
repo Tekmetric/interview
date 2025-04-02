@@ -18,6 +18,8 @@ Database Initialization Script: Flyway migration tool is configured to create in
 The customer table schema is defined to enforce data integrity by setting uniqueness constraints on the `email` field
 A script is provided to initialize the database with predefined data and enforce data integrity by setting uniqueness constraints on keys to maintain consistent data.
 
+Auditing (created/last updated) timestamp is enabled for the customer entity automatically.
+
 Unit and Integration Testing:
 
 Unit Tests are written for the service layer, using Mockito for mocking database interactions, ensuring business logic works as expected.

@@ -3,12 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "npx playwright test",
+    "test:dev": "cross-env NODE_ENV=dev npx playwright test",
+    "test:qa": "cross-env NODE_ENV=qa npx playwright test",
+    "test:ci": "cross-env NODE_ENV=ci npx playwright test"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@faker-js/faker": "^9.6.0",
     "@playwright/test": "^1.49.1",
-    "@types/node": "^22.10.7"
+    "@types/node": "^22.10.7",
+    "cross-env": "^7.0.3"
   }
 }

@@ -85,9 +85,14 @@ public class HttpResource {
     }
 
     @Operation(summary = "Delete a customer by Id.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully deleted customer record"), @ApiResponse(code = 404, message = "Customer with specified ID was not found.")})
     @DeleteMapping("/customer/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
-        customerService.deleteCustomer(id);
+        try {
+            customerService.deleteCustomer(id);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.noContent().build();
     }
 }

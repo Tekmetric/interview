@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Sort sort = Sort.by(Sort.Order.by(sortBy));
 
-        // If descending order is specified, we reverse the sort direction
+        // Choose sorting direction based on input
         sort = switch (sortDirection.toLowerCase()) {
             case "asc" -> sort.ascending();
             case "desc" -> sort.descending();
@@ -68,6 +68,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setFirstName(customerDTO.getFirstName());
         customer.setLastName(customerDTO.getLastName());
         customer.setAddress(customerDTO.getAddress());
+        customer.setBirthYear(customerDTO.getBirthYear());
 
         Customer updatedCustomer = customerRepository.save(customer);
         return convertToDTO(updatedCustomer);
@@ -75,12 +76,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void deleteCustomer(Long id) {
+        customerRepository.findById(id).orElseThrow();
         customerRepository.deleteById(id);
 
     }
 
     private CustomerDTO convertToDTO(Customer customer) {
-        return new CustomerDTO(customer.getId(), customer.getEmail(), customer.getFirstName(), customer.getLastName(), customer.getAddress());
+        return new CustomerDTO(customer.getId(), customer.getEmail(), customer.getFirstName(), customer.getLastName(), customer.getAddress(), customer.getBirthYear());
     }
 
     private Customer convertToEntity(CustomerDTO customerDTO) {
@@ -89,6 +91,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setFirstName(customerDTO.getFirstName());
         customer.setLastName(customerDTO.getLastName());
         customer.setAddress(customerDTO.getAddress());
+        customer.setBirthYear(customerDTO.getBirthYear());
         customer.setId(customerDTO.getId());
         return customer;
     }

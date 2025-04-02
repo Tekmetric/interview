@@ -20,22 +20,25 @@ public class CustomerDTO {
     private String firstName;
     private String lastName;
     private String address;
+    private Short birthYear;
 
     public CustomerDTO() {}
 
-    public CustomerDTO(Long id, String email, String firstName, String lastName, String address) {
+    public CustomerDTO(Long id, String email, String firstName, String lastName, String address, Short birthYear) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
+        this.birthYear = birthYear;
     }
 
-    public CustomerDTO(String email, String firstName, String lastName, String address) {
+    public CustomerDTO(String email, String firstName, String lastName, String address, Short birthYear) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
+        this.birthYear = birthYear;
     }
 
 }

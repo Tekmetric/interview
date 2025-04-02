@@ -14,7 +14,9 @@ Repository/Data Layer: Manages database operations using Spring Data JPA to pers
 #### Key Features:
 DTOs for Separation of Concerns: We use DTOs (Data Transfer Objects) to decouple the domain model (entities) from the API layer. This allows both the internal data model and the external-facing API to evolve independently without tight coupling.
 
-Database Initialization Script: A script is provided to initialize the database with predefined data and enforce data integrity by setting uniqueness constraints on keys to maintain consistent data.
+Database Initialization Script: Flyway migration tool is configured to create initial table and show an example of schema modification (adding a new column).
+The customer table schema is defined to enforce data integrity by setting uniqueness constraints on the `email` field
+A script is provided to initialize the database with predefined data and enforce data integrity by setting uniqueness constraints on keys to maintain consistent data.
 
 Unit and Integration Testing:
 
@@ -26,7 +28,7 @@ OpenAPI Documentation (Swagger): The API is documented using Swagger for easy vi
 Available at http://localhost:8080/swagger-ui/index.html
 
 Sorted & Paginated Endpoint: A sorted and paginated endpoint is provided for entity retrieval, allowing clients to query large datasets efficiently and with flexibility in sorting.
-GET customers/
+GET localhost:8080/customers
 
 Actuator for Health & Metrics: The Spring Boot Actuator is included for monitoring the application's health and providing essential metrics. This ensures the application is running smoothly and provides insights into its performance.
 GET localhost:8080/actuator/metrics

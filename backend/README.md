@@ -17,6 +17,8 @@ DTOs for Separation of Concerns: We use DTOs (Data Transfer Objects) to decouple
 Database Initialization Script: Flyway migration tool is configured to create initial table and show an example of schema modification (adding a new column).
 The customer table schema is defined to enforce data integrity by setting uniqueness constraints on the `email` field
 A script is provided to initialize the database with predefined data and enforce data integrity by setting uniqueness constraints on keys to maintain consistent data.
+Assuming that the application would have a common use case to retrieve all customers ordered by birth year (for example towards customer marketing segmentation based on age), an index was defined on the birth_year field
+so that sort operation would be more efficient.
 
 Auditing (created/last updated) timestamp is enabled for the customer entity automatically.
 

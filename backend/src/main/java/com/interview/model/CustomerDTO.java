@@ -1,5 +1,9 @@
 package com.interview.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,10 +22,15 @@ import java.time.LocalDateTime;
 @Getter @Setter
 public class CustomerDTO {
     private Long id;
+    @Email(message = "Email should be valid format.")
     private String email;
+    @Size(min = 2, max = 50, message = "First Name should be between 2 and 50 characters")
     private String firstName;
+    @Size(min = 2, max = 50, message = "First Name should be between 2 and 50 characters")
     private String lastName;
     private String address;
+    @Min(value = 1900)
+    @Max(value = 2025)
     private Short birthYear;
     private LocalDateTime lastModifiedAt;
     private LocalDateTime createdAt;

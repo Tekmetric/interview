@@ -33,6 +33,13 @@ public class CustomerIntegrationTest {
     }
 
     @Test
+    public void testCreateFailInvalidEmailFormat() {
+        CustomerDTO newResource = new CustomerDTO("bademail", "Mary", "Cooper", "34 SE Highway, Holliston, MA", (short) 1800);
+        ResponseEntity<CustomerDTO> response = restTemplate.postForEntity("http://localhost:" + port + "/customer", newResource, CustomerDTO.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
     public void testCreateFailDuplicateEmail() {
         CustomerDTO customer1 = new CustomerDTO("mekanic@auto.com", "Bob", "Cooper", "34 SE Highway, Holliston, MA", (short) 2002);
         ResponseEntity<CustomerDTO> response = restTemplate.postForEntity("http://localhost:" + port + "/customer", customer1, CustomerDTO.class);

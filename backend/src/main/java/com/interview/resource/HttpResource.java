@@ -5,6 +5,7 @@ import com.interview.service.CustomerService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -60,7 +61,7 @@ public class HttpResource {
     @Operation(summary = "Create a new customer record.")
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Successfully created customer record"), @ApiResponse(code = 400, message = "Bad request.")})
     @PostMapping("/customer")
-    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<CustomerDTO> createCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
         try {
             return new ResponseEntity<>(customerService.saveCustomer(customerDTO), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -72,7 +73,7 @@ public class HttpResource {
     @Operation(summary = "Update a customer record by ID.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully updated customer record"), @ApiResponse(code = 404, message = "Customer was not found.")})
     @PutMapping("/customer/{id}")
-    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerDTO customerDTO) {
         try {
             CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDTO);
             return ResponseEntity.ok(updatedCustomer);

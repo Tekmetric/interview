@@ -24,14 +24,7 @@
 
 ---
 
-### ⚙️ Set Up the Project
-
-- Navigate to the `react-native` folder (create it if it doesn’t exist):
-  ```bash
-  mkdir react-native && cd react-native
-  ```
-
-- Initialize a new Expo project:
+- Initialize a new Expo project in the mobile folder:
   ```bash
   npx create-expo-app react-native-interview --template blank-typescript
   cd react-native-interview

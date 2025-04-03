@@ -1,0 +1,17 @@
+{
+  "sequence_length": 2,
+  "num_features": 6,
+  "target_dims": 1,
+  "feature_names": [
+    "miss_distance_au",
+    "relative_velocity_kps",
+    "approach_year",
+    "approach_month",
+    "approach_day",
+    "day_of_year"
+  ],
+  "model_names": [
+    "lstm",
+    "transformer"
+  ]
+}

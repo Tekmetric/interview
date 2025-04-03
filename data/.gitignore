@@ -1,1 +1,11 @@
-.venv/
+venv/
+data/
+config.json
+src/aws_deployment/
+.pytest_cache/
+src/.ipynb_checkpoints/
+tests/__pycache__/
+neo_pipeline.log
+scratch-paper.txt
+aws_deployment/task-definition.json
+aws_deployment/aws_deployment_info.json

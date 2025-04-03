@@ -1,0 +1,11 @@
+{
+    "repository_uri": "<YOUR_ECR_REPOSITORY_URI>",
+    "cluster_name": "<YOUR_CLUSTER_NAME>",
+    "service_name": "<YOUR_SERVICE_NAME>",
+    "task_definition": "arn:aws:ecs:<YOUR_AWS_REGION>:<YOUR_AWS_ACCOUNT_ID>:task-definition/<YOUR_TASK_DEFINITION>",
+    "security_group": "<YOUR_SECURITY_GROUP_ID>",
+    "region": "<YOUR_AWS_REGION>",
+    "api_endpoint_template": "http://<public-ip>:5000 (Find the public IP in the AWS ECS console)",
+    "command_to_test": "curl http://<public-ip>:5000/health"
+  }
+  

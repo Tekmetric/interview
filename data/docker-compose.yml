@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  neo-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    ports:
+      - "8095:8888"  # Map container port 8888 (Jupyter) to host port 8095
+    networks:
+      - neo-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    shm_size: '2g'
+    command: jupyter lab --ip 0.0.0.0 --no-browser --allow-root
+
+networks:
+  neo-network:
+    driver: bridge

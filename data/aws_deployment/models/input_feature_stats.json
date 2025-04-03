@@ -1,0 +1,54 @@
+{
+  "original": {
+    "min": {
+      "miss_distance_au": 0.0001963232,
+      "relative_velocity_kps": 0.1265026462,
+      "approach_year": 1899.0,
+      "approach_month": 1.0,
+      "approach_day": 1.0,
+      "day_of_year": 1.0
+    },
+    "max": {
+      "miss_distance_au": 1.999592068,
+      "relative_velocity_kps": 83.2564021894,
+      "approach_year": 2019.0,
+      "approach_month": 12.0,
+      "approach_day": 31.0,
+      "day_of_year": 366.0
+    },
+    "median": {
+      "miss_distance_au": 0.2551125835,
+      "relative_velocity_kps": 14.81026456465,
+      "approach_year": 1959.0,
+      "approach_month": 7.0,
+      "approach_day": 16.0,
+      "day_of_year": 184.0
+    }
+  },
+  "scaled": {
+    "min": {
+      "miss_distance_au": -1.055819878127002,
+      "relative_velocity_kps": -1.8583366660073477,
+      "approach_year": -1.818847109541816,
+      "approach_month": -1.605994744885637,
+      "approach_day": -1.6795664623851243,
+      "day_of_year": -1.731835717736426
+    },
+    "max": {
+      "miss_distance_au": 6.236614498563026,
+      "relative_velocity_kps": 7.848179097808785,
+      "approach_year": 1.8046878524502525,
+      "approach_month": 1.5689913124380916,
+      "approach_day": 1.7318128116267475,
+      "day_of_year": 1.7145128328448331
+    },
+    "median": {
+      "miss_distance_au": -0.12605892178619746,
+      "relative_velocity_kps": -0.1438131634318332,
+      "approach_year": -0.0070796285457817255,
+      "approach_month": 0.1258158318363967,
+      "approach_day": 0.02612317462081164,
+      "day_of_year": -0.0039404170340413425
+    }
+  }
+}

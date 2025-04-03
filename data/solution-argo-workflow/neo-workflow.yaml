@@ -1,0 +1,429 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: neo-workflow-
+spec:
+  entrypoint: main
+  parallelism: 50
+  templates:
+    - name: main
+      inputs:
+        parameters:
+          - name: nasa_base_url
+            value: "https://api.nasa.gov"
+          - name: api_key
+            value: "DEMO_KEY"
+          - name: start_page
+            value: 0
+          - name: end_page
+            value: 9
+          - name: near_miss_threshold
+            value: 0.2
+      steps:
+        # prepare urls
+        - - name: generate-neo-urls
+            template: generate-neo-page-list
+            arguments:
+              parameters:
+                - name: nasa_base_url
+                  value: "{{inputs.parameters.nasa_base_url}}"
+                - name: api_key
+                  value: "{{inputs.parameters.api_key}}"
+                - name: start
+                  value: "{{inputs.parameters.start_page}}"
+                - name: end
+                  value: "{{inputs.parameters.end_page}}"
+
+        # fetch & process pages in parallel
+        - - name: process-page-step
+            template: process-page
+            arguments:
+              parameters:
+                - name: url
+                  value: "{{item}}"
+                - name: near_miss_threshold
+                  value: "{{inputs.parameters.near_miss_threshold}}"
+            withParam: "{{steps.generate-neo-urls.outputs.result}}"
+
+        # aggregate metrics in parallel
+        - - name: aggregate-yearly-approaches-step
+            template: aggregate-yearly-approaches
+
+          - name: sum-near-misses
+            template: sum-numbers
+            arguments:
+              parameters:
+              - name: numbers
+                value: "{{steps.process-page-step.outputs.parameters.near_miss_totals}}"
+
+        - - name: write-near-misses
+            template: write-to-s3
+            arguments:
+              parameters:
+                - name: content
+                  value: "{{steps.sum-near-misses.outputs.parameters.sum}}"
+                - name: storage_key
+                  value: "metrics/near_misses_count"
+
+
+    # Generate list of NEO page URL
+    - name: generate-neo-page-list
+      inputs:
+        parameters:
+          - name: nasa_base_url
+          - name: api_key
+          - name: start
+          - name: end
+      script:
+        image: python:3.11-slim
+        command: [python]
+        source: |
+          import json
+          import sys
+
+          base_url = "{{inputs.parameters.nasa_base_url}}"
+          api_key = "{{inputs.parameters.api_key}}"
+          start = {{inputs.parameters.start}}
+          end = {{inputs.parameters.end}}
+
+          NEO_BROWSE_URL_TEMPLATE = f"{base_url}/neo/rest/v1/neo/browse?page={{page}}&size=20&api_key={api_key}"
+          json.dump([NEO_BROWSE_URL_TEMPLATE.format(page=page) for page in range(start, end + 1)], sys.stdout)
+
+    # Sub-workflow template
+    - name: process-page
+      inputs:
+        parameters:
+          - name: url
+          - name: near_miss_threshold
+      dag:
+          tasks:
+            - name: get-page-number
+              template: extract-page-from-url
+              arguments:
+                parameters:
+                  - name: url
+                    value: "{{inputs.parameters.url}}"
+
+            - name: check-if-raw-data-exists
+              depends: get-page-number
+              template: check-storage-key
+              arguments:
+                parameters:
+                  - name: storage_key
+                    value: "raw_data/neo_{{tasks.get-page-number.outputs.parameters.page}}.json"
+
+            # fetch raw data if it doesn't exist in S3 already
+            - name: fetch-raw-data
+              depends: check-if-raw-data-exists
+              when: "{{tasks.check-if-raw-data-exists.outputs.parameters.exists}} == false"
+              template: fetch-url-limited
+              arguments:
+                parameters:
+                  - name: url
+                    value: "{{inputs.parameters.url}}"
+                  - name: storage_key
+                    value: "raw_data/neo_{{tasks.get-page-number.outputs.parameters.page}}.json"
+
+            # map neo records
+            - name: map-neo-records-step
+              depends: fetch-raw-data
+              template: map-neo-records
+              arguments:
+                parameters:
+                  - name: raw_storage_key
+                    value: "raw_data/neo_{{tasks.get-page-number.outputs.parameters.page}}.json"
+
+            # compute metrics
+            - name: count-yearly-approaches-step
+              depends: fetch-raw-data
+              template: count-yearly-approaches
+              arguments:
+                parameters:
+                  - name: raw_storage_key
+                    value: "raw_data/neo_{{tasks.get-page-number.outputs.parameters.page}}.json"
+                  - name: storage_key
+                    value: "yearly_approach_parts/count_{{tasks.get-page-number.outputs.parameters.page}}.json"
+
+            - name: count-near-misses-step
+              depends: fetch-raw-data
+              template: count-near-misses
+              arguments:
+                parameters:
+                  - name: threshold
+                    value: "{{inputs.parameters.near_miss_threshold}}"
+                  - name: raw_storage_key
+                    value: "raw_data/neo_{{tasks.get-page-number.outputs.parameters.page}}.json"
+
+            # write to parquet
+            - name: convert-neo-record-to-parquet
+              depends: map-neo-records-step
+              template: convert-json-to-parquet
+              arguments:
+                artifacts:
+                - name: data
+                  from: "{{tasks.map-neo-records-step.outputs.artifacts.neo_records}}"
+
+      outputs:
+        parameters:
+          - name: near_miss_totals
+            valueFrom:
+              parameter: "{{tasks.count-near-misses-step.outputs.parameters.near_miss_total}}"
+
+    # max 5 requests in parallel
+    - name: fetch-url-limited
+      parallelism: 5
+      inputs:
+        parameters:
+          - name: url
+          - name: storage_key
+
+      steps:
+      - - name: call-fetch-url
+          template: fetch-url
+          arguments:
+            parameters:
+              - name: url
+                value: "{{inputs.parameters.url}}"
+              - name: storage_key
+                value: "{{inputs.parameters.storage_key}}"
+
+    # Neo page sub-workflow step definitions
+    - name: extract-page-from-url
+      inputs:
+        parameters:
+          - name: url
+      script:
+        image: curlimages/curl:8.1.2
+        command: [ sh ]
+        source: |
+          url="{{inputs.parameters.url}}"
+          echo $url | grep -o "page=[0-9]\+" | sed "s/page=//" > /tmp/page
+      outputs:
+        parameters:
+        - name: page
+          valueFrom:
+            path: /tmp/page
+
+    - name: map-neo-records
+      inputs:
+        parameters:
+          - name: raw_storage_key
+        artifacts:
+        - name: raw_data
+          path: /tmp/raw_data.json
+          s3:
+            key: '{{inputs.parameters.raw_storage_key}}'
+
+      script:
+        image: stedolan/jq
+        imagePullPolicy: IfNotPresent
+        command: [ sh ]
+        source: |
+          jq '.near_earth_objects | map(
+              . as $neo |
+              (
+                {
+                  id: $neo.id,
+                  neo_reference_id: $neo.neo_reference_id,
+                  name: $neo.name,
+                  name_limited: $neo.name_limited,
+                  designation: $neo.designation,
+                  nasa_jpl_url: $neo.nasa_jpl_url,
+                  absolute_magnitude_h: $neo.absolute_magnitude_h,
+                  is_potentially_hazardous_asteroid: $neo.is_potentially_hazardous_asteroid,
+                  estimated_diameter_min_meters: $neo.estimated_diameter.meters.estimated_diameter_min,
+                  estimated_diameter_max_meters: $neo.estimated_diameter.meters.estimated_diameter_max,
+                  closest: (if ($neo.close_approach_data | length) > 0
+                            then ($neo.close_approach_data | sort_by(.miss_distance.astronomical | tonumber) | .[0])
+                            else null end),
+                  closest_approach_miss_distance_kilometers: (if .closest then .closest.miss_distance.kilometers | tonumber else null end),
+                  closest_approach_date: (if .closest then .closest.close_approach_date else null end),
+                  closest_approach_relative_velocity_kilometers_per_second: (if .closest then .closest.relative_velocity.kilometers_per_second | tonumber else null end),
+                  first_observation_date: $neo.orbital_data.first_observation_date,
+                  last_observation_date: $neo.orbital_data.last_observation_date,
+                  observations_used: $neo.orbital_data.observations_used | tonumber,
+                  orbital_period: $neo.orbital_data.orbital_period | tonumber
+                }
+                | with_entries(select(.key != "closest"))
+              )
+          )' /tmp/raw_data.json > /tmp/neo_records.json
+      outputs:
+        artifacts:
+        - name: neo_records
+          path: /tmp/neo_records.json
+
+    - name: count-yearly-approaches
+      inputs:
+        parameters:
+          - name: raw_storage_key
+          - name: storage_key
+        artifacts:
+        - name: raw_data
+          path: /tmp/raw_data.json
+          s3:
+            key: '{{inputs.parameters.raw_storage_key}}'
+      script:
+        image: stedolan/jq
+        imagePullPolicy: IfNotPresent
+        command: [ sh ]
+        source: |
+          jq '.near_earth_objects
+            | map(.close_approach_data[])
+            | group_by(.close_approach_date[0:4])
+            | map({ year: .[0].close_approach_date[0:4], count: length })'  /tmp/raw_data.json > /tmp/yearly_metric.json
+      outputs:
+        artifacts:
+        - name: yearly_metric
+          path: /tmp/yearly_metric.json
+          archive:
+            none: { }
+          s3:
+            key: "{{inputs.parameters.storage_key}}"
+
+    - name: count-near-misses
+      inputs:
+        parameters:
+          - name: threshold
+          - name: raw_storage_key
+        artifacts:
+        - name: raw_data
+          path: /tmp/raw_data.json
+          s3:
+            key: '{{inputs.parameters.raw_storage_key}}'
+      script:
+        image: stedolan/jq
+        imagePullPolicy: IfNotPresent
+        command: [ sh ]
+        source: |
+          jq '.near_earth_objects
+              | map(.close_approach_data[])
+              | map(select(.miss_distance.astronomical | tonumber < {{inputs.parameters.threshold}} ))
+              | length'  /tmp/raw_data.json > /tmp/output
+      outputs:
+        parameters:
+        - name: near_miss_total
+          valueFrom:
+            path: /tmp/output
+
+    - name: aggregate-yearly-approaches
+      inputs:
+        artifacts:
+          - name: numbers
+            path: /mnt/metrics
+            s3:
+              key: yearly_approach_parts/
+      script:
+        image: stedolan/jq
+        imagePullPolicy: IfNotPresent
+        command: [ sh ]
+        source: |
+          jq -s 'map(.[])
+             | group_by(.year)
+             | map({ year: .[0].year, count: map(.count) | add })' /mnt/metrics/* > /tmp/yearly_approaches.json
+          cat /tmp/yearly_approaches.json
+      outputs:
+        artifacts:
+          - name: yearly_approaches
+            path: /tmp/yearly_approaches.json
+            archive:
+              none: { }
+            s3:
+              key: metrics/yearly_approaches.json
+
+    # GENERIC STEPS - can be extracted in WorkflowTemplates and re-used across workflows
+    - name: fetch-url
+      inputs:
+        parameters:
+          - name: url
+          - name: storage_key
+      container:
+        image: curlimages/curl:8.1.2
+        command: [ curl ]
+        args: [ "{{inputs.parameters.url}}", "-o", "/tmp/out.json" ]
+      retryStrategy:
+        limit: 3
+        retryPolicy: "Always"
+      outputs:
+        artifacts:
+          - name: raw_data
+            path: /tmp/out.json
+            archive:
+              none: { }
+            s3:
+              key: "{{inputs.parameters.storage_key}}"
+
+    - name: check-storage-key
+      inputs:
+        parameters:
+          - name: storage_key
+      script:
+        image: minio/mc
+        imagePullPolicy: IfNotPresent
+        command: [bash, -c]
+        source: |
+          mc alias set myminio http://minio:9000 admin password
+          if mc stat myminio/my-bucket/{{inputs.parameters.storage_key}} > /dev/null 2>&1; then
+            echo "true" > /tmp/exists.txt
+          else
+            echo "false" > /tmp/exists.txt
+          fi
+      outputs:
+        parameters:
+          - name: exists
+            valueFrom:
+              path: /tmp/exists.txt
+
+
+    - name: write-to-s3
+      inputs:
+        parameters:
+          - name: content
+          - name: storage_key
+      script:
+        image: alpine:3.21
+        imagePullPolicy: IfNotPresent
+        command: [ sh ]
+        source: |
+          echo {{inputs.parameters.content}} > /tmp/output
+      outputs:
+        artifacts:
+          - name: output
+            path: /tmp/output
+            archive:
+              none: { }
+            s3:
+              key: "{{inputs.parameters.storage_key}}"
+
+    - name: convert-json-to-parquet
+      inputs:
+        artifacts:
+        - name: data
+          path: /tmp/data.json
+      script:
+        image: datacatering/duckdb:v1.2.0
+        command: [ bash ]
+        source: |
+          ./duckdb /tmp/processed_data.duckdb <<EOF
+              CREATE TABLE processed AS SELECT * FROM read_json('/tmp/data.json');
+              COPY processed TO '/tmp/data.parquet' (FORMAT 'parquet');
+          EOF
+      outputs:
+        artifacts:
+        - name: output
+          path: /tmp/data.parquet
+
+    - name: sum-numbers
+      inputs:
+        parameters:
+          - name: numbers
+      script:
+        image: stedolan/jq
+        imagePullPolicy: IfNotPresent
+        command: [ sh ]
+        source: |
+          echo '{{inputs.parameters.numbers}}' | jq 'reduce .[] as $num (0; . + ($num | tonumber))' > /tmp/output
+      outputs:
+        parameters:
+          - name: sum
+            valueFrom:
+              path: /tmp/output

@@ -12,3 +12,15 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+
+# ignore any .api files
+.api
+
+# ignore hydra output logs
+outputs/
+
+# ignore notebook checkpoints
+.ipynb_checkpoints/
+
+# ignore locally stored data
+neo_store/

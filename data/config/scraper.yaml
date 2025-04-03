@@ -1,0 +1,14 @@
+scraper:
+  request:
+    endpoint: "https://api.nasa.gov/neo/rest/v1/neo/browse"
+    api_key: ""
+    start_page: 0
+    page_size: 20
+    end_page: 10
+
+  persist:
+    output_dir: "../../../"
+    root_dir: "neo_store"
+    neo_data_file: "neo_data.parquet"
+    yearly_approach_file: "yearly_approach.parquet"
+    approach_count_file: "approach_count.parquet"

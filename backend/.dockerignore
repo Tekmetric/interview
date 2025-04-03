@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# Build directories and files
+target/
+!target/*.jar
+*.class
+*.jar
+**/build/
+
+# Docker files (prevents recursive copying)
+Dockerfile
+docker-compose.yml
+
+# Logs
+*.log
+
+# Testing files
+**/test/
+**/*.test.java
+**/*.spec.java
+
+# Documentation
+*.md
+!TASK.md
+docs/
+
+# Miscellaneous
+.DS_Store

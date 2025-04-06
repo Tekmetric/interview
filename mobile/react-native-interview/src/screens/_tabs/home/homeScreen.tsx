@@ -2,12 +2,12 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../../navigation/rootNavigator';
-import useFetchArtCrimes from '../../../hooks/useFetchArtCrimes';
-import FilterModal from '../../../components/modals/filterModal';
-import FilterHeaderButton from '../../../components/buttons/filterHeaderButton';
-import { ArtCrimeFilters, ArtCrimeQueryParams, ArtCrimeSorting } from '../../../types/artCrime';
-import DebouncedSearchInput from '../../../components/inputs/debouncedSearchInputText';
+import { RootStackParamList } from '@/navigation/rootNavigator';
+import useFetchArtCrimes from '@/hooks/useFetchArtCrimes';
+import FilterModal from '@/components/modals/filterModal';
+import FilterHeaderButton from '@/components/buttons/filterHeaderButton';
+import { ArtCrimeFilters, ArtCrimeQueryParams, ArtCrimeSorting } from '@/types/artCrime';
+import DebouncedSearchInput from '@/components/inputs/debouncedSearchInputText';
 
 export default function HomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

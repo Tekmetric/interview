@@ -10,7 +10,7 @@ type HeaderButtonProps = {
 
 export default function HeaderButton({ onPress, children, style }: HeaderButtonProps) {
   return (
-    <Pressable onPress={onPress} style={[styles.button, style]}>
+    <Pressable onPress={onPress} style={[styles.button, style]} testID="header-button">
       {children}
     </Pressable>
   );

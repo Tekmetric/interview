@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ArtCrimeFilters } from '../../types/artCrime';
 import { Feather } from '@expo/vector-icons';
 import { useMemo } from 'react';

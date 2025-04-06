@@ -1,16 +1,13 @@
-import { TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '../../context/themeContext';
+import HeaderButton from '../../components/buttons/headerButton';
 
 export default function ModeSwitcher() {
-  const { mode, toggleMode } = useTheme();
+  const { mode, theme, toggleMode } = useTheme();
+
   return (
-    <TouchableOpacity onPress={toggleMode}>
-      {mode === 'dark' ? (
-        <Feather name="sun" size={24} color="#FFD700" /> // Light mode icon
-      ) : (
-        <Feather name="moon" size={24} color="#333" /> // Dark mode icon
-      )}
-    </TouchableOpacity>
+    <HeaderButton onPress={toggleMode}>
+      <Feather name={mode === 'dark' ? 'sun' : 'moon'} size={24} color={theme.colors.text} />
+    </HeaderButton>
   );
 }

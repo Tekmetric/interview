@@ -21,3 +21,29 @@ export type ArtCrimeQueryParams = {
   title?: string;
 } & ArtCrimeFilters &
   ArtCrimeSorting;
+
+type ArtCrimeField = string | null;
+
+// Note: all item properties might be null (from the online API schema) but we can assume that the API will return a valid item uid
+export type ArtCrime = {
+  uid: string;
+  title: ArtCrimeField;
+  description: ArtCrimeField;
+  images: { original: ArtCrimeField; thumb: ArtCrimeField }[] | null;
+  crimeCategory: ArtCrimeField;
+  maker: ArtCrimeField;
+  materials: ArtCrimeField;
+  measurements: ArtCrimeField;
+  period: ArtCrimeField;
+  additionalData: ArtCrimeField;
+  modified: ArtCrimeField;
+  publication: ArtCrimeField;
+  path: ArtCrimeField;
+  referenceNumber: ArtCrimeField;
+};
+
+export type FBIArtCrimeResponse = {
+  items: ArtCrime[];
+  total: number;
+  page: number;
+};

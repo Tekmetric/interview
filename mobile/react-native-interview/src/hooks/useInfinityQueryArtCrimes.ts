@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { fetchArtCrimes, type FBIArtCrimeResponse } from '@/api/artCrimesApi';
-
+import { fetchArtCrimes } from '@/api/artCrimesApi';
+import { FBIArtCrimeResponse } from '@/types/artCrime';
 export default function useInifinityFetchArtCrimes(
   filters: Record<string, string | number | undefined>,
 ) {

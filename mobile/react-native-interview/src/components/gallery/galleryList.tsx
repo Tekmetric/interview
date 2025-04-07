@@ -1,10 +1,9 @@
 import React from 'react';
 import { FlatList, StyleSheet, ViewStyle, StyleProp } from 'react-native';
-import { ArtCrime } from '@/api/artCrimesApi';
 import { spacing } from '@/config/theme';
-import GalleryCard from './galleryCard';
+import { ArtCrime } from '@/types/artCrime';
 import LoadingOverlay from '../loadingOverlay';
-
+import GalleryCard from './galleryCard';
 const numColumns = 2;
 
 type GalleryListProps = {
@@ -15,7 +14,7 @@ type GalleryListProps = {
   ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
 };
 
-export default function InfinityGalleryList({
+export default function GalleryList({
   items,
   isFetchingNextPage,
   style,

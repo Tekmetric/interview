@@ -1,4 +1,3 @@
-import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useLayoutEffect } from 'react';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -6,9 +5,10 @@ import { RootStackParamList } from '@/navigation/rootNavigator';
 import FilterModal from '@/components/modals/filterModal';
 import FilterHeaderButton from '@/components/buttons/filterHeaderButton';
 import DebouncedSearchInput from '@/components/inputs/debouncedSearchInputText';
-import HomeScreenContent from './components/homeScreenContent';
 import { useArtCrimeFilters } from '@/hooks/useArtCrimeFilters';
 import { useFilterModal } from '@/hooks/useFilterModal';
+import SafeAreaWrapper from '@/components/safeAreaWrapper';
+import HomeScreenContent from './components/homeScreenContent';
 
 export default function HomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -22,7 +22,7 @@ export default function HomeScreen() {
   }, [navigation, toggleFilterModal, filters]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaWrapper>
       <DebouncedSearchInput onDebouncedChange={setDebouncedSearch} placeholder="Search titles..." />
       <HomeScreenContent queryParams={artCrimesParams} />
       <FilterModal
@@ -31,12 +31,6 @@ export default function HomeScreen() {
         onRequestClose={closeFilterModal}
         setFilters={setFilters}
       />
-    </View>
+    </SafeAreaWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

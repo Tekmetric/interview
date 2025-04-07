@@ -1,5 +1,6 @@
+import React from 'react';
 import { ThemeProvider } from './context/themeContext';
-import NavigationWrapper from './navigation/navigationWrapper';
+import AppContent from './navigation/appContent';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SavedItemsProvider } from './context/savedItemsContext';
 
@@ -10,7 +11,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <SavedItemsProvider>
-          <NavigationWrapper />
+          <AppContent />
         </SavedItemsProvider>
       </ThemeProvider>
     </QueryClientProvider>

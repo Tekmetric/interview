@@ -1,10 +1,9 @@
 import { StyleSheet, View } from 'react-native';
-import { ArtCrimeFilters } from '../../types/artCrime';
 import { Feather } from '@expo/vector-icons';
 import { useMemo } from 'react';
 import HeaderButton from './headerButton';
 import { useTheme } from '@/context/themeContext';
-
+import { ArtCrimeFilters } from '@/types/artCrime';
 type FilterHeaderButtonProps = {
   filters: ArtCrimeFilters;
   onPress: () => void;

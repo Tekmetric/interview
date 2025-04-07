@@ -42,7 +42,7 @@ exports[`FilterHeaderButton renders correctly with active filters 1`] = `
   testID="header-button"
 >
   <Feather
-    color="#000000"
+    color="rgb(28, 28, 30)"
     name="filter"
     size={24}
   />
@@ -104,7 +104,7 @@ exports[`FilterHeaderButton renders correctly with no filters 1`] = `
   testID="header-button"
 >
   <Feather
-    color="#000000"
+    color="rgb(28, 28, 30)"
     name="filter"
     size={24}
   />

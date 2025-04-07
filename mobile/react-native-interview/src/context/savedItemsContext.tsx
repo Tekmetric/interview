@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ArtCrime } from '@/api/artCrimesApi';
-
+import { ArtCrime } from '@/types/artCrime';
 const SAVED_ITEMS_KEY = '@saved_items';
 
 type SavedItemsContextType = {

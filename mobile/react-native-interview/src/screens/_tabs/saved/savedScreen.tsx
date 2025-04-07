@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import { useSavedItems } from '@/context/savedItemsContext';
 import LoadingOverlay from '@/components/loadingOverlay';
-import InfinityGalleryList from '@/components/gallery/infinityGalleryList';
 import EmptyState from '@/components/gallery/emptyState';
+import SafeAreaWrapper from '@/components/safeAreaWrapper';
+import GalleryList from '@/components/gallery/galleryList';
 
 export default function SavedScreen() {
   const { savedItems, isLoading } = useSavedItems();
@@ -11,8 +11,8 @@ export default function SavedScreen() {
   if (isLoading) return <LoadingOverlay />;
 
   return (
-    <View style={styles.container}>
-      <InfinityGalleryList
+    <SafeAreaWrapper>
+      <GalleryList
         items={savedItems}
         isFetchingNextPage={false}
         onEndReached={() => {}}
@@ -24,12 +24,6 @@ export default function SavedScreen() {
           />
         }
       />
-    </View>
+    </SafeAreaWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

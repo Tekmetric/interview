@@ -1,0 +1,85 @@
+import React from 'react';
+import { Image, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { ArtCrime } from '@/api/artCrimesApi';
+import { spacing, typography } from '@/config/theme';
+import { useTheme } from '@/context/themeContext';
+
+type GalleryCardProps = {
+  item: ArtCrime;
+  onPress: () => void;
+};
+
+export default function GalleryCard({ item, onPress }: GalleryCardProps) {
+  const { theme } = useTheme();
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.card, { backgroundColor: theme.colors.card }]}
+    >
+      <Image
+        source={{ uri: item.images?.[0]?.thumb ?? '' }}
+        style={styles.image}
+        resizeMode="cover"
+      />
+      <Text numberOfLines={2} style={[styles.title, { color: theme.colors.text }]}>
+        {item.title}
+      </Text>
+      <MetadataRow icon="user" value={item.maker || 'Unknown'} color={theme.colors.text} />
+      <MetadataRow icon="layers" value={item.materials || 'Unknown'} color={theme.colors.text} />
+    </TouchableOpacity>
+  );
+}
+
+function MetadataRow({
+  icon,
+  value,
+  color,
+}: {
+  icon: keyof typeof Feather.glyphMap;
+  value: string;
+  color: string;
+}) {
+  return (
+    <View style={styles.metadataRow}>
+      <Feather name={icon} size={16} color={color} />
+      <Text numberOfLines={1} style={[styles.metadataText, { color }]}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    margin: spacing.sm,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    flex: 1,
+    paddingBottom: spacing.sm,
+  },
+  image: {
+    height: 150,
+    backgroundColor: '#eee',
+  },
+  title: {
+    paddingHorizontal: spacing.sm,
+    paddingTop: spacing.sm,
+    fontSize: typography.fontSize.xs,
+    fontWeight: 'bold',
+    height: 40,
+  },
+  metadataRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  metadataText: {
+    paddingLeft: spacing.sm,
+    fontSize: typography.fontSize.xs,
+    color: '#666',
+    flex: 1,
+  },
+});

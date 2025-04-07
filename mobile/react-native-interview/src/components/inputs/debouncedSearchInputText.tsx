@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { TextInput, StyleSheet, TextInputProps } from 'react-native';
 import debounce from 'lodash/debounce';
 import type { DebouncedFunc } from 'lodash';
+import { useTheme } from '@/context/themeContext';
+import { spacing } from '@/config/theme';
 
 type DebouncedSearchInputProps = {
   onDebouncedChange: (value: string) => void;
@@ -15,6 +17,7 @@ export default function DebouncedSearchInput({
   ...props
 }: DebouncedSearchInputProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const { theme } = useTheme();
   const debouncedRef = useRef<DebouncedFunc<(value: string) => void>>();
 
   useEffect(() => {
@@ -36,7 +39,12 @@ export default function DebouncedSearchInput({
     <TextInput
       value={searchTerm}
       onChangeText={handleChange}
-      style={[styles.input, style]}
+      placeholderTextColor={'#666'}
+      style={[
+        styles.input,
+        style,
+        { backgroundColor: theme.colors.card, borderColor: theme.colors.border },
+      ]}
       {...props}
     />
   );
@@ -49,9 +57,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
+    margin: spacing.md,
     borderWidth: 1,
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 16,
+    borderRadius: spacing.md,
+    padding: spacing.sm,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
   },
 });

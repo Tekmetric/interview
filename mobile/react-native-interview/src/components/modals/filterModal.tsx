@@ -4,6 +4,7 @@ import { ArtCrimeFilters } from '../../types/artCrime';
 import FilterInput from '../inputs/filterInput';
 import { useState } from 'react';
 import { spacing, typography } from '../../config/theme';
+import { useTheme } from '@/context/themeContext';
 
 type FilterModalProps = {
   isVisible: boolean;
@@ -61,6 +62,7 @@ export default function FilterModal({
   setFilters,
 }: FilterModalProps) {
   const [modalFilters, setModalFilters] = useState(filters);
+  const { theme } = useTheme();
 
   const updateModalFiterValue = (key: keyof ArtCrimeFilters, value: any) => {
     setModalFilters((prev) => {
@@ -115,8 +117,12 @@ export default function FilterModal({
               );
             })}
           </View>
-          <Pressable style={styles.searchButton} onPress={onSearchPress}>
-            <Feather name="x" size={24} color="black" />
+          <Pressable
+            style={[styles.searchButton, { backgroundColor: theme.colors.primary }]}
+            onPress={onSearchPress}
+          >
+            <Feather name="save" size={24} color={theme.colors.text} />
+            <Text style={[styles.searchButtonText, { color: theme.colors.text }]}>Save</Text>
           </Pressable>
         </Pressable>
       </Pressable>
@@ -133,7 +139,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: typography.fontSize.lg,
-    fontFamily: typography.fontWeight.bold,
+    fontFamily: 'bold',
     textAlign: 'center',
   },
   modalHeader: {
@@ -162,6 +168,18 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   searchButton: {
-    backgroundColor: 'red',
+    padding: spacing.sm,
+    borderRadius: spacing.xl,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '80%',
+    margin: spacing.sm,
+    marginBottom: spacing.xl,
+  },
+  searchButtonText: {
+    marginLeft: spacing.sm,
+    fontSize: typography.fontSize.lg,
+    fontFamily: 'bold',
   },
 });

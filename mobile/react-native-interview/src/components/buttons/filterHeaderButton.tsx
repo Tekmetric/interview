@@ -3,7 +3,7 @@ import { ArtCrimeFilters } from '../../types/artCrime';
 import { Feather } from '@expo/vector-icons';
 import { useMemo } from 'react';
 import HeaderButton from './headerButton';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@/context/themeContext';
 
 type FilterHeaderButtonProps = {
   filters: ArtCrimeFilters;
@@ -14,11 +14,11 @@ export default function FilterHeaderButton({ onPress, filters }: FilterHeaderBut
   const hasFilters = useMemo(() => {
     return Object.values(filters).some((value) => value !== null);
   }, [filters]);
-  const { colors } = useTheme();
+  const { theme } = useTheme();
 
   return (
     <HeaderButton onPress={onPress}>
-      <Feather name="filter" size={24} color={colors.text} />
+      <Feather name="filter" size={24} color={theme.colors.text} />
       {hasFilters && <View style={styles.activeFilterIndicator} />}
     </HeaderButton>
   );

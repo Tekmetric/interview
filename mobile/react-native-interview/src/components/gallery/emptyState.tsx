@@ -15,7 +15,10 @@ export default function EmptyState({ icon = 'inbox', title, description }: Empty
 
   return (
     <View style={styles.container}>
-      <View style={[styles.iconContainer, { backgroundColor: theme.colors.card }]}>
+      <View
+        testID="icon-container"
+        style={[styles.iconContainer, { backgroundColor: theme.colors.card }]}
+      >
         <Feather name={icon} size={32} color={theme.colors.primary} />
       </View>
       <Text style={[styles.title, { color: theme.colors.text }]}>{title}</Text>

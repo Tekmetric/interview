@@ -2,8 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import FilterHeaderButton from '../buttons/filterHeaderButton';
 import { ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
-import { ArtCrimeFilters } from '../../types/artCrime';
-import { mockTheme } from '../../test-utils/mocks/theme';
+import { ArtCrimeFilters } from '@/types/artCrime';
+import { mockTheme } from '@/test-utils/mocks/theme';
 import { ThemeProvider } from '@/context/themeContext';
 
 describe('FilterHeaderButton', () => {

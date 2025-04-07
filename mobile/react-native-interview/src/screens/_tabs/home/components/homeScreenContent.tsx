@@ -5,6 +5,7 @@ import InfinityGalleryList from '@/components/gallery/infinityGalleryList';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import InlineError from '@/components/inlineError';
 import { useArtCrimesList } from '@/hooks/useArtCrimesList';
+import EmptyState from '@/components/gallery/emptyState';
 
 type HomeScreenContentProps = {
   queryParams: ArtCrimeQueryParams;
@@ -26,6 +27,13 @@ export default function HomeScreenContent({ queryParams }: HomeScreenContentProp
         items={items || []}
         isFetchingNextPage={isFetchingNextPage}
         onEndReached={loadMore}
+        style={styles.galleryList}
+        ListEmptyComponent={
+          <EmptyState
+            title="No items found"
+            description="Try to clear the search and filters to see all items"
+          />
+        }
       />
     </View>
   );
@@ -34,5 +42,8 @@ export default function HomeScreenContent({ queryParams }: HomeScreenContentProp
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  galleryList: {
+    paddingTop: 50,
   },
 });

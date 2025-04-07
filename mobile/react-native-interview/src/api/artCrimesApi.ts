@@ -6,8 +6,9 @@ const ART_CRIME_ENDPOINT = '/@artcrimes';
 
 type ArtCrimeField = string | null;
 
+// Note: all item properties might be null (from the online API schema) but we can assume that the API will return a valid item uid
 export type ArtCrime = {
-  uid: ArtCrimeField;
+  uid: string;
   title: ArtCrimeField;
   description: ArtCrimeField;
   images: { original: ArtCrimeField; thumb: ArtCrimeField }[] | null;

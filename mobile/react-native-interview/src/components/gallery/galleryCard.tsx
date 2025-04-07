@@ -4,6 +4,7 @@ import { Feather } from '@expo/vector-icons';
 import { ArtCrime } from '@/api/artCrimesApi';
 import { spacing, typography } from '@/config/theme';
 import { useTheme } from '@/context/themeContext';
+import { useSavedItems } from '@/context/savedItemsContext';
 
 type GalleryCardProps = {
   item: ArtCrime;
@@ -12,16 +13,39 @@ type GalleryCardProps = {
 
 export default function GalleryCard({ item, onPress }: GalleryCardProps) {
   const { theme } = useTheme();
+  const { saveItem, removeItem, isItemSaved } = useSavedItems();
+  const isSaved = isItemSaved(item.uid);
+
+  const handleSavePress = () => {
+    if (isSaved) {
+      removeItem(item.uid);
+    } else {
+      saveItem(item);
+    }
+  };
+
   return (
     <TouchableOpacity
       onPress={onPress}
       style={[styles.card, { backgroundColor: theme.colors.card }]}
     >
-      <Image
-        source={{ uri: item.images?.[0]?.thumb ?? '' }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      <View style={styles.imageContainer}>
+        <Image
+          source={{ uri: item.images?.[0]?.thumb ?? '' }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        <TouchableOpacity
+          style={[styles.saveButton, { backgroundColor: theme.colors.background }]}
+          onPress={handleSavePress}
+        >
+          <Feather
+            name={isSaved ? 'bookmark' : 'bookmark'}
+            size={20}
+            color={isSaved ? theme.colors.primary : theme.colors.text}
+          />
+        </TouchableOpacity>
+      </View>
       <Text numberOfLines={2} style={[styles.title, { color: theme.colors.text }]}>
         {item.title}
       </Text>
@@ -59,9 +83,19 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: spacing.sm,
   },
+  imageContainer: {
+    position: 'relative',
+  },
   image: {
     height: 150,
     backgroundColor: '#eee',
+  },
+  saveButton: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    padding: spacing.xs,
+    borderRadius: 20,
   },
   title: {
     paddingHorizontal: spacing.sm,

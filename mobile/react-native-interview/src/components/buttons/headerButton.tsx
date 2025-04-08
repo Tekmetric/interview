@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, ViewStyle } from 'react-native';
 import { ReactNode } from 'react';
-import { spacing } from '../../config/theme';
+import { spacing } from '@/config/theme';
 
 type HeaderButtonProps = {
   onPress: () => void;

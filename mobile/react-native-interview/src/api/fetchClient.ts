@@ -28,7 +28,6 @@ export async function apiRequest<T>(
   retryCount = 0,
 ): Promise<T> {
   const requestUrl = buildUrl(url, method === 'GET' ? params : undefined);
-  console.log({ requestUrl });
 
   const res = await fetch(requestUrl, {
     method,

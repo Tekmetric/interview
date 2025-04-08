@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import { Modal, View, Text, StyleSheet, Pressable } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { ArtCrimeFilters } from '../../types/artCrime';
-import FilterInput from '../inputs/filterInput';
-import { useState } from 'react';
-import { spacing, typography } from '../../config/theme';
+import { ArtCrimeFilters } from '@/types/artCrime';
+import { spacing, typography } from '@/config/theme';
 import { useTheme } from '@/context/themeContext';
+import FilterInput from '../inputs/filterInput';
 
 type FilterModalProps = {
   isVisible: boolean;

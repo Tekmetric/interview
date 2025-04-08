@@ -10,7 +10,7 @@ export function useArtCrimeFilters() {
     return {
       ...(debouncedSearch && { title: debouncedSearch }),
       ...filters,
-      ...sort,
+      ...sort, // TODO: implement sorting, the API supports only 2 sorting options
     };
   }, [debouncedSearch, filters, sort]);
 

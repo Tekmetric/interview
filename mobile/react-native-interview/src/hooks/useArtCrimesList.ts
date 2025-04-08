@@ -7,8 +7,16 @@ type ArtCrimesListProps = {
 };
 
 export function useArtCrimesList({ queryParams }: ArtCrimesListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error, refetch } =
-    useInfinityQueryArtCrimes(queryParams);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+    refetch,
+    isRefetching,
+  } = useInfinityQueryArtCrimes(queryParams);
 
   const items = useMemo(() => {
     return data?.pages.flatMap((page) => page.items) ?? [];
@@ -25,5 +33,6 @@ export function useArtCrimesList({ queryParams }: ArtCrimesListProps) {
     isFetchingNextPage,
     loadMore,
     refetch,
+    isRefetching,
   };
 }

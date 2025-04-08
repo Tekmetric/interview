@@ -17,5 +17,6 @@ export default function useInifinityFetchArtCrimes(
       }
       return (lastPageParam as number) + 1;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }

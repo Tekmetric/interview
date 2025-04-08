@@ -16,6 +16,8 @@ type GalleryListProps = {
   onEndReached: () => void;
   style?: StyleProp<ViewStyle>;
   ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
+  refetch: () => void;
+  isRefetching: boolean;
 };
 
 export default function GalleryList({
@@ -24,6 +26,8 @@ export default function GalleryList({
   style,
   onEndReached,
   ListEmptyComponent,
+  refetch,
+  isRefetching,
 }: GalleryListProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -43,6 +47,8 @@ export default function GalleryList({
       renderItem={({ item }) => <GalleryCard item={item} onPress={() => handleCardPress(item)} />}
       ListEmptyComponent={ListEmptyComponent}
       ListFooterComponent={isFetchingNextPage ? <LoadingOverlay fullScreen={false} /> : null}
+      onRefresh={refetch}
+      refreshing={isRefetching}
     />
   );
 }

@@ -12,10 +12,12 @@ type HomeScreenContentProps = {
 };
 
 export default function HomeScreenContent({ queryParams }: HomeScreenContentProps) {
-  const { items, isLoading, error, isFetchingNextPage, loadMore, refetch } = useArtCrimesList({
-    queryParams,
-  });
+  const { items, isLoading, error, isFetchingNextPage, isRefetching, loadMore, refetch } =
+    useArtCrimesList({
+      queryParams,
+    });
 
+  // TODO: isRefetching loader is hidden behind the seach input, needs to be fixed.
   if (isLoading) return <LoadingOverlay />;
   if (error)
     return (
@@ -34,6 +36,8 @@ export default function HomeScreenContent({ queryParams }: HomeScreenContentProp
             description="Try to clear the search and filters to see all items"
           />
         }
+        refetch={refetch}
+        isRefetching={isRefetching}
       />
     </View>
   );
@@ -44,6 +48,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   galleryList: {
-    paddingTop: 50,
+    paddingTop: 60,
   },
 });

@@ -6,5 +6,6 @@ export function useArtCrimeById(id: string) {
     queryKey: ['artCrime', id],
     queryFn: () => fetchArtCrimeById(id),
     enabled: !!id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }

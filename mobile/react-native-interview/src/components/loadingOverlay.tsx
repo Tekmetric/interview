@@ -20,6 +20,7 @@ export default function LoadingOverlay({ message, fullScreen = true, style }: Pr
       duration: 250,
       useNativeDriver: true,
     }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

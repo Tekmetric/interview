@@ -4,6 +4,10 @@ import { spacing } from '@/config/theme';
 import { ArtCrime } from '@/types/artCrime';
 import LoadingOverlay from '../loadingOverlay';
 import GalleryCard from './galleryCard';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/rootNavigator';
+
 const numColumns = 2;
 
 type GalleryListProps = {
@@ -21,6 +25,12 @@ export default function GalleryList({
   onEndReached,
   ListEmptyComponent,
 }: GalleryListProps) {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const handleCardPress = (item: ArtCrime) => {
+    navigation.navigate('Details', { item });
+  };
+
   return (
     <FlatList
       data={items}
@@ -30,7 +40,7 @@ export default function GalleryList({
       columnWrapperStyle={styles.columnWrapper}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
-      renderItem={({ item }) => <GalleryCard item={item} onPress={() => {}} />}
+      renderItem={({ item }) => <GalleryCard item={item} onPress={() => handleCardPress(item)} />}
       ListEmptyComponent={ListEmptyComponent}
       ListFooterComponent={isFetchingNextPage ? <LoadingOverlay fullScreen={false} /> : null}
     />
@@ -39,10 +49,10 @@ export default function GalleryList({
 
 const styles = StyleSheet.create({
   list: {
-    paddingVertical: spacing.lg,
+    padding: spacing.sm,
   },
   columnWrapper: {
     justifyContent: 'space-between',
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
 });

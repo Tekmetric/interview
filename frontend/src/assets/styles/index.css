@@ -1,0 +1,81 @@
+/* Font Imports + Global Reset */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+@import url('./_reset.css');
+
+:root {
+  /* Colors */
+  --primary-color: #f0572a;
+  --primary-color-lighter: #fde6df;
+  --primary-color-darker: #ab300c;
+
+  --secondary-color: #fbb70d;
+
+  --white-color: #f9f9f9;
+  --black-color: #2b2b2b;
+
+  /* Fonts */
+  --primary-font: 'Roboto Mono', monospace;
+  --secondary-font: 'Inter', sans-serif;
+
+  /* Spacing */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+
+  /* Font sizes */
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem; /* 16px */
+  --font-size-lg: 1.25rem; /* 20px */
+  --font-size-xl: 1.5rem; /* 20px */
+
+  /* Font weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  --header-size: 4rem;
+}
+
+/* Global Styles */
+html {
+  font-size: 16px;
+}
+
+body,
+html {
+  background-color: var(--white-color);
+  color: var(--white-color);
+}
+
+h1 {
+  font-size: var(--font-size-xl);
+  font-family: var(--primary-font);
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-lg);
+  font-family: var(--secondary-font);
+}
+
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-md);
+}
+
+p,
+li,
+th,
+td,
+a,
+button {
+  font-size: var(--font-size-md);
+  font-family: var(--secondary-font);
+  color: var(--white-color);
+}

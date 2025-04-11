@@ -1,16 +1,20 @@
 package com.interview.controller;
 
 import com.interview.dto.RepairServiceDTO;
-import com.interview.exception.ResourceNotFoundException;
-import com.interview.exception.ValidationException;
+import com.interview.dto.ApiResponseDTO;
 import com.interview.service.RepairServiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,9 +37,17 @@ public class RepairServiceController {
      * @return the created repair service
      */
     @PostMapping
-    public ResponseEntity<RepairServiceDTO> createRepairService(@Valid @RequestBody RepairServiceDTO repairServiceDTO) {
+    public ResponseEntity<ApiResponseDTO<RepairServiceDTO>> createRepairService(@Valid @RequestBody RepairServiceDTO repairServiceDTO) {
         RepairServiceDTO createdService = repairServiceService.createRepairService(repairServiceDTO);
-        return new ResponseEntity<>(createdService, HttpStatus.CREATED);
+        
+        ApiResponseDTO<RepairServiceDTO> response = ApiResponseDTO.<RepairServiceDTO>builder()
+                .success(true)
+                .data(createdService)
+                .message("Repair service created successfully")
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+                
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     /**
@@ -45,13 +57,17 @@ public class RepairServiceController {
      * @return the repair service
      */
     @GetMapping("/{id}")
-    public ResponseEntity<RepairServiceDTO> getRepairServiceById(@PathVariable Long id) {
-        try {
-            RepairServiceDTO repairService = repairServiceService.getRepairServiceById(id);
-            return ResponseEntity.ok(repairService);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<ApiResponseDTO<RepairServiceDTO>> getRepairServiceById(@PathVariable Long id) {
+        RepairServiceDTO repairService = repairServiceService.getRepairServiceById(id);
+        
+        ApiResponseDTO<RepairServiceDTO> response = ApiResponseDTO.<RepairServiceDTO>builder()
+                .success(true)
+                .data(repairService)
+                .message("Repair service retrieved successfully")
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+                
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -61,10 +77,18 @@ public class RepairServiceController {
      * @return the page of repair services
      */
     @GetMapping
-    public ResponseEntity<Page<RepairServiceDTO>> getAllRepairServices(
+    public ResponseEntity<ApiResponseDTO<Page<RepairServiceDTO>>> getAllRepairServices(
             @PageableDefault(size = 10, sort = "id") Pageable pageable) {
         Page<RepairServiceDTO> repairServicePage = repairServiceService.getAllRepairServices(pageable);
-        return ResponseEntity.ok(repairServicePage);
+        
+        ApiResponseDTO<Page<RepairServiceDTO>> response = ApiResponseDTO.<Page<RepairServiceDTO>>builder()
+                .success(true)
+                .data(repairServicePage)
+                .message("Repair services retrieved successfully")
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+                
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -75,17 +99,19 @@ public class RepairServiceController {
      * @return the updated repair service
      */
     @PutMapping("/{id}")
-    public ResponseEntity<RepairServiceDTO> updateRepairService(
+    public ResponseEntity<ApiResponseDTO<RepairServiceDTO>> updateRepairService(
             @PathVariable Long id,
             @Valid @RequestBody RepairServiceDTO repairServiceDTO) {
-        try {
-            RepairServiceDTO updatedService = repairServiceService.updateRepairService(id, repairServiceDTO);
-            return ResponseEntity.ok(updatedService);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (ValidationException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        RepairServiceDTO updatedService = repairServiceService.updateRepairService(id, repairServiceDTO);
+        
+        ApiResponseDTO<RepairServiceDTO> response = ApiResponseDTO.<RepairServiceDTO>builder()
+                .success(true)
+                .data(updatedService)
+                .message("Repair service updated successfully")
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+                
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -95,32 +121,17 @@ public class RepairServiceController {
      * @return no content if successful
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRepairService(@PathVariable Long id) {
-        try {
-            repairServiceService.deleteRepairService(id);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (ValidationException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<ApiResponseDTO<Void>> deleteRepairService(@PathVariable Long id) {
+        repairServiceService.deleteRepairService(id);
+        
+        ApiResponseDTO<Void> response = ApiResponseDTO.<Void>builder()
+                .success(true)
+                .message("Repair service deleted successfully")
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+                
+        return ResponseEntity.ok(response);
     }
     
-    /**
-     * Handle validation exceptions and return appropriate error responses.
-     *
-     * @param ex the validation exception
-     * @return a map of field errors
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        java.util.Map<String, String> errors = new java.util.HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-    }
+
 }

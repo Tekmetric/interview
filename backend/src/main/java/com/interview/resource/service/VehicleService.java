@@ -1,8 +1,17 @@
 package com.interview.resource.service;
 
+
 import com.interview.resource.repository.VehicleRepository;
+import com.interview.resource.model.PaginatedResponse;
+import com.interview.resource.model.PaginationMeta;
 import com.interview.resource.model.Vehicle;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +24,23 @@ public class VehicleService {
 
     public List<Vehicle> getAllVehicles() {
         return vehicleRepository.findAll();
+    }
+
+        public PaginatedResponse<Vehicle> getAllVehiclesPaginated(int page, int size) {
+        // adjust for 0 based indexing 
+        if (page > 0) {
+            page = page - 1;
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Vehicle> pagedVehicles = vehicleRepository.findAll(pageable);
+        
+        PaginationMeta paginationMeta = new PaginationMeta(pagedVehicles.getNumber(), pagedVehicles.getTotalPages(), pagedVehicles.getTotalElements(), pagedVehicles.getSize());
+
+        return new PaginatedResponse<Vehicle>(
+            pagedVehicles.getContent(),
+            paginationMeta
+        );
     }
 
     public Optional<Vehicle> getVehicleById(Long id) {

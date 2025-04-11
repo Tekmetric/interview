@@ -1,7 +1,9 @@
 package com.interview.resource.controller;
 
-import com.interview.resource.model.Vehicle;
 import com.interview.resource.service.VehicleService;
+import com.interview.resource.model.PaginatedResponse;
+import com.interview.resource.model.PaginationMeta;
+import com.interview.resource.model.Vehicle;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,9 +29,28 @@ public class VehicleController {
     @Autowired
     private VehicleService vehicleService;
 
+    // Get all vehicles
     @GetMapping
-    public List<Vehicle> getAllVehicles() {
-        return vehicleService.getAllVehicles();
+    public ResponseEntity<PaginatedResponse<Vehicle>> getAllVehicles(
+        @RequestParam(defaultValue = "0") int page, 
+        @RequestParam(defaultValue = "0") int size) {
+        
+       // If both page and size are 0, return all vehicles without pagination
+        if (page == 0 && size == 0) {
+            // Fetch all vehicles
+            List<Vehicle> allVehicles = vehicleService.getAllVehicles();  // fetch all vehicles without pagination
+
+            // Wrap in a PaginatedResponse and create holistic metadata
+            PaginationMeta paginationMeta = new PaginationMeta(1, 1, allVehicles.size(), allVehicles.size());
+            PaginatedResponse<Vehicle> response = new PaginatedResponse<Vehicle>(allVehicles, paginationMeta);
+
+            return ResponseEntity.ok(response);
+        }
+        
+        // Otherwise, return paginated vehicles
+        PaginatedResponse<Vehicle> vehiclePage = vehicleService.getAllVehiclesPaginated(page, size);  // fetch vehicles with pagination
+
+        return ResponseEntity.ok(vehiclePage);
     }
 
     @GetMapping("/{id}")

@@ -31,7 +31,9 @@ class ProcessorManager:
     async def process(self) -> None:
         batch = []
 
-        async for near_earth_objects_batch in self._data_fetcher.fetch_near_earth_objects():
+        async for (
+            near_earth_objects_batch
+        ) in self._data_fetcher.fetch_near_earth_objects(200):
             logger.info(
                 "Processing batch of objects",
                 objects_count=len(near_earth_objects_batch),

@@ -3,3 +3,6 @@
 
 # Ignore .envrc files
 .envrc
+
+# Parquest file location
+files/

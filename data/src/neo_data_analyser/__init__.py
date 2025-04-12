@@ -5,8 +5,14 @@ import structlog
 from pydantic import ValidationError
 
 from neo_data_analyser.data_fetcher import NeoDataFetcher
-from neo_data_analyser.processors import Ingester, ProcessorManager
+from neo_data_analyser.processors import (
+    CloseApproachesPerYearAggregator,
+    CloserThan02AuAggregator,
+    Ingester,
+    ProcessorManager,
+)
 from neo_data_analyser.settings import get_settings
+from neo_data_analyser.storage import LocalStorage
 
 logger = structlog.get_logger()
 
@@ -25,10 +31,15 @@ async def _main() -> None:
         )
         sys.exit(1)
 
+    storage = LocalStorage()
     fetcher = NeoDataFetcher()
     processor_manager = ProcessorManager(
         data_fetcher=fetcher,
-        processors=[Ingester()],
+        processors=[
+            Ingester(storage=storage),
+            CloserThan02AuAggregator(storage=storage),
+            CloseApproachesPerYearAggregator(storage=storage),
+        ],
         batch_size=10,
     )
 

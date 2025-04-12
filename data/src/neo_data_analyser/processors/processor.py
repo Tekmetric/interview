@@ -8,3 +8,6 @@ class Processor(ABC):
 
     @abstractmethod
     def process(self, data: list[NearEarthObject]) -> None: ...
+
+    @abstractmethod
+    def finalize(self) -> None: ...

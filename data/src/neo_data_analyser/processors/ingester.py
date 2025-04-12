@@ -1,9 +1,10 @@
-from pathlib import Path
+from datetime import date
 
 import pandas as pd
 import structlog
 
 from neo_data_analyser.models import NearEarthObject
+from neo_data_analyser.storage import Storage
 
 from .processor import Processor
 
@@ -11,22 +12,17 @@ logger = structlog.get_logger()
 
 
 class Ingester(Processor):
-    def __init__(self, file_name_prefix: str = "neo_data") -> None:
+    def __init__(self, storage: Storage, file_name_prefix: str = "neo_data") -> None:
         self._ingested_files_count = 0
+        self._storage = storage
         self._file_name_prefix = file_name_prefix
 
-        self._create_files_directory()
-
-    def _create_files_directory(self) -> None:
-        # Set "exist_ok" to True to avoid raising an error if the directory already exists
-        Path("files").mkdir(exist_ok=True)
-
     def _compute_parquet_file_name(self) -> str:
-        return str(Path("files") / f"{self._file_name_prefix}_{self._ingested_files_count}.parquet")
+        return f"{self._file_name_prefix}_{self._ingested_files_count}.parquet"
 
     def _transform_near_earth_object_to_dataframe_row(
         self, near_earth_object: NearEarthObject
-    ) -> dict[str, str | float | None]:
+    ) -> dict[str, str | float | date | None]:
         return {
             "id": near_earth_object.id,
             "neo_reference_id": near_earth_object.neo_reference_id,
@@ -62,9 +58,12 @@ class Ingester(Processor):
     def process(self, data: list[NearEarthObject]) -> None:
         """Process the data and save it to a file."""
         logger.info("Ingesting data", objects_count=len(data))
-        file_name = self._compute_parquet_file_name()
         dataframe = pd.DataFrame([self._transform_near_earth_object_to_dataframe_row(obj) for obj in data])
-        dataframe.to_parquet(file_name, index=False)
+        file_name = self._compute_parquet_file_name()
+        self._storage.store_dataframe_to_parquet_file(
+            dataframe=dataframe,
+            file_name=file_name,
+        )
 
         logger.info(
             "Saved batch to parquet file",
@@ -72,3 +71,5 @@ class Ingester(Processor):
             objects_count=len(data),
         )
         self._ingested_files_count += 1
+
+    def finalize(self) -> None: ...

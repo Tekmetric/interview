@@ -20,8 +20,13 @@ class ProcessorManager:
         self._batch_size = batch_size
 
     def notify_processors(self, data: list[NearEarthObject]) -> None:
+        # TODO: Convert this to async to process the data in parallel
         for processor in self._processors:
             processor.process(data)
+
+    def finalize_processors(self) -> None:
+        for processor in self._processors:
+            processor.finalize()
 
     async def process(self) -> None:
         batch = []
@@ -42,3 +47,5 @@ class ProcessorManager:
 
         if batch:
             self.notify_processors(batch)
+
+        self.finalize_processors()

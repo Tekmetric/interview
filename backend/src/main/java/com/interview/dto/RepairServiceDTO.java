@@ -26,7 +26,7 @@ public class RepairServiceDTO {
     private String customerName;
     
     @NotBlank(message = "Customer phone is required")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
+    @Pattern(regexp = "^\\d{10}$", message = "Phone number must be 10 digits")
     private String customerPhone;
     
     @NotBlank(message = "Vehicle make is required")

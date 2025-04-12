@@ -24,6 +24,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RepairServiceService {
 
+    public static final String REPAIR_SERVICE_RESOURCE = "Repair service";
     private final RepairServiceRepository repairServiceRepository;
     private final RepairServiceMapper repairServiceMapper;
 
@@ -58,7 +59,7 @@ public class RepairServiceService {
         if (repairServiceOptional.isPresent()) {
             return repairServiceMapper.toDto(repairServiceOptional.get());
         } else {
-            throw ResourceNotFoundException.forId("Repair service", id);
+            throw ResourceNotFoundException.forId(REPAIR_SERVICE_RESOURCE, id);
         }
     }
 
@@ -86,7 +87,7 @@ public class RepairServiceService {
     public RepairServiceDTO updateRepairService(Long id, RepairServiceDTO repairServiceDTO) {
         // Check if the repair service exists
         if (!repairServiceRepository.existsById(id)) {
-            throw ResourceNotFoundException.forId("Repair service", id);
+            throw ResourceNotFoundException.forId(REPAIR_SERVICE_RESOURCE, id);
         }
         
         // Set the ID to ensure we're updating the correct entity
@@ -112,7 +113,7 @@ public class RepairServiceService {
     public void deleteRepairService(Long id) {
         // Check if the repair service exists
         if (!repairServiceRepository.existsById(id)) {
-            throw ResourceNotFoundException.forId("Repair service", id);
+            throw ResourceNotFoundException.forId(REPAIR_SERVICE_RESOURCE, id);
         }
         
         repairServiceRepository.deleteById(id);

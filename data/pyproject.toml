@@ -7,7 +7,11 @@ authors = [
     { name = "Arni", email = "me@arni.ro" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "aiohttp>=3.11.16",
+    "pydantic-settings>=2.8.1",
+    "structlog>=25.2.0",
+]
 
 [project.scripts]
 neo-data-analyser = "neo_data_analyser:main"
@@ -18,20 +22,31 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "ipdb>=0.13.13",
     "mypy>=1.15.0",
     "ruff>=0.11.5",
+    "typing-extensions>=4.13.2",
 ]
 
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+	"D100", # Missing docstring in public module
+	"D101", # Missing docstring in public class
+	"D102", # Missing docstring in public method
 	"D103", # Missing docstring in public function
 	"D104", # Missing docstring in public package 
+	"D105", # Missing docstring in magic method
+	"D107", # Missing docstring in __init__
 	"D211", # Blank line before class
 	"D213", # Multi line summary second line
 	"D203", # Incorrect blank line before class
 	"COM812", # Missing trail comma
+	"TD002", # Missing author
+	"TD003", # Missing issue link
+	"FIX002", # Line contains TODO
 ]
 
 [tool.mypy]
 strict = true
+plugins = ["pydantic.mypy"]

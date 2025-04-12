@@ -50,6 +50,7 @@ ignore = [
 	"D211", # Blank line before class
 	"D213", # Multi line summary second line
 	"D203", # Incorrect blank line before class
+	"D205", # Blank line betwee summay and description
 	"COM812", # Missing trail comma
 	"TD002", # Missing author
 	"TD003", # Missing issue link

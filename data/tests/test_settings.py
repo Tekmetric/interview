@@ -37,9 +37,7 @@ def test_get_settings_raises_pydantic_validation_error_if_key_is_missing(
 
 
 @pytest.mark.parametrize("env_key", ENV_KEYS)
-def test_get_settings_raises_pydantic_validation_error_if_key_is_empty(
-    monkeypatch: MonkeyPatch, env_key: str
-) -> None:
+def test_get_settings_raises_pydantic_validation_error_if_key_is_empty(monkeypatch: MonkeyPatch, env_key: str) -> None:
     # Arrange
     env = VALID_ENV.copy()
     env[env_key] = ""

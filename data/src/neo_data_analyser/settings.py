@@ -1,7 +1,11 @@
+import sys
 from functools import lru_cache
 
-from pydantic import Field
+import structlog
+from pydantic import Field, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logger = structlog.get_logger()
 
 
 class Settings(BaseSettings):
@@ -13,3 +17,14 @@ class Settings(BaseSettings):
 @lru_cache(1)
 def get_settings() -> Settings:
     return Settings()
+
+
+def check_settings() -> None:
+    try:
+        get_settings()
+    except ValidationError as exc:
+        logger.error(  # noqa: TRY400
+            "Environment is not configured properly.",
+            reason=[(error["type"], error["loc"]) for error in exc.errors()],
+        )
+        sys.exit(1)

@@ -29,6 +29,10 @@ dev = [
     "typing-extensions>=4.13.2",
 ]
 
+[tool.ruff]
+# Allow lines to be as long as 120.
+line-length = 120
+
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [

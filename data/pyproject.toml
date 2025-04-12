@@ -15,3 +15,23 @@ neo-data-analyser = "neo_data_analyser:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "ruff>=0.11.5",
+]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+	"D103", # Missing docstring in public function
+	"D104", # Missing docstring in public package 
+	"D211", # Blank line before class
+	"D213", # Multi line summary second line
+	"D203", # Incorrect blank line before class
+	"COM812", # Missing trail comma
+]
+
+[tool.mypy]
+strict = true

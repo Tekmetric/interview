@@ -1,4 +1,6 @@
-from pydantic import BaseModel, computed_field
+from functools import cached_property
+
+from pydantic import BaseModel
 
 
 class EstimatedDiameters(BaseModel):
@@ -43,7 +45,7 @@ class NearEarthObject(BaseModel):
     id: str
     neo_reference_id: str
     name: str
-    name_limited: str
+    name_limited: str = ""
     designation: str
     nasa_jpl_url: str
     absolute_magnitude_h: float
@@ -52,8 +54,7 @@ class NearEarthObject(BaseModel):
     estimated_diameter: EstimatedDiametersMeters
     close_approach_data: list[CloseApproach]
 
-    @property
-    @computed_field
+    @cached_property
     def closest_approach(self) -> CloseApproach | None:
         if not self.close_approach_data:
             return None

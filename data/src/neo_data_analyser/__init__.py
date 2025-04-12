@@ -4,7 +4,8 @@ import sys
 import structlog
 from pydantic import ValidationError
 
-from neo_data_analyser.neo_data_fetcher import NeoDataFetcher
+from neo_data_analyser.data_fetcher import NeoDataFetcher
+from neo_data_analyser.processors import Ingester, ProcessorManager
 from neo_data_analyser.settings import get_settings
 
 logger = structlog.get_logger()
@@ -25,5 +26,10 @@ async def _main() -> None:
         sys.exit(1)
 
     fetcher = NeoDataFetcher()
-    async for _ in fetcher.fetch_near_earth_objects():
-        pass
+    processor_manager = ProcessorManager(
+        data_fetcher=fetcher,
+        processors=[Ingester()],
+        batch_size=10,
+    )
+
+    await processor_manager.process()

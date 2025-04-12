@@ -4,7 +4,7 @@ import sys
 import structlog
 from pydantic import ValidationError
 
-from neo_data_analyser.neo_api import NeoApi
+from neo_data_analyser.neo_data_fetcher import NeoDataFetcher
 from neo_data_analyser.settings import get_settings
 
 logger = structlog.get_logger()
@@ -24,5 +24,6 @@ async def _main() -> None:
         )
         sys.exit(1)
 
-    async with NeoApi() as api:
-        await api.browse()
+    fetcher = NeoDataFetcher()
+    async for _ in fetcher.fetch_near_earth_objects():
+        pass

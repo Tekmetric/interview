@@ -4,8 +4,8 @@ import sys
 import structlog
 from pydantic import ValidationError
 
-from neo_data_analyser.config import get_settings
 from neo_data_analyser.neo_api import NeoApi
+from neo_data_analyser.settings import get_settings
 
 logger = structlog.get_logger()
 

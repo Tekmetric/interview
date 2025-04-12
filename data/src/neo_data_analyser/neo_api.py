@@ -4,7 +4,7 @@ from typing import cast
 
 import aiohttp
 
-from neo_data_analyser.config import get_settings
+from neo_data_analyser.settings import get_settings
 
 
 class NeoApi:

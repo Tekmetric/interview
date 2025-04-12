@@ -21,7 +21,9 @@ class NeoApi:
         self._session: aiohttp.ClientSession
 
     async def __aenter__(self) -> "NeoApi":
-        self._session = aiohttp.ClientSession(headers={"Content-Type": "application/json"})
+        self._session = aiohttp.ClientSession(
+            headers={"Content-Type": "application/json"}
+        )
         return self
 
     async def __aexit__(
@@ -38,7 +40,6 @@ class NeoApi:
     def _build_url(self, endpoint: str) -> str:
         return f"{self._api_url}/{endpoint}?api_key={self._api_key}"
 
-    # TODO: Add proper type to the response
     async def browse(self, page: int = 0) -> list[NearEarthObject]:
         logger.info(
             "Fetching data from Neo API",
@@ -51,7 +52,9 @@ class NeoApi:
         async with self._session.get(url, params=params) as response:
             if response.status != HTTPStatus.OK:
                 # TODO: Raise custom exception
-                exception_message = f"Failed to fetch data from Neo API: {response.status}"
+                exception_message = (
+                    f"Failed to fetch data from Neo API: {response.status}"
+                )
                 raise RuntimeError(exception_message)
 
             data = await response.json()
@@ -62,4 +65,7 @@ class NeoApi:
                 page=page,
             )
 
-            return [NearEarthObject.model_validate(item) for item in data["near_earth_objects"]]
+            return [
+                NearEarthObject.model_validate(item)
+                for item in data["near_earth_objects"]
+            ]

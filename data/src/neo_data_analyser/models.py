@@ -1,3 +1,4 @@
+from datetime import date
 from functools import cached_property
 
 from pydantic import BaseModel
@@ -30,7 +31,7 @@ class RelativeVelocity(BaseModel):
 
 class CloseApproach(BaseModel):
     miss_distance: MissDistance
-    close_approach_date: str
+    close_approach_date: date
     relative_velocity: RelativeVelocity
 
 

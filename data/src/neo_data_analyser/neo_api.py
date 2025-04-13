@@ -3,6 +3,7 @@ from types import TracebackType
 
 import aiohttp
 import structlog
+from aiohttp_retry import RetryClient, ExponentialRetry
 
 from neo_data_analyser.models import NearEarthObject
 from neo_data_analyser.settings import get_settings
@@ -19,10 +20,17 @@ class NeoApi:
         self._api_key: str = settings.neo_api_key
         self._api_url: str = settings.neo_api_url
         self._session: aiohttp.ClientSession
+        self._retry_client: RetryClient
 
     async def __aenter__(self) -> "NeoApi":
         self._session = aiohttp.ClientSession(
             headers={"Content-Type": "application/json"}
+        )
+        self._retry_client = RetryClient(
+            self._session,
+            retry_options=ExponentialRetry(
+                attempts=5,
+            ),
         )
         return self
 
@@ -49,7 +57,7 @@ class NeoApi:
         url = self._build_url("browse")
         params = {"page": page}
 
-        async with self._session.get(url, params=params) as response:
+        async with self._retry_client.get(url, params=params) as response:
             if response.status != HTTPStatus.OK:
                 # TODO: Raise custom exception
                 exception_message = (

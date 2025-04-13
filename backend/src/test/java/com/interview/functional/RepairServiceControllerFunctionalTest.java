@@ -85,9 +85,35 @@ class RepairServiceControllerFunctionalTest {
      * Test getting a repair service by ID (happy path).
      */
     @Test
-    void testGetRepairServiceById() {
-        // Use ID 1 which should exist from data.sql
-        long serviceId = 1L;
+    void testGetRepairServiceById() throws IOException {
+        // Arrange
+        RepairServiceDTO newService = RepairServiceDTO.builder()
+                .customerName("Test Customer")
+                .customerPhone("5551234567")
+                .vehicleMake("Test Make")
+                .vehicleModel("Test Model")
+                .vehicleYear(2020)
+                .licensePlate("TEST123")
+                .serviceDescription("Test service description")
+                .odometerReading(25000)
+                .status(RepairServiceStatus.PENDING)
+                .build();
+
+        // Create the service
+        HttpEntity<RepairServiceDTO> createEntity = new HttpEntity<>(newService, getJsonHeaders());
+        ResponseEntity<String> createResponse = restTemplate.exchange(
+                getBaseUrl(),
+                HttpMethod.POST,
+                createEntity,
+                String.class
+        );
+        
+        assertEquals(HttpStatus.CREATED, createResponse.getStatusCode());
+
+        String responseBody = createResponse.getBody();
+        JsonNode rootNode = objectMapper.readTree(responseBody);
+        JsonNode dataNode = rootNode.get("data");
+        long serviceId = dataNode.get("id").asLong();
 
         // Act - Get the service by ID
         ResponseEntity<String> response = restTemplate.exchange(
@@ -110,7 +136,7 @@ class RepairServiceControllerFunctionalTest {
     void testGetAllRepairServices() {
         // Act - Get all services with pagination
         ResponseEntity<String> response = restTemplate.exchange(
-                getBaseUrl() + "?page=0&size=10&sort=id,desc",
+                getBaseUrl() + "?pageNumber=0&pageSize=10&sortBy=id&sortDirection=desc",
                 HttpMethod.GET,
                 new HttpEntity<>(getJsonHeaders()),
                 String.class
@@ -130,7 +156,7 @@ class RepairServiceControllerFunctionalTest {
         // First create a service that we can update
         RepairServiceDTO newService = RepairServiceDTO.builder()
                 .customerName("Original Name")
-                .customerPhone("5551234567") // 10 digits with no dashes
+                .customerPhone("5551234567")
                 .vehicleMake("Original Make")
                 .vehicleModel("Original Model")
                 .vehicleYear(2020)
@@ -150,8 +176,7 @@ class RepairServiceControllerFunctionalTest {
         );
         
         assertEquals(HttpStatus.CREATED, createResponse.getStatusCode());
-        
-        // Extract ID from response using ObjectMapper for proper JSON parsing
+
         String responseBody = createResponse.getBody();
         JsonNode rootNode = objectMapper.readTree(responseBody);
         JsonNode dataNode = rootNode.get("data");
@@ -161,7 +186,7 @@ class RepairServiceControllerFunctionalTest {
         RepairServiceDTO updateService = RepairServiceDTO.builder()
                 .id(serviceId)
                 .customerName("Updated Customer")
-                .customerPhone("5559998888") // 10 digits with no dashes
+                .customerPhone("5559998888")
                 .vehicleMake("Updated Make")
                 .vehicleModel("Updated Model")
                 .vehicleYear(2023)
@@ -216,8 +241,7 @@ class RepairServiceControllerFunctionalTest {
         );
         
         assertEquals(HttpStatus.CREATED, createResponse.getStatusCode());
-        
-        // Extract ID from response using ObjectMapper for proper JSON parsing
+
         String responseBody = createResponse.getBody();
         JsonNode rootNode = objectMapper.readTree(responseBody);
         JsonNode dataNode = rootNode.get("data");

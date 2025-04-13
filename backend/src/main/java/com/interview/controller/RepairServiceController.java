@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * REST controller for managing repair service operations.
@@ -73,12 +75,21 @@ public class RepairServiceController {
     /**
      * Get all repair services with pagination.
      *
-     * @param pageable pagination information (page, size, sort)
+     * @param pageNumber the page number (zero-based)
+     * @param pageSize the size of the page
+     * @param sortBy the field to sort by (default: "id")
+     * @param sortDirection the direction to sort ("asc" or "desc")
      * @return the page of repair services
      */
     @GetMapping
     public ResponseEntity<ApiResponseDTO<Page<RepairServiceDTO>>> getAllRepairServices(
-            @PageableDefault(size = 10, sort = "id") Pageable pageable) {
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection) {
+        
+        Sort sort = Sort.by(sortDirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<RepairServiceDTO> repairServicePage = repairServiceService.getAllRepairServices(pageable);
         
         ApiResponseDTO<Page<RepairServiceDTO>> response = ApiResponseDTO.<Page<RepairServiceDTO>>builder()

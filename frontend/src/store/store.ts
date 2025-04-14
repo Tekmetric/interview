@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import vehicleReducer from '../features/vehicles/reducer';
+import applicationReducer from '../features/application/reducer';
 
 const store = configureStore({
   reducer: {
+    application: applicationReducer,
     vehicles: vehicleReducer,
   },
 });

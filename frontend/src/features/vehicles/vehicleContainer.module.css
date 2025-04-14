@@ -1,7 +1,0 @@
-.container {
-  border: 1px solid #fff;
-  display: flex;
-  justify-content: center;
-  margin-top: var(--header-size);
-  padding-top: var(--space-sm);
-}

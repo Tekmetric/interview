@@ -1,0 +1,21 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-md);
+  flex-direction: column;
+}
+
+.header input {
+  margin: var(--space-md) 0;
+}
+
+@media (min-width: 768px) {
+  .header {
+    flex-direction: row;
+    margin-bottom: var(--space-md);
+  }
+
+  .header input {
+    margin: 0;
+  }
+}

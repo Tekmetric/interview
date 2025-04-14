@@ -23,7 +23,7 @@ export const Layout = ({ children }: LayoutProps) => {
 
         <main
           className={`flex-1 transition-all overflow-x-hidden duration-300 ${
-            navbarOpen ? 'md:ml-64' : ''
+            navbarOpen ? 'ml-64' : ''
           }`}
         >
           <div className="container mx-auto px-4 py-6">{children}</div>

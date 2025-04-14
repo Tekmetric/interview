@@ -9,7 +9,6 @@ import {
   PaginationState,
 } from '@tanstack/react-table';
 import { RepairService } from '../types/api';
-import { RepairServiceStatus } from '../types/enums';
 import { StatusBadge } from './StatusBadge';
 import { ErrorIcon, EditIcon, DeleteIcon } from './svg';
 import { PaginationButton } from './PaginationButton';
@@ -307,7 +306,7 @@ export const RepairServicesTable = ({
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-b-md sm:px-4 h-16">
+      <div className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-b-md h-16">
         <div className="flex items-center">
           <span className="text-sm text-gray-700">
             Page <span className="font-medium">{table.getState().pagination.pageIndex + 1}</span> of{' '}

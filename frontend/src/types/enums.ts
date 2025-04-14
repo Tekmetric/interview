@@ -5,7 +5,7 @@ export enum RepairServiceStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 export function getStatusDisplayText(status: RepairServiceStatus): string {

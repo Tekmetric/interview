@@ -152,13 +152,7 @@ export const NewServiceRequestForm = ({
           {...register('odometerReading')}
         />
 
-        <Select
-          id="status"
-          label="Status"
-          required
-          error={errors.status}
-          {...register('status')}
-        >
+        <Select id="status" label="Status" required error={errors.status} {...register('status')}>
           {getAllStatuses().map(status => (
             <option key={status} value={status}>
               {status.replace('_', ' ')}

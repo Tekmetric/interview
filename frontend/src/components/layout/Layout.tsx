@@ -21,7 +21,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div className="flex flex-1">
         <Navbar isOpen={navbarOpen} />
 
-        <main className={`flex-1 transition-all duration-300 ${navbarOpen ? 'md:ml-64' : ''}`}>
+        <main
+          className={`flex-1 transition-all overflow-x-hidden duration-300 ${
+            navbarOpen ? 'md:ml-64' : ''
+          }`}
+        >
           <div className="container mx-auto px-4 py-6">{children}</div>
         </main>
       </div>

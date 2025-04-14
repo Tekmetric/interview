@@ -9,6 +9,7 @@ import {
   PaginationState,
 } from '@tanstack/react-table';
 import { RepairService } from '../types/api';
+import { RepairServiceStatus } from '../types/enums';
 import { StatusBadge } from './StatusBadge';
 import { ErrorIcon, EditIcon, DeleteIcon } from './svg';
 import { PaginationButton } from './PaginationButton';
@@ -17,6 +18,7 @@ import { NewServiceRequestForm } from './NewServiceRequestForm';
 import { ConfirmationModal } from './ConfirmationModal';
 import { useUpdateRepairService } from '../hooks/useUpdateRepairService';
 import { useDeleteRepairService } from '../hooks/useDeleteRepairService';
+import { ExpandableText } from './ui';
 
 const columnHelper = createColumnHelper<RepairService>();
 
@@ -78,25 +80,21 @@ export const RepairServicesTable = ({
   const handleUpdateService = async (formData: any) => {
     if (!serviceToEdit) return;
 
-    try {
-      const serviceData = {
-        customerName: formData.customerName,
-        customerPhone: formData.customerPhone,
-        vehicleMake: formData.vehicleMake,
-        vehicleModel: formData.vehicleModel,
-        vehicleYear: Number(formData.vehicleYear),
-        licensePlate: formData.licensePlate,
-        serviceDescription: formData.serviceDescription || '',
-        odometerReading: Number(formData.odometerReading),
-        status: formData.status,
-      };
+    const serviceData = {
+      customerName: formData.customerName,
+      customerPhone: formData.customerPhone,
+      vehicleMake: formData.vehicleMake,
+      vehicleModel: formData.vehicleModel,
+      vehicleYear: Number(formData.vehicleYear),
+      licensePlate: formData.licensePlate,
+      serviceDescription: formData.serviceDescription || '',
+      odometerReading: Number(formData.odometerReading),
+      status: formData.status,
+    };
 
-      await updateService(serviceToEdit.id, serviceData);
-      setIsEditModalOpen(false);
-      onServiceUpdated(); // Refresh the list after updating
-    } catch (err) {
-      // Error is handled by the hook
-    }
+    await updateService(serviceToEdit.id, serviceData);
+    setIsEditModalOpen(false);
+    onServiceUpdated();
   };
 
   const handleDeleteService = async () => {
@@ -138,7 +136,7 @@ export const RepairServicesTable = ({
       }),
       columnHelper.accessor('serviceDescription', {
         header: 'Service Description',
-        cell: info => info.getValue(),
+        cell: info => <ExpandableText text={info.getValue() || ''} maxLength={50} />,
       }),
       columnHelper.accessor('odometerReading', {
         header: 'Odometer',
@@ -247,7 +245,7 @@ export const RepairServicesTable = ({
                     {headerGroup.headers.map(header => (
                       <th
                         key={header.id}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         <div className="flex items-center">
@@ -271,7 +269,9 @@ export const RepairServicesTable = ({
                       {row.getVisibleCells().map(cell => (
                         <td
                           key={cell.id}
-                          className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                          className={`px-4 py-4 text-sm text-gray-500 ${
+                            cell.column.id === 'serviceDescription' ? '' : 'whitespace-nowrap'
+                          }`}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
@@ -294,7 +294,7 @@ export const RepairServicesTable = ({
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-b-md sm:px-6 h-16">
+      <div className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-b-md sm:px-4 h-16">
         <div className="flex items-center">
           <span className="text-sm text-gray-700">
             Page <span className="font-medium">{table.getState().pagination.pageIndex + 1}</span> of{' '}

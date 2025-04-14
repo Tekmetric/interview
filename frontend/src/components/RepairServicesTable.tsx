@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   createColumnHelper,
   flexRender,
@@ -10,8 +10,13 @@ import {
 } from '@tanstack/react-table';
 import { RepairService } from '../types/api';
 import { StatusBadge } from './StatusBadge';
-import { ErrorIcon } from './svg/ErrorIcon';
+import { ErrorIcon, EditIcon, DeleteIcon } from './svg';
 import { PaginationButton } from './PaginationButton';
+import { Modal } from './Modal';
+import { NewServiceRequestForm } from './NewServiceRequestForm';
+import { ConfirmationModal } from './ConfirmationModal';
+import { useUpdateRepairService } from '../hooks/useUpdateRepairService';
+import { useDeleteRepairService } from '../hooks/useDeleteRepairService';
 
 const columnHelper = createColumnHelper<RepairService>();
 
@@ -28,6 +33,7 @@ type RepairServicesTableProps = {
   onPageChange: (pageIndex: number, pageSize: number) => void;
   sorting: SortingState;
   onSortingChange: (sorting: SortingState) => void;
+  onServiceUpdated: () => void;
 };
 
 export const RepairServicesTable = ({
@@ -38,7 +44,68 @@ export const RepairServicesTable = ({
   onPageChange,
   sorting,
   onSortingChange,
+  onServiceUpdated,
 }: RepairServicesTableProps) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [serviceToEdit, setServiceToEdit] = useState<RepairService | null>(null);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState<RepairService | null>(null);
+
+  const { updateService, error: updateError } = useUpdateRepairService();
+  const { deleteService, error: deleteError, isLoading: isDeleting } = useDeleteRepairService();
+
+  const handleEditClick = (service: RepairService) => {
+    setServiceToEdit(service);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (service: RepairService) => {
+    setServiceToDelete(service);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setServiceToEdit(null);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setServiceToDelete(null);
+  };
+
+  const handleUpdateService = async (formData: any) => {
+    if (!serviceToEdit) return;
+
+    try {
+      const serviceData = {
+        customerName: formData.customerName,
+        customerPhone: formData.customerPhone,
+        vehicleMake: formData.vehicleMake,
+        vehicleModel: formData.vehicleModel,
+        vehicleYear: Number(formData.vehicleYear),
+        licensePlate: formData.licensePlate,
+        serviceDescription: formData.serviceDescription || '',
+        odometerReading: Number(formData.odometerReading),
+        status: formData.status,
+      };
+
+      await updateService(serviceToEdit.id, serviceData);
+      setIsEditModalOpen(false);
+      onServiceUpdated(); // Refresh the list after updating
+    } catch (err) {
+      // Error is handled by the hook
+    }
+  };
+
+  const handleDeleteService = async () => {
+    if (!serviceToDelete) return;
+
+    await deleteService(serviceToDelete.id);
+    setIsDeleteModalOpen(false);
+    onServiceUpdated();
+  };
   const columns = useMemo(
     () => [
       columnHelper.accessor('id', {
@@ -80,6 +147,33 @@ export const RepairServicesTable = ({
       columnHelper.accessor('status', {
         header: 'Status',
         cell: info => <StatusBadge status={info.getValue()} />,
+      }),
+      columnHelper.display({
+        id: 'actions',
+        header: 'Actions',
+        cell: props => {
+          const service = props.row.original;
+          return (
+            <div className="flex space-x-4">
+              <button
+                onClick={() => handleEditClick(service)}
+                className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition-colors"
+                title="Edit service"
+                aria-label="Edit service"
+              >
+                <EditIcon />
+              </button>
+              <button
+                onClick={() => handleDeleteClick(service)}
+                className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition-colors"
+                title="Delete service"
+                aria-label="Delete service"
+              >
+                <DeleteIcon />
+              </button>
+            </div>
+          );
+        },
       }),
     ],
     []
@@ -229,6 +323,57 @@ export const RepairServicesTable = ({
           </PaginationButton>
         </div>
       </div>
+
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        title="Edit Service Request"
+        footer={
+          updateError ? (
+            <div className="w-full p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+              {updateError.message}
+            </div>
+          ) : null
+        }
+      >
+        {serviceToEdit && (
+          <NewServiceRequestForm
+            onSave={handleUpdateService}
+            onCancel={handleCloseEditModal}
+            initialValues={{
+              customerName: serviceToEdit.customerName,
+              customerPhone: serviceToEdit.customerPhone,
+              vehicleMake: serviceToEdit.vehicleMake,
+              vehicleModel: serviceToEdit.vehicleModel,
+              vehicleYear: serviceToEdit.vehicleYear,
+              licensePlate: serviceToEdit.licensePlate,
+              serviceDescription: serviceToEdit.serviceDescription,
+              odometerReading: serviceToEdit.odometerReading,
+              status: serviceToEdit.status,
+            }}
+          />
+        )}
+      </Modal>
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleDeleteService}
+        title="Delete Service Request"
+        message={
+          deleteError ? (
+            <div className="p-2 mb-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {deleteError.message}
+              <hr className="my-2" />
+              Are you sure you want to delete this service request? This action cannot be undone.
+            </div>
+          ) : (
+            'Are you sure you want to delete this service request? This action cannot be undone.'
+          )
+        }
+        confirmButtonText="Delete"
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

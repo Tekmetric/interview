@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Layout } from '../components/layout';
 import { RepairServicesTable } from '../components/RepairServicesTable';
-import { useRepairServices } from '../hooks/useRepairServices';
+import { useFetchRepairServices } from '../hooks/useFetchRepairServices';
 import { SortingState } from '@tanstack/react-table';
+import { AddNewServiceButton } from '../components/AddNewServiceButton';
 
 export const HomePage = () => {
   const [pageIndex, setPageIndex] = useState(0);
@@ -12,7 +13,7 @@ export const HomePage = () => {
   const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
   const sortDirection = sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : undefined;
 
-  const { data, pageInfo, isLoading, error } = useRepairServices(
+  const { data, pageInfo, isLoading, error, mutate } = useFetchRepairServices(
     pageIndex,
     pageSize,
     sortBy,
@@ -37,12 +38,7 @@ export const HomePage = () => {
       <div className="bg-white p-6 rounded-lg shadow-md">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Repair Services</h1>
-          <button
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            onClick={() => {}}
-          >
-            New Service Request
-          </button>
+          <AddNewServiceButton onServiceAdded={() => mutate()} />
         </div>
 
         <RepairServicesTable
@@ -53,6 +49,7 @@ export const HomePage = () => {
           onPageChange={handlePageChange}
           sorting={sorting}
           onSortingChange={handleSortingChange}
+          onServiceUpdated={() => mutate()}
         />
       </div>
     </Layout>

@@ -1,3 +1,5 @@
+import { RepairServiceStatus } from './enums';
+
 export interface RepairService {
   id: number;
   customerName: string;
@@ -8,7 +10,7 @@ export interface RepairService {
   licensePlate: string;
   serviceDescription: string;
   odometerReading: number;
-  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  status: RepairServiceStatus;
 }
 
 export interface PageableResponse<T> {

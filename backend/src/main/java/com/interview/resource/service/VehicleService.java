@@ -1,16 +1,16 @@
 package com.interview.resource.service;
 
-
-import com.interview.resource.repository.VehicleRepository;
 import com.interview.resource.model.PaginatedResponse;
 import com.interview.resource.model.PaginationMeta;
 import com.interview.resource.model.Vehicle;
+import com.interview.resource.repository.VehicleRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class VehicleService {
     private VehicleRepository vehicleRepository;
 
     public List<Vehicle> getAllVehicles() {
-        return vehicleRepository.findAll();
+        return vehicleRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
         public PaginatedResponse<Vehicle> getAllVehiclesPaginated(int page, int size) {
@@ -32,10 +32,10 @@ public class VehicleService {
             page = page - 1;
         }
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Vehicle> pagedVehicles = vehicleRepository.findAll(pageable);
         
-        PaginationMeta paginationMeta = new PaginationMeta(pagedVehicles.getNumber(), pagedVehicles.getTotalPages(), pagedVehicles.getTotalElements(), pagedVehicles.getSize());
+        PaginationMeta paginationMeta = new PaginationMeta(pagedVehicles.getNumber() + 1, pagedVehicles.getTotalPages(), pagedVehicles.getTotalElements(), pagedVehicles.getSize());
 
         return new PaginatedResponse<Vehicle>(
             pagedVehicles.getContent(),

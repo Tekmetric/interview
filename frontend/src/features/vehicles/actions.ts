@@ -1,3 +1,4 @@
+import { convertVehicleToFormData } from './utils';
 import {
   CREATE_VEHICLE_FAILURE,
   CREATE_VEHICLE_REQUEST,
@@ -21,7 +22,6 @@ import { AppDispatch } from '../../store/store';
 
 // Sync Actions
 export const setSelectedVehicle = (vehicle: Vehicle | null) => {
-  console.log('setting vehicle', vehicle);
   return {
     type: SET_SELECTED_VEHICLE,
     payload: vehicle,
@@ -104,12 +104,11 @@ export const updateVehicleById =
     dispatch({ type: UPDATE_VEHICLE_REQUEST });
 
     try {
+      const formData = convertVehicleToFormData(vehicle);
       const res = await fetch(`http://localhost:8080/api/vehicles/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(vehicle),
+        body: formData,
+        mode: 'cors',
       });
 
       if (res.ok) {
@@ -145,12 +144,11 @@ export const createVehicle =
     dispatch({ type: CREATE_VEHICLE_REQUEST });
 
     try {
+      const formData = convertVehicleToFormData(vehicle);
       const res = await fetch(`http://localhost:8080/api/vehicles`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(vehicle),
+        mode: 'cors',
+        body: formData,
       });
 
       if (res.ok) {

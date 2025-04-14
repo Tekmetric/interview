@@ -8,26 +8,32 @@ import Dashboard from './features/application/Dashboard';
 
 /**
  * TO DO
- * UI: Optimistic Adds
- * UI: Edit
+ * FRONTEND
+ * Vehicle Image Validation(s) + Backend validations
  * UI: Search
- * UI: Filter
- * NF: Preload of Pagination on scroll
  * NF: Lazy Loading
  * NF: API caching
- * UI: Styles
- * UI: Base Line Tests
+ * UI: Tests
+ * Review loading state(s)
+ * Form skeleton
  *
- * Backend: DTOs
- * Backend: Tests
+ * BACKEND
+ * File upload (remove on shutdown)
+ * DTOs
+ * Tests
+ * Vehicle Validation(s)
  *
  * Done
  * List Items
  * Pagination
  * CRUD: Optimistic Deletes
+ * CRUD: Add
+ * CRUD: Delete
+ * CRUD
  * UI: Show individual item (route)
  * UI: Skeleton
  * UI: Mobile Styles
+ *
  */
 
 const App: React.FC = () => {

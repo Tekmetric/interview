@@ -4,6 +4,7 @@ frontend/dist/*
 backend/.idea/*
 backend/*.iml
 backend/target/**
+backend/uploads/*
 
 #ignore playwright resources
 qa/node_modules/

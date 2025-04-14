@@ -26,7 +26,7 @@ export interface Vehicle {
   make: string;
   model: string;
   modelYear: number;
-  image: string;
+  image: string | Blob | null;
 }
 
 export interface MetaData {

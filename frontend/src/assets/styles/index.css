@@ -4,9 +4,12 @@
 
 :root {
   /* Colors */
+  /* TODO  programmatic lighter, darker, transparent */
   --primary-color: #f0572a;
   --primary-color-disabled: rgba(240, 87, 42, 0.5);
+  --primary-color-transparent: rgba(251, 134, 45, 0.76);
 
+  --error-color-transparent: rgba(255, 37, 37, 0.75);
   --secondary-color: #fbb70d;
 
   --white-color: #fff;

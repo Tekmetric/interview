@@ -13,9 +13,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
+import java.nio.file.Path;
 
 @Service
 public class VehicleService {
@@ -43,13 +51,36 @@ public class VehicleService {
         );
     }
 
+    public Vehicle buildVehicleFromFormData(
+        Vehicle vehicle, String vin, String make, String model, String modelYear, MultipartFile image) throws IOException {
+            vehicle.setVin(vin);
+            vehicle.setMake(make);
+            vehicle.setModel(model);
+            vehicle.setModelYear(Integer.parseInt(modelYear));
+
+        if (image != null && !image.isEmpty()) {
+            String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            Path uploadPath = Paths.get("uploads");
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            vehicle.setImage("http://localhost:8080/uploads/" + fileName);
+        }
+
+        return vehicle;
+    }
+
     public Optional<Vehicle> getVehicleById(Long id) {
         return vehicleRepository.findById(id);
     }
 
     public Vehicle createVehicle(Vehicle vehicle) {
-        System.out.println(vehicle.getId());
-        System.out.println(vehicle.getMake());
+        System.out.println(vehicle.getImage());
         return vehicleRepository.save(vehicle);
     }
 

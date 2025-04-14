@@ -13,6 +13,8 @@ import {
   SET_SELECTED_VEHICLE,
   Vehicle,
   VehiclesState,
+  UPDATE_VEHICLE_REQUEST,
+  UPDATE_VEHICLE_FAILURE,
 } from './types';
 
 const initialState: VehiclesState = {
@@ -81,6 +83,19 @@ const vehicleReducer = (state = initialState, action: any) => {
       };
     // case CREATE_VEHICLE_SUCCESS:
     case CREATE_VEHICLE_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case UPDATE_VEHICLE_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+    // case CREATE_VEHICLE_SUCCESS:
+    case UPDATE_VEHICLE_FAILURE:
       return {
         ...state,
         loading: false,

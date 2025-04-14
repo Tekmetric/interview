@@ -29,14 +29,14 @@
 }
 
 .logo {
+  display: block;
   padding: var(--space-md);
-  display: inline-block;
   color: white;
   text-decoration: none;
 }
 
 .logo span {
-  display: inline-block;
+  display: block;
   font-size: var(--font-size-xl);
   line-height: var(--line-height-xl);
 }

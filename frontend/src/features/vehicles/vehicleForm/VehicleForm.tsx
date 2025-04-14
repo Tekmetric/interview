@@ -15,6 +15,7 @@ interface Values {
   model: string;
   modelYear: number;
   make: string;
+  image: FileList | undefined;
 }
 
 const getYears = () => {
@@ -108,10 +109,11 @@ const VehicleForm: FC = () => {
 
   const fileRef = useRef<HTMLInputElement>(null);
   const initialValues: Values = {
-    vin: vehicle ? vehicle.vin : '',
-    model: vehicle ? vehicle.model : '',
+    vin: vehicle ? vehicle.vin : '134124213412421fdsa',
+    model: vehicle ? vehicle.model : '123123',
     modelYear: vehicle ? vehicle.modelYear : 2025,
-    make: vehicle ? vehicle.make : '',
+    make: vehicle ? vehicle.make : '1231312',
+    image: vehicle ? vehicle.image : '',
   };
 
   const vehicleImage = previewImage ? (
@@ -122,7 +124,6 @@ const VehicleForm: FC = () => {
     <img src={'https://placehold.co/400'} alt="Upload Image" />
   );
 
-  console.log(vehicle);
   return (
     <div className={styles.module}>
       <div className={styles.header}>
@@ -167,14 +168,15 @@ const VehicleForm: FC = () => {
           return errors;
         }}
         onSubmit={(values: Values, { setSubmitting }: FormikHelpers<Values>) => {
-          if (isEditMode) {
-            dispatch(updateVehicleById(vehicleId, values as Partial<Vehicle>));
-          } else {
-            const data = {
-              ...values,
-              modelYear: Number(values.modelYear),
-            };
+          const data = {
+            ...values,
+            modelYear: values.modelYear,
+            image: values.image?.[0],
+          };
 
+          if (isEditMode) {
+            dispatch(updateVehicleById(vehicleId, data));
+          } else {
             dispatch(createVehicle(data));
           }
 
@@ -211,7 +213,7 @@ const VehicleForm: FC = () => {
             <FileUpload
               isDisabled={isDisabled}
               fileRef={fileRef}
-              name="files"
+              name="image"
               onPreviewImageChange={setPreviewImage}
             />
           </div>

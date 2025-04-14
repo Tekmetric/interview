@@ -5,10 +5,9 @@ type ExpandableTextProps = {
   maxLength?: number;
 };
 
-export const ExpandableText: React.FC<ExpandableTextProps> = ({ text, maxLength = 100 }) => {
+export const ExpandableText = ({ text, maxLength = 100 }: ExpandableTextProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // If text is shorter than maxLength, just return it
   if (!text || text.length <= maxLength) {
     return <div className="whitespace-pre-wrap">{text}</div>;
   }
@@ -20,7 +19,7 @@ export const ExpandableText: React.FC<ExpandableTextProps> = ({ text, maxLength 
 
   return (
     <div className="relative">
-      <div className={`whitespace-pre-wrap ${!isExpanded ? 'line-clamp-2' : ''}`}>{text}</div>
+      <div className={`whitespace-pre-wrap ${!isExpanded ? 'line-clamp-1' : ''}`}>{text}</div>
       <button
         onClick={toggleExpand}
         className="text-blue-600 hover:text-blue-800 font-medium text-xs mt-1 focus:outline-none"

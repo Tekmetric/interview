@@ -136,7 +136,7 @@ export const RepairServicesTable = ({
       }),
       columnHelper.accessor('serviceDescription', {
         header: 'Service Description',
-        cell: info => <ExpandableText text={info.getValue() || ''} maxLength={50} />,
+        cell: info => <ExpandableText text={info.getValue() || ''} maxLength={30} />,
       }),
       columnHelper.accessor('odometerReading', {
         header: 'Odometer',
@@ -238,7 +238,20 @@ export const RepairServicesTable = ({
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-gray-200 table-fixed">
+              <colgroup>
+                <col className="w-[3%]" /> {/* ID */}
+                <col className="w-[10%]" /> {/* Customer Name */}
+                <col className="w-[10%]" /> {/* Phone */}
+                <col className="w-[8%]" /> {/* Make */}
+                <col className="w-[8%]" /> {/* Model */}
+                <col className="w-[6%]" /> {/* Year */}
+                <col className="w-[8%]" /> {/* License Plate */}
+                <col className="w-[24%]" /> {/* Service Description */}
+                <col className="w-[8%]" /> {/* Odometer */}
+                <col className="w-[8%]" /> {/* Status */}
+                <col className="w-[7%]" /> {/* Actions */}
+              </colgroup>
               <thead className="bg-gray-50">
                 {table.getHeaderGroups().map(headerGroup => (
                   <tr key={headerGroup.id}>

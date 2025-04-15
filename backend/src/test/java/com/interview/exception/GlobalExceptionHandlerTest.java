@@ -1,21 +1,18 @@
 package com.interview.exception;
 
-import com.interview.dto.ApiResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.context.request.WebRequest;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,23 +20,20 @@ import static org.mockito.Mockito.when;
 class GlobalExceptionHandlerTest {
 
     private GlobalExceptionHandler exceptionHandler;
-    private WebRequest webRequest;
 
     @BeforeEach
     void setUp() {
         exceptionHandler = new GlobalExceptionHandler();
-        webRequest = mock(WebRequest.class);
     }
 
     @Test
     void handleResourceNotFoundException_ShouldReturnNotFoundStatus() {
         // Arrange
-        ResourceNotFoundException ex = new ResourceNotFoundException("Resource not found");
+        var ex = new ResourceNotFoundException("Resource not found");
 
-        // Act
-        ResponseEntity<ApiResponseDTO<Void>> response = exceptionHandler.handleResourceNotFoundException(ex, webRequest);
+        // Act & Assert
+        var response = exceptionHandler.handleResourceNotFoundException(ex);
 
-        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
@@ -51,12 +45,11 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleValidationException_ShouldReturnBadRequestStatus() {
         // Arrange
-        ValidationException ex = new ValidationException("Validation error");
+        var ex = new ValidationException("Validation error");
 
-        // Act
-        ResponseEntity<ApiResponseDTO<Void>> response = exceptionHandler.handleValidationException(ex, webRequest);
+        // Act & Assert
+        var response = exceptionHandler.handleValidationException(ex);
 
-        // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
@@ -68,12 +61,11 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleMappingException_ShouldReturnInternalServerErrorStatus() {
         // Arrange
-        MappingException ex = new MappingException("Mapping error");
+        var ex = new MappingException("Mapping error");
 
-        // Act
-        ResponseEntity<ApiResponseDTO<Void>> response = exceptionHandler.handleMappingException(ex, webRequest);
+        // Act & Assert
+        var response = exceptionHandler.handleMappingException(ex);
 
-        // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
@@ -85,20 +77,18 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleMethodArgumentNotValid_ShouldReturnBadRequestWithFieldErrors() {
         // Arrange
-        MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
-        BindingResult bindingResult = mock(BindingResult.class);
+        var ex = mock(MethodArgumentNotValidException.class);
+        var bindingResult = mock(BindingResult.class);
         
-        FieldError fieldError1 = new FieldError("object", "field1", "error1");
-        FieldError fieldError2 = new FieldError("object", "field2", "error2");
+        var fieldError1 = new FieldError("object", "field1", "error1");
+        var fieldError2 = new FieldError("object", "field2", "error2");
         
         when(ex.getBindingResult()).thenReturn(bindingResult);
-        when(bindingResult.getAllErrors()).thenReturn(java.util.Arrays.asList(fieldError1, fieldError2));
+        when(bindingResult.getAllErrors()).thenReturn(asList(fieldError1, fieldError2));
 
-        // Act
-        ResponseEntity<ApiResponseDTO<Map<String, String>>> response = 
-                exceptionHandler.handleMethodArgumentNotValid(ex, webRequest);
+        // Act & Assert
+        var response = exceptionHandler.handleMethodArgumentNotValid(ex);
 
-        // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
@@ -114,13 +104,11 @@ class GlobalExceptionHandlerTest {
     void handleConstraintViolationException_ShouldReturnBadRequestStatus() {
         // Arrange
         Set<ConstraintViolation<?>> violations = new HashSet<>();
-        ConstraintViolationException ex = new ConstraintViolationException("Constraint violation", violations);
+        var ex = new ConstraintViolationException("Constraint violation", violations);
 
-        // Act
-        ResponseEntity<ApiResponseDTO<Void>> response = 
-                exceptionHandler.handleConstraintViolationException(ex, webRequest);
+        // Act & Assert
+        var response = exceptionHandler.handleConstraintViolationException(ex);
 
-        // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
@@ -132,12 +120,11 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleGlobalException_ShouldReturnInternalServerErrorStatus() {
         // Arrange
-        Exception ex = new Exception("Unexpected error");
+        var ex = new Exception("Unexpected error");
 
-        // Act
-        ResponseEntity<ApiResponseDTO<Void>> response = exceptionHandler.handleGlobalException(ex, webRequest);
+        // Act & Assert
+        var response = exceptionHandler.handleGlobalException(ex);
 
-        // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());

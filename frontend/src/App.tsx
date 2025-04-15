@@ -4,6 +4,7 @@ import { PageLoader } from './components/PageLoader';
 import { AuthenticationGuard } from './components/AuthenticationGuard';
 import { HomePage } from './pages/HomePage';
 import { ProfilePage } from './pages/ProfilePage';
+import { UserDetailsPage } from './pages/UserDetailsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 const App = () => {
@@ -21,6 +22,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<AuthenticationGuard component={HomePage} />} />
       <Route path="/profile" element={<AuthenticationGuard component={ProfilePage} />} />
+      <Route path="/user" element={<AuthenticationGuard component={UserDetailsPage} />} />
       <Route path="*" element={<AuthenticationGuard component={NotFoundPage} />} />
     </Routes>
   );

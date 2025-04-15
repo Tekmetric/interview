@@ -26,4 +26,4 @@ public class PaginatedResponse<T> {
     public void setMeta(PaginationMeta meta) {
         this.meta = meta;
     }
-} 
+}

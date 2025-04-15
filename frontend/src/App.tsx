@@ -9,8 +9,7 @@ import Dashboard from './features/application/Dashboard';
 /**
  * TO DO
  * FRONTEND
- * Vehicle Image Validation(s) + Backend validations
- * UI: Search
+ * Bubble Up Backend validations inline
  * NF: Lazy Loading
  * NF: API caching
  * UI: Tests
@@ -18,22 +17,23 @@ import Dashboard from './features/application/Dashboard';
  * Form skeleton
  *
  * BACKEND
- * File upload (remove on shutdown)
  * DTOs
  * Tests
- * Vehicle Validation(s)
+ * Enhanced Vehicle Validation(s)
  *
  * Done
  * List Items
  * Pagination
+ * Routing
  * CRUD: Optimistic Deletes
- * CRUD: Add
- * CRUD: Delete
- * CRUD
- * UI: Show individual item (route)
- * UI: Skeleton
+ * CRUD: Create
+ * CRUD: Reads (List)
+ * CRUD: Read (Form population)
+ * CRUD: Update (Form Population)
+ * CRUD: Delete (animation + optimistic)
+ * UI: Skeleton Form
  * UI: Mobile Styles
- *
+ * UI: Search
  */
 
 const App: React.FC = () => {

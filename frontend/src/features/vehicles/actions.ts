@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { convertVehicleToFormData } from './utils';
 import {
   CREATE_VEHICLE_FAILURE,
@@ -30,12 +31,14 @@ export const setSelectedVehicle = (vehicle: Vehicle | null) => {
 
 // Thunks
 export const fetchVehicles =
-  (page = 1, size = 20) =>
+  (page = 1, query = '') =>
   async (dispatch: AppDispatch) => {
     dispatch({ type: FETCH_VEHICLES_REQUEST });
 
     try {
-      const res = await fetch(`http://localhost:8080/api/vehicles?page=${page}&size=${size}`);
+      const res = await fetch(
+        `http://localhost:8080/api/vehicles?page=${page}&size=${20}&query=${query}`
+      );
       const data = await res.json();
 
       dispatch({ type: FETCH_VEHICLES_SUCCESS, payload: data });
@@ -55,6 +58,90 @@ export const fetchVehicleById = (id: number) => async (dispatch: AppDispatch) =>
     dispatch({ type: FETCH_VEHICLE_DETAIL_FAILURE, error: 'ERROR OCCURRED' });
   }
 };
+
+export const createVehicle =
+  (vehicle: Partial<Vehicle>) => async (dispatch: AppDispatch, getState: any) => {
+    dispatch({ type: CREATE_VEHICLE_REQUEST });
+
+    try {
+      const formData = convertVehicleToFormData(vehicle);
+      const res = await fetch(`http://localhost:8080/api/vehicles`, {
+        method: 'POST',
+        mode: 'cors',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const currentPage = getState().vehicles.vehicles.meta.currentPage;
+
+        dispatch(fetchVehicles(currentPage));
+        dispatch(
+          setNotice({
+            type: 'success',
+            message: 'new vehicle successfully added',
+          })
+        );
+        return true;
+      } else {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Unknown error occurred');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+      dispatch({ type: CREATE_VEHICLE_FAILURE, error: errorMessage });
+      dispatch(
+        setNotice({
+          type: 'error',
+          message: errorMessage,
+        })
+      );
+      return false;
+    }
+  };
+
+export const updateVehicleById =
+  (id: number, vehicle: Partial<Vehicle>) => async (dispatch: AppDispatch, getState: any) => {
+    dispatch({ type: UPDATE_VEHICLE_REQUEST });
+
+    try {
+      const formData = convertVehicleToFormData(vehicle);
+      const res = await fetch(`http://localhost:8080/api/vehicles/${id}`, {
+        method: 'PUT',
+        body: formData,
+        mode: 'cors',
+      });
+
+      if (res.ok) {
+        // dispatch({ type: UPDATE_VEHICLE_SUCCESS, payload: id });
+        // Get the current page from the state
+        const currentPage = getState().vehicles.vehicles.meta.currentPage;
+
+        dispatch(fetchVehicles(currentPage));
+        dispatch(
+          setNotice({
+            type: 'success',
+            message: 'vehicle updated',
+          })
+        );
+        return true;
+      } else {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Unknown error occurred');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+      dispatch({ type: UPDATE_VEHICLE_FAILURE, error: errorMessage });
+      dispatch(
+        setNotice({
+          type: 'error',
+          message: errorMessage,
+        })
+      );
+      return false;
+    }
+  };
 
 export const deleteVehicleById = (id: number) => async (dispatch: AppDispatch, getState: any) => {
   // get vehicle and index (for request failure optimistic deletes)
@@ -98,81 +185,3 @@ export const deleteVehicleById = (id: number) => async (dispatch: AppDispatch, g
     );
   }
 };
-
-export const updateVehicleById =
-  (id: number, vehicle: Partial<Vehicle>) => async (dispatch: AppDispatch, getState: any) => {
-    dispatch({ type: UPDATE_VEHICLE_REQUEST });
-
-    try {
-      const formData = convertVehicleToFormData(vehicle);
-      const res = await fetch(`http://localhost:8080/api/vehicles/${id}`, {
-        method: 'PUT',
-        body: formData,
-        mode: 'cors',
-      });
-
-      if (res.ok) {
-        // dispatch({ type: UPDATE_VEHICLE_SUCCESS, payload: id });
-        // Get the current page from the state
-        const currentPage = getState().vehicles.vehicles.meta.currentPage;
-
-        dispatch(fetchVehicles(currentPage));
-        dispatch(
-          setNotice({
-            type: 'success',
-            message: 'vehicle updated',
-          })
-        );
-      } else {
-        throw new Error('Failed to delete vehicle');
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-
-      dispatch({ type: UPDATE_VEHICLE_FAILURE, error: errorMessage });
-      dispatch(
-        setNotice({
-          type: 'error',
-          message: 'error updating vehicle',
-        })
-      );
-    }
-  };
-
-export const createVehicle =
-  (vehicle: Partial<Vehicle>) => async (dispatch: AppDispatch, getState: any) => {
-    dispatch({ type: CREATE_VEHICLE_REQUEST });
-
-    try {
-      const formData = convertVehicleToFormData(vehicle);
-      const res = await fetch(`http://localhost:8080/api/vehicles`, {
-        method: 'POST',
-        mode: 'cors',
-        body: formData,
-      });
-
-      if (res.ok) {
-        const currentPage = getState().vehicles.vehicles.meta.currentPage;
-
-        dispatch(fetchVehicles(currentPage));
-        dispatch(
-          setNotice({
-            type: 'success',
-            message: 'new vehicle successfully added',
-          })
-        );
-      } else {
-        throw new Error('Failed to delete vehicle');
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-
-      dispatch({ type: CREATE_VEHICLE_FAILURE, error: errorMessage });
-      dispatch(
-        setNotice({
-          type: 'error',
-          message: 'error adding vehicle',
-        })
-      );
-    }
-  };

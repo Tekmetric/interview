@@ -21,12 +21,12 @@ export const UPDATE_VEHICLE_FAILURE = 'UPDATE_VEHICLE_FAILURE';
 export const SET_SELECTED_VEHICLE = 'SET_SELECTED_VEHICLE';
 
 export interface Vehicle {
-  id: number | string;
+  id: number;
   vin: string;
   make: string;
   model: string;
   modelYear: number;
-  image: string | Blob | null;
+  image: any;
 }
 
 export interface MetaData {
@@ -44,4 +44,20 @@ export interface VehiclesState {
   selectedVehicle?: Vehicle;
   loading: boolean;
   error: string | null;
+}
+
+export interface VehicleFormHeaderProps {
+  isEditMode: boolean;
+  isDisabled: boolean;
+  onEditClick: () => void;
+  vehicleTitle: string;
+  imageUrl: string | null;
+  onDeleteImage: () => void;
+}
+
+export interface VehicleFormFieldsProps {
+  isDisabled: boolean;
+  fileRef: React.RefObject<HTMLInputElement | null>;
+  setPreviewImage: (img: string | null) => void;
+  setHasClearedImage: (cleared: boolean) => void;
 }

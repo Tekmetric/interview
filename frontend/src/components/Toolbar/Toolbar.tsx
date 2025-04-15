@@ -1,15 +1,58 @@
-import type { FC } from 'react';
+import type { FC, FormEvent } from 'react';
+import { useState, useRef } from 'react';
+import { FaSearch, FaPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 import styles from './toolBar.module.css';
 
-const ToolBar: FC = () => {
+interface ToolBarProps {
+  handleSearch: (query: string) => void;
+  currentSearch: string;
+  resultCount: number | undefined;
+}
+
+const ToolBar: FC<ToolBarProps> = ({ handleSearch, currentSearch, resultCount }) => {
+  const [searchQuery, setSearchQuery] = useState(currentSearch ?? '');
+  const isCooldown = useRef(false);
+
+  const searchBy = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (isCooldown.current) return;
+
+    isCooldown.current = true;
+    setTimeout(() => {
+      isCooldown.current = false;
+    }, 300);
+
+    handleSearch(searchQuery);
+  };
+
+  const resultString = resultCount
+    ? `${resultCount} search ${resultCount === 0 ? 'results' : 'result'} found`
+    : '';
+
   return (
     <section className={styles.header}>
-      <Link className="link-button" to="/vehicle/create">
-        add new vehicle
-      </Link>
-      <input type="text" placeholder="search" />
+      <div className={styles.searchBar}>
+        <Link className="link-button" to="/vehicle/create">
+          <FaPlus /> <span>add new vehicle</span>
+        </Link>
+        <form className={styles.search} onSubmit={(e) => searchBy(e)}>
+          <input
+            type="text"
+            placeholder="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button type="submit" aria-label={`Search`}>
+            <FaSearch aria-hidden="true" />
+          </button>
+        </form>
+      </div>
+      <div className={styles.results}>
+        <p>{resultString}</p>
+      </div>
     </section>
   );
 };

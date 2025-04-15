@@ -3,14 +3,16 @@ package com.interview.resource.model;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "vehicles", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "vin")
-})
+@Table(name = "vehicles", uniqueConstraints = {@UniqueConstraint(columnNames = "vin")})
 public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +25,15 @@ public class Vehicle {
     private int modelYear;
     private String image;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     // Default constructor
-    public Vehicle() {
-    }
+    public Vehicle() {}
 
     public Vehicle(String vin, String make, String model, int modelYear, String image) {
         this.vin = vin;
@@ -83,4 +91,12 @@ public class Vehicle {
     public void setImage(String image) {
         this.image = image;
     }
-} 
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+}

@@ -4,8 +4,10 @@ import com.interview.resource.service.VehicleService;
 import com.interview.resource.model.PaginatedResponse;
 import com.interview.resource.model.PaginationMeta;
 import com.interview.resource.model.Vehicle;
+import com.interview.resource.model.response.ErrorResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -36,23 +38,25 @@ public class VehicleController {
     // Get all vehicles
     @GetMapping
     public ResponseEntity<PaginatedResponse<Vehicle>> getAllVehicles(
-        @RequestParam(defaultValue = "0") int page, 
-        @RequestParam(defaultValue = "0") int size) {
-        
-       // If both page and size are 0, return all vehicles without pagination
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "0") int size,
+            @RequestParam(required = false) String query) {
+
+        // If both page and size are 0, return all vehicles without pagination
         if (page == 0 && size == 0) {
             // Fetch all vehicles
-            List<Vehicle> allVehicles = vehicleService.getAllVehicles();  // fetch all vehicles without pagination
+            List<Vehicle> allVehicles = vehicleService.getAllVehicles();
 
             // Wrap in a PaginatedResponse and create holistic metadata
-            PaginationMeta paginationMeta = new PaginationMeta(1, 1, allVehicles.size(), allVehicles.size());
-            PaginatedResponse<Vehicle> response = new PaginatedResponse<Vehicle>(allVehicles, paginationMeta);
+            PaginationMeta paginationMeta =
+                    new PaginationMeta(1, 1, allVehicles.size(), allVehicles.size());
+            PaginatedResponse<Vehicle> response =
+                    new PaginatedResponse<Vehicle>(allVehicles, paginationMeta);
 
             return ResponseEntity.ok(response);
         }
-        
-        // Otherwise, return paginated vehicles
-        PaginatedResponse<Vehicle> vehiclePage = vehicleService.getAllVehiclesPaginated(page, size);  // fetch vehicles with pagination
+
+        PaginatedResponse<Vehicle> vehiclePage =
+                vehicleService.getAllVehiclesPaginated(page, size, query);
 
         return ResponseEntity.ok(vehiclePage);
     }
@@ -64,52 +68,50 @@ public class VehicleController {
     }
 
     @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<Vehicle> createVehicle(
-        @RequestPart("vin") String vin,
-        @RequestPart("make") String make,
-        @RequestPart("model") String model,
-        @RequestPart("modelYear") String modelYear,
-        @RequestPart(value = "image", required = false) MultipartFile image
-    ) {
+    public ResponseEntity<?> createVehicle(@RequestPart("vin") String vin,
+            @RequestPart("make") String make, @RequestPart("model") String model,
+            @RequestPart("modelYear") String modelYear,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
         try {
-            Vehicle vehicle = vehicleService.buildVehicleFromFormData(new Vehicle(), vin, make, model, modelYear, image);
+            Vehicle vehicle = vehicleService.buildVehicleFromFormData(new Vehicle(), vin, make,
+                    model, modelYear, image, false);
             Vehicle createdVehicle = vehicleService.createVehicle(vehicle);
 
             // return 201 Created
             return ResponseEntity.status(HttpStatus.CREATED).body(createdVehicle);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse("A vehicle with this VIN already exists."));
         } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            // e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("An unknown error occurred"));
         }
     }
 
     @PutMapping(path = "/{id}", consumes = "multipart/form-data")
-    public ResponseEntity<Vehicle> updateVehicle(
-        @PathVariable Long id,
-        @RequestPart("vin") String vin,
-        @RequestPart("make") String make,
-        @RequestPart("model") String model,
-        @RequestPart("modelYear") String modelYear,
-        @RequestPart(value = "image", required = false) MultipartFile image
-    ) {
+    public ResponseEntity<?> updateVehicle(@PathVariable Long id, @RequestPart("vin") String vin,
+            @RequestPart("make") String make, @RequestPart("model") String model,
+            @RequestPart("modelYear") String modelYear,
+            @RequestPart(value = "removeImage", required = false) String removeImage,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
         try {
             Optional<Vehicle> existingVehicle = vehicleService.getVehicleById(id);
 
-            if (existingVehicle.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            Vehicle updatedVehicle = vehicleService.buildVehicleFromFormData(
-                existingVehicle.get(), vin, make, model, modelYear, image
-            );
+            Vehicle updatedVehicle = vehicleService.buildVehicleFromFormData(existingVehicle.get(),
+                    vin, make, model, modelYear, image, Boolean.parseBoolean(removeImage));
 
             Vehicle saved = vehicleService.updateVehicle(id, updatedVehicle);
 
             // return 200 Updated
             return ResponseEntity.status(HttpStatus.OK).body(saved);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse("A vehicle with this VIN already exists."));
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("An unknown error occurred"));
         }
     }
 

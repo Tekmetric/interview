@@ -1,8 +1,9 @@
-import { FC, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import type { FC } from 'react';
 import ReactPaginate from 'react-paginate';
+import { useEffect, useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
+import { useVehicleQueryParams } from '../../../hooks';
 import { useAppSelector, useAppDispatch } from '../../../store/store';
 import { deleteVehicleById, fetchVehicles, setSelectedVehicle } from '../actions';
 import { Vehicle } from '../../../features/vehicles/types';
@@ -19,21 +20,21 @@ interface VehicleListProps {
 
 const VehicleList: FC<VehicleListProps> = ({ vehicleId }) => {
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const currentPageFromUrl = parseInt(searchParams.get('page') || '1', 10);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const { vehicles, loading, error } = useAppSelector((state) => state.vehicles);
+  const { vehicles, loading } = useAppSelector((state) => state.vehicles);
   const { data, meta } = vehicles;
 
+  const { page, search, updateParams } = useVehicleQueryParams();
+
   useEffect(() => {
-    dispatch(fetchVehicles(currentPageFromUrl));
-  }, [dispatch, currentPageFromUrl]);
+    dispatch(fetchVehicles(page, search));
+    setIsInitialLoad(false);
+  }, [dispatch, page, search]);
 
-  const handleSetPagination = (newPage: any) => {
-    const selectedPage = newPage.selected + 1;
-    setSearchParams({ page: selectedPage.toString() });
-
-    dispatch(fetchVehicles(selectedPage));
+  const handleSetPagination = ({ selected }: { selected: number }) => {
+    const selectedPage = selected + 1;
+    updateParams({ page: selectedPage.toString() });
   };
 
   const handleDeleteVehicle = (id: number) => {
@@ -44,7 +45,12 @@ const VehicleList: FC<VehicleListProps> = ({ vehicleId }) => {
     dispatch(setSelectedVehicle(vehicle));
   };
 
-  const tableContent = loading ? (
+  const handleSearch = (query: string) => {
+    updateParams({ search: query });
+    dispatch(fetchVehicles(1, query));
+  };
+
+  const tableContent = isInitialLoad ? (
     <Skeleton count={1} />
   ) : (
     <VehicleTable
@@ -54,7 +60,7 @@ const VehicleList: FC<VehicleListProps> = ({ vehicleId }) => {
     />
   );
 
-  const paginationContent = loading ? (
+  const paginationContent = isInitialLoad ? (
     <Skeleton count={1} />
   ) : (
     <ReactPaginate
@@ -78,10 +84,14 @@ const VehicleList: FC<VehicleListProps> = ({ vehicleId }) => {
   return (
     <>
       <div className={styles.container__toolbar}>
-        <ToolBar />
+        <ToolBar
+          handleSearch={handleSearch}
+          currentSearch={search}
+          resultCount={search ? meta.totalItems : undefined}
+        />
       </div>
       <div className={styles.container__table}>{tableContent}</div>
-      <div className={styles.container__pagination}>{paginationContent}</div>
+      <div className={styles.container__pagination}>{meta.totalPages > 0 && paginationContent}</div>
     </>
   );
 };

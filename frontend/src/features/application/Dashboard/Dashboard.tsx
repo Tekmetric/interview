@@ -1,4 +1,5 @@
-import React, { useState, FC } from 'react';
+import type { FC } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaUser, FaCar, FaCalendarCheck } from 'react-icons/fa';
 
@@ -34,6 +35,7 @@ const Dashboard: FC<DashboardProps> = ({ children }) => {
             <Link to="/profile">
               <img
                 src={`${user.image}`}
+                alt={`user profile, ${user.name}`}
                 onError={({ currentTarget }) => {
                   currentTarget.onerror = null;
                   currentTarget.src = 'https://placehold.co/300';
@@ -45,15 +47,15 @@ const Dashboard: FC<DashboardProps> = ({ children }) => {
           </div>
           <ul>
             <li>
-              <FaCar />
+              <FaCar aria-hidden="true" />
               <Link to="/">Inventory</Link>
             </li>
             <li>
-              <FaCalendarCheck />
+              <FaCalendarCheck aria-hidden="true" />
               <Link to="/scheduling">Schedules</Link>
             </li>
             <li>
-              <FaUser />
+              <FaUser aria-hidden="true" />
               <Link to="/profile">Profile</Link>
             </li>
           </ul>

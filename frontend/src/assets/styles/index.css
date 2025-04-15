@@ -9,8 +9,10 @@
   --primary-color-disabled: rgba(240, 87, 42, 0.5);
   --primary-color-transparent: rgba(251, 134, 45, 0.76);
 
-  --error-color-transparent: rgba(255, 37, 37, 0.75);
   --secondary-color: #fbb70d;
+
+  --error-color: #be0404;
+  --success-color: #4682b4;
 
   --white-color: #fff;
   --white-color-transparent: rgba(255, 255, 255, 0.5);
@@ -37,6 +39,7 @@
   --font-size-xl: 2rem; /* 20px */
 
   /* Line Heights */
+  --line-height-sm: 1rem;
   --line-height-md: 1.15rem;
   --line-height-lg: 1.5rem;
   --line-height-xl: 2rem;
@@ -100,20 +103,32 @@ a {
   text-decoration: none;
 }
 
+/* Focus indicator for keyboard users only */
+a:focus-visible {
+  outline: 2px solid #005fcc; /* Accessible blue */
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 .link-button,
 .link-button:visited,
 .link-button:active,
 button {
-  background-color: var(--primary-color);
-  border: none;
+  /* background-color: var(--primary-color); */
+  background: transparent;
+  border: 1px solid var(--white-color);
   color: white;
   padding: 10px;
   text-align: center;
   text-decoration: none;
-  /* display: inline-block; */
   border-radius: var(--border-radius-md);
+  transition: all 0.25s linear;
 }
 
+.link-button:hover,
+button:hover {
+  background-color: var(--primary-color);
+}
 input,
 select {
   background-color: var(--white-color);
@@ -133,8 +148,12 @@ select {
   position: relative;
 }
 
-button:disabled {
-  background-color: var(--primary-color-disabled);
+button:disabled,
+button:disabled:hover {
+  cursor: not-allowed;
+  background-color: transparent;
+  border-color: var(--white-color-transparent);
+  color: var(--white-color-transparent);
 }
 
 input:disabled,
@@ -193,9 +212,11 @@ select:disabled {
   border: 1px solid var(--primary-color); /* Active page with border */
 }
 
-.disabled .page-link {
+.disabled {
+  opacity: 0.25;
+}
+.disabled a {
   cursor: not-allowed;
-  opacity: 0.5;
 }
 
 .break {

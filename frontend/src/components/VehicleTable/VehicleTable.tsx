@@ -1,4 +1,5 @@
-import { FC } from 'react';
+import type { FC } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
@@ -6,20 +7,15 @@ import { Vehicle } from '../../features/vehicles/types';
 
 import styles from './vehicleTable.module.css';
 
-interface VehicleListProps {
-  vehicles: Vehicle[];
-  handleDeleteVehicle: (id: number) => void;
-  handleSetSelectedVehicle: (vehicle: Vehicle) => void;
-}
-
 const renderList = (
   vehicles: Vehicle[],
   handleDeleteVehicle: (id: number) => void,
-  handleSetSelectedVehicle: (vehicle: Vehicle) => void
+  handleSetSelectedVehicle: (vehicle: Vehicle) => void,
+  deletingId: number | null
 ) => {
   return vehicles.map((vehicle) => {
     return (
-      <tr key={vehicle.id}>
+      <tr key={vehicle.id} className={vehicle.id === deletingId ? styles.deleting : ''}>
         <td>{vehicle.id}</td>
         <td className={styles.mobile}>
           {vehicle.make} {vehicle.model}, {vehicle.modelYear}
@@ -30,16 +26,21 @@ const renderList = (
         <td>{vehicle.modelYear}</td>
         <td className={styles.editHeader}>
           <Link
+            aria-label={`Edit ${vehicle.make} ${vehicle.model}, ${vehicle.modelYear}`}
             className="link-button"
             to={`/vehicle/${vehicle.id}`}
             onClick={() => handleSetSelectedVehicle(vehicle)}
           >
-            <FaEdit />
+            <FaEdit aria-hidden="true" />
           </Link>
         </td>
         <td className={styles.editHeader}>
-          <button className="link-button" onClick={() => handleDeleteVehicle(vehicle.id)}>
-            <FaTrash />
+          <button
+            aria-label={`Delete ${vehicle.make} ${vehicle.model}, ${vehicle.modelYear}`}
+            className="link-button"
+            onClick={() => handleDeleteVehicle(Number(vehicle.id))}
+          >
+            <FaTrash aria-hidden="true" />
           </button>
         </td>
       </tr>
@@ -47,10 +48,25 @@ const renderList = (
   });
 };
 
+interface VehicleListProps {
+  vehicles: Vehicle[];
+  handleDeleteVehicle: (id: number) => void;
+  handleSetSelectedVehicle: (vehicle: Vehicle) => void;
+}
+
 const VehicleTable: FC<VehicleListProps> = (props: VehicleListProps) => {
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const { vehicles, handleDeleteVehicle, handleSetSelectedVehicle } = props;
 
-  if (vehicles.length === 0) return <p className={styles.empty}>No Vehicles Inventoried</p>;
+  const handleAnimateDelete = (id: number) => {
+    setDeletingId(id);
+    setTimeout(() => {
+      handleDeleteVehicle(id);
+      setDeletingId(null);
+    }, 300);
+  };
+
+  if (vehicles.length === 0) return <p className={styles.empty}>No Results Found</p>;
 
   return (
     <table className={styles.table}>
@@ -66,7 +82,9 @@ const VehicleTable: FC<VehicleListProps> = (props: VehicleListProps) => {
           <th className={styles.editHeader}>delete</th>
         </tr>
       </thead>
-      <tbody>{renderList(vehicles, handleDeleteVehicle, handleSetSelectedVehicle)}</tbody>
+      <tbody>
+        {renderList(vehicles, handleAnimateDelete, handleSetSelectedVehicle, deletingId)}
+      </tbody>
     </table>
   );
 };

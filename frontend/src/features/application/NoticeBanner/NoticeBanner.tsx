@@ -1,4 +1,5 @@
-import { FC, useEffect, useState } from 'react';
+import type { FC } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../store/store';
 import { clearNotice } from '../actions';
@@ -14,12 +15,12 @@ const NoticeBanner: FC = () => {
     if (notice.message) {
       setTimeout(() => {
         setVisible(true);
-      }, 100);
+      }, 200);
 
       const timeout = setTimeout(() => {
         setVisible(false);
         setTimeout(() => dispatch(clearNotice()), 500);
-      }, 4000);
+      }, 3000);
       return () => clearTimeout(timeout);
     }
   }, [notice, dispatch]);

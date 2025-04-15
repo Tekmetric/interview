@@ -31,34 +31,43 @@ public class VehicleService {
     private VehicleRepository vehicleRepository;
 
     public List<Vehicle> getAllVehicles() {
+        // TODO add search by query
         return vehicleRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
-        public PaginatedResponse<Vehicle> getAllVehiclesPaginated(int page, int size) {
-        // adjust for 0 based indexing 
+    public PaginatedResponse<Vehicle> getAllVehiclesPaginated(int page, int size, String query) {
+        // adjust for 0 based indexing
         if (page > 0) {
             page = page - 1;
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Vehicle> pagedVehicles = vehicleRepository.findAll(pageable);
-        
-        PaginationMeta paginationMeta = new PaginationMeta(pagedVehicles.getNumber() + 1, pagedVehicles.getTotalPages(), pagedVehicles.getTotalElements(), pagedVehicles.getSize());
+        Page<Vehicle> pagedVehicles;
 
-        return new PaginatedResponse<Vehicle>(
-            pagedVehicles.getContent(),
-            paginationMeta
-        );
+        if (query != null && !query.trim().isEmpty()) {
+            pagedVehicles = vehicleRepository.searchByQuery(query, pageable);
+        } else {
+            pagedVehicles = vehicleRepository.findAll(pageable);
+        }
+
+        PaginationMeta paginationMeta =
+                new PaginationMeta(pagedVehicles.getNumber() + 1, pagedVehicles.getTotalPages(),
+                        pagedVehicles.getTotalElements(), pagedVehicles.getSize());
+
+        return new PaginatedResponse<Vehicle>(pagedVehicles.getContent(), paginationMeta);
     }
 
-    public Vehicle buildVehicleFromFormData(
-        Vehicle vehicle, String vin, String make, String model, String modelYear, MultipartFile image) throws IOException {
-            vehicle.setVin(vin);
-            vehicle.setMake(make);
-            vehicle.setModel(model);
-            vehicle.setModelYear(Integer.parseInt(modelYear));
+    public Vehicle buildVehicleFromFormData(Vehicle vehicle, String vin, String make, String model,
+            String modelYear, MultipartFile image, Boolean removeImage) throws IOException {
+        vehicle.setVin(vin);
+        vehicle.setMake(make);
+        vehicle.setModel(model);
+        vehicle.setModelYear(Integer.parseInt(modelYear));
 
-        if (image != null && !image.isEmpty()) {
+        // TODO remove hard coded localhost OR S3 uploads
+        if (removeImage) {
+            vehicle.setImage(null);
+        } else if (image != null && !image.isEmpty()) {
             String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
             Path uploadPath = Paths.get("uploads");
 
@@ -85,7 +94,8 @@ public class VehicleService {
     }
 
     public Vehicle updateVehicle(Long id, Vehicle vehicle) {
-        Vehicle existingVehicle = vehicleRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        Vehicle existingVehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
         existingVehicle.setMake(vehicle.getMake());
         existingVehicle.setModel(vehicle.getModel());
         existingVehicle.setImage(vehicle.getImage());

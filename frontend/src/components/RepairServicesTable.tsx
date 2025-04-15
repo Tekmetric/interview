@@ -148,7 +148,7 @@ export const RepairServicesTable = ({
       }),
       columnHelper.accessor('serviceDescription', {
         header: 'Service Description',
-        cell: info => <ExpandableText text={info.getValue() || ''} maxLength={30} />,
+        cell: info => <ExpandableText text={info.getValue() || ''} maxLength={40} />,
       }),
       columnHelper.accessor('odometerReading', {
         header: 'Odometer',

@@ -42,7 +42,7 @@ const ToolBar: FC<ToolBarProps> = ({ handleSearch, currentSearch, resultCount })
           <input
             data-testid="search"
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="search"
+            placeholder="Enter Search Term"
             type="text"
             value={searchQuery}
           />

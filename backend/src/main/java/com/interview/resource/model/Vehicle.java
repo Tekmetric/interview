@@ -32,7 +32,6 @@ public class Vehicle {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Default constructor
     public Vehicle() {}
 
     public Vehicle(String vin, String make, String model, int modelYear, String image) {

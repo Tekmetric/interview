@@ -43,10 +43,9 @@ public class VehicleController {
 
         // If both page and size are 0, return all vehicles without pagination
         if (page == 0 && size == 0) {
-            // Fetch all vehicles
             List<Vehicle> allVehicles = vehicleService.getAllVehicles();
 
-            // Wrap in a PaginatedResponse and create holistic metadata
+            // Wrap in a PaginatedResponse and create metadata
             PaginationMeta paginationMeta =
                     new PaginationMeta(1, 1, allVehicles.size(), allVehicles.size());
             PaginatedResponse<Vehicle> response =
@@ -83,7 +82,6 @@ public class VehicleController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResponse("A vehicle with this VIN already exists."));
         } catch (IOException e) {
-            // e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("An unknown error occurred"));
         }
@@ -109,7 +107,6 @@ public class VehicleController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResponse("A vehicle with this VIN already exists."));
         } catch (IOException e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("An unknown error occurred"));
         }

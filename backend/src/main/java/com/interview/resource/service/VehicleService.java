@@ -64,7 +64,7 @@ public class VehicleService {
         vehicle.setModel(model);
         vehicle.setModelYear(Integer.parseInt(modelYear));
 
-        // TODO remove hard coded localhost OR S3 uploads
+        // TODO remove hard coded localhost and add S3 uploads
         if (removeImage) {
             vehicle.setImage(null);
         } else if (image != null && !image.isEmpty()) {

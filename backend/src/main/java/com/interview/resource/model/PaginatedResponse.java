@@ -15,6 +15,7 @@ public class PaginatedResponse<T> {
         return data;
     }
 
+    // Getters and Setters
     public void setData(List<T> data) {
         this.data = data;
     }

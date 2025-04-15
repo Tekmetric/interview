@@ -13,6 +13,7 @@ public class PaginationMeta {
         this.itemsPerPage = itemsPerPage;
     }
 
+    // Getters and Setters
     public int getCurrentPage() {
         return currentPage;
     }
@@ -44,4 +45,4 @@ public class PaginationMeta {
     public void setItemsPerPage(int itemsPerPage) {
         this.itemsPerPage = itemsPerPage;
     }
-} 
+}

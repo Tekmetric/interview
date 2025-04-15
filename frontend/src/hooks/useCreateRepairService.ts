@@ -2,17 +2,19 @@ import { useState } from 'react';
 import { mutate as globalMutate } from 'swr';
 import { ApiResponse, RepairService } from '../types/api';
 import { API_BASE_URL, API_ENDPOINT, REPAIR_SERVICES_CACHE_KEY } from './constants';
+import { useAuthFetch } from '../utils/auth';
 
 export function useCreateRepairService() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const { authFetch } = useAuthFetch();
 
   const createService = async (serviceData: Omit<RepairService, 'id'>) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const result = await createRepairService(serviceData);
+      const result = await createRepairService(serviceData, authFetch);
 
       globalMutate(key => Array.isArray(key) && key[0] === REPAIR_SERVICES_CACHE_KEY);
       return result;
@@ -33,10 +35,11 @@ export function useCreateRepairService() {
 }
 
 async function createRepairService(
-  serviceData: Omit<RepairService, 'id'>
+  serviceData: Omit<RepairService, 'id'>,
+  authFetch: (url: string, options?: RequestInit) => Promise<Response>
 ): Promise<ApiResponse<RepairService>> {
   try {
-    const response = await fetch(`${API_BASE_URL}${API_ENDPOINT}`, {
+    const response = await authFetch(`${API_BASE_URL}${API_ENDPOINT}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   createColumnHelper,
   flexRender,
@@ -18,6 +18,7 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { useUpdateRepairService } from '../hooks/useUpdateRepairService';
 import { useDeleteRepairService } from '../hooks/useDeleteRepairService';
 import { ExpandableText } from './ui';
+import { usePermissions } from '../hooks/usePermissions';
 
 const columnHelper = createColumnHelper<RepairService>();
 
@@ -55,6 +56,18 @@ export const RepairServicesTable = ({
 
   const { updateService, error: updateError } = useUpdateRepairService();
   const { deleteService, error: deleteError, isLoading: isDeleting } = useDeleteRepairService();
+  
+  const { hasWritePermission } = usePermissions();
+  const [canWrite, setCanWrite] = useState(false);
+
+  useEffect(() => {
+    const checkPermissions = async () => {
+      const hasPermission = await hasWritePermission();
+      setCanWrite(hasPermission);
+    };
+    
+    checkPermissions();
+  }, [hasWritePermission]);
 
   const handleEditClick = (service: RepairService) => {
     setServiceToEdit(service);
@@ -154,17 +167,27 @@ export const RepairServicesTable = ({
             <div className="flex space-x-4">
               <button
                 onClick={() => handleEditClick(service)}
-                className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition-colors"
-                title="Edit service"
+                className={`text-blue-600 p-1 rounded transition-colors ${
+                  canWrite 
+                    ? 'hover:text-blue-800 hover:bg-blue-50' 
+                    : 'opacity-50 cursor-not-allowed'
+                }`}
+                title={canWrite ? "Edit service" : "You don't have permission to edit"}
                 aria-label="Edit service"
+                disabled={!canWrite}
               >
                 <EditIcon />
               </button>
               <button
                 onClick={() => handleDeleteClick(service)}
-                className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition-colors"
-                title="Delete service"
+                className={`text-red-600 p-1 rounded transition-colors ${
+                  canWrite 
+                    ? 'hover:text-red-800 hover:bg-red-50' 
+                    : 'opacity-50 cursor-not-allowed'
+                }`}
+                title={canWrite ? "Delete service" : "You don't have permission to delete"}
                 aria-label="Delete service"
+                disabled={!canWrite}
               >
                 <DeleteIcon />
               </button>
@@ -173,7 +196,7 @@ export const RepairServicesTable = ({
         },
       }),
     ],
-    []
+    [canWrite]
   );
 
   const pagination: PaginationState = {

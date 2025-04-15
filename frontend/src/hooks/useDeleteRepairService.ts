@@ -2,17 +2,19 @@ import { useState } from 'react';
 import { mutate as globalMutate } from 'swr';
 import { ApiResponse } from '../types/api';
 import { API_BASE_URL, API_ENDPOINT, REPAIR_SERVICES_CACHE_KEY } from './constants';
+import { useAuthFetch } from '../utils/auth';
 
 export function useDeleteRepairService() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const { authFetch } = useAuthFetch();
 
   const deleteService = async (id: number) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const result = await deleteRepairService(id);
+      const result = await deleteRepairService(id, authFetch);
       globalMutate(key => Array.isArray(key) && key[0] === REPAIR_SERVICES_CACHE_KEY);
       return result;
     } catch (err) {
@@ -31,9 +33,12 @@ export function useDeleteRepairService() {
   };
 }
 
-async function deleteRepairService(id: number): Promise<ApiResponse<void>> {
+async function deleteRepairService(
+  id: number,
+  authFetch: (url: string, options?: RequestInit) => Promise<Response>
+): Promise<ApiResponse<void>> {
   try {
-    const response = await fetch(`${API_BASE_URL}${API_ENDPOINT}/${id}`, {
+    const response = await authFetch(`${API_BASE_URL}${API_ENDPOINT}/${id}`, {
       method: 'DELETE',
     });
 

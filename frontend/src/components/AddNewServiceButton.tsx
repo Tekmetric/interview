@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { NewServiceRequestForm } from './NewServiceRequestForm';
 import { useCreateRepairService } from '../hooks/useCreateRepairService';
 import { RepairService } from '../types/api';
+import { usePermissions } from '../hooks/usePermissions';
 
 type AddNewServiceButtonProps = {
   onServiceAdded: () => void;
@@ -11,6 +12,17 @@ type AddNewServiceButtonProps = {
 export const AddNewServiceButton = ({ onServiceAdded }: AddNewServiceButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { createService, error } = useCreateRepairService();
+  const { hasWritePermission } = usePermissions();
+  const [canWrite, setCanWrite] = useState(false);
+
+  useEffect(() => {
+    const checkPermissions = async () => {
+      const hasPermission = await hasWritePermission();
+      setCanWrite(hasPermission);
+    };
+    
+    checkPermissions();
+  }, [hasWritePermission]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -42,7 +54,13 @@ export const AddNewServiceButton = ({ onServiceAdded }: AddNewServiceButtonProps
     <>
       <button
         onClick={handleOpenModal}
-        className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        className={`px-4 py-2 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+          canWrite
+            ? 'bg-blue-600 hover:bg-blue-700'
+            : 'bg-blue-400 cursor-not-allowed'
+        }`}
+        disabled={!canWrite}
+        title={canWrite ? 'Add new service' : "You don't have permission to add services"}
       >
         Add New Service
       </button>

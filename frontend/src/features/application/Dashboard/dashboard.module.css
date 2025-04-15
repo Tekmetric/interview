@@ -32,7 +32,7 @@
 .logo {
   display: block;
   padding: var(--space-md);
-  color: white;
+  color: var(--white-color);
   text-decoration: none;
 }
 
@@ -71,7 +71,7 @@
 
 .sidebar__inner {
   background-color: var(--module-color);
-  border-radius: 5px;
+  border-radius: var(--border-radius-md);
   height: 100%;
   width: 100%;
   position: relative;
@@ -88,7 +88,8 @@
   display: flex;
   align-items: center;
   background-color: var(--module-color);
-  color: #e3eaf8;
+
+  color: var(--white-color);
   border-top: 1px solid var(--white-color);
   padding: var(--space-lg);
 }

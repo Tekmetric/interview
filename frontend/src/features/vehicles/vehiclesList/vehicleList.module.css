@@ -1,12 +1,11 @@
 .container__table {
   background-color: var(--background-color);
-  border-radius: 5px;
+  border-radius: var(--border-radius-md);
   height: 100%;
   overflow: scroll;
   padding: 0 var(--space-md);
   position: relative;
   width: 100%;
-
   scrollbar-color: var(--white-color-transparent) var(--module-color);
   scrollbar-width: thin;
   overflow-x: hidden;

@@ -256,11 +256,12 @@ export const RepairServicesTable = ({
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="overflow-x-auto">
-        <div className="inline-block min-w-full align-middle">
-          <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5">
-            <table className="min-w-full divide-y divide-gray-200 table-fixed">
+    <div className="flex flex-col h-[calc(100vh-220px)]">
+      <div className="overflow-x-auto flex-grow">
+        <div className="inline-block min-w-full align-middle h-full">
+          <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 h-full flex flex-col">
+            <div className="overflow-y-auto flex-grow">
+              <table className="min-w-full divide-y divide-gray-200 table-fixed">
               <colgroup>
                 <col className="w-[3%]" /> {/* ID */}
                 <col className="w-[10%]" /> {/* Customer Name */}
@@ -274,7 +275,7 @@ export const RepairServicesTable = ({
                 <col className="w-[8%]" /> {/* Status */}
                 <col className="w-[7%]" /> {/* Actions */}
               </colgroup>
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 sticky top-0 z-10">
                 {table.getHeaderGroups().map(headerGroup => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map(header => (
@@ -325,11 +326,12 @@ export const RepairServicesTable = ({
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-b-md h-16">
+      <div className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-b-md h-16 mt-auto sticky bottom-0">
         <div className="flex items-center">
           <span className="text-sm text-gray-700">
             Page <span className="font-medium">{table.getState().pagination.pageIndex + 1}</span> of{' '}

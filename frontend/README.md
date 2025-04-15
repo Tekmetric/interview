@@ -88,3 +88,5 @@ The application uses a set of custom hooks to interact with the backend API:
 - **Service Worker**: Offline support and better handling of internet connection issues
 - **Advanced Filtering**: More sophisticated filtering options for the repair services table
 - **Unit Tests**: Unit tests for the application to ensure code quality
+- **Vite and Vitest**: Switch from Create React App to Vite for better performance and Vitest for testing
+- **PNPM**: Switch to pnpm package manager for better performance and disk space efficiency

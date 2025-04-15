@@ -15,12 +15,12 @@ const NoticeBanner: FC = () => {
     if (notice.message) {
       setTimeout(() => {
         setVisible(true);
-      }, 200);
+      }, 50);
 
       const timeout = setTimeout(() => {
         setVisible(false);
         setTimeout(() => dispatch(clearNotice()), 500);
-      }, 3000);
+      }, 2000);
       return () => clearTimeout(timeout);
     }
   }, [notice, dispatch]);

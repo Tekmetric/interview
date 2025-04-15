@@ -15,7 +15,7 @@
 .search {
   display: flex;
   flex-direction: row;
-  color: var(--white-color);
+  background-color: var(--white-color);
   border-radius: var(--border-radius-md);
   padding: 1px;
 }

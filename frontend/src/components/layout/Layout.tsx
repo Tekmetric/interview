@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Header } from './Header';
 import { Navbar } from './Navbar';
-import { Footer } from './Footer';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -30,7 +29,7 @@ export const Layout = ({ children }: LayoutProps) => {
         </main>
       </div>
 
-      <Footer />
+
     </div>
   );
 };

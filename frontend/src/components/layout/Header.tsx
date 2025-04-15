@@ -1,6 +1,8 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useNavigate } from 'react-router-dom';
 import { MenuIcon, UserIcon, ChevronDownIcon } from '../svg';
+import { HeaderButton } from './HeaderButton';
 
 interface HeaderProps {
   toggleNavbar: () => void;
@@ -9,6 +11,7 @@ interface HeaderProps {
 export const Header = ({ toggleNavbar }: HeaderProps) => {
   const { logout, user } = useAuth0();
   const [userMenuOpen, setUserMenuOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
@@ -46,23 +49,22 @@ export const Header = ({ toggleNavbar }: HeaderProps) => {
 
         {userMenuOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-            <button
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            <HeaderButton
               onClick={() => {
                 setUserMenuOpen(false);
+                navigate('/user');
               }}
             >
               User details
-            </button>
-            <button
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            </HeaderButton>
+            <HeaderButton
               onClick={() => {
                 setUserMenuOpen(false);
                 handleLogout();
               }}
             >
               Logout
-            </button>
+            </HeaderButton>
           </div>
         )}
       </div>

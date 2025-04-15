@@ -20,7 +20,7 @@ export const AddNewServiceButton = ({ onServiceAdded }: AddNewServiceButtonProps
       const hasPermission = await hasWritePermission();
       setCanWrite(hasPermission);
     };
-    
+
     checkPermissions();
   }, [hasWritePermission]);
 
@@ -55,9 +55,7 @@ export const AddNewServiceButton = ({ onServiceAdded }: AddNewServiceButtonProps
       <button
         onClick={handleOpenModal}
         className={`px-4 py-2 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-          canWrite
-            ? 'bg-blue-600 hover:bg-blue-700'
-            : 'bg-blue-400 cursor-not-allowed'
+          canWrite ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-400 cursor-not-allowed'
         }`}
         disabled={!canWrite}
         title={canWrite ? 'Add new service' : "You don't have permission to add services"}

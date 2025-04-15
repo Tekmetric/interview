@@ -6,7 +6,7 @@ export const useAuthFetch = () => {
   const authFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
-      ...(options.headers as Record<string, string> || {})
+      ...((options.headers as Record<string, string>) || {}),
     };
 
     if (isAuthenticated) {
@@ -27,4 +27,3 @@ export const useAuthFetch = () => {
 
   return { authFetch, isAuthenticated };
 };
-

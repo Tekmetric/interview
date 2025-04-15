@@ -15,12 +15,12 @@ export const usePermissions = () => {
 
   const hasPermission = async (permission: string): Promise<boolean> => {
     if (!isAuthenticated) return false;
-    
+
     try {
       const token = await getAccessTokenSilently();
-      
+
       const decodedToken = jwtDecode<JwtPayload>(token);
-      
+
       const permissions = decodedToken.permissions || [];
       return permissions.includes(permission);
     } catch (error) {
@@ -41,6 +41,6 @@ export const usePermissions = () => {
     hasPermission,
     hasWritePermission,
     hasReadPermission,
-    isAuthenticated
+    isAuthenticated,
   };
 };

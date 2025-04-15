@@ -9,9 +9,8 @@ export function useFetchRepairServices(
   sortBy?: string,
   sortDirection?: 'asc' | 'desc'
 ) {
-
   const { authFetch } = useAuthFetch();
-  
+
   const { data, error, isLoading, mutate } = useSWR<
     ApiResponse<PageableResponse<RepairService>>,
     Error
@@ -44,7 +43,7 @@ async function fetchRepairServices(
   pageSize = 10,
   authFetch: (url: string, options?: RequestInit) => Promise<Response>,
   sortBy?: string,
-  sortDirection?: 'asc' | 'desc',
+  sortDirection?: 'asc' | 'desc'
 ): Promise<ApiResponse<PageableResponse<RepairService>>> {
   try {
     let url = `${API_BASE_URL}${API_ENDPOINT}?pageNumber=${page}&pageSize=${pageSize}`;
@@ -65,4 +64,3 @@ async function fetchRepairServices(
     throw error;
   }
 }
-

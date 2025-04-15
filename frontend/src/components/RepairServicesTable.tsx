@@ -56,7 +56,7 @@ export const RepairServicesTable = ({
 
   const { updateService, error: updateError } = useUpdateRepairService();
   const { deleteService, error: deleteError, isLoading: isDeleting } = useDeleteRepairService();
-  
+
   const { hasWritePermission } = usePermissions();
   const [canWrite, setCanWrite] = useState(false);
 
@@ -65,7 +65,7 @@ export const RepairServicesTable = ({
       const hasPermission = await hasWritePermission();
       setCanWrite(hasPermission);
     };
-    
+
     checkPermissions();
   }, [hasWritePermission]);
 
@@ -168,11 +168,11 @@ export const RepairServicesTable = ({
               <button
                 onClick={() => handleEditClick(service)}
                 className={`text-blue-600 p-1 rounded transition-colors ${
-                  canWrite 
-                    ? 'hover:text-blue-800 hover:bg-blue-50' 
+                  canWrite
+                    ? 'hover:text-blue-800 hover:bg-blue-50'
                     : 'opacity-50 cursor-not-allowed'
                 }`}
-                title={canWrite ? "Edit service" : "You don't have permission to edit"}
+                title={canWrite ? 'Edit service' : "You don't have permission to edit"}
                 aria-label="Edit service"
                 disabled={!canWrite}
               >
@@ -181,11 +181,9 @@ export const RepairServicesTable = ({
               <button
                 onClick={() => handleDeleteClick(service)}
                 className={`text-red-600 p-1 rounded transition-colors ${
-                  canWrite 
-                    ? 'hover:text-red-800 hover:bg-red-50' 
-                    : 'opacity-50 cursor-not-allowed'
+                  canWrite ? 'hover:text-red-800 hover:bg-red-50' : 'opacity-50 cursor-not-allowed'
                 }`}
-                title={canWrite ? "Delete service" : "You don't have permission to delete"}
+                title={canWrite ? 'Delete service' : "You don't have permission to delete"}
                 aria-label="Delete service"
                 disabled={!canWrite}
               >
@@ -262,70 +260,70 @@ export const RepairServicesTable = ({
           <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 h-full flex flex-col">
             <div className="overflow-y-auto flex-grow">
               <table className="min-w-full divide-y divide-gray-200 table-fixed">
-              <colgroup>
-                <col className="w-[3%]" /> {/* ID */}
-                <col className="w-[10%]" /> {/* Customer Name */}
-                <col className="w-[10%]" /> {/* Phone */}
-                <col className="w-[8%]" /> {/* Make */}
-                <col className="w-[8%]" /> {/* Model */}
-                <col className="w-[6%]" /> {/* Year */}
-                <col className="w-[8%]" /> {/* License Plate */}
-                <col className="w-[24%]" /> {/* Service Description */}
-                <col className="w-[8%]" /> {/* Odometer */}
-                <col className="w-[8%]" /> {/* Status */}
-                <col className="w-[7%]" /> {/* Actions */}
-              </colgroup>
-              <thead className="bg-gray-50 sticky top-0 z-10">
-                {table.getHeaderGroups().map(headerGroup => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map(header => (
-                      <th
-                        key={header.id}
-                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        <div className="flex items-center">
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          <span>
-                            {{
-                              asc: ' 🔼',
-                              desc: ' 🔽',
-                            }[header.column.getIsSorted() as string] ?? null}
-                          </span>
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {table.getRowModel().rows.length > 0 ? (
-                  table.getRowModel().rows.map(row => (
-                    <tr key={row.id} className="hover:bg-gray-50">
-                      {row.getVisibleCells().map(cell => (
-                        <td
-                          key={cell.id}
-                          className={`px-4 py-4 text-sm text-gray-500 ${
-                            cell.column.id === 'serviceDescription' ? '' : 'whitespace-nowrap'
-                          }`}
+                <colgroup>
+                  <col className="w-[3%]" /> {/* ID */}
+                  <col className="w-[10%]" /> {/* Customer Name */}
+                  <col className="w-[10%]" /> {/* Phone */}
+                  <col className="w-[8%]" /> {/* Make */}
+                  <col className="w-[8%]" /> {/* Model */}
+                  <col className="w-[6%]" /> {/* Year */}
+                  <col className="w-[8%]" /> {/* License Plate */}
+                  <col className="w-[24%]" /> {/* Service Description */}
+                  <col className="w-[8%]" /> {/* Odometer */}
+                  <col className="w-[8%]" /> {/* Status */}
+                  <col className="w-[7%]" /> {/* Actions */}
+                </colgroup>
+                <thead className="bg-gray-50 sticky top-0 z-10">
+                  {table.getHeaderGroups().map(headerGroup => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map(header => (
+                        <th
+                          key={header.id}
+                          className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                          onClick={header.column.getToggleSortingHandler()}
                         >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
+                          <div className="flex items-center">
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            <span>
+                              {{
+                                asc: ' 🔼',
+                                desc: ' 🔽',
+                              }[header.column.getIsSorted() as string] ?? null}
+                            </span>
+                          </div>
+                        </th>
                       ))}
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={columns.length}
-                      className="px-6 py-4 text-center text-sm text-gray-500"
-                    >
-                      No repair services found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  ))}
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {table.getRowModel().rows.length > 0 ? (
+                    table.getRowModel().rows.map(row => (
+                      <tr key={row.id} className="hover:bg-gray-50">
+                        {row.getVisibleCells().map(cell => (
+                          <td
+                            key={cell.id}
+                            className={`px-4 py-4 text-sm text-gray-500 ${
+                              cell.column.id === 'serviceDescription' ? '' : 'whitespace-nowrap'
+                            }`}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={columns.length}
+                        className="px-6 py-4 text-center text-sm text-gray-500"
+                      >
+                        No repair services found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

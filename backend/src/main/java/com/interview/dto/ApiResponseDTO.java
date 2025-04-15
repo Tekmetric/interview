@@ -1,5 +1,6 @@
 package com.interview.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,25 +16,18 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Standard response wrapper for all API endpoints")
 public class ApiResponseDTO<T> {
     
-    /**
-     * Indicates whether the request was successful.
-     */
+    @Schema(description = "Indicates whether the operation was successful", example = "true")
     private boolean success;
-    
-    /**
-     * A message describing the result of the operation.
-     */
+
+    @Schema(description = "A message describing the result of the operation", example = "Repair service created successfully")
     private String message;
-    
-    /**
-     * The data payload of the response.
-     */
+
+    @Schema(description = "The data payload of the response")
     private T data;
-    
-    /**
-     * The timestamp when the response was generated.
-     */
+
+    @Schema(description = "The timestamp when the response was generated", example = "2025-04-15T21:54:03")
     private LocalDateTime timestamp;
 }

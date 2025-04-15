@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import styles from './skeleton.module.css';
 
 interface SkeletonProps {
-  count: number;
+  count?: number;
 }
 
 const Skeleton: FC<SkeletonProps> = ({ count = 1 }) => {

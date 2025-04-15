@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`VehicleFormHeader > renders correctly 1`] = `
+<div>
+  <div
+    class="_header_801691"
+  >
+    <div
+      class="_text_801691"
+    >
+      <div
+        class="_buttons_801691"
+      >
+        <a
+          class="link-button"
+          data-discover="true"
+          href="/"
+        >
+          <svg
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 448 512"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"
+            />
+          </svg>
+          <span>
+            Vehicles
+          </span>
+        </a>
+      </div>
+      <h1>
+        Honda CRV, 2018
+      </h1>
+    </div>
+    <div
+      class="_image_801691"
+    >
+      <img
+        alt="Vehicle Preview"
+        src="https://placehold.co/400"
+      />
+    </div>
+  </div>
+</div>
+`;

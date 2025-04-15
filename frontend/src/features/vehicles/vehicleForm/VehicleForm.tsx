@@ -133,7 +133,7 @@ const VehicleForm: FC = () => {
               setHasClearedImage={setHasClearedImage}
             />
 
-            <button disabled={isDisabled} type="submit">
+            <button className={styles.submitButton} disabled={isDisabled} type="submit">
               Submit
             </button>
           </Form>

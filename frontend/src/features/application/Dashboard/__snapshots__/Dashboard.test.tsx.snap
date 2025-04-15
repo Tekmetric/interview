@@ -1,0 +1,129 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Dashboard > renders correctly 1`] = `
+<div>
+  <div
+    class="_dashboard_e01829"
+  >
+    <section
+      class="_sidebar_e01829 undefined"
+    >
+      <button
+        class="_toggle_e01829"
+      >
+        ☰
+      </button>
+      <div
+        class="_sidebar__inner_e01829"
+      >
+        <a
+          class="_logo_e01829"
+          data-discover="true"
+          href="/"
+        >
+          <span>
+            Tekmetric
+          </span>
+          <span>
+            Candidate Screen
+          </span>
+        </a>
+        <div
+          class="_sidebar__profile_e01829"
+        >
+          <a
+            data-discover="true"
+            href="/profile"
+          >
+            <img
+              alt="user profile, Eric Callan"
+              src="https://ericcallantemp.s3.us-east-2.amazonaws.com/profiles/profile_ericcallan.jpeg"
+            />
+          </a>
+          <h2>
+            Eric Callan
+          </h2>
+          <h3>
+            candidate
+          </h3>
+        </div>
+        <ul>
+          <li>
+            <svg
+              aria-hidden="true"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 512 512"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M499.99 176h-59.87l-16.64-41.6C406.38 91.63 365.57 64 319.5 64h-127c-46.06 0-86.88 27.63-103.99 70.4L71.87 176H12.01C4.2 176-1.53 183.34.37 190.91l6 24C7.7 220.25 12.5 224 18.01 224h20.07C24.65 235.73 16 252.78 16 272v48c0 16.12 6.16 30.67 16 41.93V416c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32v-32h256v32c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32v-54.07c9.84-11.25 16-25.8 16-41.93v-48c0-19.22-8.65-36.27-22.07-48H494c5.51 0 10.31-3.75 11.64-9.09l6-24c1.89-7.57-3.84-14.91-11.65-14.91zm-352.06-17.83c7.29-18.22 24.94-30.17 44.57-30.17h127c19.63 0 37.28 11.95 44.57 30.17L384 208H128l19.93-49.83zM96 319.8c-19.2 0-32-12.76-32-31.9S76.8 256 96 256s48 28.71 48 47.85-28.8 15.95-48 15.95zm320 0c-19.2 0-48 3.19-48-15.95S396.8 256 416 256s32 12.76 32 31.9-12.8 31.9-32 31.9z"
+              />
+            </svg>
+            <a
+              data-discover="true"
+              href="/"
+            >
+              Inventory
+            </a>
+          </li>
+          <li>
+            <svg
+              aria-hidden="true"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 448 512"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M436 160H12c-6.627 0-12-5.373-12-12v-36c0-26.51 21.49-48 48-48h48V12c0-6.627 5.373-12 12-12h40c6.627 0 12 5.373 12 12v52h128V12c0-6.627 5.373-12 12-12h40c6.627 0 12 5.373 12 12v52h48c26.51 0 48 21.49 48 48v36c0 6.627-5.373 12-12 12zM12 192h424c6.627 0 12 5.373 12 12v260c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V204c0-6.627 5.373-12 12-12zm333.296 95.947l-28.169-28.398c-4.667-4.705-12.265-4.736-16.97-.068L194.12 364.665l-45.98-46.352c-4.667-4.705-12.266-4.736-16.971-.068l-28.397 28.17c-4.705 4.667-4.736 12.265-.068 16.97l82.601 83.269c4.667 4.705 12.265 4.736 16.97.068l142.953-141.805c4.705-4.667 4.736-12.265.068-16.97z"
+              />
+            </svg>
+            <a
+              data-discover="true"
+              href="/scheduling"
+            >
+              Schedules
+            </a>
+          </li>
+          <li>
+            <svg
+              aria-hidden="true"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 448 512"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"
+              />
+            </svg>
+            <a
+              data-discover="true"
+              href="/profile"
+            >
+              Profile
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section
+      class="_grid_container_e01829"
+    >
+      <p>
+        rendered
+      </p>
+    </section>
+  </div>
+</div>
+`;

@@ -9,31 +9,36 @@ import Dashboard from './features/application/Dashboard';
 /**
  * TO DO
  * FRONTEND
- * Bubble Up Backend validations inline
- * NF: Lazy Loading
- * NF: API caching
- * UI: Tests
- * Review loading state(s)
- * Form skeleton
+ *** Testing
+ *** Bubble Up Backend validations inline to form
+ *** Migration to RTK / RTK Query
+ *** Lazy Loading
+ *** API caching
+ *** Review loading state(s)
+ *** Review error state(s)
+ *** Form skeleton
+ *** E2E testing
  *
  * BACKEND
- * DTOs
- * Tests
- * Enhanced Vehicle Validation(s)
+ *** Testing
+ *** DTOs
+ *** Enhanced Vehicle Validation(s)
+ *** S3 Image Uploads
  *
- * Done
- * List Items
+ * DONE
  * Pagination
  * Routing
+ * Global Error Handling
+ * Search
+ * Skeleton Loading
+ * Mobile First
  * CRUD: Optimistic Deletes
  * CRUD: Create
- * CRUD: Reads (List)
+ * CRUD: Reads (List Vehicles)
  * CRUD: Read (Form population)
  * CRUD: Update (Form Population)
- * CRUD: Delete (animation + optimistic)
- * UI: Skeleton Form
- * UI: Mobile Styles
- * UI: Search
+ * CRUD: Optimistic Deletes
+ * FE Snapshot Testing
  */
 
 const App: React.FC = () => {

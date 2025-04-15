@@ -11,6 +11,7 @@
 .toggle {
   height: auto;
   width: var(--dashboard-button-width);
+  background-color: var(--primary-color);
 }
 
 .sidebar {

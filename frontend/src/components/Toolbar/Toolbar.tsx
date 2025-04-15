@@ -40,17 +40,18 @@ const ToolBar: FC<ToolBarProps> = ({ handleSearch, currentSearch, resultCount })
         </Link>
         <form className={styles.search} onSubmit={(e) => searchBy(e)}>
           <input
-            type="text"
-            placeholder="search"
-            value={searchQuery}
+            data-testid="search"
             onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="search"
+            type="text"
+            value={searchQuery}
           />
           <button type="submit" aria-label={`Search`}>
             <FaSearch aria-hidden="true" />
           </button>
         </form>
       </div>
-      <div className={styles.results}>
+      <div className={styles.results} data-id>
         <p>{resultString}</p>
       </div>
     </section>

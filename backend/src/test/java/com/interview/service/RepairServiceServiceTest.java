@@ -12,13 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +24,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RepairServiceServiceTest {
+    private final Long testId = 1L;
 
     @Mock
     private RepairServiceRepository repairServiceRepository;
@@ -39,7 +37,6 @@ class RepairServiceServiceTest {
 
     private RepairService repairService;
     private RepairServiceDTO repairServiceDTO;
-    private final Long testId = 1L;
 
     @BeforeEach
     void setUp() {
@@ -79,7 +76,7 @@ class RepairServiceServiceTest {
         when(repairServiceMapper.toDto(any(RepairService.class))).thenReturn(repairServiceDTO);
 
         // Act
-        RepairServiceDTO result = repairServiceService.createRepairService(repairServiceDTO);
+        var result = repairServiceService.createRepairService(repairServiceDTO);
 
         // Assert
         assertNotNull(result);
@@ -97,7 +94,7 @@ class RepairServiceServiceTest {
         when(repairServiceMapper.toDto(repairService)).thenReturn(repairServiceDTO);
 
         // Act
-        RepairServiceDTO result = repairServiceService.getRepairServiceById(testId);
+        var result = repairServiceService.getRepairServiceById(testId);
 
         // Assert
         assertNotNull(result);
@@ -121,15 +118,15 @@ class RepairServiceServiceTest {
     @Test
     void getAllRepairServices_ShouldReturnPageOfDTOs() {
         // Arrange
-        Pageable pageable = PageRequest.of(0, 10);
-        List<RepairService> repairServices = Collections.singletonList(repairService);
-        Page<RepairService> repairServicePage = new PageImpl<>(repairServices, pageable, repairServices.size());
+        var pageable = PageRequest.of(0, 10);
+        var repairServices = Collections.singletonList(repairService);
+        var repairServicePage = new PageImpl<>(repairServices, pageable, repairServices.size());
         
         when(repairServiceRepository.findAll(pageable)).thenReturn(repairServicePage);
         when(repairServiceMapper.toDto(repairService)).thenReturn(repairServiceDTO);
 
         // Act
-        Page<RepairServiceDTO> result = repairServiceService.getAllRepairServices(pageable);
+        var result = repairServiceService.getAllRepairServices(pageable);
 
         // Assert
         assertNotNull(result);
@@ -148,7 +145,7 @@ class RepairServiceServiceTest {
         when(repairServiceMapper.toDto(repairService)).thenReturn(repairServiceDTO);
 
         // Act
-        RepairServiceDTO result = repairServiceService.updateRepairService(testId, repairServiceDTO);
+        var result = repairServiceService.updateRepairService(testId, repairServiceDTO);
 
         // Assert
         assertNotNull(result);

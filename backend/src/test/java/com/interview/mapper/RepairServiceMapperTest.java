@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RepairServiceMapperTest {
+    private final Long testId = 1L;
 
     private RepairServiceMapper mapper;
     private RepairService repairService;
     private RepairServiceDTO repairServiceDTO;
-    private final Long testId = 1L;
 
     @BeforeEach
     void setUp() {
@@ -52,7 +52,7 @@ class RepairServiceMapperTest {
     @Test
     void toDto_WhenEntityIsNull_ShouldReturnNull() {
         // Act
-        RepairServiceDTO result = mapper.toDto(null);
+        var result = mapper.toDto(null);
 
         // Assert
         assertNull(result);
@@ -61,7 +61,7 @@ class RepairServiceMapperTest {
     @Test
     void toDto_WhenEntityIsValid_ShouldMapCorrectly() {
         // Act
-        RepairServiceDTO result = mapper.toDto(repairService);
+        var result = mapper.toDto(repairService);
 
         // Assert
         assertNotNull(result);
@@ -80,7 +80,7 @@ class RepairServiceMapperTest {
     @Test
     void toEntity_WhenDtoIsNull_ShouldReturnNull() {
         // Act
-        RepairService result = mapper.toEntity(null);
+        var result = mapper.toEntity(null);
 
         // Assert
         assertNull(result);
@@ -89,7 +89,7 @@ class RepairServiceMapperTest {
     @Test
     void toEntity_WhenDtoIsValid_ShouldMapCorrectly() {
         // Act
-        RepairService result = mapper.toEntity(repairServiceDTO);
+        var result = mapper.toEntity(repairServiceDTO);
 
         // Assert
         assertNotNull(result);
@@ -108,13 +108,13 @@ class RepairServiceMapperTest {
     @Test
     void mapToStatusEnum_WhenStatusStringIsNull_ShouldReturnNull() {
         // Arrange
-        RepairService serviceWithNullStatus = RepairService.builder()
+        var serviceWithNullStatus = RepairService.builder()
                 .id(testId)
                 .status(null)
                 .build();
 
         // Act
-        RepairServiceDTO result = mapper.toDto(serviceWithNullStatus);
+        var result = mapper.toDto(serviceWithNullStatus);
 
         // Assert
         assertNotNull(result);
@@ -124,7 +124,7 @@ class RepairServiceMapperTest {
     @Test
     void mapToStatusEnum_WhenStatusStringIsInvalid_ShouldThrowException() {
         // Arrange
-        RepairService serviceWithInvalidStatus = RepairService.builder()
+        var serviceWithInvalidStatus = RepairService.builder()
                 .id(testId)
                 .status("INVALID_STATUS")
                 .build();
@@ -136,13 +136,13 @@ class RepairServiceMapperTest {
     @Test
     void mapToStatusString_WhenStatusEnumIsNull_ShouldReturnNull() {
         // Arrange
-        RepairServiceDTO dtoWithNullStatus = RepairServiceDTO.builder()
+        var dtoWithNullStatus = RepairServiceDTO.builder()
                 .id(testId)
                 .status(null)
                 .build();
 
         // Act
-        RepairService result = mapper.toEntity(dtoWithNullStatus);
+        var result = mapper.toEntity(dtoWithNullStatus);
 
         // Assert
         assertNotNull(result);
@@ -152,7 +152,7 @@ class RepairServiceMapperTest {
     @Test
     void toDto_WithNullableServiceDescription_ShouldMapCorrectly() {
         // Arrange
-        RepairService serviceWithNullDescription = RepairService.builder()
+        var serviceWithNullDescription = RepairService.builder()
                 .id(testId)
                 .customerName("Test Customer")
                 .customerPhone("1234567890")
@@ -166,7 +166,7 @@ class RepairServiceMapperTest {
                 .build();
 
         // Act
-        RepairServiceDTO result = mapper.toDto(serviceWithNullDescription);
+        var result = mapper.toDto(serviceWithNullDescription);
 
         // Assert
         assertNotNull(result);
@@ -176,7 +176,7 @@ class RepairServiceMapperTest {
     @Test
     void toEntity_WithNullableServiceDescription_ShouldMapCorrectly() {
         // Arrange
-        RepairServiceDTO dtoWithNullDescription = RepairServiceDTO.builder()
+        var dtoWithNullDescription = RepairServiceDTO.builder()
                 .id(testId)
                 .customerName("Test Customer")
                 .customerPhone("1234567890")
@@ -190,7 +190,7 @@ class RepairServiceMapperTest {
                 .build();
 
         // Act
-        RepairService result = mapper.toEntity(dtoWithNullDescription);
+        var result = mapper.toEntity(dtoWithNullDescription);
 
         // Assert
         assertNotNull(result);

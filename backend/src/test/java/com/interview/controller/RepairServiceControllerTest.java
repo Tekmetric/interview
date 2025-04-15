@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +22,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 class RepairServiceControllerTest {
 
+    private final Long testId = 1L;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     private MockMvc mockMvc;
 
     @Mock
@@ -42,25 +43,19 @@ class RepairServiceControllerTest {
 
     @InjectMocks
     private RepairServiceController repairServiceController;
-    
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private RepairServiceDTO repairServiceDTO;
-    private final Long testId = 1L;
 
     @BeforeEach
     void setUp() {
-        // Set up PageableHandlerMethodArgumentResolver for handling Pageable parameters
-        PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
-        
-        // Set up MockMvc with the controller, exception handler, and pageable resolver
+        var pageableResolver = new PageableHandlerMethodArgumentResolver();
+
         mockMvc = MockMvcBuilders
                 .standaloneSetup(repairServiceController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .setCustomArgumentResolvers(pageableResolver)
                 .build();
-                
-        // Set up test data
+
         repairServiceDTO = RepairServiceDTO.builder()
                 .id(testId)
                 .customerName("Test Customer")
@@ -125,12 +120,11 @@ class RepairServiceControllerTest {
     @Test
     void getAllRepairServices_ShouldReturnPageOfServices() throws Exception {
         // Arrange
-        List<RepairServiceDTO> repairServices = Collections.singletonList(repairServiceDTO);
-        // Create a proper PageRequest instead of using Unpaged
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<RepairServiceDTO> page = new PageImpl<>(repairServices, pageRequest, repairServices.size());
-        
-        // Use ArgumentCaptor to capture the Pageable argument
+        var repairServices = Collections.singletonList(repairServiceDTO);
+
+        var pageRequest = PageRequest.of(0, 10);
+        var page = new PageImpl<>(repairServices, pageRequest, repairServices.size());
+
         when(repairServiceService.getAllRepairServices(any(Pageable.class))).thenReturn(page);
 
         // Act & Assert

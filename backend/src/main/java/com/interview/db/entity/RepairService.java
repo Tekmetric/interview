@@ -12,9 +12,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Entity class for storing repair service information in the database.
- */
 @Entity
 @Table(name = "repair_services")
 @Data

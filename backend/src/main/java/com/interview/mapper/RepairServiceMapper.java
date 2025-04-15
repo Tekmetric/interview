@@ -7,8 +7,6 @@ import com.interview.exception.MappingException;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-
-
 /**
  * Mapper class to convert between RepairService entity and RepairServiceDTO.
  */
@@ -16,12 +14,6 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class RepairServiceMapper {
 
-    /**
-     * Converts a RepairService entity to a RepairServiceDTO.
-     *
-     * @param entity the RepairService entity to convert
-     * @return the corresponding RepairServiceDTO
-     */
     public RepairServiceDTO toDto(RepairService entity) {
         if (entity == null) {
             return null;
@@ -41,12 +33,6 @@ public class RepairServiceMapper {
                 .build();
     }
 
-    /**
-     * Converts a RepairServiceDTO to a RepairService entity.
-     *
-     * @param dto the RepairServiceDTO to convert
-     * @return the corresponding RepairService entity
-     */
     public RepairService toEntity(RepairServiceDTO dto) {
         if (dto == null) {
             return null;
@@ -65,13 +51,7 @@ public class RepairServiceMapper {
                 .status(mapToStatusString(dto.getStatus()))
                 .build();
     }
-    
-    /**
-     * Maps a status string to a RepairServiceStatus enum.
-     *
-     * @param statusString the status string to map
-     * @return the corresponding RepairServiceStatus enum
-     */
+
     private RepairServiceStatus mapToStatusEnum(String statusString) {
         if (statusString == null) {
             return null;
@@ -84,13 +64,7 @@ public class RepairServiceMapper {
             throw new MappingException("Invalid status value: " + statusString);
         }
     }
-    
-    /**
-     * Maps a RepairServiceStatus enum to a status string.
-     *
-     * @param statusEnum the RepairServiceStatus enum to map
-     * @return the corresponding status string
-     */
+
     private String mapToStatusString(RepairServiceStatus statusEnum) {
         return statusEnum != null ? statusEnum.name() : null;
     }

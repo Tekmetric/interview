@@ -12,18 +12,18 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
-import java.util.Collections;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.interview.configuration.TestSecurityConfig;
 
 /**
  * End-to-end functional tests for RepairServiceController.
  * These tests start a real server and send HTTP requests to test the full stack.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {TestSecurityConfig.class})
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class RepairServiceControllerFunctionalTest {
@@ -40,13 +40,6 @@ class RepairServiceControllerFunctionalTest {
     private String getBaseUrl() {
         return "http://localhost:" + port + "/api/repair-services";
     }
-    
-    private HttpHeaders getJsonHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        return headers;
-    }
 
     /**
      * Test creating a new repair service (happy path).
@@ -54,7 +47,7 @@ class RepairServiceControllerFunctionalTest {
     @Test
     void testCreateRepairService() {
         // Arrange
-        RepairServiceDTO newService = RepairServiceDTO.builder()
+        var newService = RepairServiceDTO.builder()
                 .customerName("John Doe")
                 .customerPhone("5551234567")
                 .vehicleMake("Toyota")
@@ -67,8 +60,8 @@ class RepairServiceControllerFunctionalTest {
                 .build();
 
         // Act
-        HttpEntity<RepairServiceDTO> requestEntity = new HttpEntity<>(newService, getJsonHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(
+        var requestEntity = new HttpEntity<>(newService, getJsonHeaders());
+        var response = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.POST,
                 requestEntity,
@@ -87,7 +80,7 @@ class RepairServiceControllerFunctionalTest {
     @Test
     void testGetRepairServiceById() throws IOException {
         // Arrange
-        RepairServiceDTO newService = RepairServiceDTO.builder()
+        var newService = RepairServiceDTO.builder()
                 .customerName("Test Customer")
                 .customerPhone("5551234567")
                 .vehicleMake("Test Make")
@@ -100,8 +93,8 @@ class RepairServiceControllerFunctionalTest {
                 .build();
 
         // Create the service
-        HttpEntity<RepairServiceDTO> createEntity = new HttpEntity<>(newService, getJsonHeaders());
-        ResponseEntity<String> createResponse = restTemplate.exchange(
+        var createEntity = new HttpEntity<>(newService);
+        var createResponse = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.POST,
                 createEntity,
@@ -110,16 +103,16 @@ class RepairServiceControllerFunctionalTest {
         
         assertEquals(HttpStatus.CREATED, createResponse.getStatusCode());
 
-        String responseBody = createResponse.getBody();
-        JsonNode rootNode = objectMapper.readTree(responseBody);
-        JsonNode dataNode = rootNode.get("data");
+        var responseBody = createResponse.getBody();
+        var rootNode = objectMapper.readTree(responseBody);
+        var dataNode = rootNode.get("data");
         long serviceId = dataNode.get("id").asLong();
 
         // Act - Get the service by ID
-        ResponseEntity<String> response = restTemplate.exchange(
+        var response = restTemplate.exchange(
                 getBaseUrl() + "/" + serviceId,
                 HttpMethod.GET,
-                new HttpEntity<>(getJsonHeaders()),
+                new HttpEntity<>(null),
                 String.class
         );
 
@@ -129,13 +122,10 @@ class RepairServiceControllerFunctionalTest {
         assertTrue(response.getBody().contains("success"));
     }
 
-    /**
-     * Test getting all repair services with pagination (happy path).
-     */
     @Test
     void testGetAllRepairServices() {
         // Act - Get all services with pagination
-        ResponseEntity<String> response = restTemplate.exchange(
+        var response = restTemplate.exchange(
                 getBaseUrl() + "?pageNumber=0&pageSize=10&sortBy=id&sortDirection=desc",
                 HttpMethod.GET,
                 new HttpEntity<>(getJsonHeaders()),
@@ -148,13 +138,10 @@ class RepairServiceControllerFunctionalTest {
         assertTrue(response.getBody().contains("success"));
     }
 
-    /**
-     * Test updating a repair service (happy path).
-     */
     @Test
     void testUpdateRepairService() throws IOException {
         // First create a service that we can update
-        RepairServiceDTO newService = RepairServiceDTO.builder()
+        var newService = RepairServiceDTO.builder()
                 .customerName("Original Name")
                 .customerPhone("5551234567")
                 .vehicleMake("Original Make")
@@ -167,8 +154,8 @@ class RepairServiceControllerFunctionalTest {
                 .build();
 
         // Create the service first
-        HttpEntity<RepairServiceDTO> createEntity = new HttpEntity<>(newService, getJsonHeaders());
-        ResponseEntity<String> createResponse = restTemplate.exchange(
+        var createEntity = new HttpEntity<>(newService, getJsonHeaders());
+        var createResponse = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.POST,
                 createEntity,
@@ -177,13 +164,13 @@ class RepairServiceControllerFunctionalTest {
         
         assertEquals(HttpStatus.CREATED, createResponse.getStatusCode());
 
-        String responseBody = createResponse.getBody();
-        JsonNode rootNode = objectMapper.readTree(responseBody);
-        JsonNode dataNode = rootNode.get("data");
+        var responseBody = createResponse.getBody();
+        var rootNode = objectMapper.readTree(responseBody);
+        var dataNode = rootNode.get("data");
         long serviceId = dataNode.get("id").asLong();
         
         // Create an update DTO
-        RepairServiceDTO updateService = RepairServiceDTO.builder()
+        var updateService = RepairServiceDTO.builder()
                 .id(serviceId)
                 .customerName("Updated Customer")
                 .customerPhone("5559998888")
@@ -197,8 +184,8 @@ class RepairServiceControllerFunctionalTest {
                 .build();
 
         // Act - Update the service
-        HttpEntity<RepairServiceDTO> updateEntity = new HttpEntity<>(updateService, getJsonHeaders());
-        ResponseEntity<String> response = restTemplate.exchange(
+        var updateEntity = new HttpEntity<>(updateService, getJsonHeaders());
+        var response = restTemplate.exchange(
                 getBaseUrl() + "/" + serviceId,
                 HttpMethod.PUT,
                 updateEntity,
@@ -213,13 +200,10 @@ class RepairServiceControllerFunctionalTest {
         assertTrue(response.getBody().contains("IN_PROGRESS"));
     }
 
-    /**
-     * Test deleting a repair service (happy path).
-     */
     @Test
     void testDeleteRepairService() throws IOException {
         // First create a service that we can delete
-        RepairServiceDTO newService = RepairServiceDTO.builder()
+        var newService = RepairServiceDTO.builder()
                 .customerName("Delete Test")
                 .customerPhone("5551234567")
                 .vehicleMake("Test")
@@ -232,8 +216,8 @@ class RepairServiceControllerFunctionalTest {
                 .build();
 
         // Create the service
-        HttpEntity<RepairServiceDTO> createEntity = new HttpEntity<>(newService, getJsonHeaders());
-        ResponseEntity<String> createResponse = restTemplate.exchange(
+        var createEntity = new HttpEntity<>(newService, getJsonHeaders());
+        var createResponse = restTemplate.exchange(
                 getBaseUrl(),
                 HttpMethod.POST,
                 createEntity,
@@ -242,13 +226,13 @@ class RepairServiceControllerFunctionalTest {
         
         assertEquals(HttpStatus.CREATED, createResponse.getStatusCode());
 
-        String responseBody = createResponse.getBody();
-        JsonNode rootNode = objectMapper.readTree(responseBody);
-        JsonNode dataNode = rootNode.get("data");
+        var responseBody = createResponse.getBody();
+        var rootNode = objectMapper.readTree(responseBody);
+        var dataNode = rootNode.get("data");
         long serviceId = dataNode.get("id").asLong();
             
         // Act - Delete the service
-        ResponseEntity<String> response = restTemplate.exchange(
+        var response = restTemplate.exchange(
                 getBaseUrl() + "/" + serviceId,
                 HttpMethod.DELETE,
                 new HttpEntity<>(getJsonHeaders()),
@@ -261,12 +245,18 @@ class RepairServiceControllerFunctionalTest {
         assertTrue(response.getBody().contains("success"));
             
         // Verify the service is deleted by trying to get it
-        ResponseEntity<String> getResponse = restTemplate.exchange(
+        var getResponse = restTemplate.exchange(
                 getBaseUrl() + "/" + serviceId,
                 HttpMethod.GET,
-                new HttpEntity<>(getJsonHeaders()),
+                new HttpEntity<>(null),
                 String.class
         );
         assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
+    }
+
+    private HttpHeaders getJsonHeaders() {
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
     }
 }

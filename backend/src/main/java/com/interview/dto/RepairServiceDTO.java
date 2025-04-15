@@ -10,10 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO for managing car repair service requests when a customer brings their car to the shop.
- * Contains essential information needed for the initial visit and service request.
- */
 @Data
 @Builder
 @NoArgsConstructor

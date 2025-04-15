@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaTrash } from 'react-icons/fa';
+import CarPlaceHolder from '../../assets/images/car_placeholder.png';
 import styles from './vehicleFormHeader.module.css';
 import { VehicleFormHeaderProps } from '../../features/vehicles/types';
 
@@ -33,7 +34,7 @@ const VehicleFormHeader: FC<VehicleFormHeaderProps> = ({
           <FaTrash aria-hidden="true" />
         </button>
       )}
-      <img src={imageUrl || 'https://placehold.co/400'} alt="Vehicle Preview" />
+      <img src={imageUrl || CarPlaceHolder} alt="Vehicle Preview" />
     </div>
   </div>
 );

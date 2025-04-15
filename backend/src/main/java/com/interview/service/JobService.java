@@ -1,0 +1,89 @@
+package com.interview.service;
+
+import com.interview.exception.ResourceNotFoundException;
+import com.interview.model.DtoMapper;
+import com.interview.model.JobStatus;
+import com.interview.model.db.Car;
+import com.interview.model.db.Job;
+import com.interview.model.dto.JobCreateRequest;
+import com.interview.model.dto.JobResponse;
+import com.interview.model.dto.JobUpdateRequest;
+import com.interview.repository.JobRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class JobService {
+
+    private final JobRepository jobRepository;
+
+    private final CarService carService;
+
+    public List<JobResponse> findAll() {
+        var jobs = jobRepository.findAll();
+        return DtoMapper.Instance.toJobResponses(jobs);
+    }
+
+    public List<JobResponse> findJobsByStatusPaginated(JobStatus status, PageRequest pageRequest) {
+        var jobs = jobRepository.findAllByIdWithTasks(
+                jobRepository.findAllByStatus(status, pageRequest)
+        );
+        return DtoMapper.Instance.toJobResponses(jobs);
+    }
+
+    public List<JobResponse> findAllJobsByCar(String vin) {
+        var jobs = jobRepository.findAllByCar_VinOrderByScheduledAtDesc(vin);
+        return DtoMapper.Instance.toJobResponses(jobs);
+    }
+
+    @Transactional
+    public JobResponse findById(Integer id) {
+        log.debug("Finding job by id={}", id);
+        Job job = jobRepository.findById(id).orElseThrow();
+        return DtoMapper.Instance.toJobResponse(job);
+    }
+
+    @Transactional
+    public JobResponse createJob(JobCreateRequest request) {
+        log.debug("Creating new job: {}", request);
+        Car car = carService.getOrCreateCar(request);
+        Job job = new Job(car, JobStatus.SCHEDULED, request.scheduledAt());
+
+        job = jobRepository.save(job);
+
+        log.debug("Created new job with id={}: {}", job.getId(), request);
+        return DtoMapper.Instance.toJobResponse(job);
+    }
+
+    @Transactional
+    public void updateJob(Integer id, JobUpdateRequest request) {
+        log.debug("Updating job with id={}: {}", id, request);
+        int updateCount = jobRepository.updateJob(id, request.jobStatus(), request.scheduledAt());
+
+        if (updateCount == 0) {
+            log.warn("Could not find job to update with id={}", id);
+            throw new ResourceNotFoundException();
+        }
+        log.debug("Successfully updated job with id={}: {}", id, request);
+    }
+
+    @Transactional
+    public void deleteJob(Integer id) {
+        log.info("Deleting job with id: {}", id);
+        var deleteCount = jobRepository.deleteJobById(id);
+
+        if (deleteCount == 0) {
+            log.warn("Could not find job to delete with id={}", id);
+            throw new ResourceNotFoundException();
+        }
+        log.info("Successfully deleted job with id: {}", id);
+    }
+
+}

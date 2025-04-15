@@ -1,0 +1,31 @@
+### Create task
+POST http://localhost:8080/api/v1/tasks
+Content-Type: application/json
+
+{
+  "jobId": 1,
+  "status": "TODO",
+  "title": "Oil change 2",
+  "type": "Service",
+  "description": "",
+  "mechanicName": "John Doe"
+}
+
+### Update task
+PUT http://localhost:8080/api/v1/tasks/1
+Content-Type: application/json
+
+{
+  "jobId": 1,
+  "status": "COMPLETED",
+  "title": "Oil change",
+  "type": "Service",
+  "description": "",
+  "mechanicName": "John Doe"
+}
+
+### Get task by id
+GET http://localhost:8080/api/v1/tasks/2
+
+### Delete task
+DELETE http://localhost:8080/api/v1/tasks/1

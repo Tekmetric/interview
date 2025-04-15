@@ -1,0 +1,35 @@
+### Create job
+POST http://localhost:8080/api/v1/jobs
+Content-Type: application/json
+
+{
+  "vin": "ABC123DEF456GHI710",
+  "make": "Dacia",
+  "model": "Logan",
+  "modelYear": 2022,
+  "customer": "John Doe",
+  "scheduledAt": "2026-05-20T10:00:00Z"
+}
+
+
+### Update job by id
+PUT http://localhost:8080/api/v1/jobs/1
+Content-Type: application/json
+
+{
+  "scheduledAt": "2024-03-15T10:00:00Z",
+  "jobStatus": "SCHEDULED"
+}
+
+### Get all jobs for car
+GET http://localhost:8080/api/v1/jobs/car/ABC123DEF456GHI711
+
+### Get job by id
+GET http://localhost:8080/api/v1/jobs/1
+
+### Get jobs paginated
+GET http://localhost:8080/api/v1/jobs
+
+
+### Delete job
+DELETE http://localhost:8080/api/v1/jobs/1

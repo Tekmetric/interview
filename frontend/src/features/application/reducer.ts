@@ -1,4 +1,4 @@
-import { ApplicationState, SET_NOTICE, CLEAR_NOTICE, NoticeState } from './types';
+import { ApplicationState, SET_NOTICE, CLEAR_NOTICE, NoticeAction } from './types';
 
 const initialState: ApplicationState = {
   notice: {
@@ -14,7 +14,10 @@ const initialState: ApplicationState = {
   },
 };
 
-export const applicationReducer = (state = initialState, action: any): ApplicationState => {
+export const applicationReducer = (
+  state = initialState,
+  action: NoticeAction
+): ApplicationState => {
   switch (action.type) {
     case SET_NOTICE:
       return {

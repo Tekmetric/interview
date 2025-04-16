@@ -1,20 +1,20 @@
 import {
-  DELETE_VEHICLE_REQUEST,
+  CREATE_VEHICLE_FAILURE,
+  CREATE_VEHICLE_REQUEST,
   DELETE_VEHICLE_FAILURE,
-  DELETE_VEHICLE_SUCCESS,
+  DELETE_VEHICLE_REQUEST,
+  FETCH_VEHICLE_DETAIL_FAILURE,
+  FETCH_VEHICLE_DETAIL_REQUEST,
+  FETCH_VEHICLE_DETAIL_SUCCESS,
   FETCH_VEHICLES_FAILURE,
   FETCH_VEHICLES_REQUEST,
   FETCH_VEHICLES_SUCCESS,
-  FETCH_VEHICLE_DETAIL_REQUEST,
-  FETCH_VEHICLE_DETAIL_SUCCESS,
-  FETCH_VEHICLE_DETAIL_FAILURE,
-  CREATE_VEHICLE_REQUEST,
-  CREATE_VEHICLE_FAILURE,
   SET_SELECTED_VEHICLE,
-  Vehicle,
-  VehiclesState,
-  UPDATE_VEHICLE_REQUEST,
   UPDATE_VEHICLE_FAILURE,
+  UPDATE_VEHICLE_REQUEST,
+  Vehicle,
+  VehicleAction,
+  VehiclesState,
 } from './types';
 
 const initialState: VehiclesState = {
@@ -32,7 +32,7 @@ const initialState: VehiclesState = {
   error: null,
 };
 
-const vehicleReducer = (state = initialState, action: any) => {
+const vehicleReducer = (state = initialState, action: VehicleAction) => {
   switch (action.type) {
     case FETCH_VEHICLES_REQUEST:
       return {

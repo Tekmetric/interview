@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { convertVehicleToFormData } from './utils';
 import {
   CREATE_VEHICLE_FAILURE,
@@ -19,7 +18,7 @@ import {
 } from './types';
 
 import { setNotice } from '../application/actions';
-import { AppDispatch } from '../../store/store';
+import { AppDispatch, RootState } from '../../store/store';
 
 // Sync Actions
 export const setSelectedVehicle = (vehicle: Vehicle | null) => {
@@ -60,7 +59,7 @@ export const fetchVehicleById = (id: number) => async (dispatch: AppDispatch) =>
 };
 
 export const createVehicle =
-  (vehicle: Partial<Vehicle>) => async (dispatch: AppDispatch, getState: any) => {
+  (vehicle: Partial<Vehicle>) => async (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: CREATE_VEHICLE_REQUEST });
 
     try {
@@ -101,7 +100,8 @@ export const createVehicle =
   };
 
 export const updateVehicleById =
-  (id: number, vehicle: Partial<Vehicle>) => async (dispatch: AppDispatch, getState: any) => {
+  (id: number, vehicle: Partial<Vehicle>) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch({ type: UPDATE_VEHICLE_REQUEST });
 
     try {
@@ -143,45 +143,46 @@ export const updateVehicleById =
     }
   };
 
-export const deleteVehicleById = (id: number) => async (dispatch: AppDispatch, getState: any) => {
-  // get vehicle and index (for request failure optimistic deletes)
-  const vehicles = getState().vehicles.vehicles.data;
-  const index = vehicles.findIndex((vehicle: Vehicle) => vehicle.id === id);
-  const vehicle = index !== -1 ? vehicles[index] : null;
+export const deleteVehicleById =
+  (id: number) => async (dispatch: AppDispatch, getState: () => RootState) => {
+    // get vehicle and index (for request failure optimistic deletes)
+    const vehicles = getState().vehicles.vehicles.data;
+    const index = vehicles.findIndex((vehicle: Vehicle) => vehicle.id === id);
+    const vehicle = index !== -1 ? vehicles[index] : null;
 
-  // optimistic deleting of Vehicle
-  dispatch({ type: DELETE_VEHICLE_REQUEST, payload: vehicle });
+    // optimistic deleting of Vehicle
+    dispatch({ type: DELETE_VEHICLE_REQUEST, payload: vehicle });
 
-  try {
-    const res = await fetch(`http://localhost:8080/api/vehicles/${id}`, {
-      method: 'DELETE',
-    });
+    try {
+      const res = await fetch(`http://localhost:8080/api/vehicles/${id}`, {
+        method: 'DELETE',
+      });
 
-    if (res.ok) {
-      dispatch({ type: DELETE_VEHICLE_SUCCESS, payload: id });
+      if (res.ok) {
+        dispatch({ type: DELETE_VEHICLE_SUCCESS, payload: id });
 
-      const currentPage = getState().vehicles.vehicles.meta.currentPage;
+        const currentPage = getState().vehicles.vehicles.meta.currentPage;
 
-      dispatch(fetchVehicles(currentPage));
+        dispatch(fetchVehicles(currentPage));
+        dispatch(
+          setNotice({
+            type: 'success',
+            message: 'vehicle successfully deleted',
+          })
+        );
+      } else {
+        throw new Error('Failed to delete vehicle');
+      }
+    } catch (error) {
+      const payload = { vehicle, index };
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+      dispatch({ type: DELETE_VEHICLE_FAILURE, payload, error: errorMessage });
       dispatch(
         setNotice({
-          type: 'success',
-          message: 'vehicle successfully deleted',
+          type: 'error',
+          message: 'error deleting vehicle',
         })
       );
-    } else {
-      throw new Error('Failed to delete vehicle');
     }
-  } catch (error) {
-    const payload = { vehicle, index };
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-
-    dispatch({ type: DELETE_VEHICLE_FAILURE, payload, error: errorMessage });
-    dispatch(
-      setNotice({
-        type: 'error',
-        message: 'error deleting vehicle',
-      })
-    );
-  }
-};
+  };

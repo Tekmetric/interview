@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaUser, FaCar, FaCalendarCheck } from 'react-icons/fa';
 
-import { useAppSelector, useAppDispatch } from '../../../store/store';
+import { useAppSelector } from '../../../store/store';
 
 import NoticeBanner from '../NoticeBanner';
 import styles from './dashboard.module.css';

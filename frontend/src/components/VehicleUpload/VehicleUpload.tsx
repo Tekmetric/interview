@@ -17,7 +17,7 @@ const FileUpload: FC<FileUploadProps> = ({
   onPreviewImageChange,
   hasClearedImage,
 }) => {
-  const [field, meta, helpers] = useField(name);
+  const [_, meta, helpers] = useField(name);
   const [fileName, setFileName] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

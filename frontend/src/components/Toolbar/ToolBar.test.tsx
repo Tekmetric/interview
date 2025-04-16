@@ -15,7 +15,7 @@ describe('Toolbar', () => {
   });
 
   it('render correctly with search and results', () => {
-    const { container } = render(
+    render(
       <MemoryRouter>
         <ToolBar handleSearch={mockHandleSearch} currentSearch="My Search" resultCount={5} />
       </MemoryRouter>

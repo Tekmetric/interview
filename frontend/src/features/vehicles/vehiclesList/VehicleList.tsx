@@ -18,11 +18,11 @@ interface VehicleListProps {
   vehicleId?: number;
 }
 
-const VehicleList: FC<VehicleListProps> = ({ vehicleId }) => {
+const VehicleList: FC<VehicleListProps> = () => {
   const dispatch = useAppDispatch();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const { vehicles, loading } = useAppSelector((state) => state.vehicles);
+  const { vehicles } = useAppSelector((state) => state.vehicles);
   const { data, meta } = vehicles;
 
   const { page, search, updateParams } = useVehicleQueryParams();

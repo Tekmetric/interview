@@ -1,5 +1,5 @@
 package com.interview.model;
 
 public enum TaskStatus {
-    TODO, IN_PROGRESS, CANCELLED, COMPLETED
+    TODO, AWAITING_PARTS, IN_PROGRESS, CANCELLED, COMPLETED
 }

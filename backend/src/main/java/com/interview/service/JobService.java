@@ -11,11 +11,15 @@ import com.interview.model.dto.JobUpdateRequest;
 import com.interview.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,16 +30,18 @@ public class JobService {
 
     private final CarService carService;
 
-    public List<JobResponse> findAll() {
-        var jobs = jobRepository.findAll();
-        return DtoMapper.Instance.toJobResponses(jobs);
-    }
-
-    public List<JobResponse> findJobsByStatusPaginated(JobStatus status, PageRequest pageRequest) {
-        var jobs = jobRepository.findAllByIdWithTasks(
-                jobRepository.findAllByStatus(status, pageRequest)
-        );
-        return DtoMapper.Instance.toJobResponses(jobs);
+    public Page<JobResponse> findJobsByStatusPaginated(List<JobStatus> statuses, Pageable pageable) {
+        if (statuses == null || statuses.isEmpty()) {
+            statuses = JobStatus.ALL;
+        }
+        Page<Integer> idsPage = jobRepository.findAllByStatuses(statuses, pageable);
+        Map<Integer, Job> jobsById = jobRepository.findAllByIdWithTasks(idsPage.getContent())
+                .stream()
+                .collect(Collectors.toMap(
+                        Job::getId,
+                        Function.identity(),
+                        (existingValue, newValue) -> existingValue));
+        return idsPage.map(id -> DtoMapper.Instance.toJobResponse(jobsById.get(id)));
     }
 
     public List<JobResponse> findAllJobsByCar(String vin) {

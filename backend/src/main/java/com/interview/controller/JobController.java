@@ -7,8 +7,8 @@ import com.interview.model.dto.JobResponse;
 import com.interview.model.dto.JobUpdateRequest;
 import com.interview.service.JobService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,12 +27,8 @@ public class JobController {
     }
 
     @GetMapping()
-    public List<JobResponse> findAllJobsPaginated(String vin) {
-        return jobService.findJobsByStatusPaginated(JobStatus.SCHEDULED, PageRequest.of(
-                0,
-                2,
-                Sort.by("scheduledAt").descending()
-        ));
+    public PagedModel<JobResponse> findAllJobsPaginated(Pageable pageable, @RequestParam(required = false) List<JobStatus> statuses) {
+        return new PagedModel<>(jobService.findJobsByStatusPaginated(statuses, pageable));
     }
 
     @GetMapping("/{id}")

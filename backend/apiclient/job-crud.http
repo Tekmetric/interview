@@ -13,12 +13,12 @@ Content-Type: application/json
 
 
 ### Update job by id
-PUT http://localhost:8080/api/v1/jobs/1
+PUT http://localhost:8080/api/v1/jobs/4
 Content-Type: application/json
 
 {
   "scheduledAt": "2024-03-15T10:00:00Z",
-  "jobStatus": "SCHEDULED"
+  "jobStatus": "CANCELLED"
 }
 
 ### Get all jobs for car
@@ -28,7 +28,7 @@ GET http://localhost:8080/api/v1/jobs/car/ABC123DEF456GHI711
 GET http://localhost:8080/api/v1/jobs/1
 
 ### Get jobs paginated
-GET http://localhost:8080/api/v1/jobs
+GET http://localhost:8080/api/v1/jobs?page=0&size=2&sort=id,DESC&statuses=IN_PROGRESS,CANCELLED
 
 
 ### Delete job

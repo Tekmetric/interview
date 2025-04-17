@@ -10,3 +10,40 @@ datasources:
       exemplarTraceIdDestinations:
         - name: trace_id
           url: http://localhost:9411/zipkin/traces/$${__value.raw}
+  - name: Zipkin
+    type: zipkin
+    uid: EbPG8fYoz
+    url: http://host.docker.internal:9411
+    access: proxy
+    basicAuth: true
+    basicAuthUser: my_user
+    readOnly: true
+    isDefault: false
+    jsonData:
+        tracesToLogsV2:
+            # Field with an internal link pointing to a logs data source in Grafana.
+            # datasourceUid value must match the uid value of the logs data source.
+            datasourceUid: 'loki'
+            spanStartTimeShift: '1h'
+            spanEndTimeShift: '-1h'
+            tags: ['job', 'instance', 'pod', 'namespace']
+            filterByTraceID: false
+            filterBySpanID: false
+            customQuery: true
+            query: 'method="$${__span.tags.method}"'
+        tracesToMetrics:
+            datasourceUid: 'prom'
+            spanStartTimeShift: '1h'
+            spanEndTimeShift: '-1h'
+            tags: [{ key: 'service.name', value: 'service' }, { key: 'job' }]
+            queries:
+                - name: 'Sample query'
+                  query: 'sum(rate(traces_spanmetrics_latency_bucket{$$__tags}[5m]))'
+        nodeGraph:
+            enabled: true
+        traceQuery:
+            timeShiftEnabled: true
+            spanStartTimeShift: '1h'
+            spanEndTimeShift: '-1h'
+        spanBar:
+            type: 'None'

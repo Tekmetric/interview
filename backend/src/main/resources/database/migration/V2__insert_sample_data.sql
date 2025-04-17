@@ -82,7 +82,8 @@ INSERT INTO job (fk_car_id, status, scheduled_at, created_at, updated_at) VALUES
     (12, 'SCHEDULED', '2025-05-20 11:30:00', '2025-04-13 16:10:00', CURRENT_TIMESTAMP),
     (27, 'READY_FOR_PICKUP', '2025-04-23 16:30:00', '2025-04-16 07:50:00', CURRENT_TIMESTAMP),
     (4, 'CANCELLED', '2025-05-12 12:00:00', '2025-04-10 11:25:00', CURRENT_TIMESTAMP),
-    (19, 'SCHEDULED', '2025-05-21 10:00:00', '2025-04-14 15:40:00', CURRENT_TIMESTAMP);
+    (19, 'SCHEDULED', '2025-05-21 10:00:00', '2025-04-14 15:40:00', CURRENT_TIMESTAMP),
+    (21, 'IN_PROGRESS', '2025-03-04 08:00:00', '2025-02-01 12:30:00', CURRENT_TIMESTAMP);
 
 
 INSERT INTO task (fk_job_id, status, title, type, description, mechanic_name, created_at, updated_at) VALUES

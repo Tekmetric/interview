@@ -3,16 +3,14 @@ package com.interview.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableMethodSecurity
-@EnableWebSecurity
+//@EnableMethodSecurity
+//@EnableWebSecurity
 public class SecurityConfig {
 
     /**
@@ -22,9 +20,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 // What paths do we want to authenticate
-                .authorizeHttpRequests(authz -> authz
-                        // Allow initial resource to be public
-                        .requestMatchers(HttpMethod.GET, "/api/welcome").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll() // Allow all actuator endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/welcome").permitAll() // Allow initial resource to be public
                         .anyRequest().authenticated() // All other requests require authentication (a valid JWT)
                 )
                 // Configure OAuth2 Resource Server support

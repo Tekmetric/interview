@@ -13,7 +13,7 @@ Authorization: Bearer {{client.auth.token.admin}}
 }
 
 ### Update job by id
-PUT {{client.host.url}}/api/v1/jobs/4
+PUT {{client.host.url}}/api/v1/jobs/51
 Content-Type: application/json
 Authorization: Bearer {{client.auth.token.admin}}
 
@@ -31,7 +31,7 @@ GET {{client.host.url}}/api/v1/jobs/1
 Authorization: Bearer {{client.auth.token.admin}}
 
 ### Get jobs paginated
-GET {{client.host.url}}/api/v1/jobs?page=0&size=2&sort=id,DESC&statuses=IN_PROGRESS,CANCELLED
+GET {{client.host.url}}/api/v1/jobs?page=0&size=20&sort=id,DESC&statuses=IN_PROGRESS,CANCELLED
 Authorization: Bearer {{client.auth.token.admin}}
 
 ### Delete job

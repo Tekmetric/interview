@@ -1,6 +1,7 @@
 ### Create job
-POST http://localhost:8080/api/v1/jobs
+POST {{client.host.url}}/api/v1/jobs
 Content-Type: application/json
+Authorization: Bearer {{client.auth.token.admin}}
 
 {
   "vin": "ABC123DEF456GHI710",
@@ -11,10 +12,10 @@ Content-Type: application/json
   "scheduledAt": "2026-05-20T10:00:00Z"
 }
 
-
 ### Update job by id
-PUT http://localhost:8080/api/v1/jobs/4
+PUT {{client.host.url}}/api/v1/jobs/4
 Content-Type: application/json
+Authorization: Bearer {{client.auth.token.admin}}
 
 {
   "scheduledAt": "2024-03-15T10:00:00Z",
@@ -22,14 +23,17 @@ Content-Type: application/json
 }
 
 ### Get all jobs for car
-GET http://localhost:8080/api/v1/jobs/car/ABC123DEF456GHI711
+GET {{client.host.url}}/api/v1/jobs/car/SAMPLEVIN000000003
+Authorization: Bearer {{client.auth.token.user}}
 
 ### Get job by id
-GET http://localhost:8080/api/v1/jobs/1
+GET {{client.host.url}}/api/v1/jobs/1
+Authorization: Bearer {{client.auth.token.admin}}
 
 ### Get jobs paginated
-GET http://localhost:8080/api/v1/jobs?page=0&size=2&sort=id,DESC&statuses=IN_PROGRESS,CANCELLED
-
+GET {{client.host.url}}/api/v1/jobs?page=0&size=2&sort=id,DESC&statuses=IN_PROGRESS,CANCELLED
+Authorization: Bearer {{client.auth.token.admin}}
 
 ### Delete job
-DELETE http://localhost:8080/api/v1/jobs/1
+DELETE {{client.host.url}}/api/v1/jobs/1
+Authorization: Bearer {{client.auth.token.admin}}

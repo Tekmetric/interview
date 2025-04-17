@@ -30,6 +30,7 @@ public class JobService {
 
     private final CarService carService;
 
+    @Transactional
     public Page<JobResponse> findJobsByStatusPaginated(List<JobStatus> statuses, Pageable pageable) {
         if (statuses == null || statuses.isEmpty()) {
             statuses = JobStatus.ALL;
@@ -44,6 +45,7 @@ public class JobService {
         return idsPage.map(id -> DtoMapper.Instance.toJobResponse(jobsById.get(id)));
     }
 
+    @Transactional
     public List<JobResponse> findAllJobsByCar(String vin) {
         var jobs = jobRepository.findAllByCar_VinOrderByScheduledAtDesc(vin);
         return DtoMapper.Instance.toJobResponses(jobs);
@@ -60,8 +62,8 @@ public class JobService {
     public JobResponse createJob(JobCreateRequest request) {
         log.debug("Creating new job: {}", request);
         Car car = carService.getOrCreateCar(request);
-        Job job = new Job(car, JobStatus.SCHEDULED, request.scheduledAt());
 
+        Job job = new Job(car, JobStatus.SCHEDULED, request.scheduledAt());
         job = jobRepository.save(job);
 
         log.debug("Created new job with id={}: {}", job.getId(), request);

@@ -35,12 +35,12 @@ const VehicleForm: FC = () => {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!vehicle && id) {
+    if (!vehicle && vehicleId) {
       dispatch(fetchVehicleById(vehicleId));
     } else {
-      if (!id) setIsDisabled(false);
+      if (!vehicleId) setIsDisabled(false);
     }
-  }, [dispatch, id, vehicle]);
+  }, [dispatch, vehicle, vehicleId]);
 
   useEffect(() => {
     return () => {

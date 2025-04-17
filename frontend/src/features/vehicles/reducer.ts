@@ -101,7 +101,7 @@ const vehicleReducer = (state = initialState, action: VehicleAction) => {
         loading: false,
         error: action.payload,
       };
-    case DELETE_VEHICLE_REQUEST:
+    case DELETE_VEHICLE_REQUEST: {
       // optimistic deleting of Vehicle
       const filteredVehicles = state.vehicles.data.filter(
         (vehicle: Vehicle) => vehicle.id !== action.payload.id
@@ -116,8 +116,9 @@ const vehicleReducer = (state = initialState, action: VehicleAction) => {
         loading: true,
         error: null,
       };
+    }
     // case DELETE_VEHICLE_SUCCESS:
-    case DELETE_VEHICLE_FAILURE:
+    case DELETE_VEHICLE_FAILURE: {
       // determine original location of index and re-add for optimistic deletes
       const vehicles = [...state.vehicles.data];
       vehicles.splice(action.payload.index, 0, action.payload.vehicle);
@@ -131,6 +132,7 @@ const vehicleReducer = (state = initialState, action: VehicleAction) => {
           meta: { ...state.vehicles.meta },
         },
       };
+    }
     case SET_SELECTED_VEHICLE:
       return {
         ...state,

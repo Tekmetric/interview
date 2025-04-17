@@ -41,8 +41,10 @@ export const fetchVehicles =
       const data = await res.json();
 
       dispatch({ type: FETCH_VEHICLES_SUCCESS, payload: data });
-    } catch (err) {
-      dispatch({ type: FETCH_VEHICLES_FAILURE, error: 'ERROR OCCURRED' });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+      dispatch({ type: FETCH_VEHICLES_FAILURE, error: 'ERROR OCCURRED', payload: errorMessage });
     }
   };
 
@@ -53,8 +55,14 @@ export const fetchVehicleById = (id: number) => async (dispatch: AppDispatch) =>
     const data = await res.json();
 
     dispatch({ type: FETCH_VEHICLE_DETAIL_SUCCESS, payload: data });
-  } catch (err) {
-    dispatch({ type: FETCH_VEHICLE_DETAIL_FAILURE, error: 'ERROR OCCURRED' });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+    dispatch({
+      type: FETCH_VEHICLE_DETAIL_FAILURE,
+      error: 'ERROR OCCURRED',
+      payload: errorMessage,
+    });
   }
 };
 

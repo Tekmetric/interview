@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Action Type Constants
 export const FETCH_VEHICLES_REQUEST = 'FETCH_VEHICLES_REQUEST';
 export const FETCH_VEHICLES_SUCCESS = 'FETCH_VEHICLES_SUCCESS';

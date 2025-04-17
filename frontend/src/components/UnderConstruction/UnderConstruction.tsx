@@ -9,7 +9,7 @@ const UnderConstruction: FC = () => {
       <div className={styles.container__inner}>
         <h2>under construction</h2>
         <p>
-          We're busy tuning things up under the hood. This page isn't quite ready yet, but we're
+          We&apos;re busy tuning things up under the hood. This page isn&apos;t quite ready yet, but
           working hard to get it running smoothly. Check back soon!
         </p>
         <img src={UnderConstructionImage} alt="Under Construction" />

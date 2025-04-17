@@ -15,3 +15,6 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+
+# ignoring base node_modules
+node_modules/

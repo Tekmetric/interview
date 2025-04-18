@@ -2,6 +2,23 @@
 
 This is Spring boot service which allows management of jobs & tasks within a repair shop.
 
+## Tech Stack
+
+- Java 21
+- Spring Boot 3
+- Spring Data JPA
+- H2 Database
+- Flyway (schema migration)
+- Lombok & MapStruct (for reducing boilerplate)
+- Zipkin (distributed tracing)
+- Micrometer Prometheus (exposes application metrics)
+- Grafana (for metrics dashboard)
+- Spring Boot Test
+
+## Setup for local dev
+
+Can be found [here](SETUP_LOCAL_DEV.md)
+
 ## DB Diagram
 
 ```mermaid
@@ -39,15 +56,11 @@ erDiagram
 
 ## API
 
-TODO 
-
-## Setup for local dev
-
 TODO
 
 ## Security
 
-Spring security is configured with OAuth2 support.
+This application leverages Spring Security with OAuth2 Resource Server capabilities to secure its endpoints. It relies on JWT (JSON Web Tokens) for authentication and role-based authorization.
 
 ### Authentication
 

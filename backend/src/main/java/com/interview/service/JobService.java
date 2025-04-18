@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class JobService {
 
     private final JobRepository jobRepository;
 
     private final CarService carService;
 
-    @Transactional
     public Page<JobResponse> findJobsByStatusPaginated(List<JobStatus> statuses, Pageable pageable) {
         if (statuses == null || statuses.isEmpty()) {
             statuses = JobStatus.ALL;
@@ -45,13 +45,11 @@ public class JobService {
         return idsPage.map(id -> DtoMapper.Instance.toJobResponse(jobsById.get(id)));
     }
 
-    @Transactional
     public List<JobResponse> findAllJobsByCar(String vin) {
         var jobs = jobRepository.findAllByCar_VinOrderByScheduledAtDesc(vin);
         return DtoMapper.Instance.toJobResponses(jobs);
     }
 
-    @Transactional
     public JobResponse findById(Integer id) {
         log.debug("Finding job by id={}", id);
         Job job = jobRepository.findById(id).orElseThrow();
@@ -85,13 +83,12 @@ public class JobService {
     @Transactional
     public void deleteJob(Integer id) {
         log.info("Deleting job with id: {}", id);
-        var deleteCount = jobRepository.deleteJobById(id);
 
-        if (deleteCount == 0) {
-            log.warn("Could not find job to delete with id={}", id);
+        if (!jobRepository.existsById(id)) {
             throw new ResourceNotFoundException();
         }
+        jobRepository.deleteById(id);
+
         log.info("Successfully deleted job with id: {}", id);
     }
-
 }

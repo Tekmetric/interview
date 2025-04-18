@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 
-
+@Transactional(readOnly = true)
 public interface JobRepository extends CrudRepository<Job, Integer> {
     // Use custom update in order to avoid select before update full entity
     @Modifying
@@ -24,14 +24,6 @@ public interface JobRepository extends CrudRepository<Job, Integer> {
     int updateJob(Integer id,
                   JobStatus status,
                   Instant scheduledAt);
-
-    // Override default deleteById in order to return result & remove unnecessary select done before delete
-    @Modifying
-    @Transactional
-    @Query(value = """
-                    DELETE from Job j where j.id = :id
-            """)
-    int deleteJobById(Integer id);
 
     List<Job> findAllByCar_VinOrderByScheduledAtDesc(String vin);
 

@@ -1,7 +1,7 @@
 package com.interview.model.db;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -9,10 +9,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Instant;
 import java.util.Set;
 
-@Data
 @Entity
 @Table(name = "car")
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

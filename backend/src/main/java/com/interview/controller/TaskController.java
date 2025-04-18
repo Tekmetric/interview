@@ -19,7 +19,7 @@ public class TaskController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public TaskResponse getTask(@PathVariable Integer id) {
-        return taskService.getTask(id);
+        return taskService.findById(id);
     }
 
     @PostMapping()

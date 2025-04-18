@@ -2,8 +2,7 @@ package com.interview.model.db;
 
 import com.interview.model.JobStatus;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -12,11 +11,13 @@ import java.time.Instant;
 import java.util.Set;
 
 
-@Data
-@NoArgsConstructor
 @Entity
 @Table(name = "job")
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +27,7 @@ public class Job {
     @JoinColumn(name = "fk_car_id", nullable = false)
     private Car car;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_job_id")
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Task> tasks;
 
     @Enumerated(EnumType.STRING)

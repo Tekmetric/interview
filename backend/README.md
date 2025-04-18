@@ -112,3 +112,11 @@ We use method-level security on the endpoints using `@PreAuthorize("hasRole({ROL
 ## Database migration
 
 We use flyway to manage database migrations. The scripts can be found at `src/main/resouces/database/migration`.
+
+## Potential Improvements
+
+- Automatically populate car db entity by using publicly available APIs
+- Fuzzy filtering which searches for a match in multiple fields
+- Improve testing by adding unit tests and more integration tests
+- Ability to run app in docker
+- Offer an SDK library for the service which allows other Java projects to integrate the API easily.

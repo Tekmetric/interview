@@ -50,9 +50,8 @@ public class VehicleService {
             pagedVehicles = vehicleRepository.findAll(pageable);
         }
 
-        PaginationMeta paginationMeta =
-                new PaginationMeta(pagedVehicles.getNumber() + 1, pagedVehicles.getTotalPages(),
-                        pagedVehicles.getTotalElements(), pagedVehicles.getSize());
+        PaginationMeta paginationMeta = new PaginationMeta(pagedVehicles.getNumber() + 1, pagedVehicles.getTotalPages(),
+                pagedVehicles.getTotalElements(), pagedVehicles.getSize());
 
         return new PaginatedResponse<Vehicle>(pagedVehicles.getContent(), paginationMeta);
     }
@@ -95,7 +94,7 @@ public class VehicleService {
 
     public Vehicle updateVehicle(Long id, Vehicle vehicle) {
         Vehicle existingVehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
         existingVehicle.setMake(vehicle.getMake());
         existingVehicle.setModel(vehicle.getModel());
         existingVehicle.setImage(vehicle.getImage());

@@ -14,11 +14,7 @@ import VehicleTable from '../../../components/VehicleTable/VehicleTable';
 
 import styles from './vehicleList.module.css';
 
-interface VehicleListProps {
-  vehicleId?: number;
-}
-
-const VehicleList: FC<VehicleListProps> = () => {
+const VehicleList: FC = () => {
   const dispatch = useAppDispatch();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 

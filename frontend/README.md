@@ -77,7 +77,7 @@ The frontend will start on port 5173, which is configured to work with the backe
 
 ### Frontend
 
-- Built with React 16 and [Vite](https://vitejs.dev/) for fast development and optimized builds
+- Built with React 18 and [Vite](https://vitejs.dev/) for fast development and optimized builds
 - Uses modern React hooks for state management
 - Custom mobile-first CSS
 - Communicates with backend API for data operations

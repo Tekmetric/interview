@@ -12,9 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import test.TestConstants;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -26,6 +28,8 @@ import static org.assertj.core.api.Assertions.within;
 @ActiveProfiles("test") // Activates application-test.properties
 @AutoConfigureWebTestClient
 public class JobControllerTest {
+
+
 
     @Autowired
     private WebTestClient webClient;
@@ -49,6 +53,7 @@ public class JobControllerTest {
 
         JobResponse response = webClient
                 .post().uri("/api/v1/jobs")
+                .header(HttpHeaders.AUTHORIZATION, TestConstants.ADMIN_AUTH_HEADER)
                 .bodyValue(jobRequest)
                 .exchange()
                 .expectStatus().isCreated()
@@ -73,12 +78,14 @@ public class JobControllerTest {
 
         webClient
                 .put().uri("/api/v1/jobs/1234")
+                .header(HttpHeaders.AUTHORIZATION, TestConstants.ADMIN_AUTH_HEADER)
                 .bodyValue(request)
                 .exchange()
                 .expectStatus().isNotFound();
 
         webClient
                 .delete().uri("/api/v1/jobs/1234")
+                .header(HttpHeaders.AUTHORIZATION, TestConstants.ADMIN_AUTH_HEADER)
                 .exchange()
                 .expectStatus().isNotFound();
     }

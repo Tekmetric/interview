@@ -1,0 +1,175 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`VehicleForm > renders correctly 1`] = `
+<div>
+  <div
+    class="_container__toolbar_9bced2"
+  >
+    <section
+      class="_header_e52d52"
+    >
+      <div
+        class="_searchBar_e52d52"
+      >
+        <a
+          class="link-button"
+          data-discover="true"
+          href="/vehicle/create"
+        >
+          <svg
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 448 512"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+            />
+          </svg>
+           
+          <span>
+            add new vehicle
+          </span>
+        </a>
+        <form
+          class="_search_e52d52"
+        >
+          <input
+            data-testid="search"
+            placeholder="search"
+            type="text"
+            value=""
+          />
+          <button
+            aria-label="Search"
+            type="submit"
+          >
+            <svg
+              aria-hidden="true"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 512 512"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
+              />
+            </svg>
+          </button>
+        </form>
+      </div>
+      <div
+        class="_results_e52d52"
+        data-id="true"
+      >
+        <p />
+      </div>
+    </section>
+  </div>
+  <div
+    class="_container__table_9bced2"
+  >
+    <p
+      class="_empty_03378d"
+    >
+      No Results Found
+    </p>
+  </div>
+  <div
+    class="_container__pagination_9bced2"
+  />
+</div>
+`;
+
+exports[`VehicleList > renders correctly 1`] = `
+<div>
+  <div
+    class="_container__toolbar_9bced2"
+  >
+    <section
+      class="_header_e52d52"
+    >
+      <div
+        class="_searchBar_e52d52"
+      >
+        <a
+          class="link-button"
+          data-discover="true"
+          href="/vehicle/create"
+        >
+          <svg
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 448 512"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+            />
+          </svg>
+           
+          <span>
+            add new vehicle
+          </span>
+        </a>
+        <form
+          class="_search_e52d52"
+        >
+          <input
+            data-testid="search"
+            placeholder="search"
+            type="text"
+            value=""
+          />
+          <button
+            aria-label="Search"
+            type="submit"
+          >
+            <svg
+              aria-hidden="true"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 512 512"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
+              />
+            </svg>
+          </button>
+        </form>
+      </div>
+      <div
+        class="_results_e52d52"
+        data-id="true"
+      >
+        <p />
+      </div>
+    </section>
+  </div>
+  <div
+    class="_container__table_9bced2"
+  >
+    <p
+      class="_empty_03378d"
+    >
+      No Results Found
+    </p>
+  </div>
+  <div
+    class="_container__pagination_9bced2"
+  />
+</div>
+`;

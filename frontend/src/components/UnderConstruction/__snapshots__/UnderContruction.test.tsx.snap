@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`UnderConstruction > renders correctly 1`] = `
+<div>
+  <div
+    class="_container_b5be04"
+  >
+    <div
+      class="_container__inner_b5be04"
+    >
+      <h2>
+        under construction
+      </h2>
+      <p>
+        We're busy tuning things up under the hood. This page isn't quite ready yet, but we're working hard to get it running smoothly. Check back soon!
+      </p>
+      <img
+        alt="Under Construction"
+        src="/src/assets/images/under_construction.png"
+      />
+      <a
+        class="link-button"
+        data-discover="true"
+        href="/"
+      >
+        Take Me Home
+      </a>
+    </div>
+  </div>
+</div>
+`;

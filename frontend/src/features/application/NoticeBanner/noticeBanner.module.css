@@ -1,0 +1,43 @@
+.alertBanner {
+  align-items: center;
+  background-color: var(--success-color);
+  border-radius: var(--border-radius-md);
+  border: 0;
+  bottom: 20px;
+  color: var(--white-color);
+  display: flex;
+  font-size: var(--font-size-md);
+  height: 100px;
+  justify-content: center;
+  left: 50%;
+  padding: var(--space-md);
+  position: fixed;
+  text-align: center;
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%) translateY(2.5rem);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+  width: 75%;
+  z-index: 1000;
+  opacity: 0;
+}
+
+.error {
+  background-color: var(--error-color);
+}
+
+.success {
+  background-color: var(--success-color);
+}
+
+.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.hidden {
+  transform: translateX(-50%) translateY(2.5rem);
+  opacity: 0;
+}

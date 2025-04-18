@@ -1,0 +1,131 @@
+.dashboard {
+  --dashboard-button-width: 50px;
+
+  background-color: var(--background-color);
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.toggle {
+  height: auto;
+  width: var(--dashboard-button-width);
+  background-color: var(--primary-color);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: row-reverse;
+  height: 100%;
+  position: absolute;
+  transform: translateX(calc(-100% + var(--dashboard-button-width)));
+  transition: 0.25s linear transform;
+  width: 100%;
+  z-index: 1;
+}
+
+.sidebar.active {
+  transform: translateX(0%);
+}
+
+.logo {
+  display: block;
+  padding: var(--space-md);
+  color: var(--white-color);
+  text-decoration: none;
+}
+
+.logo span {
+  display: block;
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-xl);
+}
+.logo span:nth-child(2) {
+  font-size: var(--font-size-lg);
+  opacity: 0.5;
+}
+
+.sidebar__profile {
+  padding: var(--space-md);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  grid-gap: 1rem;
+}
+
+.sidebar__profile a {
+  display: flex;
+}
+
+.sidebar__profile img {
+  border-radius: 100%;
+  margin: 0 auto;
+  width: 100px;
+}
+
+.sidebar__profile h3 {
+  color: var(--primary-color);
+  text-transform: uppercase;
+}
+
+.sidebar__inner {
+  background-color: var(--module-color);
+  border-radius: var(--border-radius-md);
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.sidebar__inner ul {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-md);
+}
+
+.sidebar__inner li {
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  background-color: var(--module-color);
+
+  color: var(--white-color);
+  border-top: 1px solid var(--white-color);
+  padding: var(--space-lg);
+}
+
+.sidebar__inner li svg {
+  margin: 0 10px;
+}
+
+.grid_container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+  padding: var(--space-md);
+  margin-left: var(--dashboard-button-width);
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    position: relative;
+    transform: none;
+    width: 300px;
+  }
+
+  .toggle {
+    display: none;
+  }
+
+  .sidebar {
+    position: relative;
+    transform: translateX(0%);
+    width: 300px;
+  }
+
+  .grid_container {
+    margin-left: auto;
+  }
+}

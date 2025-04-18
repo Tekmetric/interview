@@ -1,0 +1,37 @@
+.container {
+  position: relative;
+  height: 100%;
+}
+
+.container__inner {
+  height: auto;
+  padding: var(--space-lg);
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  border: 2px dashed var(--white-color-transparent);
+  border-radius: var(--border-radius-md);
+}
+
+.container h2 {
+  color: var(--white-color-transparent);
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-md);
+  text-transform: uppercase;
+}
+
+.container p {
+  color: var(--white-color-transparent);
+  padding: var(--space-md);
+}
+
+.container img {
+  width: 100%;
+  margin: 2rem 0;
+  opacity: 0.5;
+}
+
+@media (min-width: 768px) {
+}

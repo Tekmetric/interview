@@ -1,0 +1,9 @@
+.module {
+  margin: var(--space-md);
+  background-color: var(--module-color);
+  padding: var(--space-md);
+}
+
+.submitButton {
+  margin: var(--space-md) 0;
+}

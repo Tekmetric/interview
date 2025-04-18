@@ -1,0 +1,101 @@
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    height: auto;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+    height: 0;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.empty {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--font-size-xl);
+  font-family: var(--primary-font);
+  line-height: var(--line-height-xl);
+  text-align: center;
+}
+
+.table td:not(.mobile),
+.table th:not(.mobile) {
+  display: none;
+}
+
+.table th.editHeader:not(.mobile),
+.table td.editHeader:not(.mobile) {
+  display: table-cell;
+}
+
+.table {
+  width: 100%;
+  text-align: left;
+}
+
+.table a,
+.table button {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+}
+
+.table th {
+  background-color: var(--background-color);
+  font-family: var(--primary-font);
+  font-weight: bold;
+  height: 2.5rem;
+  text-transform: uppercase;
+  vertical-align: middle;
+  position: sticky;
+  top: 0;
+}
+
+.table th:nth-last-child(-n + 2) {
+  text-align: left;
+}
+
+.table__header {
+  height: var(--space-xl);
+}
+
+.table td {
+  height: 4rem;
+  vertical-align: middle;
+  padding: var(--space-md);
+}
+
+.table tr {
+  background-color: var(--module-color);
+}
+
+.deleting {
+  animation: fadeOut 300ms ease forwards;
+}
+
+.table tr:nth-child(odd) {
+  background-color: #24324d;
+}
+
+@media (min-width: 1024px) {
+  .mobile {
+    display: none;
+  }
+
+  .table td:not(.mobile),
+  .table th:not(.mobile) {
+    display: table-cell;
+  }
+
+  .editHeader {
+    text-align: right;
+  }
+}

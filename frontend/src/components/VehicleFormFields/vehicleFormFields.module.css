@@ -1,0 +1,30 @@
+.error {
+  font-family: var(--primary-font);
+  color: var(--primary-color);
+}
+
+.formn {
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.form:last-child {
+  margin-bottom: 0;
+}
+
+.form label {
+  font-family: var(--primary-font);
+  margin: var(--space-sm) 0;
+  display: block;
+}
+
+.form input,
+.form select {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.form input:focus,
+.form select {
+  outline: none;
+}

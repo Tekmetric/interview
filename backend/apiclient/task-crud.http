@@ -1,9 +1,10 @@
 ### Create task
 POST {{client.host.url}}/api/v1/tasks
 Content-Type: application/json
+Authorization: Bearer {{client.auth.token.admin}}
 
 {
-  "jobId": 2,
+  "jobId": 3,
   "status": "TODO",
   "title": "Oil change 2",
   "type": "Service",
@@ -14,6 +15,7 @@ Content-Type: application/json
 ### Update task
 PUT {{client.host.url}}/api/v1/tasks/1
 Content-Type: application/json
+Authorization: Bearer {{client.auth.token.admin}}
 
 {
   "jobId": 1,
@@ -26,6 +28,8 @@ Content-Type: application/json
 
 ### Get task by id
 GET {{client.host.url}}/api/v1/tasks/2
+Authorization: Bearer {{client.auth.token.admin}}
 
 ### Delete task
 DELETE {{client.host.url}}/api/v1/tasks/1
+Authorization: Bearer {{client.auth.token.admin}}

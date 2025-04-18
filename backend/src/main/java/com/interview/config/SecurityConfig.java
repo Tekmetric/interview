@@ -24,6 +24,8 @@ public class SecurityConfig {
                 // What paths do we want to authenticate
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll() // Allow all actuator endpoints
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll() // Allow swagger
+                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll() // Allow api docs
                         .requestMatchers(HttpMethod.GET, "/api/welcome").permitAll() // Allow initial resource to be public
                         .anyRequest().authenticated() // All other requests require authentication (a valid JWT)
                 )

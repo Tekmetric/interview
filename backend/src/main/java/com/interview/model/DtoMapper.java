@@ -30,7 +30,9 @@ public interface DtoMapper {
 
     List<JobResponse> toJobResponses(Iterable<Job> job);
 
+    @Mapping(source = "jobId", target = "job.id")
     Task toTaskEntity(TaskRequest taskRequest);
 
+    @Mapping(source = "job.id", target = "jobId")
     TaskResponse toTaskResponse(Task task);
 }

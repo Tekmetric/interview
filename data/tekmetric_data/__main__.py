@@ -27,7 +27,7 @@ def fetch_and_process(client, metric: Metric, page: int) -> Optional[dict]:
     if 'error' in data:
         logger.error("error getting the page %d: %s", page, data['error']['message'])
         return None
-
+    logger.debug("page %d: %s", page, data)
     # Process the data with the metric
     metric.add(data)
     return data
@@ -40,6 +40,7 @@ def data_to_record_batch(data: dict) -> Optional[pa.RecordBatch]:
     :return: The record batch.
     """
     if data is None:
+        logger.debug("no data to convert")
         return None
 
     column_data = defaultdict(list)
@@ -48,6 +49,7 @@ def data_to_record_batch(data: dict) -> Optional[pa.RecordBatch]:
         for key, value in processed_record.items():
             column_data[key].append(value)
 
+    logger.debug("columns: %s", column_data)
     return pa.RecordBatch.from_pydict(mapping=dict(column_data), schema=data_schema)
 
 
@@ -64,11 +66,13 @@ def write_metrics(writer, metrics: Metric) -> None:
         'number_of_near_misses': [metrics.number_of_near_misses],
         'per_year_miss': [per_year_miss_cleaned]
     }
+    logger.info("metrics: %s", data_for_arrow)
 
     metrics_table = pa.Table.from_pydict(data_for_arrow, schema=metric_schema)
 
     writer.write(metrics_table)
     writer.close()
+    logger.debug("metrics written")
 
 
 def main():
@@ -76,7 +80,6 @@ def main():
     Main function to run the Tekmetric Data application.
     """
     init_logging()
-    logger = logging.getLogger("tekmetric")
     logger.info("Starting Tekmetric Data version %s", __version__)
 
     args = parse_args()
@@ -94,33 +97,41 @@ def main():
 
     # Create the metric
     metrics = MetricFactory.get_metric(args.metric)
-    logger.info("Metric created: %s", metrics)
+    logger.info("Metric %s created.", metrics)
 
     # Create the output writer
-    writer = WriterFactory.get_writer(
+    data_writer = WriterFactory.get_writer(
         writer_type=args.output_type, schema=data_schema, output_dir=args.output_dir,
         filename="neo_data.parquet"
     )
+    logger.debug("Writer created with type %s, path %s is created for data", args.output_type, args.output_dir)
 
     end_page = args.num_pages
     num_objects = args.page_size * end_page
     logger.info("Will fetch pages 0 to %d: %d number of instances", end_page, num_objects)
 
     for page in range(0, end_page):
+        # fetch data from the client
         data = fetch_and_process(neo_client, metrics, page)
 
+        # convert data to record batch
         record_batch = data_to_record_batch(data)
 
-        writer.write(record_batch)
-    writer.close()
-    del writer
+        # write data with the writer
+        data_writer.write(record_batch)
+        logger.debug("page %d written", page)
+
+    data_writer.close()
+    logger.debug("data writer closed")
+    del data_writer
 
     # write metrics to file
-    writer = WriterFactory.get_writer(
+    metric_writer = WriterFactory.get_writer(
         writer_type=args.output_type, schema=metric_schema, output_dir=args.output_dir,
         filename="metrics.parquet"
     )
-    write_metrics(writer, metrics)
+    logger.debug("Writer created with type %s, path %s is created for metrics", args.output_type, args.output_dir)
+    write_metrics(metric_writer, metrics)
     logger.info("all done")
 
 

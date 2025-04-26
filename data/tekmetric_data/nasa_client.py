@@ -1,6 +1,9 @@
+import logging
 import os
 
 import requests
+
+logger = logging.getLogger("tekmetric")
 
 
 class NeoClient:
@@ -50,7 +53,12 @@ class NasaClient:
             params = {}
         params["api_key"] = self._api_key
 
-        response = self._session.get(f"{self._url}{endpoint}", params=params)
+        try:
+            response = self._session.get(f"{self._url}{endpoint}", params=params)
+            logger.debug("GET %s %s", response.url, response.status_code)
+        except requests.exceptions.RequestException as exc:
+            logger.error("Request failed: %s", exc)
+            return {'error': {'message': str(exc)}}
         return response.json()
 
 

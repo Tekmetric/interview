@@ -60,7 +60,6 @@ class NasaClientFactory:
 
     def __init__(self, client: NasaClient) -> None:
         self._client = client
-        self._clients = {}
 
     def get_client(self, client_type: str, **kwargs):
         """
@@ -69,13 +68,10 @@ class NasaClientFactory:
         :param kwargs: Additional arguments to pass to the client constructor.
         :return: The created client.
         """
-        if client_type in self._clients:
-            return self._clients[client_type]
 
         if client_type == "neo":
             client = NeoClient(self._client, **kwargs)
         else:
             raise ValueError(f"Unknown client type: {client_type}")
 
-        self._clients[client_type] = client
         return client

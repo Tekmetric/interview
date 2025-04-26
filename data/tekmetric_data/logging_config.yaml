@@ -1,0 +1,18 @@
+version: 1
+disable_existing_loggers: False
+formatters:
+  formatter:
+    format: "%(asctime)s - %(module)s.%(funcName)s:%(lineno)d - %(levelname)s - %(message)s"
+handlers:
+  stream_handler:
+    class: "logging.StreamHandler"
+    formatter: "formatter"
+    level: "NOTSET"
+loggers:
+  "":
+    level: "ERROR"
+    handlers: [ "stream_handler" ]
+  "tekmetric":
+    level: "INFO"
+    handlers: [ "stream_handler" ]
+    propagate: 0

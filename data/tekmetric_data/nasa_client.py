@@ -32,8 +32,9 @@ class NasaClient:
     """
 
     BASE_URL = "https://api.nasa.gov"
+    DEMO_KEY = "DEMO_KEY"
 
-    def __init__(self, url: str = BASE_URL, api_key: str = ""):
+    def __init__(self, url: str = BASE_URL, api_key: str = DEMO_KEY):
         self._url = url
         self._api_key = os.environ.get("TEK_NASA_API_KEY", api_key)
         self._session = requests.Session()

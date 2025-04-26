@@ -84,13 +84,16 @@ class S3Writer(Writer):
     S3Writer is a concrete implementation of the Writer class that writes data to Amazon S3.
     """
 
-    @abc.abstractmethod
     def __init__(self, schema: pa.schema, bucket_name: str, s3_client):
         super().__init__()
-        raise NotImplementedError("S3Writer is not implemented yet")
 
-    @abc.abstractmethod
     def write(self, data):
+        raise NotImplementedError()
+
+    def close(self):
+        """
+        Close the writer and release any resources.
+        """
         raise NotImplementedError()
 
 

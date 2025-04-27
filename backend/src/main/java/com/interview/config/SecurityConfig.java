@@ -6,9 +6,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @Configuration
 @EnableMethodSecurity
@@ -21,14 +24,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(toH2Console())
+                        .disable())
                 // What paths do we want to authenticate
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll() // Allow all actuator endpoints
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll() // Allow swagger
-                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll() // Allow api docs
+                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll() //
+                        .requestMatchers(toH2Console()).permitAll() // H2 console
                         .requestMatchers(HttpMethod.GET, "/api/welcome").permitAll() // Allow initial resource to be public
                         .anyRequest().authenticated() // All other requests require authentication (a valid JWT)
                 )
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 // Configure OAuth2 Resource Server support
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt

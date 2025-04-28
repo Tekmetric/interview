@@ -2,6 +2,12 @@
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.diagnosticMode": "workspace",
     "python.analysis.autoImportCompletions": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.extraPaths": ["."],
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportUnknownMemberType": "none",
+        "reportUnknownVariableType": "none"
+    },
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,

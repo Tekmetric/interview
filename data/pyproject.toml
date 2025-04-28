@@ -24,11 +24,11 @@ package-mode = false
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.11.4"
-pyright = "^1.1.399"
 pre-commit = "^4.2.0"
+pyright = "^1.1.400"
 
 [tool.ruff]
-line-length = 88
+line-length = 120
 target-version = "py313"
 exclude = [
     ".git",
@@ -47,9 +47,14 @@ select = [
 ]
 
 [tool.pyright]
-include = ["aggregators", "config", "models", "orchestration", "persistence", "scrapers"]
 exclude = ["**/__pycache__"]
+venvPath = "data"
+venv = ".venv"
 pythonVersion = "3.13"
-typeCheckingMode = "basic"
-reportMissingImports = true
+typeCheckingMode = "standard"
 reportMissingTypeStubs = false
+useLibraryCodeForTypes = true
+enableTypeIgnoreComments = true
+reportGeneralTypeIssues = "warning"
+strictListInference = true
+strictDictionaryInference = true

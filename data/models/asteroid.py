@@ -21,7 +21,6 @@ class AsteroidValidatedObject(BaseModel):
     last_observation_date: datetime
     observations_used: int
     orbital_period: float
-    is_sentry_object: bool
 
     @model_validator(mode="before")
     def extract_estimated_diameter_min_max(cls, values):

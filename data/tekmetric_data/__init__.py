@@ -4,6 +4,14 @@ from logging.config import dictConfig
 
 import yaml
 
+try:
+    import dotenv
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 
 def init_logging() -> None:
     """

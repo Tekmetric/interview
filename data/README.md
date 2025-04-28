@@ -1,5 +1,7 @@
 # Python Coding Exercise
 
+## Problem Statement
+
 Your task is to build a python script to gather data from NASA's Near Earth Object Web Service API, and save that data. We'll also perform some aggregations to make reporting on Near Earth Objects simpler for our theoretical website.
 
 The page for the API is here: https://api.nasa.gov
@@ -37,3 +39,52 @@ To save our data, we'll write it out to the local filesystem as if we're saving 
 
 ### Submitting your coding exercise
 Once you have finished your script, please create a PR into Tekmetric/interview. Don't forget to update the gitignore if that is required!
+
+## Solution Design
+Since the key point of this exercise is to design a scalable system, I'm chosing a highly customisable design, where I  split the data pipeline functionality in the following components:
+1. The orchestrator
+2. The scraper(s)
+3. The serializer(s) / persistence
+4. The aggregators
+5. Other minor components, such as configuration or data models.
+
+### 1. The orchestractor
+This main component is responsible for wiring everything up together: based on the settings, it instantiates the parser, the serializer and the aggregators.
+
+Next, it traverses the objects list from the scraper and passes the *processed* data to the serializer, and the *raw* data to each of the loaded aggregators for processing.
+
+### 2. The scraper(s)
+The main purpose of the scraper is to establish the contract with an API, web page etc. In this case it is the NASA NeoWs API.
+
+Based on the configuration, the scraper yields objects one by one via a property called objects. Each object has two "flavours": *raw* (a dict from the raw JSON from the API response) and *processed* (a pydantic object of type AsteroidValidatedObject, which inherits from BaseModel and validates the fields obtained by the scraper). Once it is done with traversing a page from the base_url, it loads the next one, by accessing the links.next field from the JSON response.
+
+### 3. The serializer(s)
+This component is responsible for persisting the data somewhere (such as disk, AWS S3, MongoDB etc).
+
+In this particular case, it serializes the objects on disk once it reaches the object count or upon flushing it.
+
+### 4. The aggregator(s)
+These components are also highly stateful objects, whose main purpose is to aggregate data based on raw views of the data.
+
+They persist their data in JSON format upon flushing. For even further extensibility, one could have another component, whose main purpose would be to just serialize aggregations. This was not implemented as part of this solution.
+
+## Solution Execution
+The entry-point for the solution is the `recall_data.py`, as it was designed initially.
+
+### Installing dependencies
+For running this project, `poetry` is required, since it offers package management for it.
+
+Depending on the OS you are running, installation instructions can be found on [the official web page](https://python-poetry.org/docs/#installing-with-the-official-installer).
+
+To install all deps, run the following:
+1. `poetry install`
+2. `poetry run pre-commit install` (Optional, to set up pre-commit hooks)
+
+Furthermore, for an integrated dev experience, I'm using the ruff and pyright VSCode extensions.
+Ideally, I'd set up a **devcontainer** for all this, but in the interest of time, I choose to skip this step. Same goes for **unit tests**.
+
+### Running the script
+Running the script requires the following command:
+`poetry run python ./recall_data.py [args]`.
+
+Of course, in a prod environment, one can package this and run it normally, i.e. directly via `python`.

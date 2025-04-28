@@ -80,7 +80,12 @@ To install all deps, run the following:
 1. `poetry install`
 2. `poetry run pre-commit install` (Optional, to set up pre-commit hooks)
 
-Furthermore, for an integrated dev experience, I'm using the ruff and pyright VSCode extensions.
+Furthermore, for an integrated dev experience, I'm using the following VSCode extensions:
+
+- ruff
+- pyright
+- autoDocstring.
+
 Ideally, I'd set up a **devcontainer** for all this, but in the interest of time, I choose to skip this step. Same goes for **unit tests**.
 
 ### Running the script

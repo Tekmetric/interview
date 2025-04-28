@@ -1,26 +1,27 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, model_validator
 
 
 class AsteroidValidatedObject(BaseModel):
     id: str
-    neo_reference_id: str
-    name: str
-    name_limited: str
-    designation: str
-    nasa_jpl_url: str
-    absolute_magnitude_h: float
-    is_potentially_hazardous_asteroid: bool
-    estimated_diameter_min_m: float
-    estimated_diameter_max_m: float
-    closest_approach_miss_distance_km: float
-    closest_approach_date: datetime
-    closest_approach_relative_velocity_kmps: float
-    first_observation_date: datetime
-    last_observation_date: datetime
-    observations_used: int
-    orbital_period: float
+    neo_reference_id: Optional[str] = None
+    name: Optional[str] = None
+    name_limited: Optional[str] = None
+    designation: Optional[str] = None
+    nasa_jpl_url: Optional[str] = None
+    absolute_magnitude_h: Optional[float] = None
+    is_potentially_hazardous_asteroid: Optional[bool] = None
+    estimated_diameter_min_m: Optional[float] = None
+    estimated_diameter_max_m: Optional[float] = None
+    closest_approach_miss_distance_km: Optional[float] = None
+    closest_approach_date: Optional[datetime] = None
+    closest_approach_relative_velocity_kmps: Optional[float] = None
+    first_observation_date: Optional[datetime] = None
+    last_observation_date: Optional[datetime] = None
+    observations_used: Optional[int] = None
+    orbital_period: Optional[float] = None
 
     @model_validator(mode="before")
     def extract_estimated_diameter_min_max(cls, values):

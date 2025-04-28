@@ -37,7 +37,8 @@ Please see [SETUP.md](SETUP.md) for installation and running instructions.
 ## Design Considerations
 
 - The project is designed to be easily extensible. New metrics, output formats, and API endpoints can be added with
-  minimal changes to the existing code.
+  minimal changes to the existing code. Introducing a new class and registering it in the registry is all that is
+  needed.
 - Fetching and metric calculation are separated. This allows for independent scaling of the two components.
 - Fetching each page is independent can be easily parallelized. The current implementation fetches each page
   sequentially, but this can be easily changed to fetch multiple pages in parallel.
@@ -58,5 +59,7 @@ Please see [SETUP.md](SETUP.md) for installation and running instructions.
   faster data fetching.
 - Running everything in parallel with a tool like Spark, Flink etc. S3 with S3 Notifications?
 - Asyncio for the API calls. This would allow for faster data fetching.
-- Factories could be removed all together and the classes could be instantiated directly. This would reduce the
-  complexity of the code. 
+- Registries could be removed all together and the classes could be instantiated directly. This would reduce the
+  complexity of the code.
+- A library like confuse could be used for configuration management. This would allow for easier configuration of the
+  project by consolidating all the configuration, parameters and environment variables in a single place.

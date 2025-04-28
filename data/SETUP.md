@@ -38,19 +38,21 @@
 
 ### Usage
 
+:warning: API key should be always passed as an environment variable. `DEMO_KEY` is used if the environment variable is not set.
+
 ```shell
 python3 -m tekmetric_data --help
 # or 
 docker run --rm -it tekmetric_data:latest --help
 
 2025-04-27 00:52:44,553 - __main__.main:83 - INFO - Starting Tekmetric Data version 0.1.0
-usage: tekmetric_data [-h] [--api-key API_KEY] [--page-size PAGE_SIZE] [--num-pages NUM_PAGES] [--metric METRIC] [--output-type OUTPUT_TYPE] [--output-dir OUTPUT_DIR]
+usage: tekmetric_data [-h] [--url URL] [--page-size PAGE_SIZE] [--num-pages NUM_PAGES] [--metric METRIC] [--output-type OUTPUT_TYPE] [--output-dir OUTPUT_DIR]
 
 Tekmetric Data
 
 options:
   -h, --help            show this help message and exit
-  --api-key API_KEY     NASA API key (default: DEMO_KEY)
+  --url URL             NASA API URL (default: https://api.nasa.gov)
   --page-size PAGE_SIZE
                         Limit number of neo items on each page (default: 20)
   --num-pages NUM_PAGES
@@ -60,5 +62,4 @@ options:
                         Output directory (default: disk)
   --output-dir OUTPUT_DIR
                         Output directory (default: output)
-
 ```

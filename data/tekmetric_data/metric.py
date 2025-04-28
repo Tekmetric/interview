@@ -18,6 +18,35 @@ class Metric(abc.ABC):
         """
 
 
+class MetricRegistry:
+    """
+    Factory class for creating metrics.
+    """
+    _registry = {}
+
+    @classmethod
+    def register(cls, client_type: str):
+        def decorator(client_class):
+            cls._registry[client_type] = client_class
+            return client_class
+
+        return decorator
+
+    @classmethod
+    def get(cls, metric_type: str, **kwargs):
+        """
+        Get a metric by type.
+        :param metric_type: The type of metric to create (e.g., "close_approach").
+        :return: The created metric.
+        """
+        metric_cls = cls._registry.get(metric_type)
+        if not metric_cls:
+            raise ValueError(f"Unknown metric type: {metric_type}")
+
+        return metric_cls(**kwargs)
+
+
+@MetricRegistry.register("close_approach")
 class CloseApproachMetric(Metric):
     """
     Metric to track the number of near misses and the number of near misses per year.
@@ -55,21 +84,3 @@ class CloseApproachMetric(Metric):
 
     def __repr__(self):
         return "Close Approach Metric"
-
-
-class MetricFactory:
-    """
-    Factory class for creating metrics.
-    """
-
-    @staticmethod
-    def get_metric(metric_type: str):
-        """
-        Get a metric by type.
-        :param metric_type: The type of metric to create (e.g., "close_approach").
-        :return: The created metric.
-        """
-        if metric_type == "close_approach":
-            return CloseApproachMetric()
-        else:
-            raise ValueError(f"Unknown metric type: {metric_type}")

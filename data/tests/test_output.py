@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tekmetric_data.output import DiskWriter, WriterFactory, S3Writer
+from tekmetric_data.output import DiskWriter, WriterRegistry, S3Writer
 
 
 @patch("tekmetric_data.output.pq.ParquetWriter")
@@ -42,9 +42,9 @@ def test_disk_writer_write_none_does_nothing():
 
 
 def test_writer_factory_disk():
-    with patch("tekmetric_data.output.DiskWriter") as mock_disk_writer:
-        WriterFactory.get_writer("disk", schema="s", output_dir="o", filename="f")
-        mock_disk_writer.assert_called_once_with(schema="s", output_dir="o", filename="f")
+    writer = WriterRegistry.get("disk", schema="s", output_dir="o", filename="f")
+    assert writer is not None
+    assert writer.__class__.__name__ == "DiskWriter"
 
 
 def test_s3_writer_write_and_close_raise():
@@ -56,11 +56,11 @@ def test_s3_writer_write_and_close_raise():
 
 
 def test_writer_factory_s3_returns_s3writer():
-    with patch("tekmetric_data.output.S3Writer") as mock_s3_writer:
-        WriterFactory.get_writer("s3", schema="s", bucket_name="b", s3_client="c")
-        mock_s3_writer.assert_called_once_with(schema="s", bucket_name="b", s3_client="c")
+    writer = WriterRegistry.get("s3", schema="s", bucket_name="b", s3_client="c")
+    assert writer is not None
+    assert writer.__class__.__name__ == "S3Writer"
 
 
 def test_writer_factory_invalid_type():
     with pytest.raises(ValueError):
-        WriterFactory.get_writer("unknown")
+        WriterRegistry.get("unknown")

@@ -32,9 +32,8 @@ def test_parse_args_defaults(monkeypatch):
     test_args = ["prog"]
     monkeypatch.setattr("sys.argv", test_args)
     args = tdi.parse_args()
-    assert args.api_key == "DEMO_KEY"
     assert args.page_size == 20
-    assert args.num_pages == 2
+    assert args.num_pages == 10
     assert args.metric == "close_approach"
     assert args.output_type == "disk"
     assert args.output_dir == "output"
@@ -42,12 +41,11 @@ def test_parse_args_defaults(monkeypatch):
 
 def test_parse_args_custom(monkeypatch):
     test_args = [
-        "prog", "--api-key", "KEY", "--page-size", "5", "--num-pages", "1",
+        "prog", "--page-size", "5", "--num-pages", "1",
         "--metric", "m", "--output-type", "s3", "--output-dir", "d"
     ]
     monkeypatch.setattr("sys.argv", test_args)
     args = tdi.parse_args()
-    assert args.api_key == "KEY"
     assert args.page_size == 5
     assert args.num_pages == 1
     assert args.metric == "m"

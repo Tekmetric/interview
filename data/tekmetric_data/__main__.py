@@ -6,9 +6,9 @@ import pyarrow as pa
 
 from tekmetric_data import init_logging, parse_args
 from tekmetric_data.data import data_schema, data_to_record_dict, metric_schema
-from tekmetric_data.metric import MetricFactory, Metric
-from tekmetric_data.nasa_client import NasaClient, NasaClientFactory
-from tekmetric_data.output import WriterFactory
+from tekmetric_data.metric import MetricRegistry, Metric
+from tekmetric_data.nasa_client import NasaClientRegistry, NasaClient
+from tekmetric_data.output import WriterRegistry
 from tekmetric_data.release import __version__
 
 logger = logging.getLogger("tekmetric")
@@ -86,21 +86,19 @@ def main():
     logger.debug("Args: %s", args)
 
     limit = args.page_size
-    api_key = args.api_key
+    url = args.url
 
     # Create the NasaClient and NeoClient
-    nasa_client = NasaClient(api_key=api_key)
-    logger.debug("NasaClient created")
-    client_factory = NasaClientFactory(client=nasa_client)
-    neo_client = client_factory.get_client("neo", page_size=limit)
+    client_factory = NasaClientRegistry(client=NasaClient(url=url))
+    neo_client = client_factory.get("neo", page_size=limit)
     logger.debug("NeoClient created with page size: %d", limit)
 
     # Create the metric
-    metrics = MetricFactory.get_metric(args.metric)
+    metrics = MetricRegistry.get(args.metric)
     logger.info("Metric %s created.", metrics)
 
     # Create the output writer
-    data_writer = WriterFactory.get_writer(
+    data_writer = WriterRegistry.get(
         writer_type=args.output_type, schema=data_schema, output_dir=args.output_dir,
         filename="neo_data.parquet"
     )
@@ -123,15 +121,15 @@ def main():
 
     data_writer.close()
     logger.debug("data writer closed")
-    del data_writer
 
     # write metrics to file
-    metric_writer = WriterFactory.get_writer(
+    metric_writer = WriterRegistry.get(
         writer_type=args.output_type, schema=metric_schema, output_dir=args.output_dir,
         filename="metrics.parquet"
     )
     logger.debug("Writer created with type %s, path %s is created for metrics", args.output_type, args.output_dir)
     write_metrics(metric_writer, metrics)
+    metric_writer.close()
     logger.info("all done")
 
 

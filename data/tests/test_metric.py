@@ -2,7 +2,7 @@
 
 import pytest
 
-from tekmetric_data.metric import CloseApproachMetric, MetricFactory
+from tekmetric_data.metric import CloseApproachMetric, MetricRegistry
 
 
 @pytest.fixture
@@ -47,10 +47,10 @@ def test_close_approach_metric_repr():
 
 
 def test_metric_factory_valid():
-    metric = MetricFactory.get_metric("close_approach")
+    metric = MetricRegistry.get("close_approach")
     assert isinstance(metric, CloseApproachMetric)
 
 
 def test_metric_factory_invalid():
     with pytest.raises(ValueError):
-        MetricFactory.get_metric("unknown_metric")
+        MetricRegistry.get("unknown_metric")

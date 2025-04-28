@@ -32,6 +32,37 @@ class Writer(abc.ABC):
         """
 
 
+class WriterRegistry:
+    """
+    Factory class for creating Writer instances.
+    """
+
+    _registry = {}
+
+    @classmethod
+    def register(cls, client_type: str):
+        def decorator(client_class):
+            cls._registry[client_type] = client_class
+            return client_class
+
+        return decorator
+
+    @classmethod
+    def get(cls, writer_type: str, **kwargs):
+        """
+        Factory method to create a Writer instance based on the writer type.
+        :param writer_type: The type of writer to create (e.g., "disk", "s3").
+        :param kwargs: Additional arguments to pass to the writer constructor.
+        :return: The created Writer instance.
+        """
+        writer_cls = cls._registry.get(writer_type)
+        if not writer_cls:
+            raise ValueError(f"Unknown writer type: {writer_type}")
+
+        return writer_cls(**kwargs)
+
+
+@WriterRegistry.register("disk")
 class DiskWriter(Writer):
     """
     DiskWriter is a concrete implementation of the Writer class that writes data to disk in Parquet format.
@@ -79,6 +110,7 @@ class DiskWriter(Writer):
         self.close()
 
 
+@WriterRegistry.register("s3")
 class S3Writer(Writer):
     """
     S3Writer is a concrete implementation of the Writer class that writes data to Amazon S3.
@@ -95,24 +127,3 @@ class S3Writer(Writer):
         Close the writer and release any resources.
         """
         raise NotImplementedError()
-
-
-class WriterFactory:
-    """
-    Factory class for creating Writer instances.
-    """
-
-    @staticmethod
-    def get_writer(writer_type: str, **kwargs):
-        """
-        Factory method to create a Writer instance based on the writer type.
-        :param writer_type: The type of writer to create (e.g., "disk", "s3").
-        :param kwargs: Additional arguments to pass to the writer constructor.
-        :return: The created Writer instance.
-        """
-        if writer_type == "disk":
-            return DiskWriter(**kwargs)
-        elif writer_type == "s3":
-            return S3Writer(**kwargs)
-        else:
-            raise ValueError(f"Unknown writer type: {writer_type}")

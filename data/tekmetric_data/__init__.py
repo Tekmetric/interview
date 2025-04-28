@@ -30,7 +30,7 @@ def parse_args() -> argparse.Namespace:
         description="Tekmetric Data",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument("--api-key", type=str, default="DEMO_KEY", help="NASA API key")
+    parser.add_argument("--url", type=str, default="https://api.nasa.gov", help="NASA API URL")
     parser.add_argument("--page-size", type=int, default=20, help="Limit number of neo items on each page")
     parser.add_argument("--num-pages", type=int, default=10, help="Number of pages to fetch")
     parser.add_argument("--metric", type=str, default="close_approach", help="Metric type")  # TODO choices

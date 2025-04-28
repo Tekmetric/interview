@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tekmetric_data.nasa_client import NasaClient, NeoClient, NasaClientFactory
+from tekmetric_data.nasa_client import NasaClient, NeoClient, NasaClientRegistry
 
 
 def test_nasa_client_get():
@@ -39,15 +39,15 @@ def test_neo_client_browse_calls_client_get():
 
 def test_nasa_client_factory_returns_same_instance():
     base_client = MagicMock()
-    factory = NasaClientFactory(base_client)
-    neo1 = factory.get_client("neo", page_size=10)
-    neo2 = factory.get_client("neo", page_size=20)
+    factory = NasaClientRegistry(base_client)
+    neo1 = factory.get("neo", page_size=10)
+    neo2 = factory.get("neo", page_size=20)
     assert neo1._page_size == 10
     assert neo2._page_size == 20
 
 
 def test_nasa_client_factory_invalid_type():
     base_client = MagicMock()
-    factory = NasaClientFactory(base_client)
+    factory = NasaClientRegistry(base_client)
     with pytest.raises(ValueError):
-        factory.get_client("invalid")
+        factory.get("invalid")

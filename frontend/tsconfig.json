@@ -19,7 +19,7 @@
 		"allowJs": true,
 		"allowUnreachableCode": false
 	},
-	"include": ["./**/*", "./types/*"],
+	"include": ["./**/*", "./types/*", "./src/**/*.json"],
 	"exclude": [
 		"node_modules",
 		"dist",

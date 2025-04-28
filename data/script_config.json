@@ -1,0 +1,37 @@
+{
+    "scraper": {
+        "path": "scrapers/nasa_neo_ws_scraper.py",
+        "class_name": "NasaNeoWsScraper",
+        "args": {
+            "base_url": "https://api.nasa.gov/neo/rest/v1/neo/browse",
+            "object_count": 200,
+            "api_key": "env:NASA_API_KEY"
+        }
+    },
+    "persistence": {
+        "path": "persistence/parquet_local_serializer.py",
+        "class_name": "ParquetLocalSerializer",
+        "args": {
+            "output_dir": "nasa_data",
+            "object_count": 100
+        }
+    },
+    "aggregators": [
+        {
+            "path": "aggregators/neo_count.py",
+            "class_name": "NeoCountAggregator",
+            "args": {
+                "output_dir": "nasa_data/aggregated",
+                "output_file": "neo_count.json"
+            }
+        },
+        {
+            "path": "aggregators/neo_count_per_year.py",
+            "class_name": "NeoCountPerYearAggregator",
+            "args": {
+                "output_dir": "nasa_data/aggregated",
+                "output_file": "neo_count_per_year.json"
+            }
+        }
+    ]
+}

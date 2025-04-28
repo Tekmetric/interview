@@ -31,6 +31,22 @@ class Writer(abc.ABC):
         Close the writer and release any resources.
         """
 
+    def __enter__(self):
+        """
+        Enter the runtime context related to this object.
+        :return: self
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Exit the runtime context related to this object.
+        :param exc_type: The exception type.
+        :param exc_val: The exception value.
+        :param exc_tb: The traceback object.
+        """
+        self.close()
+
 
 class WriterRegistry:
     """

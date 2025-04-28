@@ -101,7 +101,7 @@ def main():
     data_writer = WriterRegistry.get(
         writer_type=args.output_type, schema=data_schema, output_dir=args.output_dir,
         filename="neo_data.parquet"
-    )
+    )  # could be used as a context manager too.
     logger.debug("Writer created with type %s, path %s is created for data", args.output_type, args.output_dir)
 
     end_page = args.num_pages
@@ -123,13 +123,12 @@ def main():
     logger.debug("data writer closed")
 
     # write metrics to file
-    metric_writer = WriterRegistry.get(
-        writer_type=args.output_type, schema=metric_schema, output_dir=args.output_dir,
-        filename="metrics.parquet"
-    )
-    logger.debug("Writer created with type %s, path %s is created for metrics", args.output_type, args.output_dir)
-    write_metrics(metric_writer, metrics)
-    metric_writer.close()
+    with WriterRegistry.get(
+            writer_type=args.output_type, schema=metric_schema, output_dir=args.output_dir,
+            filename="metrics.parquet"
+    ) as metric_writer:  # context manager usage example
+        logger.debug("Writer created with type %s, path %s is created for metrics", args.output_type, args.output_dir)
+        write_metrics(metric_writer, metrics)
     logger.info("all done")
 
 

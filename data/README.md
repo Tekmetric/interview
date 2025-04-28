@@ -90,6 +90,20 @@ Ideally, I'd set up a **devcontainer** for all this, but in the interest of time
 
 ### Running the script
 Running the script requires the following command:
-`poetry run python ./recall_data.py [args]`.
+`poetry run python recall_data.py [config_file]`.
 
 Of course, in a prod environment, one can package this and run it normally, i.e. directly via `python`.
+
+## Potential future developments
+
+As already mentioned, there are at least 3 engineering activities which are still required besides the actual implementation, to make this solution "production-ready":
+
+1. Unit and integration tests (and potentially integrate their runtime in a CI/CD GitHub Actions pipeline)
+2. Devcontainer setup, for x-platform compatibility
+3. Package and deploy script (potentially as a subsequent step of the pipeline)
+
+On top of this, another area which is worth considering is the recurrent run of the pipeline, which would be used to update potentially changed data from a source.
+
+However, plain parquet data is not suited for in-place updates. Hence, for these workloads, depending on the data volume and data scenarios, a data lake platform such as Delta Lake (on top of parquet), or a document DB, or even a simple table data store would be suitable, such as AWS's DynamoDB.
+
+On the execution side of things, recurrent pipeline runs can be achieved with various platforms, such as Apache Airflow, or serverlessly with Amazon EventBridge and AWS Batch.

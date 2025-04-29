@@ -24,24 +24,4 @@ const ButtonsContainer = styled.div`
 	gap: ${({ theme }) => theme.spacing03};
 `;
 
-const Button = styled.button<{ isRound?: boolean }>`
-	all: unset;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	background-color: ${({ theme }) => theme.ui01};
-	border-radius: ${({ theme, isRound }) => (isRound ? '50%' : theme.spacing02)};
-	padding: ${({ theme, isRound }) =>
-		isRound ? theme.spacing03 : `${theme.spacing03} ${theme.spacing04}`};
-	color: ${({ theme }) => theme.textColor01};
-	border: 1px solid ${({ theme }) => theme.borderColor};
-	flex-grow: 0;
-	flex-shrink: 0;
-
-	&:focus {
-		box-shadow: 0 0 0 2px ${({ theme }) => theme.focusColor};
-	}
-`;
-
-export { Container, Title, ButtonsContainer, Button };
+export { Container, Title, ButtonsContainer };

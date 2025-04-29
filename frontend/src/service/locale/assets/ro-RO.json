@@ -5,5 +5,9 @@
 	"LINK": "Link",
 	"DESCRIPTION": "Descriere",
 	"TAGS": "Etichete",
-	"CREATED_AT": "Creat la"
+	"CREATED_AT": "Creat la",
+	"FILTER_BY_TITLE": "Filtrează după titlu",
+	"SEARCH": "Caută",
+	"DELETE": "Șterge",
+	"SELECTED_RESOURCES_COUNT": "{count, plural, one {o resursă selectată} other {# de resurse selectate}}"
 }

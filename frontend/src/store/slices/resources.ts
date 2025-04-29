@@ -63,6 +63,8 @@ function partialResetState(state: ResourcesStateInterface) {
 	state.isSelectedMap = {};
 	state.numberOfSelectedItems = 0;
 	state.isAllSelected = false;
+	state.isLoading = false;
+	state.hasFetchError = false;
 }
 
 const getResources = createAsyncThunk(
@@ -87,10 +89,13 @@ const resources = createSlice({
 	name: 'resources',
 	initialState,
 	reducers: {
+		refreshData: (state) => {
+			partialResetState(state);
+		},
 		setSearchText: (state, { payload }: { payload: string }) => {
 			state.searchText = payload;
 
-			//reset state
+			partialResetState(state);
 		},
 		selectResource: (state, { payload }: { payload: string }) => {
 			if (state.isSelectedMap[payload]) {
@@ -159,8 +164,18 @@ const resources = createSlice({
 
 				state.isLoading = false;
 				const newItems = [...(state.resources ?? []), ...payload.data];
+				const newItemsMap: Record<string, boolean> = {};
 
-				state.resources = newItems;
+				state.resources = newItems.filter((item) => {
+					if (newItemsMap[item.id]) {
+						return false;
+					}
+
+					newItemsMap[item.id] = true;
+
+					return true;
+				});
+
 				state.paginationConfig.canQueryMore = payload.canQueryMore;
 				state.paginationConfig.offset =
 					state.paginationConfig.offset + payload.data.length;

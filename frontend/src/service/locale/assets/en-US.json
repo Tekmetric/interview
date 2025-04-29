@@ -5,5 +5,9 @@
 	"LINK": "Link",
 	"DESCRIPTION": "Description",
 	"TAGS": "Tags",
-	"CREATED_AT": "Created At"
+	"CREATED_AT": "Created At",
+	"FILTER_BY_TITLE": "Filter by title",
+	"SEARCH": "Search",
+	"DELETE": "Delete",
+	"SELECTED_RESOURCES_COUNT": "{count, plural, one {# selected resource} other {# selected resources}}"
 }

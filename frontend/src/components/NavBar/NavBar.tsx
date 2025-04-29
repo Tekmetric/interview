@@ -1,9 +1,10 @@
 import { useIntl } from 'react-intl';
 import { useTheme } from 'styled-components';
 
-import { Button, ButtonsContainer, Container, Title } from './NavBar.styled';
-import DarkMode from './assets/DarkMode';
-import LightMode from './assets/LightMode';
+import { ButtonsContainer, Container, Title } from './NavBar.styled';
+import Button from '../Button';
+import DarkMode from '../icons/DarkMode';
+import LightMode from '../icons/LightMode';
 
 export interface NameBarInterface {
 	onThemeSwitch: () => void;

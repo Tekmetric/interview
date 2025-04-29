@@ -41,6 +41,26 @@ function DataGrid<T extends { id: string }>({
 	const containerRef = useRef<HTMLDivElement>(null);
 	const scrollableContentRef = useRef<HTMLDivElement>(null);
 	const checkboxRef = useRef<HTMLInputElement>(null);
+	const previousContainerHeight = useRef<number>(0);
+
+	// the function passed in the ResizeObserver is "memoized", so we need to use a ref to store the params
+	// otherwise, we have 2 options - fire the useEffect at each change and rebuild the resizer at each change
+	// 															- or we fire the function with stale params and hope for the best
+	const onScrollParamsAsRef = useRef({
+		dataLength: data.length,
+		isLoading,
+		hasFetchError,
+		canQueryMore,
+		rowHeight,
+	});
+
+	onScrollParamsAsRef.current = {
+		dataLength: data.length,
+		isLoading,
+		hasFetchError,
+		canQueryMore,
+		rowHeight,
+	};
 
 	const gridColumnsTemplate = useMemo(
 		() => computeGridColumnsTemplate(headers),
@@ -66,16 +86,52 @@ function DataGrid<T extends { id: string }>({
 		onScroll();
 	}, [data?.length, isLoading, hasFetchError, canQueryMore, rowHeight]);
 
+	useEffect(() => {
+		if (!containerRef.current) {
+			return;
+		}
+
+		const observer = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				if (
+					entry.contentRect.height - previousContainerHeight.current >
+					(TOLERANCE_ROWS_COUNT * rowHeight) / 2
+				) {
+					onScroll();
+					previousContainerHeight.current = entry.contentRect.height;
+				}
+			}
+		});
+
+		observer.observe(containerRef.current);
+
+		return () => {
+			if (containerRef.current) {
+				observer.unobserve(containerRef.current);
+			}
+
+			observer.disconnect();
+		};
+	}, []);
+
 	function onScroll() {
-		if (!isLoading && canQueryMore && !hasFetchError) {
+		const {
+			isLoading: localIsLoading,
+			canQueryMore: localCanQueryMore,
+			hasFetchError: localHasFetchError,
+			rowHeight: localRowHeight,
+			dataLength: localDataLength,
+		} = onScrollParamsAsRef.current;
+
+		if (!localIsLoading && localCanQueryMore && !localHasFetchError) {
 			const { scrollTop, clientHeight } = scrollableContentRef.current || {
 				scrollTop: 0,
 				clientHeight: 0,
 			};
 
 			if (
-				(data?.length || 0) * rowHeight - scrollTop - clientHeight <
-				rowHeight * TOLERANCE_ROWS_COUNT
+				(localDataLength || 0) * localRowHeight - scrollTop - clientHeight <
+				localRowHeight * TOLERANCE_ROWS_COUNT
 			) {
 				getItems();
 			}

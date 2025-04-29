@@ -21,6 +21,7 @@ const HeaderRow = styled.div<{ template: string }>`
 	position: sticky;
 	top: 0;
 	width: 100%;
+	z-index: 1;
 `;
 
 const HeaderCell = styled.div`
@@ -81,29 +82,20 @@ const Row = styled.div<{ template: string }>`
 	}
 `;
 
-const CustomRow = styled.div<{ template: string; height?: number }>`
-	display: grid;
-	grid-template-columns: ${({ template }) => template};
-	position: relative;
-	height: ${({ height }) => (height ? `${height}px` : '100%')};
-	overflow: hidden;
-	flex-grow: 1;
-`;
-
-const CustomCell = styled.div`
-	grid-column: 1/ -1;
+const CustomCell = styled.div<{ height?: number }>`
 	display: flex;
+	width: 100%;
+	height: ${({ height }) => (height ? `${height}px` : '100%')};
+	position: sticky;
+	left: 0;
 `;
 
 const NoDataDisplayContainer = styled.div`
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	width: 100%;
 	height: 100%;
-	position: sticky;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%);
 `;
 
 export {
@@ -116,6 +108,5 @@ export {
 	Row,
 	Cell,
 	NoDataDisplayContainer,
-	CustomRow,
 	CustomCell,
 };

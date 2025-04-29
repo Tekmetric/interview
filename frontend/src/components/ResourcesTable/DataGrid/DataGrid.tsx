@@ -7,7 +7,6 @@ import {
 	Checkbox,
 	Container,
 	CustomCell,
-	CustomRow,
 	HeaderRow,
 	NoDataDisplayContainer,
 	Row,
@@ -190,24 +189,17 @@ function DataGrid<T extends { id: string }>({
 				))}
 
 				{isLoading && (
-					<CustomRow
-						template={gridColumnsTemplate}
-						height={data?.length ? rowHeight : undefined}
-					>
-						<CustomCell>
-							<NoDataDisplayContainer>{loadingLabel}</NoDataDisplayContainer>
-						</CustomCell>
-					</CustomRow>
+					<CustomCell height={data?.length ? rowHeight : undefined}>
+						<NoDataDisplayContainer>{loadingLabel}</NoDataDisplayContainer>
+					</CustomCell>
 				)}
 
 				{!data?.length && !isLoading && (
-					<CustomRow template={gridColumnsTemplate}>
-						<CustomCell>
-							<NoDataDisplayContainer>
-								{hasFetchError ? fetchErrorLabel : noDataAvailableLabel}
-							</NoDataDisplayContainer>
-						</CustomCell>
-					</CustomRow>
+					<CustomCell>
+						<NoDataDisplayContainer>
+							{hasFetchError ? fetchErrorLabel : noDataAvailableLabel}
+						</NoDataDisplayContainer>
+					</CustomCell>
 				)}
 			</ScrollableContent>
 		</Container>

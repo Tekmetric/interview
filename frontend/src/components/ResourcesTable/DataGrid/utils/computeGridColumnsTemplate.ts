@@ -4,7 +4,7 @@ function computeGridColumnsTemplate<T extends string>(
 	headers: DataGridHeaderInterface<T>[]
 ): string {
 	return (
-		'max-content ' +
+		'40px ' +
 		headers
 			.map((header) => {
 				const { width, minWidth } = header;

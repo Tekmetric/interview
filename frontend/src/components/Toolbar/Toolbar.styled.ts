@@ -19,7 +19,8 @@ const SearchBox = styled.input`
 	border-radius: ${({ theme }) => theme.spacing02};
 
 	&:focus {
-		outline-color: ${({ theme }) => theme.focusColor};
+		outline: none;
+		border-color: ${({ theme }) => theme.focusColor};
 	}
 `;
 

@@ -1,5 +1,13 @@
 import { type ResourceInterface } from './data';
 
+function sleep(timeout: number) {
+	return new Promise((resolve) => {
+		setTimeout(() => {
+			resolve(true);
+		}, timeout);
+	});
+}
+
 const SORTABLE_COLUMNS = [
 	'title',
 	'type',
@@ -40,4 +48,4 @@ function getSortedList(
 	});
 }
 
-export { getSortedList };
+export { sleep, getSortedList };

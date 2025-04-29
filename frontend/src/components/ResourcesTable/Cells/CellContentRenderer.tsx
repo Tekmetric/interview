@@ -5,6 +5,7 @@ import { type ResourceInterface } from 'src/store/slices/resources';
 
 import { type HeaderKeys } from '../constants';
 import { Link, Text } from './CellRenderer.styled';
+import DeleteCell from './DeleteCell/DeleteCell';
 
 function CreatedAtCell({ item }: { item: ResourceInterface }) {
 	const { locale } = useIntl();
@@ -31,6 +32,7 @@ const MAP_KEY_TO_CELL = {
 		<Text>{item.tags?.join(', ') ?? null}</Text>
 	),
 	createdAt: (item: ResourceInterface) => <CreatedAtCell item={item} />,
+	delete: (item: ResourceInterface) => <DeleteCell item={item} />,
 } as const satisfies Record<
 	HeaderKeys,
 	(item: ResourceInterface) => JSX.Element

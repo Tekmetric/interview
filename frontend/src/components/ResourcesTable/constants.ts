@@ -1,4 +1,3 @@
-import { type ResourceInterface } from '../../store/slices/resources';
 import { type DataGridHeaderInterface } from './DataGrid';
 
 const LARGE_CELL_WIDTH = '30%';
@@ -51,7 +50,12 @@ const HEADERS = [
 		width: MEDIUM_CELL_WIDTH,
 		minWidth: MEDIUM_CELL_MIN_WIDTH,
 	},
-] as const satisfies DataGridHeaderInterface<keyof ResourceInterface>[];
+	{
+		label: '',
+		key: 'delete',
+		width: '100px',
+	},
+] as const satisfies DataGridHeaderInterface<string>[];
 
 type HeaderKeys = (typeof HEADERS)[number]['key'];
 

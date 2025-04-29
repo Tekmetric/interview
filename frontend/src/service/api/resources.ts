@@ -46,7 +46,7 @@ function updateResource(id: string, data: any) {
 }
 
 function deleteResource(id: string) {
-	return api.delete(`/resources/${id}`, {
+	return api.delete(`/resources/one/${id}`, {
 		baseURL: SERVICE_URL,
 	});
 }

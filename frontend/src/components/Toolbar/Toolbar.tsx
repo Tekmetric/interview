@@ -24,6 +24,8 @@ interface ToolbarInterface {
 	searchText: ResourcesStateInterface['searchText'];
 	setSearchText: (typeof resourcesActions)['setSearchText'];
 	numberOfSelectedItems: ResourcesStateInterface['numberOfSelectedItems'];
+	isDeleteLoading: ResourcesStateInterface['isDeleteLoading'];
+	bulkDeleteResources: (typeof resourcesActions)['bulkDeleteResources'];
 	refreshData: (typeof resourcesActions)['refreshData'];
 }
 
@@ -31,6 +33,8 @@ function Toolbar({
 	searchText,
 	setSearchText,
 	numberOfSelectedItems,
+	isDeleteLoading,
+	bulkDeleteResources,
 	refreshData,
 }: ToolbarInterface) {
 	const { formatMessage } = useIntl();
@@ -51,6 +55,13 @@ function Toolbar({
 		debouncedSearch(value);
 	}
 
+	function handleDelete() {
+		// eslint-disable-next-line no-alert
+		if (confirm(formatMessage({ id: 'BULK_DELETE_CONFIRMATION' }))) {
+			bulkDeleteResources();
+		}
+	}
+
 	return (
 		<Container>
 			<SearchBoxContainer>
@@ -61,8 +72,8 @@ function Toolbar({
 
 			<SecondaryToolbar>
 				<Button
-					disabled={numberOfSelectedItems === 0}
-					onClick={() => {}}
+					disabled={numberOfSelectedItems === 0 || isDeleteLoading}
+					onClick={handleDelete}
 					buttonType="destructive"
 				>
 					{formatMessage({ id: 'DELETE' })}
@@ -90,11 +101,16 @@ function Toolbar({
 const mapStateToProps = (state: RootState) => ({
 	searchText: state.resources.searchText,
 	numberOfSelectedItems: state.resources.numberOfSelectedItems,
+	isDeleteLoading: state.resources.isDeleteLoading,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	setSearchText: bindActionCreators(resourcesActions.setSearchText, dispatch),
 	refreshData: bindActionCreators(resourcesActions.refreshData, dispatch),
+	bulkDeleteResources: bindActionCreators(
+		resourcesActions.bulkDeleteResources,
+		dispatch
+	),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Toolbar);

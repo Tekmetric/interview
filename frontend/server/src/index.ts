@@ -3,7 +3,7 @@ import cors from 'cors';
 import { v4 as uuid } from 'uuid';
 
 import generateData, { type ResourceInterface } from './data';
-import { getSortedList } from './utils';
+import { getSortedList, sleep } from './utils';
 
 const app = express();
 
@@ -21,8 +21,11 @@ app.use(express.json());
 app.set('port', process.env.PORT || 8000);
 
 let database = generateData(500);
+const DELAY = 1000;
 
-app.get('/api/resources', (request: Request, response: Response) => {
+app.get('/api/resources', async (request: Request, response: Response) => {
+	await sleep(DELAY);
+
 	const {
 		filter,
 		limit = 50,
@@ -63,7 +66,9 @@ app.get('/api/resources', (request: Request, response: Response) => {
 	});
 });
 
-app.post('/api/resources', (request: Request, response: Response) => {
+app.post('/api/resources', async (request: Request, response: Response) => {
+	await sleep(DELAY);
+
 	const { resource } = request.body;
 
 	if (!resource) {
@@ -89,7 +94,9 @@ app.post('/api/resources', (request: Request, response: Response) => {
 	response.status(201).json(newResource);
 });
 
-app.put('/api/resources', (request: Request, response: Response) => {
+app.put('/api/resources', async (request: Request, response: Response) => {
+	await sleep(DELAY);
+
 	const { resource } = request.body;
 
 	const { id, filteredResourceFields } = resource;
@@ -112,43 +119,53 @@ app.put('/api/resources', (request: Request, response: Response) => {
 	response.status(200).json(database[index]);
 });
 
-app.delete('/api/resources/:id', (request: Request, response: Response) => {
-	const { id } = request.params;
-	const index = database.findIndex((item) => item.id === id);
+app.delete(
+	'/api/resources/one/:id',
+	async (request: Request, response: Response) => {
+		await sleep(DELAY);
 
-	if (index === -1) {
-		response.status(404).json({ message: 'Resource not found' });
+		const { id } = request.params;
+		const index = database.findIndex((item) => item.id === id);
 
-		return;
-	}
+		if (index === -1) {
+			response.status(404).json({ message: 'Resource not found' });
 
-	database.splice(index, 1);
-	response.status(200).json({ id });
-});
-
-app.delete('/api/resources/bulk', (request: Request, response: Response) => {
-	const { ids } = request.body;
-
-	if (!Array.isArray(ids)) {
-		response.status(400).json({ message: 'Invalid request' });
-
-		return;
-	}
-
-	const deletedIds: string[] = [];
-
-	database = database.filter((item) => {
-		if (ids.includes(item.id)) {
-			deletedIds.push(item.id);
-
-			return false;
+			return;
 		}
 
-		return true;
-	});
+		database.splice(index, 1);
+		response.status(200).json({ deletedId: id });
+	}
+);
 
-	response.status(200).json({ deletedIds });
-});
+app.delete(
+	'/api/resources/bulk',
+	async (request: Request, response: Response) => {
+		await sleep(2 * DELAY);
+
+		const { ids } = request.body;
+
+		if (!Array.isArray(ids)) {
+			response.status(400).json({ message: 'Invalid request' });
+
+			return;
+		}
+
+		const deletedIds: string[] = [];
+
+		database = database.filter((item) => {
+			if (ids.includes(item.id)) {
+				deletedIds.push(item.id);
+
+				return false;
+			}
+
+			return true;
+		});
+
+		response.status(200).json({ deletedIds });
+	}
+);
 
 app.get('*', (request: Request, response: Response) => {
 	response.status(404).json({ message: 'Not found' });

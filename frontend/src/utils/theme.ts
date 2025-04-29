@@ -69,8 +69,8 @@ const darkTheme: DefaultTheme = {
 	textColor03: '#ffffff',
 	textColorDestructive: '#FF3D00',
 
-	focusColor: '#0000EE',
-	borderColor: '#E0E0E0',
+	focusColor: '#4e4eed',
+	borderColor: '#4A4A5D',
 
 	contentTypography,
 	titleTypography,

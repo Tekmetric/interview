@@ -1,13 +1,15 @@
 {
-	"LEARNING_RESOURCES": "Learning Resources",
-	"TITLE": "Title",
-	"TYPE": "Type",
-	"LINK": "Link",
-	"DESCRIPTION": "Description",
-	"TAGS": "Tags",
-	"CREATED_AT": "Created At",
-	"FILTER_BY_TITLE": "Filter by title",
-	"SEARCH": "Search",
-	"DELETE": "Delete",
-	"SELECTED_RESOURCES_COUNT": "{count, plural, one {# selected resource} other {# selected resources}}"
+    "BULK_DELETE_CONFIRMATION": "Are you sure you want to delete these resources? The action cannot be undone.",
+    "CREATED_AT": "Created At",
+    "DELETE": "Delete",
+    "DELETE_CONFIRMATION": "Are you sure you want to delete this resource? The action cannot be undone.",
+    "DESCRIPTION": "Description",
+    "FILTER_BY_TITLE": "Filter by title",
+    "LEARNING_RESOURCES": "Learning Resources",
+    "LINK": "Link",
+    "SEARCH": "Search",
+    "SELECTED_RESOURCES_COUNT": "{count, plural, one {# selected resource} other {# selected resources}}",
+    "TAGS": "Tags",
+    "TITLE": "Title",
+    "TYPE": "Type"
 }

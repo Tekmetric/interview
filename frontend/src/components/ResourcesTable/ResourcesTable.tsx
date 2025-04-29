@@ -14,7 +14,7 @@ import { HEADERS } from './constants';
 import cellContentRenderer from './Cells/CellContentRenderer';
 
 interface ResourcesTableInterface {
-	resources: ResourcesStateInterface['resources'];
+	items: ResourcesStateInterface['items'];
 	getResources: (typeof resourcesActions)['getResources'];
 	canQueryMore: ResourcesStateInterface['paginationConfig']['canQueryMore'];
 	hasFetchError: ResourcesStateInterface['hasFetchError'];
@@ -29,7 +29,7 @@ interface ResourcesTableInterface {
 }
 
 function ResourcesTable({
-	resources,
+	items,
 	getResources,
 	canQueryMore,
 	hasFetchError,
@@ -48,7 +48,7 @@ function ResourcesTable({
 		() =>
 			HEADERS.map((header) => ({
 				...header,
-				label: formatMessage({ id: header.label }),
+				label: header.label && formatMessage({ id: header.label }),
 			})),
 		[formatMessage]
 	);
@@ -56,7 +56,7 @@ function ResourcesTable({
 	return (
 		<DataGrid
 			headers={translatedHeaders}
-			data={resources}
+			data={items}
 			getItems={getResources}
 			isLoading={isLoading}
 			hasFetchError={hasFetchError}
@@ -74,7 +74,7 @@ function ResourcesTable({
 }
 
 const mapStateToProps = (state: RootState) => ({
-	resources: state.resources.resources,
+	items: state.resources.items,
 	canQueryMore: state.resources.paginationConfig.canQueryMore,
 	hasFetchError: state.resources.hasFetchError,
 	isLoading: state.resources.isLoading,

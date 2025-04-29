@@ -1,0 +1,32 @@
+# Auto - generated
+build
+coverage
+public
+dist
+tmp
+.cache
+
+# Ignore all node_modules:
+node_modules
+
+# Ignore log files:
+*.log
+
+# Ignore environment variable files:
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore lock files:
+package-lock.json
+yarn.lock
+
+# Ignore compiled files:
+*.min.js
+*.bundle.js
+
+# Ignore files related to version control:
+.git
+.gitignore

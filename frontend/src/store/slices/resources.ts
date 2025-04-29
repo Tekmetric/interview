@@ -13,7 +13,7 @@ export interface ResourceInterface {
 }
 
 export interface ResourcesStateInterface {
-	resources: ResourceInterface[] | undefined;
+	resources: ResourceInterface[];
 	searchText: string;
 	paginationConfig: {
 		offset: number;
@@ -35,7 +35,7 @@ export interface ResourcesStateInterface {
 }
 
 const initialState: ResourcesStateInterface = {
-	resources: undefined,
+	resources: [],
 	searchText: '',
 	paginationConfig: {
 		offset: 0,
@@ -55,6 +55,15 @@ const initialState: ResourcesStateInterface = {
 		getResources: undefined,
 	},
 };
+
+function partialResetState(state: ResourcesStateInterface) {
+	state.paginationConfig.offset = 0;
+	state.paginationConfig.canQueryMore = true;
+	state.resources = [];
+	state.isSelectedMap = {};
+	state.numberOfSelectedItems = 0;
+	state.isAllSelected = false;
+}
 
 const getResources = createAsyncThunk(
 	'resources/getResources',
@@ -122,7 +131,19 @@ const resources = createSlice({
 			}: {
 				payload: string;
 			}
-		) => {},
+		) => {
+			if (state.sortConfig.column === payload) {
+				const newSortDirection =
+					state.sortConfig.order === 'asc' ? 'desc' : 'asc';
+
+				state.sortConfig.order = newSortDirection;
+			} else {
+				state.sortConfig.order = 'asc';
+				state.sortConfig.column = payload;
+			}
+
+			partialResetState(state);
+		},
 	},
 	extraReducers: (builder) => {
 		builder

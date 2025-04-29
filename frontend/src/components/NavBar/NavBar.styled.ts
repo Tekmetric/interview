@@ -39,10 +39,8 @@ const Button = styled.button<{ isRound?: boolean }>`
 	flex-grow: 0;
 	flex-shrink: 0;
 
-	& > svg {
-		fill: ${({ theme }) => theme.textColor01};
-		heigth: 24px;
-		width: 24px;
+	&:focus {
+		box-shadow: 0 0 0 2px ${({ theme }) => theme.focusColor};
 	}
 `;
 

@@ -8,7 +8,7 @@ interface DataGridHeaderInterface<T = string> {
 
 interface DataGridInterface<T extends { id: string } = { id: string }> {
 	headers: DataGridHeaderInterface[];
-	data: T[] | undefined;
+	data: T[];
 	rowHeight?: number;
 	getItems: () => void;
 	isLoading: boolean;
@@ -28,6 +28,9 @@ interface DataGridInterface<T extends { id: string } = { id: string }> {
 	numberOfSelectedItems: number;
 	onSort: (key: string) => void;
 	sortConfig: { column?: string; order: 'asc' | 'desc' };
+	noDataAvailableLabel?: string;
+	fetchErrorLabel?: string;
+	loadingLabel?: string;
 }
 
 export { DataGridHeaderInterface, DataGridInterface };

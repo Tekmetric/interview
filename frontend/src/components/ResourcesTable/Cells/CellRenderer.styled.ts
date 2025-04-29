@@ -13,7 +13,8 @@ const Text = styled.div<{ shouldShowBold?: boolean }>`
 const Link = styled.a`
 	${({ theme }) => theme.contentTypography};
 	text-decoration: none;
-	cursour: pointer;
+	cursor: pointer;
+	color: ${({ theme }) => theme.focusColor};
 	width: 100%;
 	max-width: 100%;
 	overflow: hidden;

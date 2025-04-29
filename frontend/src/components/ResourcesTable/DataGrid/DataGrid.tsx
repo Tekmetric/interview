@@ -6,12 +6,15 @@ import {
 	Cell,
 	Checkbox,
 	Container,
-	HeaderActiveCell,
-	HeaderCell,
+	CustomCell,
+	CustomRow,
 	HeaderRow,
+	NoDataDisplayContainer,
 	Row,
 	ScrollableContent,
 } from './DataGrid.styled';
+import HeaderCell from './HeaderCell/HeaderCell';
+import { StyledHeaderCell } from './HeaderCell/HeaderCell.styled';
 
 const TOLERANCE_ROWS_COUNT = 5;
 
@@ -31,6 +34,9 @@ function DataGrid<T extends { id: string }>({
 	numberOfSelectedItems,
 	onSort,
 	sortConfig,
+	noDataAvailableLabel = 'No data available',
+	fetchErrorLabel = 'Error fetching data',
+	loadingLabel = 'Loading...',
 }: DataGridInterface<T>) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const scrollableContentRef = useRef<HTMLDivElement>(null);
@@ -52,7 +58,6 @@ function DataGrid<T extends { id: string }>({
 		if (!data?.length) {
 			scrollableContentRef.current?.scrollTo({
 				top: 0,
-				left: 0,
 			});
 		}
 	}, [data]);
@@ -81,7 +86,7 @@ function DataGrid<T extends { id: string }>({
 		<Container ref={containerRef}>
 			<ScrollableContent onScroll={onScroll} ref={scrollableContentRef}>
 				<HeaderRow template={gridColumnsTemplate}>
-					<HeaderCell>
+					<StyledHeaderCell>
 						<Checkbox
 							ref={checkboxRef}
 							type="checkbox"
@@ -90,24 +95,16 @@ function DataGrid<T extends { id: string }>({
 							}}
 							checked={isAllSelected}
 						/>
-					</HeaderCell>
+					</StyledHeaderCell>
 
-					{headers.map((header) => {
-						if (header.isSortable) {
-							return (
-								<HeaderActiveCell
-									key={header.key}
-									onClick={() => {
-										onSort(header.key);
-									}}
-								>
-									{header.label}
-								</HeaderActiveCell>
-							);
-						}
-
-						return <HeaderCell key={header.key}>{header.label}</HeaderCell>;
-					})}
+					{headers.map((header) => (
+						<HeaderCell
+							key={header.key}
+							header={header}
+							onSort={onSort}
+							sortConfig={sortConfig}
+						/>
+					))}
 				</HeaderRow>
 
 				{data?.map((item) => (
@@ -135,6 +132,27 @@ function DataGrid<T extends { id: string }>({
 						))}
 					</Row>
 				))}
+
+				{isLoading && (
+					<CustomRow
+						template={gridColumnsTemplate}
+						height={data?.length ? rowHeight : undefined}
+					>
+						<CustomCell>
+							<NoDataDisplayContainer>{loadingLabel}</NoDataDisplayContainer>
+						</CustomCell>
+					</CustomRow>
+				)}
+
+				{!data?.length && !isLoading && (
+					<CustomRow template={gridColumnsTemplate}>
+						<CustomCell>
+							<NoDataDisplayContainer>
+								{hasFetchError ? fetchErrorLabel : noDataAvailableLabel}
+							</NoDataDisplayContainer>
+						</CustomCell>
+					</CustomRow>
+				)}
 			</ScrollableContent>
 		</Container>
 	);

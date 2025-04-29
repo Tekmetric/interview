@@ -52,6 +52,10 @@ const HeaderActiveCell = styled.button`
 
 const Checkbox = styled.input`
 	cursor: pointer;
+
+	&:focus {
+		outline-color: ${({ theme }) => theme.focusColor};
+	}
 `;
 
 const Cell = styled.div<{ height: number }>`
@@ -77,14 +81,29 @@ const Row = styled.div<{ template: string }>`
 	}
 `;
 
+const CustomRow = styled.div<{ template: string; height?: number }>`
+	display: grid;
+	grid-template-columns: ${({ template }) => template};
+	position: relative;
+	height: ${({ height }) => (height ? `${height}px` : '100%')};
+	overflow: hidden;
+	flex-grow: 1;
+`;
+
+const CustomCell = styled.div`
+	grid-column: 1/ -1;
+	display: flex;
+`;
+
 const NoDataDisplayContainer = styled.div`
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 100%;
 	height: 100%;
-	background-color: ${({ theme }) => theme.ui01};
-	color: ${({ theme }) => theme.textColor01};
+	position: sticky;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%);
 `;
 
 export {
@@ -97,4 +116,6 @@ export {
 	Row,
 	Cell,
 	NoDataDisplayContainer,
+	CustomRow,
+	CustomCell,
 };

@@ -69,6 +69,15 @@ function ResourcesTable({
 			numberOfSelectedItems={numberOfSelectedItems}
 			onSort={onSort}
 			sortConfig={sortConfig}
+			noDataAvailableLabel={formatMessage({
+				id: 'NO_RESOURCES_AVAILABLE',
+			})}
+			fetchErrorLabel={formatMessage({
+				id: 'FAILED_TO_GET_RESOURCES',
+			})}
+			loadingLabel={formatMessage({
+				id: 'LOADING',
+			})}
 		/>
 	);
 }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 
-import { type DataGridInterface } from './types';
+import { type DataGridInterface } from './utils/types';
 import computeGridColumnsTemplate from './utils/computeGridColumnsTemplate';
 import {
 	Cell,

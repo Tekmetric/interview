@@ -6,7 +6,10 @@ import {
 	StyledHeaderCell,
 	Text,
 } from './HeaderCell.styled';
-import { type DataGridInterface, type DataGridHeaderInterface } from '../types';
+import {
+	type DataGridInterface,
+	type DataGridHeaderInterface,
+} from '../utils/types';
 import SortableIcon from './assets/SortableIcon';
 import AscendingIcon from './assets/AscendingIcon';
 

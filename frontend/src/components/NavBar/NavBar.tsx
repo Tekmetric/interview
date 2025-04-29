@@ -3,8 +3,8 @@ import { useTheme } from 'styled-components';
 
 import { ButtonsContainer, Container, Title } from './NavBar.styled';
 import Button from '../Button';
-import DarkMode from '../icons/DarkMode';
-import LightMode from '../icons/LightMode';
+import DarkMode from '../Icons/DarkMode';
+import LightMode from '../Icons/LightMode';
 
 export interface NameBarInterface {
 	onThemeSwitch: () => void;

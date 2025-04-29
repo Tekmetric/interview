@@ -55,7 +55,7 @@ const HEADERS = [
 		key: 'delete',
 		width: '100px',
 	},
-] as const satisfies DataGridHeaderInterface<string>[];
+] as const satisfies DataGridHeaderInterface[];
 
 type HeaderKeys = (typeof HEADERS)[number]['key'];
 

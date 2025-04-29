@@ -18,7 +18,7 @@ import {
 	SearchBoxContainer,
 	SecondaryToolbar,
 } from './Toolbar.styled';
-import Refresh from '../icons/Refresh';
+import Refresh from '../Icons/Refresh';
 
 interface ToolbarInterface {
 	searchText: ResourcesStateInterface['searchText'];

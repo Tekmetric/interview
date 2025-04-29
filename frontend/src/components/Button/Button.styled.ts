@@ -25,7 +25,7 @@ const Button = styled.button<{
 			buttonType === 'secondary' ? theme.ui01Hover : theme.ui03Hover};
 	}
 
-	&:focus {
+	&:focus-visible {
 		box-shadow: 0 0 0 2px ${({ theme }) => theme.focusColor};
 	}
 

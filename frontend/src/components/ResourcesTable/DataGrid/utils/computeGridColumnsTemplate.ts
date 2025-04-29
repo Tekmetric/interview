@@ -1,4 +1,4 @@
-import { type DataGridHeaderInterface } from '../types';
+import { type DataGridHeaderInterface } from './types';
 
 function computeGridColumnsTemplate<T extends string>(
 	headers: DataGridHeaderInterface<T>[]

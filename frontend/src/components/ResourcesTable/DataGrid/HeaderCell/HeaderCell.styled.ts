@@ -27,7 +27,7 @@ const HeaderActiveCell = styled.button`
 	color: ${({ theme }) => theme.textColor02};
 	padding: ${({ theme }) => theme.spacing04};
 
-	&:focus {
+	&:focus-visible {
 		box-shadow: 0 0 2px 2px inset ${({ theme }) => theme.focusColor};
 	}
 `;

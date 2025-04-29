@@ -3,14 +3,15 @@ import { ThemeProvider } from 'styled-components';
 import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 
+import createStore from '_store/index';
+
 import themes, { type ThemeName } from './utils/theme';
 import { getLocale, getThemeColor } from './utils/localStorageHandlers';
 import { LOCAL_STORAGE_KEYS } from './utils/constants';
 import localeImporter, {
 	SUPPORTED_LOCALES,
 } from './service/locale/localeImporter';
-import createStore from './store';
-import GlobalStyles from './globalStyles';
+import GlobalStyles, { TitleHandler } from './globalConfig';
 import MainView from './containers/MainVIew';
 
 function AppWithProviders() {
@@ -60,6 +61,7 @@ function AppWithProviders() {
 				messages={messages}
 				defaultLocale={SUPPORTED_LOCALES[0]}
 			>
+				<TitleHandler />
 				<MainView
 					onThemeSwitch={handleThemeSwitch}
 					onLocaleSwitch={handleLocaleSwitch}

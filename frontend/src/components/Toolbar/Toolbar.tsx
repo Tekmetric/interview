@@ -8,8 +8,8 @@ import { useTheme } from 'styled-components';
 import {
 	type ResourcesStateInterface,
 	resourcesActions,
-} from 'src/store/slices/resources';
-import { type RootState } from 'src/store';
+} from '_store/slices/resources';
+import { type RootState } from '_store/index';
 
 import Button from '../Button';
 import {

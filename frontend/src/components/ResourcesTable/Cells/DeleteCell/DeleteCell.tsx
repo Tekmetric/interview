@@ -2,13 +2,14 @@ import { bindActionCreators, type Dispatch } from '@reduxjs/toolkit';
 import { useIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
-import Button from 'src/components/Button';
-import { type RootState } from 'src/store';
 import {
 	type ResourceInterface,
 	resourcesActions,
 	type ResourcesStateInterface,
-} from 'src/store/slices/resources';
+} from '_store/slices/resources';
+import { type RootState } from '_store/index';
+
+import Button from '../../../Button';
 
 interface DeleteCellInterface {
 	item: ResourceInterface;

@@ -48,7 +48,7 @@ const initialState: ResourcesStateInterface = {
 		canQueryMore: true,
 	},
 	sortConfig: {
-		column: undefined,
+		column: 'title',
 		order: 'asc',
 	},
 	hasFetchError: false,

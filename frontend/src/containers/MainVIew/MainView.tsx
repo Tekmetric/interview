@@ -1,5 +1,4 @@
-import NavBar from 'src/components/NavBar';
-
+import NavBar from '../../components/NavBar';
 import ResourcesTable from '../../components/ResourcesTable';
 import { Container, ContentWrapper } from './MainView.styled';
 import Toolbar from '../../components/Toolbar';

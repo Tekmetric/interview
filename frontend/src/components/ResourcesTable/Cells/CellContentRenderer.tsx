@@ -1,7 +1,7 @@
 import { type JSX } from 'react';
 import { useIntl } from 'react-intl';
 
-import { type ResourceInterface } from 'src/store/slices/resources';
+import { type ResourceInterface } from '_store/slices/resources';
 
 import { type HeaderKeys } from '../constants';
 import { Link, Text } from './CellRenderer.styled';

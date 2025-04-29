@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useIntl } from 'react-intl';
 import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyles = createGlobalStyle`
@@ -21,4 +23,15 @@ const GlobalStyles = createGlobalStyle`
 	}
 `;
 
+function TitleHandler() {
+	const { formatMessage } = useIntl();
+
+	useEffect(() => {
+		document.title = formatMessage({ id: 'LEARNING_RESOURCES' });
+	}, [formatMessage]);
+
+	return null;
+}
+
+export { TitleHandler };
 export default GlobalStyles;

@@ -1,5 +1,4 @@
-import { SUPPORTED_LOCALES } from 'src/service/locale/localeImporter';
-
+import { SUPPORTED_LOCALES } from '../service/locale/localeImporter';
 import { LOCAL_STORAGE_KEYS } from './constants';
 import { type ThemeName } from './theme';
 

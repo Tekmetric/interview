@@ -6,8 +6,8 @@ import { useMemo } from 'react';
 import {
 	resourcesActions,
 	type ResourcesStateInterface,
-} from 'src/store/slices/resources';
-import { type RootState } from 'src/store';
+} from '_store/slices/resources';
+import { type RootState } from '_store/index';
 
 import DataGrid from './DataGrid';
 import { HEADERS } from './constants';

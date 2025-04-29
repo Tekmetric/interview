@@ -17,7 +17,10 @@
 		"outDir": "dist/",
 		"sourceMap": true,
 		"allowJs": true,
-		"allowUnreachableCode": false
+		"allowUnreachableCode": false,
+		"paths": {
+			"_store/*": ["./src/store/*"]
+		}
 	},
 	"include": ["./**/*", "./types/*", "./src/**/*.json"],
 	"exclude": [

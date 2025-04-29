@@ -1,1 +1,9 @@
-{}
+{
+	"LEARNING_RESOURCES": "Resurse de învățare",
+	"TITLE": "Titlu",
+	"TYPE":  "Tip",
+	"LINK": "Link",
+	"DESCRIPTION": "Descriere",
+	"TAGS": "Etichete",
+	"CREATED_AT": "Creat la"
+}

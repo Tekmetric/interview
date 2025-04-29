@@ -2,7 +2,7 @@ import api from '.';
 
 const SERVICE_URL = 'http://localhost:8000/api';
 
-function getAllResources({
+function getResources({
 	filter,
 	limit,
 	offset,
@@ -13,7 +13,7 @@ function getAllResources({
 	limit: number;
 	offset: number;
 	sortDirection: 'asc' | 'desc';
-	sortColumn: string;
+	sortColumn?: string;
 }) {
 	return api.get('/resources', {
 		baseURL: SERVICE_URL,
@@ -59,7 +59,7 @@ function bulkDeleteResources(ids: string[]) {
 }
 
 export {
-	getAllResources,
+	getResources,
 	addResource,
 	updateResource,
 	deleteResource,

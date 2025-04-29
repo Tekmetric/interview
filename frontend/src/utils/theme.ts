@@ -2,18 +2,26 @@ import { type DefaultTheme } from 'styled-components';
 
 const contentTypography: DefaultTheme['contentTypography'] = {
 	fontFamily: 'Inter, sans-serif',
-	fontSize: '16px',
+	fontSize: '1rem',
 	fontWeight: '400',
-	lineHeight: '24px',
+	lineHeight: '1.5rem',
 	letterSpacing: '0.5px',
 };
 
 const titleTypography: DefaultTheme['titleTypography'] = {
 	fontFamily: 'Inter, sans-serif',
-	fontSize: '20px',
+	fontSize: '1.5rem',
 	fontWeight: '600',
-	lineHeight: '28px',
+	lineHeight: '2rem',
 	letterSpacing: '0.5px',
+};
+
+const spacing = {
+	spacing01: '2px',
+	spacing02: '4px',
+	spacing03: '8px',
+	spacing04: '12px',
+	spacing05: '16px',
 };
 
 const lightTheme: DefaultTheme = {
@@ -35,8 +43,13 @@ const lightTheme: DefaultTheme = {
 
 	focusColor: '#8C1AF6',
 	borderColor: '#E0E0E0',
+
 	contentTypography,
 	titleTypography,
+
+	...spacing,
+
+	themeName: 'light',
 };
 
 const darkTheme: DefaultTheme = {
@@ -58,8 +71,13 @@ const darkTheme: DefaultTheme = {
 
 	focusColor: '#8C1AF6',
 	borderColor: '#E0E0E0',
+
 	contentTypography,
 	titleTypography,
+
+	...spacing,
+
+	themeName: 'dark',
 };
 
 const themes = {

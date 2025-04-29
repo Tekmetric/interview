@@ -1,1 +1,9 @@
-{}
+{
+	"LEARNING_RESOURCES": "Learning Resources",
+	"TITLE": "Title",
+	"TYPE": "Type",
+	"LINK": "Link",
+	"DESCRIPTION": "Description",
+	"TAGS": "Tags",
+	"CREATED_AT": "Created At"
+}

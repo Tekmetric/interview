@@ -11,6 +11,7 @@ import localeImporter, {
 } from './service/locale/localeImporter';
 import createStore from './store';
 import GlobalStyles from './globalStyles';
+import MainView from './containers/MainVIew';
 
 function AppWithProviders() {
 	const [themeName, setThemeName] = useState<ThemeName>(getThemeColor());
@@ -59,7 +60,10 @@ function AppWithProviders() {
 				messages={messages}
 				defaultLocale={SUPPORTED_LOCALES[0]}
 			>
-				boo
+				<MainView
+					onThemeSwitch={handleThemeSwitch}
+					onLocaleSwitch={handleLocaleSwitch}
+				/>
 			</IntlProvider>
 		</ThemeProvider>
 	);

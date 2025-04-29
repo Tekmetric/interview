@@ -28,6 +28,14 @@ interface CustomTheme {
 
 	contentTypography: TypographyInterface;
 	titleTypography: TypographyInterface;
+
+	spacing01: string;
+	spacing02: string;
+	spacing03: string;
+	spacing04: string;
+	spacing05: string;
+
+	themeName: 'light' | 'dark';
 }
 
 declare module 'styled-components' {

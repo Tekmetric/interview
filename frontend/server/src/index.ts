@@ -81,6 +81,7 @@ app.post('/api/resources', (request: Request, response: Response) => {
 	const newResource: ResourceInterface = {
 		...resource,
 		id: uuid(),
+		createdAt: new Date().toISOString(),
 	};
 
 	database.push(newResource);

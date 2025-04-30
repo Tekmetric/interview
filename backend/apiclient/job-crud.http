@@ -1,0 +1,39 @@
+### Create job
+POST {{client.host.url}}/api/v1/jobs
+Content-Type: application/json
+Authorization: Bearer {{client.auth.token.admin}}
+
+{
+  "vin": "ABC123DEF456GHI710",
+  "make": "Dacia",
+  "model": "Logan",
+  "modelYear": 2022,
+  "customer": "John Doe",
+  "scheduledAt": "2026-05-20T10:00:00Z"
+}
+
+### Update job by id
+PUT {{client.host.url}}/api/v1/jobs/51
+Content-Type: application/json
+Authorization: Bearer {{client.auth.token.admin}}
+
+{
+  "scheduledAt": "2024-03-15T10:00:00Z",
+  "jobStatus": "CANCELLED"
+}
+
+### Get all jobs for car
+GET {{client.host.url}}/api/v1/jobs/car/SAMPLEVIN000000003
+Authorization: Bearer {{client.auth.token.user}}
+
+### Get job by id
+GET {{client.host.url}}/api/v1/jobs/1
+Authorization: Bearer {{client.auth.token.admin}}
+
+### Get jobs paginated
+GET {{client.host.url}}/api/v1/jobs?page=0&size=20&sort=id,DESC&statuses=IN_PROGRESS,CANCELLED
+Authorization: Bearer {{client.auth.token.admin}}
+
+### Delete job
+DELETE {{client.host.url}}/api/v1/jobs/1
+Authorization: Bearer {{client.auth.token.admin}}

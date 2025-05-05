@@ -28,7 +28,6 @@ public class ShopResponse {
 		this.website = shop.getWebsite();
 	}
 
-	// Getters and setters
 	public Long getId() {
 		return id;
 	}

@@ -23,8 +23,11 @@ import com.interview.service.ShopService;
 @RestController
 public class ShopResource {
 
-	@Autowired
-	private ShopService shopService;
+	private final ShopService shopService;
+
+	public ShopResource(ShopService shopService) {
+		this.shopService = shopService;
+	}
 
 	@GetMapping("/api/shop/{shopId}")
 	public ShopResponse getShop(@PathVariable("shopId") Long shopId) {

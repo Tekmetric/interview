@@ -4,9 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -20,10 +18,11 @@ import com.interview.repository.ShopRepository;
 @Service
 public class ShopService {
 
-	private static final Logger log = LoggerFactory.getLogger(ShopService.class);
+	private final ShopRepository shopRepository;
 
-	@Autowired
-	private ShopRepository shopRepository;
+	public ShopService(ShopRepository shopRepository) {
+		this.shopRepository = shopRepository;
+	}
 
 	public ShopResponse getShopById(Long shopId) {
 		return shopRepository.findById(shopId).map(ShopResponse::new).orElseThrow(ShopNotFoundException::new);
@@ -31,7 +30,7 @@ public class ShopService {
 
 
 	public List<ShopResponse> findAllShops(String name) {
-		if (name != null) {
+		if (StringUtils.isNotEmpty(name)) {
 			return shopRepository.findAllByNameOrderByNameAsc(name)
 					.stream().map(ShopResponse::new)
 					.collect(Collectors.toList());

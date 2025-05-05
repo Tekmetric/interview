@@ -53,11 +53,11 @@ public class ShopService {
 		}
 
 		Shop shop = new Shop();
-		setFields(shopRequest, shop, false);
+		setFields(shopRequest, shop, true);
 		return new ShopResponse(shopRepository.save(shop));
 	}
 
-	private static void setFields(ShopRequest shopRequest, Shop shop, boolean isUpdate) {
+	private static void setFields(ShopRequest shopRequest, Shop shop, boolean isNew) {
 		shop.setName(shopRequest.getName());
 		shop.setAddress1(shopRequest.getAddress1());
 		shop.setAddress2(shopRequest.getAddress2());
@@ -67,7 +67,7 @@ public class ShopService {
 		shop.setPhoneNumber(shopRequest.getPhoneNumber());
 		shop.setEmail(shopRequest.getEmail());
 		shop.setWebsite(shopRequest.getWebsite());
-		if (!isUpdate) {
+		if (isNew) {
 			shop.setCreated(LocalDateTime.now());
 		}
 		shop.setModified(LocalDateTime.now());
@@ -82,7 +82,7 @@ public class ShopService {
 		Shop shop = shopRepository.findById(shopId)
 				.orElseThrow(ShopNotFoundException::new);
 
-		setFields(shopRequest, shop, true);
+		setFields(shopRequest, shop, false);
 		return new ShopResponse(shopRepository.save(shop));
 	}
 }

@@ -67,7 +67,7 @@ class ShopServiceTest {
 	}
 
 	@Test
-	void createShop_withErrors_shouldThrowException() {
+	void createShop_withRequestErrors_shouldThrowException() {
 		BindingResult bindingResult = mock(BindingResult.class);
 		when(bindingResult.hasErrors()).thenReturn(true);
 		when(bindingResult.getFieldErrors()).thenReturn(Collections.singletonList(new FieldError("field", "error", "error message")));
@@ -79,4 +79,30 @@ class ShopServiceTest {
 
 		assertEquals("Invalid shop request: Field error in object 'field' on field 'error': rejected value [null]; codes []; arguments []; default message [error message]", thrown.getMessage());
 	}
+
+	@Test
+	void updateShop_withRequestErrors_shouldThrowException() {
+		BindingResult bindingResult = mock(BindingResult.class);
+		when(bindingResult.hasErrors()).thenReturn(true);
+		when(bindingResult.getFieldErrors()).thenReturn(Collections.singletonList(new FieldError("field", "error", "error message")));
+
+		BadShopRequestException thrown = assertThrows(
+				BadShopRequestException.class,
+				() -> shopService.updateShop(1L, new ShopRequest(), bindingResult)
+		);
+
+		assertEquals("Invalid shop request: Field error in object 'field' on field 'error': rejected value [null]; codes []; arguments []; default message [error message]", thrown.getMessage());
+	}
+
+	@Test
+	void updateShop_withErrors_shouldThrowException() {
+		when(shopRepository.findById(any(Long.class)))
+				.thenReturn(Optional.empty());
+
+		ShopNotFoundException thrown = assertThrows(
+				ShopNotFoundException.class,
+				() -> shopService.updateShop(1L, new ShopRequest(), mock(BindingResult.class))
+		);
+
+		assertEquals("Shop not found", thrown.getMessage());	}
 }

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -51,6 +53,11 @@ public class ShopService {
 		}
 
 		Shop shop = new Shop();
+		setFields(shopRequest, shop, false);
+		return new ShopResponse(shopRepository.save(shop));
+	}
+
+	private static void setFields(ShopRequest shopRequest, Shop shop, boolean isUpdate) {
 		shop.setName(shopRequest.getName());
 		shop.setAddress1(shopRequest.getAddress1());
 		shop.setAddress2(shopRequest.getAddress2());
@@ -60,8 +67,22 @@ public class ShopService {
 		shop.setPhoneNumber(shopRequest.getPhoneNumber());
 		shop.setEmail(shopRequest.getEmail());
 		shop.setWebsite(shopRequest.getWebsite());
-		shop.setCreated(LocalDateTime.now());
+		if (!isUpdate) {
+			shop.setCreated(LocalDateTime.now());
+		}
 		shop.setModified(LocalDateTime.now());
+	}
+
+	public ShopResponse updateShop(Long shopId, ShopRequest shopRequest, BindingResult errors) {
+		if (errors.hasErrors()) {
+			String firstError = errors.getFieldErrors().get(0).toString();
+			throw new BadShopRequestException("Invalid shop request: " + firstError);
+		}
+
+		Shop shop = shopRepository.findById(shopId)
+				.orElseThrow(ShopNotFoundException::new);
+
+		setFields(shopRequest, shop, true);
 		return new ShopResponse(shopRepository.save(shop));
 	}
 }

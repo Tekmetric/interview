@@ -1,0 +1,71 @@
+#container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: #008000;
+  overflow-y: scroll;
+}
+
+.input-container {
+  margin: 0 auto;
+  padding-top: 320px;
+  width: 50%;
+
+  label {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 48px;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  input {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+    font-size: 72px;
+    font-weight: bold;
+    color: #fff;
+    text-overflow: ellipsis;
+
+    &::placeholder {
+      color: #006b00
+    }
+  
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .input-container {
+    padding-top: 0;
+    width: 90%;
+    height: 300px;
+    margin: 0 auto;
+    margin-top: 50%;
+  }
+}
+
+.fade-enter .input {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.fade-enter-active .input {
+  opacity: 1;
+  transform: translateX(0%);
+}
+.fade-exit .input {
+  opacity: 1;
+  transform: translateX(0%);
+}
+.fade-exit-active .input {
+  opacity: 0;
+  transform: translateX(100%);
+}
+.fade-enter-active .input,
+.fade-exit-active .input {
+  transition: opacity 500ms, transform 500ms;
+}

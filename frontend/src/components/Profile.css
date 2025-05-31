@@ -1,0 +1,18 @@
+#profile {
+  margin-top: -320px;
+}
+
+p {
+  color: #fff;
+  font-size: 48px;
+
+  &.info {
+    font-weight: 200;
+  }
+}
+
+@media (max-width: 768px) {
+  #profile {
+    margin-top: -50%;
+  }
+}

@@ -1,0 +1,33 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"target": "ESNext",
+		"module": "ESNext",
+		"jsx": "react-jsx",
+		"noUncheckedIndexedAccess": true,
+		"strictNullChecks": true,
+		"moduleResolution": "node",
+		"skipLibCheck": true,
+		"baseUrl": ".",
+		"resolveJsonModule": true,
+		"typeRoots": ["./types/*", "./node_modules/@types"],
+		"composite": true,
+		"allowSyntheticDefaultImports": true,
+		"declaration": true,
+		"outDir": "dist/",
+		"sourceMap": true,
+		"allowJs": true,
+		"allowUnreachableCode": false,
+		"paths": {
+			"_store/*": ["./src/store/*"]
+		}
+	},
+	"include": ["./**/*", "./types/*", "./src/**/*.json"],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"build",
+		"./**/*.test.ts",
+		"./**/*.test.tsx"
+	]
+}

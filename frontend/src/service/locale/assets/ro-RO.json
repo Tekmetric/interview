@@ -1,0 +1,18 @@
+{
+	"BULK_DELETE_CONFIRMATION": "Sunteți sigur că doriți să ștergeți aceste resurse? Acțiunea nu poate fi anulată.",
+	"CREATED_AT": "Creat la",
+	"DELETE": "Șterge",
+	"DELETE_CONFIRMATION": "Sunteți sigur că doriți să ștergeți această resursă? Acțiunea nu poate fi anulată.",
+	"DESCRIPTION": "Descriere",
+	"FAILED_TO_GET_RESOURCES": "Nu s-au putut obține resursele",
+	"FILTER_BY_TITLE": "Filtrează după titlu",
+	"LEARNING_RESOURCES": "Resurse de învățare",
+	"LINK": "Link",
+	"LOADING": "Se încarcă...",
+	"NO_RESOURCES_AVAILABLE": "Nu sunt resurse disponibile",
+	"SEARCH": "Caută",
+	"SELECTED_RESOURCES_COUNT": "{count, plural, one {o resursă selectată} other {# de resurse selectate}}",
+	"TAGS": "Etichete",
+	"TITLE": "Titlu",
+	"TYPE": "Tip"
+}

@@ -24,6 +24,7 @@
         <spotless.version>2.44.0</spotless.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
+        <easy-random.version>5.0.0</easy-random.version>
     </properties>
 
     <dependencies>
@@ -115,6 +116,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jeasy</groupId>
+            <artifactId>easy-random-core</artifactId>
+            <version>${easy-random.version}</version>
             <scope>test</scope>
         </dependency>
 

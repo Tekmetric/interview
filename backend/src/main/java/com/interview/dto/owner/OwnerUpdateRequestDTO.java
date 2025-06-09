@@ -6,7 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Schema(
     name = "OwnerUpdateRequestDTO",
@@ -15,6 +18,9 @@ import lombok.Data;
             + "This acts in a patch manner as well, so that fields that are not specified will not be updated.")
 @Data
 @ValidOwnerUpdateRequest
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class OwnerUpdateRequestDTO {
 
   @Schema(description = "Name of the owner", example = "John Doe")

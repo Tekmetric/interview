@@ -7,10 +7,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Schema(name = "OwnerCreateRequestDTO", description = "Request payload for creating a new owner")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class OwnerCreateRequestDTO {
 
   @Schema(description = "Name of the owner", example = "John Doe")

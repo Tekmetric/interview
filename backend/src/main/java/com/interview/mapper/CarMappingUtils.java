@@ -1,6 +1,7 @@
 package com.interview.mapper;
 
 import com.interview.entity.Owner;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
@@ -8,6 +9,7 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(
     componentModel = MappingConstants.ComponentModel.SPRING,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR,
     unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface CarMappingUtils {
 

@@ -3,6 +3,7 @@ package com.interview.mapper;
 import com.interview.dto.car.CarCreateRequestDTO;
 import com.interview.dto.car.CarDTO;
 import com.interview.entity.Car;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -10,6 +11,7 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(
     componentModel = MappingConstants.ComponentModel.SPRING,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR,
     unmappedTargetPolicy = ReportingPolicy.ERROR,
     uses = CarMappingUtils.class)
 public interface CarMapper {

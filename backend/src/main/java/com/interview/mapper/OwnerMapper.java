@@ -7,6 +7,7 @@ import com.interview.dto.owner.OwnerUpdateRequestDTO;
 import com.interview.entity.Car;
 import com.interview.entity.Owner;
 import java.util.Optional;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -14,6 +15,7 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(
     componentModel = MappingConstants.ComponentModel.SPRING,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR,
     unmappedTargetPolicy = ReportingPolicy.ERROR,
     uses = CarMappingUtils.class)
 public interface OwnerMapper {

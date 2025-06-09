@@ -2,6 +2,7 @@ package com.interview.api;
 
 import com.interview.dto.OwnerCreateRequestDTO;
 import com.interview.dto.OwnerDTO;
+import com.interview.dto.OwnerUpdateRequestDTO;
 import com.interview.dto.PageResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -97,4 +99,22 @@ public interface OwnerApi {
   @DeleteMapping("/{id}")
   ResponseEntity<OwnerDTO> deleteOwnerById(
       @Parameter(description = "ID of the owner") @PathVariable final Long id);
+
+  @Operation(
+      summary = "Update an existing owner",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Owner updated",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = OwnerDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Owner not found")
+      })
+  @PutMapping("/{id}")
+  ResponseEntity<OwnerDTO> updateOwner(
+      @Parameter(description = "ID of the owner") @PathVariable final Long id,
+      @org.springframework.web.bind.annotation.RequestBody @NotNull @Valid
+          final OwnerUpdateRequestDTO request);
 }

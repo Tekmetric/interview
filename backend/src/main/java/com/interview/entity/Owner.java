@@ -1,6 +1,7 @@
 package com.interview.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +34,7 @@ public class Owner {
   private String name;
 
   @Column(nullable = false, unique = true, name = "personal_number")
+  @Convert(converter = PersonalNumberAesEncryptor.class)
   private String personalNumber;
 
   @Column(nullable = false, name = "birth_date")

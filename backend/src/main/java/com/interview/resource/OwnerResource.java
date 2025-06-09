@@ -3,6 +3,7 @@ package com.interview.resource;
 import com.interview.api.OwnerApi;
 import com.interview.dto.OwnerCreateRequestDTO;
 import com.interview.dto.OwnerDTO;
+import com.interview.dto.OwnerUpdateRequestDTO;
 import com.interview.dto.PageResponseDTO;
 import com.interview.service.OwnerService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,12 @@ public class OwnerResource implements OwnerApi {
   public ResponseEntity<OwnerDTO> deleteOwnerById(final Long id) {
     final OwnerDTO deletedOwner = ownerService.deleteOwnerById(id);
     return ResponseEntity.ok(deletedOwner);
+  }
+
+  @Override
+  public ResponseEntity<OwnerDTO> updateOwner(final Long id, final OwnerUpdateRequestDTO request) {
+    final OwnerDTO result = ownerService.updateOwner(id, request);
+    return ResponseEntity.ok(result);
   }
 
   private <T> PageResponseDTO<T> toPageResponseDTO(final Page<T> page) {

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Pattern;
 import java.time.Instant;
 import lombok.Data;
 
+@Schema(name = "OwnerCreateRequestDTO", description = "Request payload for creating a new owner")
 @Data
 public class OwnerCreateRequestDTO {
 

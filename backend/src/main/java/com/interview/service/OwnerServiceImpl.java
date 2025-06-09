@@ -2,6 +2,7 @@ package com.interview.service;
 
 import com.interview.dto.OwnerCreateRequestDTO;
 import com.interview.dto.OwnerDTO;
+import com.interview.dto.OwnerUpdateRequestDTO;
 import com.interview.entity.Owner;
 import com.interview.mapper.OwnerMapper;
 import com.interview.repository.OwnerRepository;
@@ -52,5 +53,32 @@ public class OwnerServiceImpl implements OwnerService {
   @Transactional(readOnly = true)
   public Page<OwnerDTO> getOwners(final Pageable pageable) {
     return ownerRepository.findAll(pageable).map(ownerMapper::toDto);
+  }
+
+  @Override
+  public OwnerDTO updateOwner(final Long id, final OwnerUpdateRequestDTO request) {
+    final Owner existingOwner =
+        ownerRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Owner not found"));
+
+    if (request.getName() != null) {
+      existingOwner.setName(request.getName());
+    }
+
+    if (request.getPersonalNumber() != null) {
+      existingOwner.setPersonalNumber(request.getPersonalNumber());
+    }
+
+    if (request.getBirthDate() != null) {
+      existingOwner.setBirthDate(request.getBirthDate());
+    }
+
+    if (request.getAddress() != null) {
+      existingOwner.setAddress(request.getAddress());
+    }
+
+    final Owner savedOwner = ownerRepository.save(existingOwner);
+    return ownerMapper.toDto(savedOwner);
   }
 }

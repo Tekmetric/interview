@@ -9,7 +9,7 @@ RUN mvn dependency:go-offline
 # Copy the rest of the source code.
 # We use docker layer caching to avoid re-downloading dependencies(pom.xml) if they haven't changed.
 COPY . .
-RUN mvn clean install -DskipTests -Dspotless.skip=true
+RUN mvn clean install -DskipTests -DskipITs -Dspotless.skip=true
 
 # Stage 2: Runtime image
 FROM eclipse-temurin:21-jre

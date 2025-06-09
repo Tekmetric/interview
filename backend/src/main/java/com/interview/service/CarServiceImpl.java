@@ -29,23 +29,17 @@ public class CarServiceImpl implements CarService {
   private final OwnerRepository ownerRepository;
   private final CarMapper carMapper;
 
+  @Transactional(readOnly = true)
   @Override
   public CarDTO getCarById(final Long id) {
-    final Car existingCar =
-        carRepository
-            .findByIdWithOwner(id)
-            .orElseThrow(() -> new EntityNotFoundException("Car not found"));
-
+    final Car existingCar = findCarOrThrow(id);
     return carMapper.toDto(existingCar);
   }
 
   @Override
   public CarDTO createCar(final CarCreateRequestDTO request) {
     final Long ownerId = request.getOwnerId();
-    final Owner owner =
-        ownerRepository
-            .findById(ownerId)
-            .orElseThrow(() -> new EntityNotFoundException("Owner not found"));
+    final Owner owner = findOwnerOrThrow(ownerId);
 
     final Car car = carMapper.toEntity(request);
 
@@ -55,6 +49,7 @@ public class CarServiceImpl implements CarService {
     return carMapper.toDto(savedCar);
   }
 
+  @Transactional(readOnly = true)
   @Override
   public PageResponseDTO<CarDTO> getCars(final String query, final Pageable pageable) {
     final Specification<Car> specification = CarSpecification.fuzzySearch(query);
@@ -72,7 +67,13 @@ public class CarServiceImpl implements CarService {
 
   private Car findCarOrThrow(final Long id) {
     return carRepository
-        .findById(id)
+        .findByIdWithOwner(id)
         .orElseThrow(() -> new EntityNotFoundException("Car not found"));
+  }
+
+  private Owner findOwnerOrThrow(final Long ownerId) {
+    return ownerRepository
+        .findById(ownerId)
+        .orElseThrow(() -> new EntityNotFoundException("Owner not found"));
   }
 }

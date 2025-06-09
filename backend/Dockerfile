@@ -9,11 +9,13 @@ RUN mvn dependency:go-offline
 # Copy the rest of the source code.
 # We use docker layer caching to avoid re-downloading dependencies(pom.xml) if they haven't changed.
 COPY . .
-RUN mvn clean install -DskipTests
+RUN mvn clean install -DskipTests -Dspotless.skip=true
 
 # Stage 2: Runtime image
 FROM eclipse-temurin:21-jre
 WORKDIR /app
+
+# Only copy the jar file from the build stage
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

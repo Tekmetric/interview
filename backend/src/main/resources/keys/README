@@ -1,0 +1,2 @@
+Generated keys with RSA256 algorithm and key size of 2048 bits.
+Keys provided here are for demo purposes only, in a production system you would never store the keys(especially the private ones) in the repository.

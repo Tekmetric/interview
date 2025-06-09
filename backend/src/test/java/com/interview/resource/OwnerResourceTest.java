@@ -135,7 +135,7 @@ class OwnerResourceTest {
         .thenReturn(page);
 
     mockMvc
-        .perform(get("/owners").param("page", "0").param("size", "2"))
+        .perform(get("/owners").param("page", "0").param("size", "2").param("query", ""))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.content.length()").value(2));
   }

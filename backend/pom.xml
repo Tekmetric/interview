@@ -20,7 +20,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.enforcer.version>3.5.0</maven.enforcer.version>
-        <swagger.version>2.5.0</swagger.version>
+        <swagger.version>2.8.8</swagger.version>
         <spotless.version>2.44.0</spotless.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>

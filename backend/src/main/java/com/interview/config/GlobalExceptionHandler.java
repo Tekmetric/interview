@@ -3,6 +3,7 @@ package com.interview.config;
 import com.interview.dto.ErrorDTO;
 import com.interview.dto.ValidationErrorDTO;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.time.Clock;
@@ -112,6 +113,16 @@ public class GlobalExceptionHandler {
       final DataIntegrityViolationException ex) {
     final String message =
         "A data integrity violation occurred. Likely a duplicate or constraint violation.";
+    log.warn(message, ex);
+
+    final ErrorDTO dto = ErrorDTO.builder().message(message).timestamp(clock.instant()).build();
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(dto);
+  }
+
+  @ExceptionHandler(OptimisticLockException.class)
+  public ResponseEntity<ErrorDTO> handleOptimisticLockException(final OptimisticLockException ex) {
+    final String message =
+        "The entity was updated by another transaction. Please reload and try again.";
     log.warn(message, ex);
 
     final ErrorDTO dto = ErrorDTO.builder().message(message).timestamp(clock.instant()).build();

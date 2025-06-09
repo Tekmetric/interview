@@ -2,7 +2,9 @@ package com.interview.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.time.Instant;
 import lombok.Data;
 
 @Data
@@ -17,4 +19,14 @@ public class OwnerCreateRequestDTO {
   @NotEmpty
   @Pattern(regexp = "^[0-9]+$", message = "Personal number must contain only digits")
   private String personalNumber;
+
+  @Schema(description = "Address of the owner", example = "Some Street 123, City, Country")
+  @NotEmpty(message = "Address cannot be null")
+  private String address;
+
+  @Schema(
+      description = "The birth date of the owner in ISO 8601 format",
+      example = "1990-01-01T00:00:00Z")
+  @NotNull(message = "Birth date cannot be null")
+  private Instant birthDate;
 }

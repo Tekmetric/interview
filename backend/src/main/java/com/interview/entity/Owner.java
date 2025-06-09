@@ -23,15 +23,23 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Data
 @EntityListeners(AuditingEntityListener.class)
 public class Owner {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(nullable = false, name = "id")
   private Long id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, name = "name")
   private String name;
 
   @Column(nullable = false, unique = true, name = "personal_number")
   private String personalNumber;
+
+  @Column(nullable = false, name = "birth_date")
+  private Instant birthDate;
+
+  @Column(nullable = false, name = "address")
+  private String address;
 
   @Version private Long version;
 

@@ -18,6 +18,10 @@ public class OwnerDTO {
 
   private String personalNumber;
 
+  private String address;
+
+  private Instant birthDate;
+
   private Instant createdAt;
 
   private Instant updatedAt;

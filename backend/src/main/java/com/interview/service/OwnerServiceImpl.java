@@ -3,6 +3,7 @@ package com.interview.service;
 import com.interview.dto.OwnerCreateRequestDTO;
 import com.interview.dto.OwnerDTO;
 import com.interview.dto.OwnerUpdateRequestDTO;
+import com.interview.dto.PageResponseDTO;
 import com.interview.entity.Owner;
 import com.interview.mapper.OwnerMapper;
 import com.interview.repository.OwnerRepository;
@@ -51,8 +52,9 @@ public class OwnerServiceImpl implements OwnerService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<OwnerDTO> getOwners(final Pageable pageable) {
-    return ownerRepository.findAll(pageable).map(ownerMapper::toDto);
+  public PageResponseDTO<OwnerDTO> getOwners(final Pageable pageable) {
+    final Page<OwnerDTO> page = ownerRepository.findAll(pageable).map(ownerMapper::toDto);
+    return toPageResponseDTO(page);
   }
 
   @Override
@@ -66,5 +68,16 @@ public class OwnerServiceImpl implements OwnerService {
 
     final Owner savedOwner = ownerRepository.save(existingOwner);
     return ownerMapper.toDto(savedOwner);
+  }
+
+  private <T> PageResponseDTO<T> toPageResponseDTO(final Page<T> page) {
+    return PageResponseDTO.<T>builder()
+        .content(page.getContent())
+        .page(page.getNumber())
+        .size(page.getSize())
+        .totalElements(page.getTotalElements())
+        .totalPages(page.getTotalPages())
+        .last(page.isLast())
+        .build();
   }
 }

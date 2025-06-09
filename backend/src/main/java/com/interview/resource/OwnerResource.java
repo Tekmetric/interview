@@ -8,7 +8,6 @@ import com.interview.dto.PageResponseDTO;
 import com.interview.service.OwnerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +27,8 @@ public class OwnerResource implements OwnerApi {
 
   @Override
   public ResponseEntity<PageResponseDTO<OwnerDTO>> getOwners(final int page, final int size) {
-    final Page<OwnerDTO> result = ownerService.getOwners(PageRequest.of(page, size));
-    final PageResponseDTO<OwnerDTO> response = toPageResponseDTO(result);
-    return ResponseEntity.ok(response);
+    final PageResponseDTO<OwnerDTO> result = ownerService.getOwners(PageRequest.of(page, size));
+    return ResponseEntity.ok(result);
   }
 
   @Override
@@ -49,16 +47,5 @@ public class OwnerResource implements OwnerApi {
   public ResponseEntity<OwnerDTO> updateOwner(final Long id, final OwnerUpdateRequestDTO request) {
     final OwnerDTO result = ownerService.updateOwner(id, request);
     return ResponseEntity.ok(result);
-  }
-
-  private <T> PageResponseDTO<T> toPageResponseDTO(final Page<T> page) {
-    return PageResponseDTO.<T>builder()
-        .content(page.getContent())
-        .page(page.getNumber())
-        .size(page.getSize())
-        .totalElements(page.getTotalElements())
-        .totalPages(page.getTotalPages())
-        .last(page.isLast())
-        .build();
   }
 }

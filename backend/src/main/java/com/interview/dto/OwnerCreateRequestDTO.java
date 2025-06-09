@@ -1,5 +1,6 @@
 package com.interview.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -28,5 +29,6 @@ public class OwnerCreateRequestDTO {
       description = "The birth date of the owner in ISO 8601 format",
       example = "1990-01-01T00:00:00Z")
   @NotNull(message = "Birth date cannot be null")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX", timezone = "UTC")
   private Instant birthDate;
 }

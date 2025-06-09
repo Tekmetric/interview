@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -101,8 +102,20 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<ErrorDTO> handleEntityNotFoundException(final EntityNotFoundException ex) {
     log.warn("Resource not found", ex);
-    final ErrorDTO dto = new ErrorDTO(ex.getMessage(), clock.instant());
+    final ErrorDTO dto =
+        ErrorDTO.builder().message(ex.getMessage()).timestamp(clock.instant()).build();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dto);
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ErrorDTO> handleDataIntegrityViolationException(
+      final DataIntegrityViolationException ex) {
+    final String message =
+        "A data integrity violation occurred. Likely a duplicate or constraint violation.";
+    log.warn(message, ex);
+
+    final ErrorDTO dto = ErrorDTO.builder().message(message).timestamp(clock.instant()).build();
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(dto);
   }
 
   @ExceptionHandler(Exception.class)

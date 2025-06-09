@@ -8,6 +8,7 @@ import com.interview.dto.page.PageResponseDTO;
 import com.interview.service.CarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,8 +26,10 @@ public class CarResource implements CarApi {
   }
 
   @Override
-  public ResponseEntity<PageResponseDTO<CarDTO>> getCars(final int page, final int size) {
-    return null;
+  public ResponseEntity<PageResponseDTO<CarDTO>> getCars(
+      final int page, final int size, final String query) {
+    final PageResponseDTO<CarDTO> result = carService.getCars(query, PageRequest.of(page, size));
+    return ResponseEntity.ok(result);
   }
 
   @Override

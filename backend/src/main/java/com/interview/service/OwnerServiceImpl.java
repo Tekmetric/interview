@@ -33,21 +33,16 @@ public class OwnerServiceImpl implements OwnerService {
   @Override
   @Transactional(readOnly = true)
   public OwnerDTO getOwnerById(final Long id) {
-    final Owner owner =
-        ownerRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Owner not found"));
-    return ownerMapper.toDto(owner);
+    final Owner existingOwner = findOwnerOrThrow(id);
+    return ownerMapper.toDto(existingOwner);
   }
 
   @Override
   public OwnerDTO deleteOwnerById(final Long id) {
-    final Owner owner =
-        ownerRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Owner not found"));
-    ownerRepository.delete(owner);
-    return ownerMapper.toDto(owner);
+    final Owner existingOwner = findOwnerOrThrow(id);
+    ownerRepository.delete(existingOwner);
+
+    return ownerMapper.toDto(existingOwner);
   }
 
   @Override
@@ -59,10 +54,7 @@ public class OwnerServiceImpl implements OwnerService {
 
   @Override
   public OwnerDTO updateOwner(final Long id, final OwnerUpdateRequestDTO request) {
-    final Owner existingOwner =
-        ownerRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Owner not found"));
+    final Owner existingOwner = findOwnerOrThrow(id);
 
     ownerMapper.updateOwnerFromDto(request, existingOwner);
     final Owner savedOwner = ownerRepository.save(existingOwner);
@@ -81,5 +73,11 @@ public class OwnerServiceImpl implements OwnerService {
         .totalPages(page.getTotalPages())
         .last(page.isLast())
         .build();
+  }
+
+  private Owner findOwnerOrThrow(final Long id) {
+    return ownerRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Owner not found"));
   }
 }

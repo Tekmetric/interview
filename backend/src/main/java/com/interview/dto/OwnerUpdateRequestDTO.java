@@ -7,8 +7,11 @@ import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import lombok.Data;
 
-@Schema(name = "OwnerUpdateRequestDTO", description = "Request payload for updating an existing owner. " +
-        "This acts in a patch manner as well, so that fields that are not specified will not be updated.")
+@Schema(
+    name = "OwnerUpdateRequestDTO",
+    description =
+        "Request payload for updating an existing owner. "
+            + "This acts in a patch manner as well, so that fields that are not specified will not be updated.")
 @Data
 @ValidOwnerUpdateRequest
 public class OwnerUpdateRequestDTO {
@@ -26,8 +29,8 @@ public class OwnerUpdateRequestDTO {
   private String address;
 
   @Schema(
-          description = "The birth date of the owner in ISO 8601 format",
-          example = "1990-01-01T00:00:00Z")
+      description = "The birth date of the owner in ISO 8601 format",
+      example = "1990-01-01T00:00:00Z")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX", timezone = "UTC")
   private Instant birthDate;
 }

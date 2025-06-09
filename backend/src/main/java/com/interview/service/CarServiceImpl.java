@@ -60,6 +60,8 @@ public class CarServiceImpl implements CarService {
   @Override
   public CarDTO deleteCarById(final Long id) {
     final Car existingCar = findCarOrThrow(id);
+    final Owner owner = existingCar.getOwner();
+    owner.removeCar(existingCar);
 
     carRepository.delete(existingCar);
     return carMapper.toDto(existingCar);

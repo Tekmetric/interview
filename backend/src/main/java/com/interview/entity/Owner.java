@@ -81,4 +81,11 @@ public class Owner {
     cars.add(car);
     car.setOwner(this);
   }
+
+  public void removeCar(final Car car) {
+    if (cars != null) {
+      cars.remove(car);
+      car.setOwner(null);
+    }
+  }
 }

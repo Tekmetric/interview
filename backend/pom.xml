@@ -20,6 +20,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.enforcer.version>3.5.0</maven.enforcer.version>
+        <swagger.version>2.5.0</swagger.version>
     </properties>
 
     <dependencies>
@@ -46,9 +47,21 @@
         </dependency>
 
         <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- Swagger annotations -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${swagger.version}</version>
         </dependency>
 
         <!--Testing-->
@@ -126,7 +139,7 @@
                         <googleJavaFormat>
                             <version>1.17.0</version>
                         </googleJavaFormat>
-                        <removeUnusedImports />
+                        <removeUnusedImports/>
                     </java>
                 </configuration>
             </plugin>

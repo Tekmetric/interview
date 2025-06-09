@@ -1,7 +1,7 @@
 package com.interview.config;
 
-import com.interview.dto.ErrorDTO;
-import com.interview.dto.ValidationErrorDTO;
+import com.interview.dto.error.ErrorDTO;
+import com.interview.dto.error.ValidationErrorDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.ConstraintViolation;

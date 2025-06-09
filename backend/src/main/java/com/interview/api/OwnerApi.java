@@ -1,9 +1,9 @@
 package com.interview.api;
 
-import com.interview.dto.OwnerCreateRequestDTO;
-import com.interview.dto.OwnerDTO;
-import com.interview.dto.OwnerUpdateRequestDTO;
-import com.interview.dto.PageResponseDTO;
+import com.interview.dto.owner.OwnerCreateRequestDTO;
+import com.interview.dto.owner.OwnerDTO;
+import com.interview.dto.owner.OwnerUpdateRequestDTO;
+import com.interview.dto.page.PageResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

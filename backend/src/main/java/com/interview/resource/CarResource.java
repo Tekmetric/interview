@@ -1,0 +1,44 @@
+package com.interview.resource;
+
+import com.interview.api.CarApi;
+import com.interview.dto.car.CarCreateRequestDTO;
+import com.interview.dto.car.CarDTO;
+import com.interview.dto.car.CarUpdateRequestDTO;
+import com.interview.dto.page.PageResponseDTO;
+import com.interview.service.CarService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+public class CarResource implements CarApi {
+
+  private final CarService carService;
+
+  @Override
+  public ResponseEntity<CarDTO> getCarById(final Long id) {
+    return null;
+  }
+
+  @Override
+  public ResponseEntity<PageResponseDTO<CarDTO>> getCars(final int page, final int size) {
+    return null;
+  }
+
+  @Override
+  public ResponseEntity<CarDTO> createCar(final CarCreateRequestDTO car) {
+    return null;
+  }
+
+  @Override
+  public ResponseEntity<CarDTO> deleteCarById(final Long id) {
+    return null;
+  }
+
+  @Override
+  public ResponseEntity<CarDTO> updateCar(final Long id, final CarUpdateRequestDTO request) {
+    return null;
+  }
+}

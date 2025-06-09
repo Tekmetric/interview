@@ -1,8 +1,8 @@
 package com.interview.mapper;
 
-import com.interview.dto.OwnerCreateRequestDTO;
-import com.interview.dto.OwnerDTO;
-import com.interview.dto.OwnerUpdateRequestDTO;
+import com.interview.dto.owner.OwnerCreateRequestDTO;
+import com.interview.dto.owner.OwnerDTO;
+import com.interview.dto.owner.OwnerUpdateRequestDTO;
 import com.interview.entity.Owner;
 import java.util.Optional;
 import org.mapstruct.Mapper;
@@ -21,6 +21,7 @@ public interface OwnerMapper {
   @Mapping(target = "version", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "cars", ignore = true)
   Owner toEntity(final OwnerCreateRequestDTO request);
 
   default void updateOwnerFromDto(final OwnerUpdateRequestDTO request, final Owner existingOwner) {

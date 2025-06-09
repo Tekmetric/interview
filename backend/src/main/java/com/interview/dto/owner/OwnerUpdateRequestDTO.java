@@ -1,10 +1,11 @@
-package com.interview.dto;
+package com.interview.dto.owner;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.interview.validation.ValidOwnerUpdateRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
+import java.util.List;
 import lombok.Data;
 
 @Schema(
@@ -33,4 +34,7 @@ public class OwnerUpdateRequestDTO {
       example = "1990-01-01T00:00:00Z")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX", timezone = "UTC")
   private Instant birthDate;
+
+  @Schema(description = "List of car IDs associated with the owner", example = "[1, 2, 3]")
+  private List<Long> carIds;
 }

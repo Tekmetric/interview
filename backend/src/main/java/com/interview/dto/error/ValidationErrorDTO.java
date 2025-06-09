@@ -1,4 +1,4 @@
-package com.interview.dto;
+package com.interview.dto.error;
 
 import java.time.Instant;
 import java.util.Map;

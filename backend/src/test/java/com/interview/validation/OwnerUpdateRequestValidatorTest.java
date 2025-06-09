@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-import com.interview.dto.OwnerUpdateRequestDTO;
+import com.interview.dto.owner.OwnerUpdateRequestDTO;
 import jakarta.validation.ConstraintValidatorContext;
 import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;

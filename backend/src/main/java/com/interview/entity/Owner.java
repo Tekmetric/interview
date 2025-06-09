@@ -1,5 +1,6 @@
 package com.interview.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -7,10 +8,13 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -33,6 +37,7 @@ public class Owner {
   @Column(nullable = false, name = "name")
   private String name;
 
+  // This field is stored encrypted using AES encryption
   @Column(nullable = false, unique = true, name = "personal_number")
   @Convert(converter = PersonalNumberAesEncryptor.class)
   private String personalNumber;
@@ -43,6 +48,10 @@ public class Owner {
   @Column(nullable = false, name = "address")
   private String address;
 
+  @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Car> cars = new ArrayList<>();
+
+  // Version field for optimistic locking
   @Version private Long version;
 
   @CreatedDate

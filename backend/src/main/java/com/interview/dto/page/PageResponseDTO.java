@@ -1,4 +1,4 @@
-package com.interview.dto;
+package com.interview.dto.page;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

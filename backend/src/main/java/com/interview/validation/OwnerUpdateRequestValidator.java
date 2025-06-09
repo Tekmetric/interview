@@ -1,6 +1,6 @@
 package com.interview.validation;
 
-import com.interview.dto.OwnerUpdateRequestDTO;
+import com.interview.dto.owner.OwnerUpdateRequestDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.time.Instant;

@@ -47,7 +47,7 @@ public class Owner {
   @Column(nullable = false, name = "name")
   private String name;
 
-  // This field is stored encrypted using AES encryption
+  // Sensitive field is stored encrypted using AES encryption
   @Column(nullable = false, unique = true, name = "personal_number")
   @Convert(converter = PersonalNumberAesEncryptor.class)
   @NaturalId

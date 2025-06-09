@@ -4,6 +4,7 @@ import static com.interview.service.ServiceUtils.toPageResponseDTO;
 
 import com.interview.dto.car.CarCreateRequestDTO;
 import com.interview.dto.car.CarDTO;
+import com.interview.dto.car.CarUpdateRequestDTO;
 import com.interview.dto.page.PageResponseDTO;
 import com.interview.entity.Car;
 import com.interview.entity.Owner;
@@ -55,6 +56,19 @@ public class CarServiceImpl implements CarService {
     final Specification<Car> specification = CarSpecification.fuzzySearch(query);
     final Page<CarDTO> page = carRepository.findAll(specification, pageable).map(carMapper::toDto);
     return toPageResponseDTO(page);
+  }
+
+  @Override
+  public CarDTO updateCar(final Long id, CarUpdateRequestDTO request) {
+    final Car existingCar = findCarOrThrow(id);
+    existingCar.getOwner().removeCar(existingCar);
+    existingCar.setModel(request.getModel());
+
+    final Long ownerId = request.getOwnerId();
+    final Owner newOwner = findOwnerOrThrow(ownerId);
+    newOwner.addCar(existingCar);
+
+    return carMapper.toDto(existingCar);
   }
 
   @Override

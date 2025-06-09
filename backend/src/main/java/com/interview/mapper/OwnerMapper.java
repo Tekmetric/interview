@@ -32,7 +32,6 @@ public interface OwnerMapper {
 
   default void updateOwnerFromDto(final OwnerUpdateRequestDTO request, final Owner existingOwner) {
     Optional.ofNullable(request.getName()).ifPresent(existingOwner::setName);
-    Optional.ofNullable(request.getPersonalNumber()).ifPresent(existingOwner::setPersonalNumber);
     Optional.ofNullable(request.getBirthDate()).ifPresent(existingOwner::setBirthDate);
     Optional.ofNullable(request.getAddress()).ifPresent(existingOwner::setAddress);
   }

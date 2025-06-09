@@ -83,7 +83,6 @@ class OwnerMapperTest {
     final OwnerUpdateRequestDTO update =
         OwnerUpdateRequestDTO.builder()
             .name("Updated Name")
-            .personalNumber(null)
             .birthDate(Instant.parse("2000-01-01T00:00:00Z"))
             .address("Updated Address")
             .build();

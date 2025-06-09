@@ -41,11 +41,12 @@ public class CarResource implements CarApi {
   @Override
   public ResponseEntity<CarDTO> deleteCarById(final Long id) {
     final CarDTO result = carService.deleteCarById(id);
-    return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    return ResponseEntity.ok(result);
   }
 
   @Override
   public ResponseEntity<CarDTO> updateCar(final Long id, final CarUpdateRequestDTO request) {
-    return null;
+    final CarDTO result = carService.updateCar(id, request);
+    return ResponseEntity.ok(result);
   }
 }

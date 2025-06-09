@@ -27,10 +27,6 @@ public class OwnerUpdateRequestDTO {
   @Size(message = "Name cannot exceed 255 characters", max = 255)
   private String name;
 
-  @Schema(description = "Personal number of the owner", example = "1234567890")
-  @Size(message = "Personal number cannot exceed 255 characters", max = 255)
-  private String personalNumber;
-
   @Schema(description = "Address of the owner", example = "Some Street 123, City, Country")
   @Size(message = "Address cannot exceed 500 characters", max = 500)
   private String address;

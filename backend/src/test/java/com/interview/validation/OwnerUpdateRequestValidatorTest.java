@@ -31,7 +31,6 @@ class OwnerUpdateRequestValidatorTest {
   void validFieldsShouldPass() {
     final OwnerUpdateRequestDTO dto = new OwnerUpdateRequestDTO();
     dto.setName("John Doe");
-    dto.setPersonalNumber("123456");
     dto.setAddress("Some Street");
     dto.setBirthDate(Instant.parse("1990-01-01T00:00:00Z"));
 
@@ -52,19 +51,6 @@ class OwnerUpdateRequestValidatorTest {
     assertFalse(result);
     verify(context)
         .buildConstraintViolationWithTemplate(ArgumentMatchers.contains("letters and spaces"));
-  }
-
-  @Test
-  void invalidPersonalNumberShouldFail() {
-    when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
-    when(builder.addConstraintViolation()).thenReturn(context);
-
-    final OwnerUpdateRequestDTO dto = new OwnerUpdateRequestDTO();
-    dto.setPersonalNumber("abc123");
-
-    final boolean result = validator.isValid(dto, context);
-    assertFalse(result);
-    verify(context).buildConstraintViolationWithTemplate(ArgumentMatchers.contains("only digits"));
   }
 
   @Test

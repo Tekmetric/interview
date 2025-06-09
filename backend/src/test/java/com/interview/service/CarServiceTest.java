@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.interview.dto.car.CarCreateRequestDTO;
 import com.interview.dto.car.CarDTO;
+import com.interview.dto.car.CarUpdateRequestDTO;
 import com.interview.dto.owner.OwnerCreateRequestDTO;
 import com.interview.dto.owner.OwnerDTO;
 import com.interview.dto.page.PageResponseDTO;
@@ -72,5 +73,31 @@ class CarServiceTest {
     final PageResponseDTO<CarDTO> page = carService.getCars("", PageRequest.of(0, 3));
     assertThat(page.getContent()).hasSize(3);
     assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(5);
+  }
+
+  @Test
+  void updateCarUpdatesModelAndOwner() {
+    // Create initial owner and car
+    final CarCreateRequestDTO createRequest = easyRandom.nextObject(CarCreateRequestDTO.class);
+    createRequest.setOwnerId(owner.getId());
+    final CarDTO carDTO = carService.createCar(createRequest);
+
+    // Create a new owner for update
+    final OwnerCreateRequestDTO newOwnerRequest =
+        easyRandom.nextObject(OwnerCreateRequestDTO.class);
+    final OwnerDTO newOwner = ownerService.createOwner(newOwnerRequest);
+
+    // Prepare update request
+    final CarUpdateRequestDTO updateRequest = new CarUpdateRequestDTO();
+    updateRequest.setModel("Updated Model");
+    updateRequest.setOwnerId(newOwner.getId());
+
+    // Perform update
+    final CarDTO updatedCar = carService.updateCar(carDTO.getId(), updateRequest);
+
+    // Assert changes
+    assertThat(updatedCar.getModel()).isEqualTo("Updated Model");
+    assertThat(updatedCar.getOwnerId()).isEqualTo(newOwner.getId());
+    assertThat(updatedCar.getId()).isEqualTo(carDTO.getId());
   }
 }

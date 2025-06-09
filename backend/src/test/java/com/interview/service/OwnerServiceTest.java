@@ -72,7 +72,6 @@ class OwnerServiceTest {
             .name("Charlie Updated")
             .birthDate(createRequest.getBirthDate())
             .address(createRequest.getAddress())
-            .personalNumber(createRequest.getPersonalNumber())
             .build();
 
     final OwnerDTO updated = ownerService.updateOwner(ownerDTO.getId(), updateRequest);

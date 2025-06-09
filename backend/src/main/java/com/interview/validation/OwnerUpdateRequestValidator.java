@@ -21,16 +21,6 @@ public class OwnerUpdateRequestValidator
       }
     }
 
-    if (dto.getPersonalNumber() != null) {
-      if (!dto.getPersonalNumber().matches("^[0-9]+$")) {
-        context.disableDefaultConstraintViolation();
-        context
-            .buildConstraintViolationWithTemplate("Personal number must contain only digits")
-            .addConstraintViolation();
-        return false;
-      }
-    }
-
     if (dto.getAddress() != null) {
       if (dto.getAddress().trim().isEmpty()) {
         context.disableDefaultConstraintViolation();

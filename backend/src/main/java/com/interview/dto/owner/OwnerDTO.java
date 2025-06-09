@@ -1,6 +1,5 @@
 package com.interview.dto.owner;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.interview.dto.car.CarDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
@@ -39,6 +38,5 @@ public class OwnerDTO {
   private Instant updatedAt;
 
   @Schema(description = "List of cars owned by the owner")
-  @JsonManagedReference
   private List<CarDTO> cars;
 }

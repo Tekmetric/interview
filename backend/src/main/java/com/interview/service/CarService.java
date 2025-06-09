@@ -8,4 +8,6 @@ public interface CarService {
   CarDTO getCarById(final Long id);
 
   CarDTO createCar(final CarCreateRequestDTO request);
+
+  CarDTO deleteCarById(final Long id);
 }

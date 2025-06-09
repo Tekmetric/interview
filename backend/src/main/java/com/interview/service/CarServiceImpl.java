@@ -48,7 +48,15 @@ public class CarServiceImpl implements CarService {
     return carMapper.toDto(savedCar);
   }
 
-  private Car findOwnerOrThrow(final Long id) {
+  @Override
+  public CarDTO deleteCarById(final Long id) {
+    final Car existingCar = findCarOrThrow(id);
+
+    carRepository.delete(existingCar);
+    return carMapper.toDto(existingCar);
+  }
+
+  private Car findCarOrThrow(final Long id) {
     return carRepository
         .findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Car not found"));

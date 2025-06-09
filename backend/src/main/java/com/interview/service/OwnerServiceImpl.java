@@ -62,21 +62,7 @@ public class OwnerServiceImpl implements OwnerService {
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Owner not found"));
 
-    if (request.getName() != null) {
-      existingOwner.setName(request.getName());
-    }
-
-    if (request.getPersonalNumber() != null) {
-      existingOwner.setPersonalNumber(request.getPersonalNumber());
-    }
-
-    if (request.getBirthDate() != null) {
-      existingOwner.setBirthDate(request.getBirthDate());
-    }
-
-    if (request.getAddress() != null) {
-      existingOwner.setAddress(request.getAddress());
-    }
+    ownerMapper.updateOwnerFromDto(request, existingOwner);
 
     final Owner savedOwner = ownerRepository.save(existingOwner);
     return ownerMapper.toDto(savedOwner);

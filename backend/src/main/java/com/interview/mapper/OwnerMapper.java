@@ -2,6 +2,7 @@ package com.interview.mapper;
 
 import com.interview.dto.OwnerCreateRequestDTO;
 import com.interview.dto.OwnerDTO;
+import com.interview.dto.OwnerUpdateRequestDTO;
 import com.interview.entity.Owner;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,4 +21,19 @@ public interface OwnerMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   Owner toEntity(final OwnerCreateRequestDTO request);
+
+  default void updateOwnerFromDto(final OwnerUpdateRequestDTO request, final Owner existingOwner) {
+    if (request.getName() != null) {
+      existingOwner.setName(request.getName());
+    }
+    if (request.getPersonalNumber() != null) {
+      existingOwner.setPersonalNumber(request.getPersonalNumber());
+    }
+    if (request.getBirthDate() != null) {
+      existingOwner.setBirthDate(request.getBirthDate());
+    }
+    if (request.getAddress() != null) {
+      existingOwner.setAddress(request.getAddress());
+    }
+  }
 }

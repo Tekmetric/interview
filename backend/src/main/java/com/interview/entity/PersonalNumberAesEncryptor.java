@@ -5,7 +5,9 @@ import jakarta.persistence.Converter;
 import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Converter
 public class PersonalNumberAesEncryptor implements AttributeConverter<String, String> {
 
@@ -28,6 +30,7 @@ public class PersonalNumberAesEncryptor implements AttributeConverter<String, St
       final byte[] encrypted = cipher.doFinal(attribute.getBytes());
       return Base64.getEncoder().encodeToString(encrypted);
     } catch (Exception e) {
+      log.error("Error encrypting personal number", e);
       throw new IllegalStateException("Error encrypting personal number", e);
     }
   }
@@ -43,6 +46,7 @@ public class PersonalNumberAesEncryptor implements AttributeConverter<String, St
       final byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(dbData));
       return new String(decrypted);
     } catch (Exception e) {
+      log.error("Error decrypting personal number", e);
       throw new IllegalStateException("Error decrypting personal number", e);
     }
   }

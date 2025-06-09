@@ -1,8 +1,10 @@
 package com.interview.mapper;
 
+import com.interview.dto.OwnerCreateRequestDTO;
 import com.interview.dto.OwnerDTO;
 import com.interview.entity.Owner;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
@@ -12,4 +14,8 @@ import org.mapstruct.ReportingPolicy;
 public interface OwnerMapper {
 
   OwnerDTO toDto(final Owner owner);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  Owner toEntity(final OwnerCreateRequestDTO request);
 }

@@ -2,6 +2,7 @@ package com.interview.config;
 
 import com.interview.dto.ErrorDTO;
 import com.interview.dto.ValidationErrorDTO;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.time.Clock;
@@ -95,6 +96,13 @@ public class GlobalExceptionHandler {
             .build();
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
+  }
+
+  @ExceptionHandler(EntityNotFoundException.class)
+  public ResponseEntity<ErrorDTO> handleEntityNotFoundException(final EntityNotFoundException ex) {
+    log.warn("Resource not found", ex);
+    final ErrorDTO dto = new ErrorDTO(ex.getMessage(), clock.instant());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(dto);
   }
 
   @ExceptionHandler(Exception.class)

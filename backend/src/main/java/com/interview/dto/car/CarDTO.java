@@ -1,6 +1,5 @@
 package com.interview.dto.car;
 
-import com.interview.dto.owner.OwnerDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +22,6 @@ public class CarDTO {
   @Schema(description = "The vehicle identification number", example = "CSA1234567890SA")
   private String vin;
 
-  @Schema(description = "The owner of the car", implementation = OwnerDTO.class)
+  @Schema(description = "The owner id of the car")
   private Long ownerId;
 }

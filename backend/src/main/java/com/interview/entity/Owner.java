@@ -13,9 +13,14 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.Data;
+import java.util.HashSet;
+import java.util.Set;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.NaturalId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -25,7 +30,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
     name = "owner",
     uniqueConstraints =
         @UniqueConstraint(name = "uk_owner_personal_number", columnNames = "personal_number"))
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
+// https://vladmihalcea.com/the-best-way-to-implement-equals-hashcode-and-tostring-with-jpa-and-hibernate/
+@EqualsAndHashCode(of = "personalNumber")
 @EntityListeners(AuditingEntityListener.class)
 public class Owner {
 
@@ -40,6 +50,7 @@ public class Owner {
   // This field is stored encrypted using AES encryption
   @Column(nullable = false, unique = true, name = "personal_number")
   @Convert(converter = PersonalNumberAesEncryptor.class)
+  @NaturalId
   private String personalNumber;
 
   @Column(nullable = false, name = "birth_date")
@@ -49,11 +60,12 @@ public class Owner {
   private String address;
 
   @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Car> cars = new ArrayList<>();
+  private Set<Car> cars;
 
   // Version field for optimistic locking
   @Version private Long version;
 
+  // Auditing fields
   @CreatedDate
   @Column(name = "created_at")
   private Instant createdAt;
@@ -61,4 +73,12 @@ public class Owner {
   @LastModifiedDate
   @Column(name = "updated_at")
   private Instant updatedAt;
+
+  public void addCar(final Car car) {
+    if (cars == null) {
+      cars = new HashSet<>();
+    }
+    cars.add(car);
+    car.setOwner(this);
+  }
 }

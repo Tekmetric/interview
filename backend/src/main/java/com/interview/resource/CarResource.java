@@ -8,6 +8,7 @@ import com.interview.dto.page.PageResponseDTO;
 import com.interview.service.CarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,8 @@ public class CarResource implements CarApi {
 
   @Override
   public ResponseEntity<CarDTO> getCarById(final Long id) {
-    return null;
+    final CarDTO result = carService.getCarById(id);
+    return ResponseEntity.ok(result);
   }
 
   @Override
@@ -28,8 +30,9 @@ public class CarResource implements CarApi {
   }
 
   @Override
-  public ResponseEntity<CarDTO> createCar(final CarCreateRequestDTO car) {
-    return null;
+  public ResponseEntity<CarDTO> createCar(final CarCreateRequestDTO request) {
+    final CarDTO result = carService.createCar(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
   @Override

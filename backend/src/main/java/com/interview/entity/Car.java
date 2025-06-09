@@ -11,15 +11,24 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.NaturalId;
 
 @Entity
 @Table(
     name = "car",
     uniqueConstraints = @UniqueConstraint(name = "uk_car_vin", columnNames = "vin"))
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+// Avoid circular references in toString and equals/hashCode methods
+@ToString(exclude = "owner")
+// https://vladmihalcea.com/the-best-way-to-implement-equals-hashcode-and-tostring-with-jpa-and-hibernate/
+@EqualsAndHashCode(of = "vin")
 public class Car {
 
   @Id
@@ -30,11 +39,10 @@ public class Car {
   @Column(nullable = false, name = "model")
   private String model;
 
+  @NaturalId
   @Column(nullable = false, unique = true, name = "vin")
   private String vin;
 
-  @EqualsAndHashCode.Exclude
-  @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "owner_id", nullable = false)
   private Owner owner;

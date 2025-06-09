@@ -68,7 +68,8 @@ public class OwnerServiceImpl implements OwnerService {
 
     final List<Long> carIds = Optional.ofNullable(request.getCarIds()).orElse(List.of());
     if (!carIds.isEmpty()) {
-      final List<Car> cars = carRepository.findAllById(carIds);
+      final Set<Car> cars = carRepository.findAllById(carIds).stream().collect(Collectors.toSet());
+
       validateAllCarIdsExist(carIds, cars);
       cars.forEach(car -> car.setOwner(existingOwner));
       existingOwner.setCars(cars);
@@ -89,7 +90,7 @@ public class OwnerServiceImpl implements OwnerService {
         .orElseThrow(() -> new EntityNotFoundException("Owner not found"));
   }
 
-  private void validateAllCarIdsExist(final List<Long> requestedCarIds, final List<Car> foundCars) {
+  private void validateAllCarIdsExist(final List<Long> requestedCarIds, final Set<Car> foundCars) {
     final Set<Long> requestedIdSet = new HashSet<>(requestedCarIds);
     final Set<Long> foundIdSet = foundCars.stream().map(Car::getId).collect(Collectors.toSet());
     if (!requestedIdSet.equals(foundIdSet)) {

@@ -1,7 +1,10 @@
 package com.interview.dto.owner;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.interview.dto.car.CarDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,4 +37,8 @@ public class OwnerDTO {
 
   @Schema(description = "Last update timestamp", example = "2024-06-10T15:30:00.000Z")
   private Instant updatedAt;
+
+  @Schema(description = "List of cars owned by the owner")
+  @JsonManagedReference
+  private List<CarDTO> cars;
 }

@@ -1,10 +1,12 @@
 -- Create Owner table
 CREATE TABLE owner
 (
-    id   BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL
+    id              BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name            VARCHAR(255) NOT NULL,
+    personal_number VARCHAR(255) NOT NULL,
+    version         BIGINT DEFAULT 0,
+    CONSTRAINT uk_owner_personal_number UNIQUE (personal_number)
 );
-
 
 -- Create Car table
 CREATE TABLE car

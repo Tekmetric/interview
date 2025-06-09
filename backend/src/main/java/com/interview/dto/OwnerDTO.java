@@ -1,5 +1,6 @@
 package com.interview.dto;
 
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +17,8 @@ public class OwnerDTO {
   private String name;
 
   private String personalNumber;
+
+  private Instant createdAt;
+
+  private Instant updatedAt;
 }

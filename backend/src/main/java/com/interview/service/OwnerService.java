@@ -8,4 +8,6 @@ public interface OwnerService {
   OwnerDTO createOwner(final OwnerCreateRequestDTO owner);
 
   OwnerDTO getOwnerById(final Long id);
+
+  OwnerDTO deleteOwnerById(final Long id);
 }

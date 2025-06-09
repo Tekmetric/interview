@@ -1,5 +1,7 @@
 package com.interview.dto;
 
+import java.time.Instant;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class OwnerDTO {
-
-  private Long id;
-
-  private String name;
-
-  private String personalNumber;
+public class ValidationErrorDTO {
+  private String message;
+  private Instant timestamp;
+  private Map<String, String> errors;
 }

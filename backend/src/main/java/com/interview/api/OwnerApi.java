@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,4 +62,20 @@ public interface OwnerApi {
           @NotNull
           @Valid
           final OwnerCreateRequestDTO owner);
+
+  @Operation(
+      summary = "Delete owner by ID",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Owner deleted",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = OwnerDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Owner not found")
+      })
+  @DeleteMapping("/{id}")
+  ResponseEntity<OwnerDTO> deleteOwnerById(
+      @Parameter(description = "ID of the owner") @PathVariable final Long id);
 }

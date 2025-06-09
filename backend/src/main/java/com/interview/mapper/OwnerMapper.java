@@ -7,9 +7,9 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(
-        componentModel = MappingConstants.ComponentModel.SPRING,
-        unmappedTargetPolicy = ReportingPolicy.ERROR)
+    componentModel = MappingConstants.ComponentModel.SPRING,
+    unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface OwnerMapper {
 
-     OwnerDTO toDto(final Owner owner);
+  OwnerDTO toDto(final Owner owner);
 }

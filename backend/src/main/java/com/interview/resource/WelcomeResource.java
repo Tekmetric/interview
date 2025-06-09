@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WelcomeResource {
 
-    @RequestMapping("/api/welcome")
-    public String index() {
+  @RequestMapping("/api/welcome")
+  public String index() {
 
-        return "Welcome to the interview project!";
-    }
+    return "Welcome to the interview project!";
+  }
 }

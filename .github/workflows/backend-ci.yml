@@ -32,6 +32,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Run Spotless Check
+        working-directory: backend
+        run: mvn spotless:check
+
       - name: Build backend with Maven
         working-directory: backend
         run: mvn clean install

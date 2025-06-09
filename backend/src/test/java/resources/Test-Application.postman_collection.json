@@ -1,0 +1,59 @@
+{
+	"info": {
+		"_postman_id": "8c217bf9-a71b-4ee1-9e02-0c2b07aa8c85",
+		"name": "Test - Application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43482110",
+		"_collection_link": "https://winter-crater-4033937.postman.co/workspace/A.B's-Workspace~849962a2-4c0f-470e-885f-0e25f57c7fe4/collection/43482110-8c217bf9-a71b-4ee1-9e02-0c2b07aa8c85?action=share&source=collection_link&creator=43482110"
+	},
+	"item": [
+		{
+			"name": "customers",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "get customer",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "create customer",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "delete customer",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "update customer",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "customers-paginated",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,12 +20,14 @@ public class CarResource implements CarApi {
 
   private final CarService carService;
 
+  @PreAuthorize("hasAuthority('READ')")
   @Override
   public ResponseEntity<CarDTO> getCarById(final Long id) {
     final CarDTO result = carService.getCarById(id);
     return ResponseEntity.ok(result);
   }
 
+  @PreAuthorize("hasAuthority('READ')")
   @Override
   public ResponseEntity<PageResponseDTO<CarDTO>> getCars(
       final int page, final int size, final String query) {
@@ -32,18 +35,21 @@ public class CarResource implements CarApi {
     return ResponseEntity.ok(result);
   }
 
+  @PreAuthorize("hasAuthority('WRITE')")
   @Override
   public ResponseEntity<CarDTO> createCar(final CarCreateRequestDTO request) {
     final CarDTO result = carService.createCar(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
+  @PreAuthorize("hasAuthority('WRITE')")
   @Override
   public ResponseEntity<CarDTO> deleteCarById(final Long id) {
     final CarDTO result = carService.deleteCarById(id);
     return ResponseEntity.ok(result);
   }
 
+  @PreAuthorize("hasAuthority('WRITE')")
   @Override
   public ResponseEntity<CarDTO> updateCar(final Long id, final CarUpdateRequestDTO request) {
     final CarDTO result = carService.updateCar(id, request);

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,12 +20,14 @@ public class OwnerResource implements OwnerApi {
 
   private final OwnerService ownerService;
 
+  @PreAuthorize("hasAuthority('READ')")
   @Override
   public ResponseEntity<OwnerDTO> getOwnerById(final Long id) {
     final OwnerDTO result = ownerService.getOwnerById(id);
     return ResponseEntity.ok(result);
   }
 
+  @PreAuthorize("hasAuthority('READ')")
   @Override
   public ResponseEntity<PageResponseDTO<OwnerDTO>> getOwners(
       final int page, final int size, final String query) {
@@ -33,18 +36,21 @@ public class OwnerResource implements OwnerApi {
     return ResponseEntity.ok(result);
   }
 
+  @PreAuthorize("hasAuthority('WRITE')")
   @Override
   public ResponseEntity<OwnerDTO> createOwner(final OwnerCreateRequestDTO request) {
     final OwnerDTO result = ownerService.createOwner(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
+  @PreAuthorize("hasAuthority('WRITE')")
   @Override
   public ResponseEntity<OwnerDTO> deleteOwnerById(final Long id) {
     final OwnerDTO deletedOwner = ownerService.deleteOwnerById(id);
     return ResponseEntity.ok(deletedOwner);
   }
 
+  @PreAuthorize("hasAuthority('WRITE')")
   @Override
   public ResponseEntity<OwnerDTO> updateOwner(final Long id, final OwnerUpdateRequestDTO request) {
     final OwnerDTO result = ownerService.updateOwner(id, request);

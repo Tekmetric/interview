@@ -26,8 +26,10 @@ public class OwnerResource implements OwnerApi {
   }
 
   @Override
-  public ResponseEntity<PageResponseDTO<OwnerDTO>> getOwners(final int page, final int size) {
-    final PageResponseDTO<OwnerDTO> result = ownerService.getOwners(PageRequest.of(page, size));
+  public ResponseEntity<PageResponseDTO<OwnerDTO>> getOwners(
+      final int page, final int size, final String query) {
+    final PageResponseDTO<OwnerDTO> result =
+        ownerService.getOwners(query, PageRequest.of(page, size));
     return ResponseEntity.ok(result);
   }
 

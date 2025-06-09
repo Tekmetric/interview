@@ -11,6 +11,7 @@ import com.interview.entity.Owner;
 import com.interview.mapper.OwnerMapper;
 import com.interview.repository.CarRepository;
 import com.interview.repository.OwnerRepository;
+import com.interview.repository.OwnerSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,8 +59,10 @@ public class OwnerServiceImpl implements OwnerService {
 
   @Override
   @Transactional(readOnly = true)
-  public PageResponseDTO<OwnerDTO> getOwners(final Pageable pageable) {
-    final Page<OwnerDTO> page = ownerRepository.findAll(pageable).map(ownerMapper::toDto);
+  public PageResponseDTO<OwnerDTO> getOwners(final String query, final Pageable pageable) {
+    final Specification<Owner> specification = OwnerSpecifications.fuzzySearch(query);
+    final Page<OwnerDTO> page =
+        ownerRepository.findAll(specification, pageable).map(ownerMapper::toDto);
     return toPageResponseDTO(page);
   }
 
@@ -68,7 +72,7 @@ public class OwnerServiceImpl implements OwnerService {
 
     final List<Long> carIds = Optional.ofNullable(request.getCarIds()).orElse(List.of());
     if (!carIds.isEmpty()) {
-      final Set<Car> cars = carRepository.findAllById(carIds).stream().collect(Collectors.toSet());
+      final Set<Car> cars = new HashSet<>(carRepository.findAllById(carIds));
 
       validateAllCarIdsExist(carIds, cars);
       cars.forEach(car -> car.setOwner(existingOwner));

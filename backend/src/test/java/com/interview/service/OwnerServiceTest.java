@@ -56,7 +56,7 @@ class OwnerServiceTest {
       final OwnerCreateRequestDTO request = easyRandom.nextObject(OwnerCreateRequestDTO.class);
       ownerService.createOwner(request);
     }
-    final PageResponseDTO<OwnerDTO> page = ownerService.getOwners(PageRequest.of(0, 2));
+    final PageResponseDTO<OwnerDTO> page = ownerService.getOwners("", PageRequest.of(0, 2));
     assertThat(page.getContent()).hasSize(2);
     assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(4);
   }

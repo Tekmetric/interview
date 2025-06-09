@@ -57,7 +57,9 @@ public interface OwnerApi {
   ResponseEntity<PageResponseDTO<OwnerDTO>> getOwners(
       @Parameter(description = "Page number (0-based)") @RequestParam(defaultValue = "0")
           final int page,
-      @Parameter(description = "Page size") @RequestParam(defaultValue = "10") final int size);
+      @Parameter(description = "Page size") @RequestParam(defaultValue = "10") final int size,
+      @Parameter(description = "Fuzzy search query") @RequestParam(required = false)
+          final String query);
 
   @Operation(
       summary = "Create a new owner",

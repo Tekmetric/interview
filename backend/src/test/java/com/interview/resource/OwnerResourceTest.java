@@ -131,7 +131,8 @@ class OwnerResourceTest {
             .last(false)
             .build();
 
-    Mockito.when(ownerService.getOwners(any(PageRequest.class))).thenReturn(page);
+    Mockito.when(ownerService.getOwners(any(String.class), any(PageRequest.class)))
+        .thenReturn(page);
 
     mockMvc
         .perform(get("/owners").param("page", "0").param("size", "2"))

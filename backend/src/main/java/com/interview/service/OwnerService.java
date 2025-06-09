@@ -14,7 +14,7 @@ public interface OwnerService {
 
   OwnerDTO deleteOwnerById(final Long id);
 
-  PageResponseDTO<OwnerDTO> getOwners(final Pageable pageable);
+  PageResponseDTO<OwnerDTO> getOwners(final String query, final Pageable pageable);
 
   OwnerDTO updateOwner(final Long id, final OwnerUpdateRequestDTO request);
 }

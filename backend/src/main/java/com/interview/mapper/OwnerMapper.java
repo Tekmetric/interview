@@ -4,6 +4,7 @@ import com.interview.dto.OwnerCreateRequestDTO;
 import com.interview.dto.OwnerDTO;
 import com.interview.dto.OwnerUpdateRequestDTO;
 import com.interview.entity.Owner;
+import java.util.Optional;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -23,17 +24,9 @@ public interface OwnerMapper {
   Owner toEntity(final OwnerCreateRequestDTO request);
 
   default void updateOwnerFromDto(final OwnerUpdateRequestDTO request, final Owner existingOwner) {
-    if (request.getName() != null) {
-      existingOwner.setName(request.getName());
-    }
-    if (request.getPersonalNumber() != null) {
-      existingOwner.setPersonalNumber(request.getPersonalNumber());
-    }
-    if (request.getBirthDate() != null) {
-      existingOwner.setBirthDate(request.getBirthDate());
-    }
-    if (request.getAddress() != null) {
-      existingOwner.setAddress(request.getAddress());
-    }
+    Optional.ofNullable(request.getName()).ifPresent(existingOwner::setName);
+    Optional.ofNullable(request.getPersonalNumber()).ifPresent(existingOwner::setPersonalNumber);
+    Optional.ofNullable(request.getBirthDate()).ifPresent(existingOwner::setBirthDate);
+    Optional.ofNullable(request.getAddress()).ifPresent(existingOwner::setAddress);
   }
 }

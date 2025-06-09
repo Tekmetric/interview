@@ -145,7 +145,7 @@ public class GlobalExceptionHandler {
   private String resolveViolationKey(final ConstraintViolation<?> violation) {
     return Optional.ofNullable(violation.getPropertyPath())
         .map(Object::toString)
-        .filter(s -> !s.isBlank())
+        .filter(error -> !error.isBlank())
         .orElse("unknown");
   }
 

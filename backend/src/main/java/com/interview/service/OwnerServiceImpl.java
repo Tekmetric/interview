@@ -65,8 +65,10 @@ public class OwnerServiceImpl implements OwnerService {
             .orElseThrow(() -> new EntityNotFoundException("Owner not found"));
 
     ownerMapper.updateOwnerFromDto(request, existingOwner);
-
     final Owner savedOwner = ownerRepository.save(existingOwner);
+
+    // Flush the changes so that the updated entity is immediately visible(last update timestamp)
+    ownerRepository.flush();
     return ownerMapper.toDto(savedOwner);
   }
 

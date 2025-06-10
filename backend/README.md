@@ -33,8 +33,13 @@ act
 
 This will trigger the workflow and run all the steps defined in the **.github/workflows/ci.ym** file.
 
+### Act running the github actions workflow
+![Grafana Dashboard](images/act-running.png)
 
 
+
+### Act completing the workflow
+![Grafana Dashboard](images/act-completed.png)
 
 
 ## K6 load testing
@@ -44,6 +49,10 @@ You can simply run it with the following command:
 ```
 docker-compose up --build
 ```
+
+For example, we hit **15k requests per second** with 50 virtual users for 60 seconds with a **p95** of **7.72ms**
+
+![Grafana Dashboard](images/k6-running.png)
 
 
 
@@ -55,7 +64,7 @@ http://localhost:3000/d/k6/k6-load-testing-results?orgId=1&refresh=5s
 
 This is an example dashboard that shows the results of the load tests run by K6.
 
-[Grafana Dashbord](images/grafana-dashboard.png)
+![Grafana Dashboard](images/grafana-dashboard.png)
 
 ## Other considerations and improvements
 - Use of Webflux for reactive programming and a better performance and scalability.  

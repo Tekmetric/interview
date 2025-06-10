@@ -149,6 +149,10 @@ We can check apply the code style for violations with the following command:
 mvn spotless:check
 ```
 
+## Maven Docker plugin
+- The Maven Docker plugin is used to build the Docker image for the application.
+- It is also used to run the integration tests. Before the integration tests maven lifecycle phase, tests that are picked up by the **maven-failsafe-plugin** (ones that end in **IT**), it will build the Docker image, run the container, execute the tests against the dockerized application container(blackbox) and then stop the application container.
+
 ## Other considerations and improvements
 - Use of Webflux for reactive programming and a better performance and scalability.  
 However this enforces the use of a reactive database like H2 R2DBC and also increases the overall complexity of the application with Flux/Mono and subscription management.

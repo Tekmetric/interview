@@ -8,6 +8,7 @@ This is a Spring boot service which allows management of owners and cars.
 - Spring Boot 3.5 (with Virtual Threads)
 - Maven enforcer plugin for maven [3.9.0,)
 - Maven spotless plugin for code style
+- Spring Boot validations and JSR 380 for bean validation
 - Docker maven plugin for building docker images and Integration testing
 - Spring Data JPA
 - H2 in-memory database
@@ -22,7 +23,7 @@ This is a Spring boot service which allows management of owners and cars.
 - Lombok & MapStruct for code generation
 - JsonPath for testing JSON responses
 - Micrometer for metrics and prometheus exporter
-
+- HTTP2 for better performance(multiplexing and header compression)
 
 
 
@@ -112,6 +113,42 @@ This is an example dashboard that shows the results of the load tests run by K6.
 
 ![Grafana Dashboard](images/grafana-dashboard.png)
 
+
+## HTTP2
+
+- The application is configured to use HTTP2 for better performance.
+This can be tested with the following command:
+```
+curl -v --location 'http://localhost:8080/owners' \
+--http2-prior-knowledge \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzb3JpbiIsImF1dGhvcml0aWVzIjpbIlJFQUQiLCJXUklURSJdfQ.0TBa_EilUxZFJeQ-m5XLhR7AefNNzexAXftc8B5kqAI' \
+--data '{
+    "name" : "Sorin second",
+    "personalNumber" : "234242423232223",
+    "birthDate" : "1990-01-01T00:00:00Z",
+    "address" : "some street number 2"
+}'
+```
+
+![Http2 working](images/http-2-working.png)
+
+
+## Spotless and Code Style
+
+Spotless is used to enforce a code style and format the code automatically.
+It is configured as a check in the Maven build process to fail the build otherwise.
+
+We can automatically apply the code style with the following command:
+```
+mvn spotless:apply
+```
+
+We can check apply the code style for violations with the following command:
+```
+mvn spotless:check
+```
+
 ## Other considerations and improvements
 - Use of Webflux for reactive programming and a better performance and scalability.  
 However this enforces the use of a reactive database like H2 R2DBC and also increases the overall complexity of the application with Flux/Mono and subscription management.
@@ -121,3 +158,5 @@ However this enforces the use of a reactive database like H2 R2DBC and also incr
 - Add a K8s deployment configuration to deploy the application through helm to a Kubernetes cluster. This can help to ensure that the application is scalable and can be easily managed in a production environment.
 This should involve a replicaSet, HPA, and a service to expose the application.
 
+- Security is a just a simple PoC with a JWT authentication with stored credentials in memory.
+This should be replaced with a more robust solution like OAuth2 or OpenID Connect with a proper user management system.

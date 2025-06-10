@@ -58,3 +58,17 @@ jobs:
       - name: Run integration tests
         working-directory: backend
         run: mvn verify -DskipUnitTests
+
+      - name: Build Docker image
+        working-directory: backend
+        run: mvn docker:build
+
+      - name: Tag Docker image
+        working-directory: backend
+        run: mvn docker:tag
+
+      # Push Docker image to registry
+      # Commented out, as it requires Docker Hub credentials
+#      - name: Push Docker image
+#        working-directory: backend
+#        run: mvn docker:push

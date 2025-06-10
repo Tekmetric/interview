@@ -5,8 +5,8 @@ export let options = {
     scenarios: {
         constant_users: {
             executor: 'constant-vus',
-            vus: 10, // Number of concurrent users
-            duration: '10s', // How long to run
+            vus: 50, // Number of concurrent users
+            duration: '60s', // How long to run
         },
     },
     thresholds: {

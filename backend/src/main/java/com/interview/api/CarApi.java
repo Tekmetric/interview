@@ -3,6 +3,8 @@ package com.interview.api;
 import com.interview.dto.car.CarCreateRequestDTO;
 import com.interview.dto.car.CarDTO;
 import com.interview.dto.car.CarUpdateRequestDTO;
+import com.interview.dto.error.ErrorDTO;
+import com.interview.dto.error.ValidationErrorDTO;
 import com.interview.dto.page.PageResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +32,27 @@ public interface CarApi {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = CarDTO.class))),
-        @ApiResponse(responseCode = "404", description = "Car not found")
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Car not found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class)))
       })
   @GetMapping("/{id}")
   ResponseEntity<CarDTO> getCarById(
@@ -45,7 +67,21 @@ public interface CarApi {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = CarDTO.class)))
+                    schema = @Schema(implementation = CarDTO.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class)))
       })
   @GetMapping
   ResponseEntity<PageResponseDTO<CarDTO>> getCars(
@@ -64,7 +100,28 @@ public interface CarApi {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = CarDTO.class)))
+                    schema = @Schema(implementation = CarDTO.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Validation error",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ValidationErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class)))
       })
   @PostMapping
   ResponseEntity<CarDTO> createCar(
@@ -90,7 +147,27 @@ public interface CarApi {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = CarDTO.class))),
-        @ApiResponse(responseCode = "404", description = "Car not found")
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Car not found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class)))
       })
   @DeleteMapping("/{id}")
   ResponseEntity<CarDTO> deleteCarById(
@@ -106,7 +183,34 @@ public interface CarApi {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = CarDTO.class))),
-        @ApiResponse(responseCode = "404", description = "Car not found")
+        @ApiResponse(
+            responseCode = "400",
+            description = "Validation error",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ValidationErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Car not found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class)))
       })
   @PutMapping("/{id}")
   ResponseEntity<CarDTO> updateCar(

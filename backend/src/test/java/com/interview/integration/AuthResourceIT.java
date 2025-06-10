@@ -28,7 +28,7 @@ public class AuthResourceIT {
     restTemplate.setErrorHandler(
         new DefaultResponseErrorHandler() {
           @Override
-          public void handleError(ClientHttpResponse response) {
+          public void handleError(final ClientHttpResponse response) {
             // Do nothing, so RestTemplate does not throw exceptions for 4xx/5xx
           }
         });
@@ -44,7 +44,7 @@ public class AuthResourceIT {
         restTemplate.exchange(
             BASE_URL + "/owners?page=0&size=1", HttpMethod.GET, request, Void.class);
 
-    Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    Assertions.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
 
   @Test

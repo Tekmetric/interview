@@ -1,5 +1,7 @@
 package com.interview.api;
 
+import com.interview.dto.error.ErrorDTO;
+import com.interview.dto.error.ValidationErrorDTO;
 import com.interview.dto.owner.OwnerCreateRequestDTO;
 import com.interview.dto.owner.OwnerDTO;
 import com.interview.dto.owner.OwnerUpdateRequestDTO;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Owner", description = "CRUD operations for Owner")
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/owners")
 public interface OwnerApi {
 
@@ -36,7 +40,27 @@ public interface OwnerApi {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = OwnerDTO.class))),
-        @ApiResponse(responseCode = "404", description = "Owner not found")
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Owner not found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class)))
       })
   @GetMapping("/{id}")
   ResponseEntity<OwnerDTO> getOwnerById(
@@ -51,7 +75,21 @@ public interface OwnerApi {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = OwnerDTO.class)))
+                    schema = @Schema(implementation = OwnerDTO.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class)))
       })
   @GetMapping
   ResponseEntity<PageResponseDTO<OwnerDTO>> getOwners(
@@ -70,7 +108,28 @@ public interface OwnerApi {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = OwnerDTO.class)))
+                    schema = @Schema(implementation = OwnerDTO.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Validation error",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ValidationErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class)))
       })
   @PostMapping
   ResponseEntity<OwnerDTO> createOwner(
@@ -96,7 +155,27 @@ public interface OwnerApi {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = OwnerDTO.class))),
-        @ApiResponse(responseCode = "404", description = "Owner not found")
+        @ApiResponse(
+            responseCode = "404",
+            description = "Owner not found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class)))
       })
   @DeleteMapping("/{id}")
   ResponseEntity<OwnerDTO> deleteOwnerById(
@@ -112,6 +191,27 @@ public interface OwnerApi {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = OwnerDTO.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Validation error",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ValidationErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDTO.class))),
         @ApiResponse(responseCode = "404", description = "Owner not found")
       })
   @PutMapping("/{id}")

@@ -7,6 +7,7 @@ import com.interview.dto.auth.AuthRequestDTO;
 import com.interview.dto.auth.AuthResponseDTO;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,10 @@ public class AuthResource implements AuthApi {
 
     final Object user = auth.getPrincipal();
     if (user instanceof UserDetails userDetails) {
+      // Set token to expire in 1 hour
+      final Date now = new Date();
+      final Date expiryDate = new Date(now.getTime() + 3600_000); // 1 hour in ms
+
       final String token =
           Jwts.builder()
               .setSubject(userDetails.getUsername())
@@ -41,6 +46,8 @@ public class AuthResource implements AuthApi {
                   userDetails.getAuthorities().stream()
                       .map(GrantedAuthority::getAuthority)
                       .toList())
+              .setIssuedAt(now)
+              .setExpiration(expiryDate)
               .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
               .compact();
 

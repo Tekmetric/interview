@@ -35,7 +35,7 @@ public class AuthResourceIT {
   }
 
   @Test
-  void accessProtectedEndpoint_withoutToken_shouldReturn401() {
+  void accessProtectedEndpoint_withoutToken_shouldReturn403() {
     final HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     HttpEntity<Void> request = new HttpEntity<>(headers);
@@ -76,7 +76,8 @@ public class AuthResourceIT {
     headers.setContentType(MediaType.APPLICATION_JSON);
     final HttpEntity<Map<String, String>> request = new HttpEntity<>(loginRequest, headers);
 
-    ResponseEntity<String> response = restTemplate.postForEntity(loginUrl, request, String.class);
+    final ResponseEntity<String> response =
+        restTemplate.postForEntity(loginUrl, request, String.class);
     Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
     final String token = JsonPath.read(response.getBody(), "$.token");
 

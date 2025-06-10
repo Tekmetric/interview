@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.BeforeAll;
@@ -163,7 +164,7 @@ public class OwnerResourceIT {
     final Map<String, Object> carRequest =
         Map.of(
             "model", model,
-            "vin", "VIN" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 6),
+            "vin", "VIN" + UUID.randomUUID().toString().replace("-", "").substring(0, 6),
             "ownerId", ownerId);
     final HttpEntity<Map<String, Object>> carEntity =
         new HttpEntity<>(carRequest, createAuthHeaders());

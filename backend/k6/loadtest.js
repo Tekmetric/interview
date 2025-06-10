@@ -13,8 +13,8 @@ export let options = {
         // 95% of requests should complete below 500ms
         http_req_duration: ['p(95)<500'],
 
-        // At least 10 requests per second
-        http_reqs: ['rate>10'],
+        // At least 1000 requests per second
+        http_reqs: ['rate>1000'],
     },
 };
 

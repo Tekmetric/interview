@@ -15,7 +15,10 @@ RUN mvn clean install -DskipTests -DskipIT -Dspotless.skip=true
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
+# Use ZGC for low latency
+ENV JAVA_OPTS="-Xms512m -Xmx2g -XX:+UseZGC -XX:+UseContainerSupport"
+
 # Only copy the jar file from the build stage
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD java $JAVA_OPTS -jar /app/app.jar

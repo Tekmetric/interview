@@ -1,7 +1,7 @@
 # Owner/Car CRUD Application
 
 
-This is Spring boot service which allows management of jobs & tasks within a repair shop.
+This is a Spring boot service which allows management of owners and cars.
 
 ## Technologies Used
 - Java 21
@@ -21,6 +21,53 @@ This is Spring boot service which allows management of jobs & tasks within a rep
 - Grafana for load test results visualization
 - Lombok & MapStruct for code generation
 - JsonPath for testing JSON responses
+- Micrometer for metrics and prometheus exporter
+
+
+
+
+## Swagger UI
+
+Swagger UI is available at:
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
+It supports also authentication in the UI.
+The following credentials can be used to authenticate with a **WRITE** role:
+```
+{
+  "username": "sorin",
+  "password": "pass123"
+}
+````
+
+![Swagger UI](images/swagger-ui-auth.png)
+
+
+## Entity diagram and relationships
+
+```mermaid
+erDiagram
+    OWNER {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR personal_number "Unique"
+        TIMESTAMP birth_date
+        VARCHAR address
+        BIGINT version
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+    CAR {
+        BIGINT id PK
+        VARCHAR model
+        VARCHAR vin "Unique"
+        BIGINT owner_id FK
+        BIGINT version
+    }
+    OWNER ||--o{ CAR : "owns"
+```
 
 
 ## Github actions and apt
@@ -34,12 +81,11 @@ act
 This will trigger the workflow and run all the steps defined in the **.github/workflows/ci.ym** file.
 
 ### Act running the github actions workflow
-![Grafana Dashboard](images/act-running.png)
-
+![Act running](images/act-running.png)
 
 
 ### Act completing the workflow
-![Grafana Dashboard](images/act-completed.png)
+![Act Completed](images/act-completed.png)
 
 
 ## K6 load testing
@@ -52,7 +98,7 @@ docker-compose up --build
 
 For example, we hit **15k requests per second** with 50 virtual users for 60 seconds with a **p95** of **7.72ms**
 
-![Grafana Dashboard](images/k6-running.png)
+![K6 Running](images/k6-running.png)
 
 
 

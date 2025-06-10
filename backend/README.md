@@ -154,7 +154,7 @@ mvn spotless:check
 - It is also used to run the integration tests. Before the integration tests maven lifecycle phase, tests that are picked up by the **maven-failsafe-plugin** (ones that end in **IT**), it will build the Docker image, run the container, execute the tests against the dockerized application container(blackbox) and then stop the application container.
 
 ## Other considerations and improvements
-- Use of Webflux for reactive programming and a better performance and scalability.  
+- Use of **Webflux for reactive programming** and a better performance and scalability.  
 However this enforces the use of a reactive database like H2 R2DBC and also increases the overall complexity of the application with Flux/Mono and subscription management.
 
 - Use of code generation tools like OpenAPI Generator to generate the API client and server stubs. This can help to ensure that the API is well-defined and can be easily consumed by clients. However, it also increases the complexity of the build process and requires additional configuration.
@@ -164,3 +164,5 @@ This should involve a replicaSet, HPA, and a service to expose the application.
 
 - Security is a just a simple PoC with a JWT authentication with stored credentials in memory.
 This should be replaced with a more robust solution like OAuth2 or OpenID Connect with a proper user management system.
+
+- Considered the **maven jib plugin** for building and publishing docker images, but I wanted more control on the Dockerfile build and also wanted to have a multi stage build.

@@ -84,14 +84,14 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(HandlerMethodValidationException.class)
   public ResponseEntity<ValidationErrorDTO> handleHandlerMethodValidationException(
       final HandlerMethodValidationException ex) {
-    log.warn("Validation failed", ex);
-
     final Map<String, String> errors =
         ex.getParameterValidationResults().stream()
             .flatMap(result -> result.getResolvableErrors().stream())
             .collect(
                 Collectors.toMap(
                     this::resolveErrorKey, this::resolveErrorMessage, (msg1, msg2) -> msg1));
+
+    log.warn("Validation failed errors={}", errors, ex);
 
     final ValidationErrorDTO dto =
         ValidationErrorDTO.builder()

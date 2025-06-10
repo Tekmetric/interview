@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      retries: 5
+
+  influxdb:
+    image: influxdb:1.8
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=k6
+      - INFLUXDB_ADMIN_ENABLED=true
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - influxdb
+    volumes:
+      - ./grafana/conf/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
+
+  k6:
+    image: grafana/k6
+    volumes:
+      - ./k6:/scripts
+    command: run /scripts/loadtest.js
+    depends_on:
+      app:
+        condition: service_healthy
+      influxdb:
+        condition: service_started
+    environment:
+      - K6_OUT=influxdb=http://influxdb:8086/k6
+
+volumes:
+  influxdb-data:
+  grafana-data:

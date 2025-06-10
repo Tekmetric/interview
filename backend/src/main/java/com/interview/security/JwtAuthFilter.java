@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -37,13 +38,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     final String header = request.getHeader(AUTHORIZATION_HEADER);
 
     if (header != null && header.startsWith("Bearer ")) {
-      String token = header.substring(7);
+      final String token = header.substring(7);
       try {
         final Claims claims = parser.parseClaimsJws(token).getBody();
         final String username = claims.getSubject();
         final List<String> authorities = claims.get("authorities", List.class);
 
-        final var auth =
+        final Authentication auth =
             new UsernamePasswordAuthenticationToken(
                 username, null, authorities.stream().map(SimpleGrantedAuthority::new).toList());
         SecurityContextHolder.getContext().setAuthentication(auth);

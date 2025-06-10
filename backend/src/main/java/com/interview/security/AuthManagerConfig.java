@@ -13,7 +13,7 @@ public class AuthManagerConfig {
   @Bean
   public AuthenticationManager authenticationManager(
       final UserDetailsService uds, final PasswordEncoder encoder) {
-    final var provider = new DaoAuthenticationProvider(uds);
+    final DaoAuthenticationProvider provider = new DaoAuthenticationProvider(uds);
     provider.setPasswordEncoder(encoder);
     return new ProviderManager(provider);
   }

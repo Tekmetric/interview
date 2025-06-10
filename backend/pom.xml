@@ -25,9 +25,9 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <easy-random.version>5.0.0</easy-random.version>
-        <test-containers.version>1.19.7</test-containers.version>
-        <test-containers-docker-java-api.version>3.5.1</test-containers-docker-java-api.version>
         <jwt.version>0.11.5</jwt.version>
+        <json-path.version>2.8.0</json-path.version>
+        <skipIT>false</skipIT>
     </properties>
 
     <dependencies>
@@ -157,18 +157,12 @@
         </dependency>
 
         <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>${test-containers.version}</version>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${json-path.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${test-containers.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -263,38 +257,61 @@
                 </executions>
                 <configuration>
                     <includes>
+                        <skipITs>${skipIT}</skipITs>
                         <include>**/*IT.java</include>
                     </includes>
                 </configuration>
             </plugin>
 
-            <!-- Docker Maven plugin for Test Containers  -->
-<!--            <plugin>-->
-<!--                <groupId>com.spotify</groupId>-->
-<!--                <artifactId>docker-maven-plugin</artifactId>-->
-<!--                <version>1.2.2</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>build-image</id>-->
-<!--                        <phase>pre-integration-test</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>build</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <imageName>${project.artifactId}:latest</imageName>-->
-<!--                    <dockerDirectory>${project.basedir}</dockerDirectory>-->
-<!--                    <resources>-->
-<!--                        <resource>-->
-<!--                            <targetPath>/</targetPath>-->
-<!--                            <directory>${project.build.directory}</directory>-->
-<!--                            <include>${project.build.finalName}.jar</include>-->
-<!--                        </resource>-->
-<!--                    </resources>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-
+            <!-- Docker Maven plugin for Integration Tests  -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.41.0</version>
+                <configuration>
+                    <skip>${skipIT}</skip>
+                    <useColor>true</useColor>
+                    <verbose>true</verbose>
+                    <images>
+                        <image>
+                            <name>interview-app</name>
+                            <build>
+                                <dockerFileDir>${project.basedir}</dockerFileDir>
+                            </build>
+                            <run>
+                                <ports>
+                                    <port>8080:8080</port>
+                                </ports>
+                                <wait>
+                                    <http>
+                                        <url>http://127.0.0.1:8080/actuator/health</url>
+                                        <method>GET</method>
+                                    </http>
+                                    <time>60000</time>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- Build and start the Docker image before integration tests-->
+                        <id>build-image</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-image</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -18,6 +18,9 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -140,6 +143,26 @@ public class GlobalExceptionHandler {
             .build();
 
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dto);
+  }
+
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<ErrorDTO> handleAuthenticationException(final AuthenticationException ex) {
+    log.warn("Authentication failed: {}", ex.getMessage());
+
+    final ErrorDTO dto =
+        ErrorDTO.builder().message("Authentication failed").timestamp(clock.instant()).build();
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(dto);
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ErrorDTO> handleAccessDeniedException(final AccessDeniedException ex) {
+    log.warn("Access denied: {}", ex.getMessage());
+
+    final ErrorDTO dto =
+        ErrorDTO.builder().message("Access denied").timestamp(clock.instant()).build();
+
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(dto);
   }
 
   private String resolveErrorKey(final MessageSourceResolvable error) {

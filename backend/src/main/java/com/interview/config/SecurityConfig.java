@@ -22,7 +22,12 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(
-                        "/auth/login", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                        "/auth/login",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/actuator/**",
+                        "/h2-console/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated())

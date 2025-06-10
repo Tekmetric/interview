@@ -36,7 +36,7 @@ public class AuthResource implements AuthApi {
     if (user instanceof UserDetails userDetails) {
       // Set token to expire in 1 hour
       final Date now = new Date();
-      final Date expiryDate = new Date(now.getTime() + 3600_000); // 1 hour in ms
+      final Date expiryDate = new Date(now.getTime() + 3600_000);
 
       final String token =
           Jwts.builder()

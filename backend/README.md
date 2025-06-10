@@ -46,6 +46,7 @@ docker-compose up --build
 ```
 
 
+
 ## Grafana Dashboard
 - The Grafana dashboard is available at:
 ```
@@ -54,7 +55,7 @@ http://localhost:3000/d/k6/k6-load-testing-results?orgId=1&refresh=5s
 
 This is an example dashboard that shows the results of the load tests run by K6.
 
-
+[Grafana Dashbord](images/grafana-dashboard.png)
 
 ## Other considerations and improvements
 - Use of Webflux for reactive programming and a better performance and scalability.  

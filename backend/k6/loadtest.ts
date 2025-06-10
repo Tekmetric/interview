@@ -1,12 +1,15 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { check } from 'k6';
+import type { Options } from 'k6/options';
 
-export let options = {
+export let options: Options = {
     scenarios: {
         constant_users: {
             executor: 'constant-vus',
-            vus: 50, // Number of concurrent users
-            duration: '60s', // How long to run
+            // Number of concurrent users
+            vus: 50,
+            // How long to run
+            duration: '60s',
         },
     },
     thresholds: {
@@ -18,7 +21,11 @@ export let options = {
     },
 };
 
-export function setup() {
+interface SetupData {
+    token: string;
+}
+
+export function setup(): SetupData {
     const loginPayload = JSON.stringify({
         username: 'sorin',
         password: 'pass123'
@@ -30,15 +37,13 @@ export function setup() {
     return { token };
 }
 
-function randomPastDate() {
+function randomPastDate(): string {
     const now = new Date();
     const past = new Date(now.getFullYear() - Math.floor(Math.random() * 40 + 18), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
-
-    // Format: yyyy-MM-dd'T'HH:mm:ssZ (Zulu time)
     return past.toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
-function randomAlphaString(length) {
+function randomAlphaString(length: number): string {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let result = '';
     for (let i = 0; i < length; i++) {
@@ -47,12 +52,11 @@ function randomAlphaString(length) {
     return result;
 }
 
-function randomName() {
+function randomName(): string {
     return `${randomAlphaString(5)} ${randomAlphaString(7)}`;
 }
 
-export default function (data) {
-    // Combine VU, iteration, and a random 4-digit number for uniqueness
+export default function (data: SetupData): void {
     const personalNumber = `${__VU}${__ITER}${Math.floor(10000000 + Math.random() * 90000000)}`;
 
     const payload = JSON.stringify({

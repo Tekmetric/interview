@@ -39,7 +39,7 @@ services:
     image: grafana/k6:latest
     volumes:
       - ./k6:/scripts
-    command: run /scripts/loadtest.js
+    command: run /scripts/loadtest.ts
     depends_on:
       app:
         condition: service_healthy

@@ -10,10 +10,12 @@ This is a Spring boot service which allows management of owners and cars.
 - Maven spotless plugin for code style
 - Spring Boot validations and JSR 380 for bean validation
 - Docker maven plugin for building docker images and Integration testing
-- Spring Data JPA
+- Spring Data JPA 
+- Fuzzy search through JPA Specifications including on child elements
+- Avoid N+1 problem through join fetch
 - H2 in-memory database
 - JWT for authentication
-- Spring Security
+- Spring Security 6.x
 - Swagger UI for API documentation
 - JUnit 5 for unit testing and Spring Boot Tests
 - Mockito for mocking in tests and MockMvc for testing controllers
@@ -78,6 +80,8 @@ erDiagram
 ```
 act
 ```
+
+The command **needs to be issued in the top level directory**, next to the **.github** directory.
 
 This will trigger the workflow and run all the steps defined in the **.github/workflows/ci.ym** file.
 
@@ -166,3 +170,5 @@ This should involve a replicaSet, HPA, and a service to expose the application.
 This should be replaced with a more robust solution like OAuth2 or OpenID Connect with a proper user management system.
 
 - Considered the **maven jib plugin** for building and publishing docker images, but I wanted more control on the Dockerfile build and also wanted to have a multi stage build.
+
+- Maybe more flexibility in terms of the JPA specification queries like passing a sort parameter and a column or using derived queries, projections, etc.

@@ -12,6 +12,7 @@ This is a Spring boot service which allows management of owners and cars.
 - Docker maven plugin for building docker images and Integration testing
 - Spring Data JPA 
 - Fuzzy search through JPA Specifications including on child elements
+- AES Encryption storage for sensitive fields
 - Avoid N+1 problem through join fetch
 - H2 in-memory database
 - JWT for authentication

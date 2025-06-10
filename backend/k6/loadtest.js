@@ -53,7 +53,7 @@ function randomName() {
 
 export default function (data) {
     // Combine VU, iteration, and a random 4-digit number for uniqueness
-    const personalNumber = `${__VU}${__ITER}${Math.floor(1000 + Math.random() * 9000)}`;
+    const personalNumber = `${__VU}${__ITER}${Math.floor(10000000 + Math.random() * 90000000)}`;
 
     const payload = JSON.stringify({
         name: randomName(),

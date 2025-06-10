@@ -20,18 +20,23 @@ services:
       - influxdb-data:/var/lib/influxdb
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:8.5.21
     ports:
       - "3000:3000"
     depends_on:
       - influxdb
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     volumes:
-      - ./grafana/conf/grafana.ini:/etc/grafana/grafana.ini
-      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/grafana-dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+      - ./grafana/grafana-datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
 
   k6:
-    image: grafana/k6
+    image: grafana/k6:latest
     volumes:
       - ./k6:/scripts
     command: run /scripts/loadtest.js

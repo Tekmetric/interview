@@ -1,39 +1,67 @@
-# Java Spring Boot API Coding Exercise
+# Owner/Car CRUD Application
 
-## Steps to get started:
 
-#### Prerequisites
-- Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
+This is Spring boot service which allows management of jobs & tasks within a repair shop.
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+## Technologies Used
+- Java 21
+- Spring Boot 3.5 (with Virtual Threads)
+- Maven enforcer plugin for maven [3.9.0,)
+- Maven spotless plugin for code style
+- Docker maven plugin for building docker images and Integration testing
+- Spring Data JPA
+- H2 in-memory database
+- JWT for authentication
+- Spring Security
+- Swagger UI for API documentation
+- JUnit 5 for unit testing and Spring Boot Tests
+- Mockito for mocking in tests and MockMvc for testing controllers
+- Flyway for database versioning and migrations
+- K6 for load testing
+- Grafana for load test results visualization
+- Lombok & MapStruct for code generation
+- JsonPath for testing JSON responses
 
-#### Import project into IDE
-- Project root is located in `backend` folder
 
-#### Build and run your app
-- `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
+## Github actions and apt
+- Github actions are used for CI/CD.
+- Usually the workflow is triggered on push to the main branch or on pull request.
+- However, we can still run the workflow manually through **act** (brew install act) with the following command:
+```
+act
+```
 
-#### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
+This will trigger the workflow and run all the steps defined in the **.github/workflows/ci.ym** file.
 
-#### After finishing the goals listed below create a PR
 
-### Goals
-1. Design a CRUD API with data store using Spring Boot and in memory H2 database (pre-configured, see below)
-2. API should include one object with create, read, update, and delete operations. Read should include fetching a single item and list of items.
-3. Provide SQL create scripts for your object(s) in resources/data.sql
-4. Demo API functionality using API client tool
 
-### Considerations
-This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
 
-#### H2 Configuration
-- Console: http://localhost:8080/h2-console 
-- JDBC URL: jdbc:h2:mem:testdb
-- Username: sa
-- Password: password
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+## K6 load testing
+
+- K6 is used for load testing the application.
+You can simply run it with the following command:
+```
+docker-compose up --build
+```
+
+
+## Grafana Dashboard
+- The Grafana dashboard is available at:
+```
+http://localhost:3000/d/k6/k6-load-testing-results?orgId=1&refresh=5s
+```
+
+This is an example dashboard that shows the results of the load tests run by K6.
+
+
+
+## Other considerations and improvements
+- Use of Webflux for reactive programming and a better performance and scalability.  
+However this enforces the use of a reactive database like H2 R2DBC and also increases the overall complexity of the application with Flux/Mono and subscription management.
+
+- Use of code generation tools like OpenAPI Generator to generate the API client and server stubs. This can help to ensure that the API is well-defined and can be easily consumed by clients. However, it also increases the complexity of the build process and requires additional configuration.
+
+- Add a K8s deployment configuration to deploy the application through helm to a Kubernetes cluster. This can help to ensure that the application is scalable and can be easily managed in a production environment.
+This should involve a replicaSet, HPA, and a service to expose the application.
+

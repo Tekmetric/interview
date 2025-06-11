@@ -1,0 +1,85 @@
+# Server configuration for Tekmetric Backend
+server:
+  port: 20001
+  http2:
+    enabled: true
+  compression:
+    enabled: true
+  # Don't accept new requests but allow existing requests to complete
+  shutdown: graceful
+
+spring:
+  application:
+    name: tekmetric-backend
+    instance-id: ${spring.application.name}-${random.value}
+
+  # Database-related configurations
+  # Flyway is a useful tool used for database migrations in production-ready microservices.
+  # Although we are using an in-memory H2 database for demo purposes,
+  # it is still a good practice to use it for managing database schema changes.
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  datasource:
+    hikari:
+      connection-timeout: 10000 # 10 seconds
+    # Ideally we should use an external real database in production!
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD}
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    # Disable Open Session in View
+    # See https://vladmihalcea.com/the-open-session-in-view-anti-pattern/ for more details
+    open-in-view: false
+
+  # Spring Actuator configurations
+  management:
+    info:
+      git:
+        mode: full
+    health:
+      db:
+        enabled: true
+      livenessstate:
+        enabled: true
+      readinessstate:
+        enabled: true
+    endpoint:
+      health:
+        probes:
+          enabled: true
+        group:
+          readiness:
+            # Add any other health indicators you want to include in readiness state
+            include:
+              - readinessstate
+              - db
+        show-details: always
+    endpoints:
+      web:
+        exposure:
+          include: health, info, metrics, prometheus
+    metrics:
+      # Include application tags in metrics
+      tags:
+        application: ${spring.application.name}
+        instance-id: ${spring.application.instance-id}
+
+  # Disable Spring Boot's default banner
+  main:
+    banner-mode: off
+
+  # Disable static file serving
+  web:
+    resources:
+      add-mappings: false
+
+log:
+  # Log bean names during application startup
+  bean-names: ${LOG_BEAN_NAMES:false}
+  requests:
+    # Log incoming HTTP requests for any API endpoints
+    enabled: ${LOG_REQUESTS_ENABLED:false}
+    include-headers: ${LOG_REQUESTS_INCLUDE_HEADERS:false}

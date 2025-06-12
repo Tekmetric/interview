@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -72,13 +72,12 @@ public class CustomerEntity {
 
   @CreatedDate
   @Column(name = "created_date", nullable = false, updatable = false)
-  private LocalDateTime createdDate;
+  private OffsetDateTime createdDate;
 
   @LastModifiedDate
   @Column(name = "updated_date", nullable = false)
-  private LocalDateTime updatedDate;
+  private OffsetDateTime updatedDate;
 
-  // Constructor with required fields only
   public CustomerEntity(String name, String email) {
     this.name = name;
     this.email = email;

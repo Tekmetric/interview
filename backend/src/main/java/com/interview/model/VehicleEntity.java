@@ -11,12 +11,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -82,13 +81,12 @@ public class VehicleEntity {
 
   @CreatedDate
   @Column(name = "created_date", nullable = false, updatable = false)
-  private LocalDateTime createdDate;
+  private OffsetDateTime createdDate;
 
   @LastModifiedDate
   @Column(name = "updated_date", nullable = false)
-  private LocalDateTime updatedDate;
+  private OffsetDateTime updatedDate;
 
-  // Constructor with required fields only
   public VehicleEntity(CustomerEntity customer, String make, String model, Integer year,
       String licensePlate) {
     this.customer = customer;

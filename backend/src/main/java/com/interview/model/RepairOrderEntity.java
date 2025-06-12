@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -62,17 +62,10 @@ public class RepairOrderEntity {
 
   @CreatedDate
   @Column(name = "created_date", nullable = false, updatable = false)
-  private LocalDateTime createdDate;
+  private OffsetDateTime createdDate;
 
   @LastModifiedDate
   @Column(name = "updated_date", nullable = false)
-  private LocalDateTime updatedDate;
-
-  // Constructor with required fields only
-  public RepairOrderEntity(VehicleEntity vehicle, String description, String status) {
-    this.vehicle = vehicle;
-    this.description = description;
-    this.status = status;
-  }
+  private OffsetDateTime updatedDate;
 
 }

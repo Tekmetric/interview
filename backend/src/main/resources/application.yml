@@ -27,8 +27,11 @@ spring:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
     username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD}
+    password: ${DB_PASSWORD:password}
   jpa:
+    hibernate:
+      # Validate the database schema based on the entity classes on startup (DB migration is handled by Flyway)
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.H2Dialect
     # Disable Open Session in View
     # See https://vladmihalcea.com/the-open-session-in-view-anti-pattern/ for more details

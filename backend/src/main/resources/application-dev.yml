@@ -19,3 +19,8 @@ log:
   requests:
     enabled: true
     include-headers: true
+
+# Springdoc OpenAPI configurations
+springdoc:
+  swagger-ui:
+    enabled: true

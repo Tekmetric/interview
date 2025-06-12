@@ -1,6 +1,6 @@
 # Server configuration for Tekmetric Backend
 server:
-  port: 20001
+  port: ${SERVER_PORT:8080}
   http2:
     enabled: true
   compression:
@@ -83,3 +83,14 @@ log:
     # Log incoming HTTP requests for any API endpoints
     enabled: ${LOG_REQUESTS_ENABLED:false}
     include-headers: ${LOG_REQUESTS_INCLUDE_HEADERS:false}
+
+# OpenAPI / Swagger configurations
+springdoc:
+  show-actuator: false
+  swagger-ui:
+    # Dısabled by default, can be enabled via environment variable or via dev profile
+    enabled: ${SWAGGER_ENABLED:false}
+    # Disable swagger-ui default (petstore) url:
+    disable-swagger-default-url: true
+    validator-url: none
+    use-root-path: true

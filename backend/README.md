@@ -33,7 +33,9 @@ docker build -t tekmetric-backend-interview:latest .
 To run the project, execute the following command in the backend directory:
 
 ```bash
-TODO
+DB_PASSWORD=password API_PASSWORD=password ./mvnw spring-boot:run 
+# Or if you want to use the dev profile to enable H2 Console and Swagger UI and set the default database and API user passwords:
+SPRING_PROFILES_ACTIVE=dev ./mvnw spring-boot:run
 ```
 
 ### Docker Container
@@ -41,7 +43,7 @@ TODO
 To run the project in a Docker container, execute the following command in the backend directory:
 
 ```bash
-docker run -p 8080:8080 -e DB_PASSWORD=password -e USER_PASSWORD=password tekmetric-backend-interview:latest
+docker run -p 8080:8080 -e DB_PASSWORD=password -e API_PASSWORD=password tekmetric-backend-interview:latest
 # Or if you want to use the dev profile to enable H2 Console and Swagger UI and set the default database and API user passwords:
 docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev tekmetric-backend-interview:latest
 ```
@@ -87,18 +89,22 @@ To run the project, execute the following command in the backend directory:
 
 ## Health Check & Info Endpoints
 
-TODO
+* **/actuator/info**: Info about service version and git commit id.
+* **/actuator/health/liveness**: Endpoint for liveness probe (can be used by k8s).
+* **/actuator/health/readiness**: Endpoint for readiness probe (can be used by k8s and docker-compose).
+* **/actuator/metrics**: Lists all metric names.
+* **/actuator/metrics/{metricName}**: Shows specified metric (can be used by prometheus).
 
-## ER Diagram
-
-![ER diagram](./docs/er-diagram.png)
-
-## Future Improvements
+## Possible Future Improvements
 
 In order to keep the interview demo project simple and constrained to a specific timeline, 
-some features have been left out or simplified and could be improved in the future:
+some features have been intentionally left out or simplified and could be improved if the project were to be developed for a real-world application:
 
 - To ensure discoverability in the REST API, HATEOAS support should be considered.
 - To prevent "lost updates" in the database, the persistence layer should use versioning (i.e. version column) if necessary.
 - Migration to a more robust database (e.g. PostgreSQL, MySQL) should be considered.
-- To further minimize the Docker image size, the project might be built using native compilation or carefully picking modules/JRE via JLink.
+- After a database migration, the project may use Testcontainers to run integration tests against the database.
+- To further optimize the Docker image size, the image might be built using native compilation or carefully picking modules/JRE via JLink.
+- Logging should be further improved to output structured logs in JSON format, which is more suitable for log aggregation and analysis (e.g. ELK or Grafana stacks)
+- REST API should be secured using OAuth2 or JWT authentication instead of basic authentication.
+- REST API versioning strategy should be reconsidered as URL-based versioning can become cumbersome in the long run.

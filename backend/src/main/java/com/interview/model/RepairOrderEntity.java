@@ -2,6 +2,7 @@ package com.interview.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -25,6 +26,7 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents a repair order entity in the system. Each repair order is associated with a vehicle
@@ -40,6 +42,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Builder
 @ToString(exclude = "vehicle") // Exclude to avoid lazy loading issues
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EntityListeners(AuditingEntityListener.class)
 public class RepairOrderEntity {
 
   @Id

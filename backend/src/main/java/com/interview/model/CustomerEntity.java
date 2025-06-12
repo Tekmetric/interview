@@ -3,6 +3,7 @@ package com.interview.model;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +26,7 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents a customer entity in the system. Each customer can have multiple vehicles and is
@@ -40,6 +42,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Builder
 @ToString(exclude = "vehicles") // Exclude to avoid lazy loading issues
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EntityListeners(AuditingEntityListener.class)
 public class CustomerEntity {
 
   @Id

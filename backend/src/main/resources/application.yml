@@ -13,6 +13,11 @@ spring:
     name: tekmetric-backend
     instance-id: ${spring.application.name}-${random.value}
 
+  security:
+    user:
+      name: ${API_USERNAME:sa}
+      password: ${API_PASSWORD}
+
   # Database-related configurations
   # Flyway is a useful tool used for database migrations in production-ready microservices.
   # Although we are using an in-memory H2 database for demo purposes,

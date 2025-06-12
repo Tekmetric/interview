@@ -1,6 +1,11 @@
 # Using "dev" profile enables development-specific
 # configurations such as more logging and test data in the database.
 spring:
+  security:
+    user:
+      # Set default password for the API user
+      password: ${API_PASSWORD:password} #gitleaks:allow
+
   sql:
     init:
       data-locations: optional:classpath:db/dev-data/data.sql
@@ -12,6 +17,8 @@ spring:
       # Enable H2 console for development purposes
       enabled: true
       path: /h2-console
+      settings:
+        trace: true
 
 # Log incoming HTTP requests for any RESTful API
 log:

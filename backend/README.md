@@ -12,7 +12,7 @@ It allows users to manage customer, vehicle and repair order records, including 
 
 ### Source Code
 
-To build the project source code, run the following command in the root directory:
+To build the project source code, run the following command in the backend directory:
 
 ```bash
 ./mvnw clean install
@@ -23,14 +23,14 @@ To build the project source code, run the following command in the root director
 To build the Docker image, run the following command in the backend directory:
 
 ```bash
-docker build -t tekmetric-backend-interview .
+docker build -t tekmetric-backend-interview:latest .
 ```
 
 ## Running the Project
 
 ### 
 
-To run the project, execute the following command in the root directory:
+To run the project, execute the following command in the backend directory:
 
 ```bash
 TODO
@@ -38,22 +38,25 @@ TODO
 
 ### Docker Container
 
-To run the project in a Docker container, execute the following command in the root directory:
+To run the project in a Docker container, execute the following command in the backend directory:
 
 ```bash
-docker run -p 8080:8080 tekmetric-backend-interview
+docker run -p 8080:8080 -e DB_PASSWORD=password -e USER_PASSWORD=password tekmetric-backend-interview:latest
+# Or if you want to use the dev profile to enable H2 Console and Swagger UI and set the default database and API user passwords:
+docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev tekmetric-backend-interview:latest
 ```
 
 ### Local Development Tools
 
 * Swagger URI is available at: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 * H2 Console is available at: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+* OpenAPI Specification is available at: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
 
-> Note: The H2 Console and the Swagger URI is only available in the "dev" profile.
+> Note: The H2 Console and the Swagger URI is **only** available in the "dev" profile or when running the project with the correct environment variables. Username is `sa` and the password is set via environment variables (default is `password` when "dev" profile is active).
 
 ## Running Tests
 
-To run the project, execute the following command in the root directory:
+To run the project, execute the following command in the backend directory:
 
 ```bash
 ./mvnw clean verify
@@ -61,7 +64,26 @@ To run the project, execute the following command in the root directory:
 
 ## Environment Variables
 
-TODO
+- `API_USERNAME`: The username for the default user. Default is `sa`.
+- `API_PASSWORD`: The password for the default user. Default is `password`.
+  This is required to run the project and automatically set as default value when using the dev profile.
+- `DB_USERNAME`: The username for the H2 database. Default is `sa`.
+- `DB_PASSWORD`: The password for the H2 database. Default is `password`. 
+  This is required to run the project and automatically set as default value when using the dev profile.
+- `SPRING_PROFILES_ACTIVE`: The active Spring profile. Default profile is configured for prod. 
+  Set to `dev` to enable H2 Console and Swagger UI.
+- `H2_CONSOLE_ENABLED`: Set to `true` to enable the H2 Console. Default is `false`. 
+  This is automatically enabled when the `dev` profile is active.
+- `SWAGGER_ENABLED`: Set to `true` to enable Swagger UI. Default is `false`. 
+  This is automatically enabled when the `dev` profile is active.
+- `SERVER_PORT`: The port on which the application will run. Default is `8080`. 
+  This can be set to any available port.
+- `LOG_BEAN_NAMES`: Set to `true` to log bean names at startup. Default is `false`. 
+  This can be useful for debugging purposes.
+- `LOG_REQUESTS_ENABLED`: Set to `true` to enable logging of HTTP requests. Default is `false`. 
+  This can be useful for debugging purposes.
+- `LOG_REQUESTS_INCLUDE_HEADERS`: Set to `true` to include headers in the request logs. Default is `false`. 
+  This can be useful for debugging purposes, but may expose sensitive information, so use with caution!
 
 ## Health Check & Info Endpoints
 
@@ -79,3 +101,4 @@ some features have been left out or simplified and could be improved in the futu
 - To ensure discoverability in the REST API, HATEOAS support should be considered.
 - To prevent "lost updates" in the database, the persistence layer should use versioning (i.e. version column) if necessary.
 - Migration to a more robust database (e.g. PostgreSQL, MySQL) should be considered.
+- To further minimize the Docker image size, the project might be built using native compilation or carefully picking modules/JRE via JLink.

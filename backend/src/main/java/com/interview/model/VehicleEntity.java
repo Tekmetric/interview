@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -34,10 +35,10 @@ import org.springframework.data.annotation.LastModifiedDate;
  * have multiple repair orders.
  */
 @Entity
-@Table(name = "vehicles",
-    uniqueConstraints = @UniqueConstraint(columnNames = "license_plate"))
+@Table(name = "vehicles")
 @Getter
 @Setter
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

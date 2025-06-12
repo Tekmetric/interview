@@ -12,10 +12,4 @@ public record VehicleResponseDTO(
     List<RepairOrderSummaryDTO> repairOrders
 ) {
 
-  // Factory method without repair orders (for basic responses)
-  public static VehicleResponseDTO withoutRepairOrders(Long id, String make, String model,
-      Integer year,
-      String licensePlate, CustomerSummaryDTO customer) {
-    return new VehicleResponseDTO(id, make, model, year, licensePlate, customer, null);
-  }
 }

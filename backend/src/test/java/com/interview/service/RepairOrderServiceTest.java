@@ -23,6 +23,7 @@ import com.interview.model.VehicleEntity;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.repository.VehicleRepository;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +64,7 @@ class RepairOrderServiceTest {
 
   @BeforeEach
   void setUp() {
-    LocalDateTime now = LocalDateTime.now();
+    OffsetDateTime now = OffsetDateTime.now();
 
     CustomerEntity customerEntity = CustomerEntity.builder()
         .id(1L)

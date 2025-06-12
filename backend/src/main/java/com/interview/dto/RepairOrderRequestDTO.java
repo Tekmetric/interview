@@ -22,8 +22,4 @@ public record RepairOrderRequestDTO(
     return new RepairOrderRequestDTO(vehicleId, description, status);
   }
 
-  // Factory method with default status
-  public static RepairOrderRequestDTO withDefaultStatus(Long vehicleId, String description) {
-    return new RepairOrderRequestDTO(vehicleId, description, "PENDING");
-  }
 }

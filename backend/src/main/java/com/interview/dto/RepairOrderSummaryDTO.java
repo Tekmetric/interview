@@ -1,13 +1,13 @@
 package com.interview.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public record RepairOrderSummaryDTO(
     Long id,
     String description,
     String status,
-    LocalDateTime createdDate,
-    LocalDateTime updatedDate
+    OffsetDateTime createdDate,
+    OffsetDateTime updatedDate
 ) {
 
 }

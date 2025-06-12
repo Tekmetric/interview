@@ -23,7 +23,6 @@ import com.interview.model.RepairOrderStatus;
 import com.interview.model.VehicleEntity;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.repository.VehicleRepository;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -317,8 +316,8 @@ class RepairOrderServiceTest {
     @DisplayName("Should return repair orders by date range")
     void shouldReturnRepairOrdersByDateRange() {
       // Given
-      LocalDateTime startDate = LocalDateTime.now().minusDays(7);
-      LocalDateTime endDate = LocalDateTime.now();
+      OffsetDateTime startDate = OffsetDateTime.now().minusDays(7);
+      OffsetDateTime endDate = OffsetDateTime.now();
       List<RepairOrderEntity> entities = Collections.singletonList(repairOrderEntity);
       List<RepairOrderSummaryDTO> summaryDTOs = Collections.singletonList(repairOrderSummaryDTO);
 
@@ -384,7 +383,7 @@ class RepairOrderServiceTest {
       List<RepairOrderSummaryDTO> summaryDTOs = Collections.singletonList(repairOrderSummaryDTO);
 
       when(repairOrderRepository.findByStatusAndCreatedDateAfter(eq(status),
-          any(LocalDateTime.class))).thenReturn(entities);
+          any(OffsetDateTime.class))).thenReturn(entities);
       when(repairOrderMapper.toSummaryDTOList(entities)).thenReturn(summaryDTOs);
 
       // When
@@ -394,7 +393,7 @@ class RepairOrderServiceTest {
       // Then
       assertThat(result).hasSize(1);
       verify(repairOrderRepository).findByStatusAndCreatedDateAfter(eq(status),
-          any(LocalDateTime.class));
+          any(OffsetDateTime.class));
       verify(repairOrderMapper).toSummaryDTOList(entities);
     }
   }

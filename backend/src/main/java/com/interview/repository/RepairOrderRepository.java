@@ -2,7 +2,7 @@ package com.interview.repository;
 
 import com.interview.model.RepairOrderEntity;
 import com.interview.model.RepairOrderStatus;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,12 +28,12 @@ public interface RepairOrderRepository extends JpaRepository<RepairOrderEntity, 
   List<RepairOrderEntity> findByCustomerId(@Param("customerId") Long customerId);
 
   @Query("SELECT r FROM RepairOrderEntity r WHERE r.createdDate BETWEEN :startDate AND :endDate")
-  List<RepairOrderEntity> findByCreatedDateBetween(@Param("startDate") LocalDateTime startDate,
-      @Param("endDate") LocalDateTime endDate);
+  List<RepairOrderEntity> findByCreatedDateBetween(@Param("startDate") OffsetDateTime startDate,
+      @Param("endDate") OffsetDateTime endDate);
 
   @Query("SELECT r FROM RepairOrderEntity r WHERE r.updatedDate BETWEEN :startDate AND :endDate")
-  List<RepairOrderEntity> findByUpdatedDateBetween(@Param("startDate") LocalDateTime startDate,
-      @Param("endDate") LocalDateTime endDate);
+  List<RepairOrderEntity> findByUpdatedDateBetween(@Param("startDate") OffsetDateTime startDate,
+      @Param("endDate") OffsetDateTime endDate);
 
   @Query("SELECT r FROM RepairOrderEntity r JOIN FETCH r.vehicle v JOIN FETCH v.customer WHERE r.id = :id")
   Optional<RepairOrderEntity> findByIdWithVehicleAndCustomer(@Param("id") Long id);
@@ -43,7 +43,7 @@ public interface RepairOrderRepository extends JpaRepository<RepairOrderEntity, 
 
   @Query("SELECT r FROM RepairOrderEntity r WHERE r.status = :status AND r.createdDate >= :date")
   List<RepairOrderEntity> findByStatusAndCreatedDateAfter(@Param("status") RepairOrderStatus status,
-      @Param("date") LocalDateTime date);
+      @Param("date") OffsetDateTime date);
 
   @Query("SELECT COUNT(r) FROM RepairOrderEntity r WHERE r.vehicle.id = :vehicleId")
   long countByVehicleId(@Param("vehicleId") Long vehicleId);

@@ -6,7 +6,7 @@ import com.interview.dto.RepairOrderSummaryDTO;
 import com.interview.model.RepairOrderStatus;
 import com.interview.service.RepairOrderService;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -114,8 +114,8 @@ public class RepairOrderController {
 
   @GetMapping("/date-range")
   public ResponseEntity<List<RepairOrderSummaryDTO>> getRepairOrdersByDateRange(
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDate,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDate) {
     log.info("GET /api/v1/repair-orders/date-range - Fetching repair orders between {} and {}",
         startDate, endDate);
     List<RepairOrderSummaryDTO> repairOrders = repairOrderService.getRepairOrdersByDateRange(
@@ -125,8 +125,8 @@ public class RepairOrderController {
 
   @GetMapping("/updated-date-range")
   public ResponseEntity<List<RepairOrderSummaryDTO>> getRepairOrdersByUpdatedDateRange(
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDate,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDate) {
     log.info(
         "GET /api/v1/repair-orders/updated-date-range - Fetching repair orders updated between {} and {}",
         startDate, endDate);

@@ -10,7 +10,7 @@ import com.interview.model.RepairOrderStatus;
 import com.interview.model.VehicleEntity;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.repository.VehicleRepository;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,8 +94,8 @@ public class RepairOrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<RepairOrderSummaryDTO> getRepairOrdersByDateRange(LocalDateTime startDate,
-      LocalDateTime endDate) {
+  public List<RepairOrderSummaryDTO> getRepairOrdersByDateRange(OffsetDateTime startDate,
+      OffsetDateTime endDate) {
     log.debug("Fetching repair orders created between {} and {}", startDate, endDate);
     List<RepairOrderEntity> repairOrders = repairOrderRepository.findByCreatedDateBetween(startDate,
         endDate);
@@ -103,8 +103,8 @@ public class RepairOrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<RepairOrderSummaryDTO> getRepairOrdersByUpdatedDateRange(LocalDateTime startDate,
-      LocalDateTime endDate) {
+  public List<RepairOrderSummaryDTO> getRepairOrdersByUpdatedDateRange(OffsetDateTime startDate,
+      OffsetDateTime endDate) {
     log.debug("Fetching repair orders updated between {} and {}", startDate, endDate);
     List<RepairOrderEntity> repairOrders = repairOrderRepository.findByUpdatedDateBetween(startDate,
         endDate);
@@ -128,7 +128,7 @@ public class RepairOrderService {
   @Transactional(readOnly = true)
   public List<RepairOrderSummaryDTO> getRecentRepairOrdersByStatus(RepairOrderStatus status, int days) {
     log.debug("Fetching repair orders with status {} from last {} days", status, days);
-    LocalDateTime date = LocalDateTime.now().minusDays(days);
+    OffsetDateTime date = OffsetDateTime.now().minusDays(days);
     List<RepairOrderEntity> repairOrders = repairOrderRepository.findByStatusAndCreatedDateAfter(
         status, date);
     return repairOrderMapper.toSummaryDTOList(repairOrders);

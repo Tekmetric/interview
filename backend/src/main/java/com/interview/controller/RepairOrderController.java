@@ -1,5 +1,6 @@
 package com.interview.controller;
 
+import com.interview.dto.PaginationRequestDTO;
 import com.interview.dto.RepairOrderRequestDTO;
 import com.interview.dto.RepairOrderResponseDTO;
 import com.interview.dto.RepairOrderSummaryDTO;
@@ -51,17 +52,14 @@ public class RepairOrderController {
 
   @GetMapping("/paginated")
   public ResponseEntity<Page<RepairOrderSummaryDTO>> getAllRepairOrdersPaginated(
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "createdDate") String sortBy,
-      @RequestParam(defaultValue = "desc") String sortDir) {
+      @Valid PaginationRequestDTO pagination) {
 
     log.info("GET /api/v1/repair-orders/paginated - page: {}, size: {}, sortBy: {}, sortDir: {}",
-        page, size, sortBy, sortDir);
+        pagination.getPage(), pagination.getSize(), pagination.getSortBy(), pagination.getSortDir());
 
-    Sort sort = sortDir.equalsIgnoreCase("desc") ?
-        Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-    Pageable pageable = PageRequest.of(page, size, sort);
+    Sort sort = pagination.getSortDir().equalsIgnoreCase("desc") ?
+        Sort.by(pagination.getSortBy()).descending() : Sort.by(pagination.getSortBy()).ascending();
+    Pageable pageable = PageRequest.of(pagination.getPage(), pagination.getSize(), sort);
 
     Page<RepairOrderSummaryDTO> repairOrders = repairOrderService.getAllRepairOrders(pageable);
     return ResponseEntity.ok(repairOrders);

@@ -1,5 +1,6 @@
 package com.interview.controller;
 
+import com.interview.dto.PaginationRequestDTO;
 import com.interview.dto.VehicleRequestDTO;
 import com.interview.dto.VehicleResponseDTO;
 import com.interview.dto.VehicleSummaryDTO;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -47,17 +47,14 @@ public class VehicleController {
 
   @GetMapping("/paginated")
   public ResponseEntity<Page<VehicleSummaryDTO>> getAllVehiclesPaginated(
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "id") String sortBy,
-      @RequestParam(defaultValue = "asc") String sortDir) {
+      @Valid PaginationRequestDTO pagination) {
 
     log.info("GET /api/v1/vehicles/paginated - page: {}, size: {}, sortBy: {}, sortDir: {}",
-        page, size, sortBy, sortDir);
+        pagination.getPage(), pagination.getSize(), pagination.getSortBy(), pagination.getSortDir());
 
-    Sort sort = sortDir.equalsIgnoreCase("desc") ?
-        Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-    Pageable pageable = PageRequest.of(page, size, sort);
+    Sort sort = pagination.getSortDir().equalsIgnoreCase("desc") ?
+        Sort.by(pagination.getSortBy()).descending() : Sort.by(pagination.getSortBy()).ascending();
+    Pageable pageable = PageRequest.of(pagination.getPage(), pagination.getSize(), sort);
 
     Page<VehicleSummaryDTO> vehicles = vehicleService.getAllVehicles(pageable);
     return ResponseEntity.ok(vehicles);

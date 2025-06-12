@@ -51,10 +51,10 @@ public interface RepairOrderRepository extends JpaRepository<RepairOrderEntity, 
   @Query("SELECT COUNT(r) FROM RepairOrderEntity r WHERE r.vehicle.customer.id = :customerId")
   long countByCustomerId(@Param("customerId") Long customerId);
 
-  @Query("SELECT r FROM RepairOrderEntity r WHERE r.status IN (0, 1) ORDER BY r.updatedDate DESC")
+  @Query("SELECT r FROM RepairOrderEntity r WHERE r.status IN (com.interview.model.RepairOrderStatus.PENDING, com.interview.model.RepairOrderStatus.IN_PROGRESS) ORDER BY r.updatedDate DESC")
   List<RepairOrderEntity> findActiveRepairOrders();
 
-  @Query("SELECT r FROM RepairOrderEntity r WHERE r.status = 2 ORDER BY r.updatedDate DESC")
+  @Query("SELECT r FROM RepairOrderEntity r WHERE r.status = com.interview.model.RepairOrderStatus.COMPLETED ORDER BY r.updatedDate DESC")
   List<RepairOrderEntity> findCompletedRepairOrdersOrderByUpdatedDate();
 
 }

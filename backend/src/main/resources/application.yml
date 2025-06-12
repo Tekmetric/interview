@@ -27,7 +27,7 @@ spring:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
     username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:password}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       # Validate the database schema based on the entity classes on startup (DB migration is handled by Flyway)

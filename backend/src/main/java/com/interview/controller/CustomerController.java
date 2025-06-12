@@ -5,6 +5,9 @@ import com.interview.dto.CustomerResponseDTO;
 import com.interview.dto.CustomerSummaryDTO;
 import com.interview.dto.PaginationRequestDTO;
 import com.interview.service.CustomerService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 @CrossOrigin(origins = "*")
+@OpenAPIDefinition(info = @Info(title = "Customer API", version = "v1"))
+@SecurityRequirement(name = "basicAuth")
 public class CustomerController {
 
   private final CustomerService customerService;

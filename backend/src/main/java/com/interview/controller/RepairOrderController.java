@@ -6,6 +6,9 @@ import com.interview.dto.RepairOrderResponseDTO;
 import com.interview.dto.RepairOrderSummaryDTO;
 import com.interview.model.RepairOrderStatus;
 import com.interview.service.RepairOrderService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -39,6 +42,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 @CrossOrigin(origins = "*")
+@OpenAPIDefinition(info = @Info(title = "Repair Order API", version = "v1"))
+@SecurityRequirement(name = "basicAuth")
 public class RepairOrderController {
 
   private final RepairOrderService repairOrderService;

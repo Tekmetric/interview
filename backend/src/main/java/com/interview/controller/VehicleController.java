@@ -5,6 +5,9 @@ import com.interview.dto.VehicleRequestDTO;
 import com.interview.dto.VehicleResponseDTO;
 import com.interview.dto.VehicleSummaryDTO;
 import com.interview.service.VehicleService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 @CrossOrigin(origins = "*")
+@OpenAPIDefinition(info = @Info(title = "Vehicle API", version = "v1"))
+@SecurityRequirement(name = "basicAuth")
 public class VehicleController {
 
   private final VehicleService vehicleService;

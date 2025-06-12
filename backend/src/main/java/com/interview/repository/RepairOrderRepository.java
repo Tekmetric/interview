@@ -57,4 +57,5 @@ public interface RepairOrderRepository extends JpaRepository<RepairOrderEntity, 
   @Query("SELECT r FROM RepairOrderEntity r WHERE r.status = com.interview.model.RepairOrderStatus.COMPLETED ORDER BY r.updatedDate DESC")
   List<RepairOrderEntity> findCompletedRepairOrdersOrderByUpdatedDate();
 
+  List<RepairOrderEntity> findAllByOrderById();
 }

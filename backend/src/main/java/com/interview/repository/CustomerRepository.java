@@ -1,6 +1,7 @@
 package com.interview.repository;
 
 import com.interview.model.CustomerEntity;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,5 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> 
   @Query("SELECT c FROM CustomerEntity c LEFT JOIN FETCH c.vehicles WHERE c.id = :id")
   Optional<CustomerEntity> findByIdWithVehicles(@Param("id") Long id);
 
+  List<CustomerEntity> findAllByOrderById();
 }

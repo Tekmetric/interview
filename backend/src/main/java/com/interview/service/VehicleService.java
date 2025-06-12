@@ -36,7 +36,7 @@ public class VehicleService {
   @Transactional(readOnly = true)
   public List<VehicleSummaryDTO> getAllVehicles() {
     log.debug("Fetching all vehicles");
-    List<VehicleEntity> vehicles = vehicleRepository.findAll();
+    List<VehicleEntity> vehicles = vehicleRepository.findAllByOrderById();
     return vehicleMapper.toSummaryDTOList(vehicles);
   }
 

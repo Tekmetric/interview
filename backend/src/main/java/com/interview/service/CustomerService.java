@@ -32,7 +32,7 @@ public class CustomerService {
   @Transactional(readOnly = true)
   public List<CustomerSummaryDTO> getAllCustomers() {
     log.debug("Fetching all customers");
-    List<CustomerEntity> customers = customerRepository.findAll();
+    List<CustomerEntity> customers = customerRepository.findAllByOrderById();
     return customerMapper.toSummaryDTOList(customers);
   }
 

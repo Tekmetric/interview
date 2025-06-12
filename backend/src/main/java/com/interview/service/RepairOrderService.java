@@ -36,7 +36,7 @@ public class RepairOrderService {
   @Transactional(readOnly = true)
   public List<RepairOrderSummaryDTO> getAllRepairOrders() {
     log.debug("Fetching all repair orders");
-    List<RepairOrderEntity> repairOrders = repairOrderRepository.findAll();
+    List<RepairOrderEntity> repairOrders = repairOrderRepository.findAllByOrderById();
     return repairOrderMapper.toSummaryDTOList(repairOrders);
   }
 

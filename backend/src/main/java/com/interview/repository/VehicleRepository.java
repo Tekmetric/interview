@@ -30,4 +30,6 @@ public interface VehicleRepository extends JpaRepository<VehicleEntity, Long> {
   @Query("SELECT COUNT(v) FROM VehicleEntity v WHERE v.customer.id = :customerId")
   long countByCustomerId(@Param("customerId") Long customerId);
 
+  List<VehicleEntity> findAllByOrderById();
+
 }

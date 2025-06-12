@@ -1,6 +1,7 @@
 package com.interview.repository;
 
 import com.interview.model.RepairOrderEntity;
+import com.interview.model.RepairOrderStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public interface RepairOrderRepository extends JpaRepository<RepairOrderEntity, 
 
   List<RepairOrderEntity> findByVehicleId(Long vehicleId);
 
-  List<RepairOrderEntity> findByStatus(String status);
+  List<RepairOrderEntity> findByStatus(RepairOrderStatus status);
 
   List<RepairOrderEntity> findByDescriptionContainingIgnoreCase(String description);
 
@@ -41,23 +42,19 @@ public interface RepairOrderRepository extends JpaRepository<RepairOrderEntity, 
   List<RepairOrderEntity> findByVehicleLicensePlate(@Param("licensePlate") String licensePlate);
 
   @Query("SELECT r FROM RepairOrderEntity r WHERE r.status = :status AND r.createdDate >= :date")
-  List<RepairOrderEntity> findByStatusAndCreatedDateAfter(@Param("status") String status,
+  List<RepairOrderEntity> findByStatusAndCreatedDateAfter(@Param("status") RepairOrderStatus status,
       @Param("date") LocalDateTime date);
 
   @Query("SELECT COUNT(r) FROM RepairOrderEntity r WHERE r.vehicle.id = :vehicleId")
   long countByVehicleId(@Param("vehicleId") Long vehicleId);
 
-  @Query("SELECT COUNT(r) FROM RepairOrderEntity r WHERE r.status = :status")
-  long countByStatus(@Param("status") String status);
-
   @Query("SELECT COUNT(r) FROM RepairOrderEntity r WHERE r.vehicle.customer.id = :customerId")
   long countByCustomerId(@Param("customerId") Long customerId);
 
-  // Common status queries
-  @Query("SELECT r FROM RepairOrderEntity r WHERE r.status IN ('PENDING', 'IN_PROGRESS')")
+  @Query("SELECT r FROM RepairOrderEntity r WHERE r.status IN (0, 1) ORDER BY r.updatedDate DESC")
   List<RepairOrderEntity> findActiveRepairOrders();
 
-  @Query("SELECT r FROM RepairOrderEntity r WHERE r.status = 'COMPLETED' ORDER BY r.updatedDate DESC")
+  @Query("SELECT r FROM RepairOrderEntity r WHERE r.status = 2 ORDER BY r.updatedDate DESC")
   List<RepairOrderEntity> findCompletedRepairOrdersOrderByUpdatedDate();
 
 }

@@ -6,6 +6,7 @@ import com.interview.dto.RepairOrderSummaryDTO;
 import com.interview.exception.ResourceNotFoundException;
 import com.interview.mapper.RepairOrderMapper;
 import com.interview.model.RepairOrderEntity;
+import com.interview.model.RepairOrderStatus;
 import com.interview.model.VehicleEntity;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.repository.VehicleRepository;
@@ -70,7 +71,7 @@ public class RepairOrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<RepairOrderSummaryDTO> getRepairOrdersByStatus(String status) {
+  public List<RepairOrderSummaryDTO> getRepairOrdersByStatus(RepairOrderStatus status) {
     log.debug("Fetching repair orders by status: {}", status);
     List<RepairOrderEntity> repairOrders = repairOrderRepository.findByStatus(status);
     return repairOrderMapper.toSummaryDTOList(repairOrders);
@@ -125,7 +126,7 @@ public class RepairOrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<RepairOrderSummaryDTO> getRecentRepairOrdersByStatus(String status, int days) {
+  public List<RepairOrderSummaryDTO> getRecentRepairOrdersByStatus(RepairOrderStatus status, int days) {
     log.debug("Fetching repair orders with status {} from last {} days", status, days);
     LocalDateTime date = LocalDateTime.now().minusDays(days);
     List<RepairOrderEntity> repairOrders = repairOrderRepository.findByStatusAndCreatedDateAfter(
@@ -170,7 +171,7 @@ public class RepairOrderService {
     return repairOrderMapper.toResponseDTO(updatedRepairOrder);
   }
 
-  public RepairOrderResponseDTO updateRepairOrderStatus(Long id, String status) {
+  public RepairOrderResponseDTO updateRepairOrderStatus(Long id, RepairOrderStatus status) {
     log.debug("Updating repair order status with id: {} to status: {}", id, status);
 
     RepairOrderEntity existingRepairOrder = repairOrderRepository.findByIdWithVehicleAndCustomer(id)

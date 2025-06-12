@@ -3,6 +3,7 @@ package com.interview.controller;
 import com.interview.dto.RepairOrderRequestDTO;
 import com.interview.dto.RepairOrderResponseDTO;
 import com.interview.dto.RepairOrderSummaryDTO;
+import com.interview.model.RepairOrderStatus;
 import com.interview.service.RepairOrderService;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
@@ -95,7 +96,7 @@ public class RepairOrderController {
 
   @GetMapping("/status/{status}")
   public ResponseEntity<List<RepairOrderSummaryDTO>> getRepairOrdersByStatus(
-      @PathVariable String status) {
+      @PathVariable RepairOrderStatus status) {
     log.info("GET /api/v1/repair-orders/status/{} - Fetching repair orders by status", status);
     List<RepairOrderSummaryDTO> repairOrders = repairOrderService.getRepairOrdersByStatus(status);
     return ResponseEntity.ok(repairOrders);
@@ -150,7 +151,7 @@ public class RepairOrderController {
 
   @GetMapping("/recent")
   public ResponseEntity<List<RepairOrderSummaryDTO>> getRecentRepairOrdersByStatus(
-      @RequestParam String status,
+      @RequestParam RepairOrderStatus status,
       @RequestParam(defaultValue = "30") int days) {
     log.info(
         "GET /api/v1/repair-orders/recent - Fetching recent repair orders with status {} from last {} days",
@@ -183,7 +184,7 @@ public class RepairOrderController {
   @PatchMapping("/{id}/status")
   public ResponseEntity<RepairOrderResponseDTO> updateRepairOrderStatus(
       @PathVariable Long id,
-      @RequestParam String status) {
+      @RequestParam RepairOrderStatus status) {
     log.info("PATCH /api/v1/repair-orders/{}/status - Updating repair order status to: {}", id,
         status);
     RepairOrderResponseDTO updatedRepairOrder = repairOrderService.updateRepairOrderStatus(id,

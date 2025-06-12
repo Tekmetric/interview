@@ -58,7 +58,7 @@ public class RepairOrderEntity {
   @NotBlank(message = "Status is required")
   @Size(max = 50, message = "Status must not exceed 50 characters")
   @Column(nullable = false, length = 50)
-  private String status;
+  private RepairOrderStatus status;
 
   @CreatedDate
   @Column(name = "created_date", nullable = false, updatable = false)

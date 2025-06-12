@@ -19,6 +19,7 @@ import com.interview.exception.ResourceNotFoundException;
 import com.interview.mapper.RepairOrderMapper;
 import com.interview.model.CustomerEntity;
 import com.interview.model.RepairOrderEntity;
+import com.interview.model.RepairOrderStatus;
 import com.interview.model.VehicleEntity;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.repository.VehicleRepository;
@@ -85,7 +86,7 @@ class RepairOrderServiceTest {
         .id(1L)
         .vehicle(vehicleEntity)
         .description("Oil change and filter replacement")
-        .status("PENDING")
+        .status(RepairOrderStatus.PENDING)
         .createdDate(now)
         .updatedDate(now)
         .build();
@@ -93,7 +94,7 @@ class RepairOrderServiceTest {
     repairOrderRequestDTO = new RepairOrderRequestDTO(
         1L, // vehicleId
         "Oil change and filter replacement",
-        "PENDING"
+        RepairOrderStatus.PENDING
     );
 
     CustomerSummaryDTO customerSummaryDTO = new CustomerSummaryDTO(
@@ -116,7 +117,7 @@ class RepairOrderServiceTest {
     repairOrderResponseDTO = new RepairOrderResponseDTO(
         1L,
         "Oil change and filter replacement",
-        "PENDING",
+        RepairOrderStatus.PENDING,
         now,
         now,
         vehicleDetailsDTO
@@ -125,7 +126,7 @@ class RepairOrderServiceTest {
     repairOrderSummaryDTO = new RepairOrderSummaryDTO(
         1L,
         "Oil change and filter replacement",
-        "PENDING",
+        RepairOrderStatus.PENDING,
         now,
         now
     );
@@ -253,7 +254,7 @@ class RepairOrderServiceTest {
     @DisplayName("Should return repair orders by status")
     void shouldReturnRepairOrdersByStatus() {
       // Given
-      String status = "PENDING";
+      RepairOrderStatus status = RepairOrderStatus.PENDING;
       List<RepairOrderEntity> entities = Collections.singletonList(repairOrderEntity);
       List<RepairOrderSummaryDTO> summaryDTOs = Collections.singletonList(repairOrderSummaryDTO);
 
@@ -377,7 +378,7 @@ class RepairOrderServiceTest {
     @DisplayName("Should return recent repair orders by status")
     void shouldReturnRecentRepairOrdersByStatus() {
       // Given
-      String status = "PENDING";
+      RepairOrderStatus status = RepairOrderStatus.PENDING;
       int days = 7;
       List<RepairOrderEntity> entities = Collections.singletonList(repairOrderEntity);
       List<RepairOrderSummaryDTO> summaryDTOs = Collections.singletonList(repairOrderSummaryDTO);
@@ -436,7 +437,7 @@ class RepairOrderServiceTest {
       RepairOrderRequestDTO updateRequest = new RepairOrderRequestDTO(
           1L,
           "Updated description",
-          "IN_PROGRESS"
+          RepairOrderStatus.IN_PROGRESS
       );
 
       when(repairOrderRepository.findByIdWithVehicleAndCustomer(1L)).thenReturn(
@@ -460,7 +461,7 @@ class RepairOrderServiceTest {
     @DisplayName("Should throw exception when repair order to update not found")
     void shouldThrowExceptionWhenRepairOrderToUpdateNotFound() {
       // Given
-      RepairOrderRequestDTO updateRequest = new RepairOrderRequestDTO(1L, "Updated", "IN_PROGRESS");
+      RepairOrderRequestDTO updateRequest = new RepairOrderRequestDTO(1L, "Updated", RepairOrderStatus.IN_PROGRESS);
       when(repairOrderRepository.findByIdWithVehicleAndCustomer(1L)).thenReturn(Optional.empty());
 
       // When & Then
@@ -476,7 +477,7 @@ class RepairOrderServiceTest {
     @DisplayName("Should update repair order status successfully")
     void shouldUpdateRepairOrderStatusSuccessfully() {
       // Given
-      String newStatus = "COMPLETED";
+      RepairOrderStatus newStatus = RepairOrderStatus.COMPLETED;
       when(repairOrderRepository.findByIdWithVehicleAndCustomer(1L)).thenReturn(
           Optional.of(repairOrderEntity));
       when(repairOrderRepository.save(repairOrderEntity)).thenReturn(repairOrderEntity);

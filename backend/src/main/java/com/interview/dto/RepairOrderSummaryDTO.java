@@ -1,11 +1,12 @@
 package com.interview.dto;
 
+import com.interview.model.RepairOrderStatus;
 import java.time.OffsetDateTime;
 
 public record RepairOrderSummaryDTO(
     Long id,
     String description,
-    String status,
+    RepairOrderStatus status,
     OffsetDateTime createdDate,
     OffsetDateTime updatedDate
 ) {

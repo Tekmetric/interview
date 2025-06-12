@@ -1,9 +1,9 @@
 # Using "dev" profile enables development-specific
 # configurations such as more logging and test data in the database.
 spring:
-  flyway:
-    enabled: true
-    locations: classpath:db/migration,classpath:db/dev-migration
+  sql:
+    init:
+      data-locations: optional:classpath:db/dev-data/data.sql
   datasource:
     # Set default password for H2 database
     password: ${DB_PASSWORD:password} #gitleaks:allow

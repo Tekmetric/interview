@@ -5,10 +5,13 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * Global exception handler for managing exceptions across the application. This class handles
@@ -80,6 +83,42 @@ public class GlobalExceptionHandler {
         "Validation Failed",
         "Invalid input data",
         errors
+    );
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidParameterExceptions(
+      MethodArgumentTypeMismatchException ex) {
+    log.error("Invalid parameter error: {}", ex.getMessage());
+    ErrorResponse error = ErrorResponse.of(
+        HttpStatus.BAD_REQUEST.value(),
+        "Invalid Parameter",
+        ex.getMessage()
+    );
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidPayloadExceptions(
+      HttpMessageNotReadableException ex) {
+    log.error("Invalid payload error: {}", ex.getMessage());
+    ErrorResponse error = ErrorResponse.of(
+        HttpStatus.BAD_REQUEST.value(),
+        "Invalid Payload",
+        ex.getMessage()
+    );
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+  }
+
+  @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidContentTypeExceptions(
+      HttpMediaTypeNotSupportedException ex) {
+    log.error("Invalid content type error: {}", ex.getMessage());
+    ErrorResponse error = ErrorResponse.of(
+        HttpStatus.BAD_REQUEST.value(),
+        "Invalid Content Type",
+        ex.getMessage()
     );
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
   }

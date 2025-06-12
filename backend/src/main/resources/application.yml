@@ -29,7 +29,7 @@ spring:
     hikari:
       connection-timeout: 10000 # 10 seconds
     # Ideally we should use an external real database in production!
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:testdb;DATABASE_TO_UPPER=false
     driverClassName: org.h2.Driver
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD}
@@ -41,6 +41,10 @@ spring:
     # Disable Open Session in View
     # See https://vladmihalcea.com/the-open-session-in-view-anti-pattern/ for more details
     open-in-view: false
+    properties:
+      hibernate:
+        # To overcome the reserved keyword issues with H2 database
+        "globally_quoted_identifiers": "true"
 
   # Spring Actuator configurations
   management:

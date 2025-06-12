@@ -41,6 +41,11 @@
           <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
           <version>${springdoc.version}</version>
         </dependency>
+        <dependency>
+          <groupId>com.github.gavlyukovskiy</groupId>
+          <artifactId>datasource-proxy-spring-boot-starter</artifactId>
+          <version>${ds-proxy-spring-boot-starter.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

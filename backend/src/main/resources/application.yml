@@ -94,3 +94,18 @@ springdoc:
     disable-swagger-default-url: true
     validator-url: none
     use-root-path: true
+
+# Log database queries with parameters via a datasource proxy
+# This is useful for debugging and performance analysis and a better alternative to using Hibernate's built-in logging
+# See https://vladmihalcea.com/log-sql-spring-boot/ for more details
+decorator:
+  datasource:
+    datasource-proxy:
+      slow-query:
+        enable-logging: true
+        log-level: WARN
+        threshold: 1
+      query:
+        enable-logging: true
+        log-level: DEBUG
+      logging: slf4j

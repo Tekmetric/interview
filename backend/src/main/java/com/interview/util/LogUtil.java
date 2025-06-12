@@ -14,10 +14,6 @@ public class LogUtil {
     // Private constructor to prevent instantiation
   }
 
-  public static String formatLogMessage(String message, Object... args) {
-    return String.format(message, args);
-  }
-
   /**
    * Shamelessly copied from JHipster many years ago and I still frequently use this as it's very
    * helpful considering the same app can be run in very different environments. Logs the

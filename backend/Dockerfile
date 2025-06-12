@@ -1,0 +1,24 @@
+# Stage 1: Build the application
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+WORKDIR /app
+
+# Copy only pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copy the rest of the source code.
+# We use docker layer caching to avoid re-downloading dependencies(pom.xml) if they haven't changed.
+COPY . .
+RUN mvn clean install -DskipTests -DskipIT -Dspotless.skip=true
+
+# Stage 2: Runtime image
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+
+ENV JAVA_OPTS="-Xms512m -Xmx2g -XX:+UseContainerSupport"
+
+# Only copy the jar file from the build stage
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+
+CMD ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

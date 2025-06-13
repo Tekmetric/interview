@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RepairOrderRepository extends JpaRepository<RepairOrderEntity, Long> {
 
-  List<RepairOrderEntity> findByVehicleId(Long vehicleId);
+  List<RepairOrderEntity> findByVehicleIdOrderById(Long vehicleId);
 
   List<RepairOrderEntity> findByStatus(RepairOrderStatus status);
 

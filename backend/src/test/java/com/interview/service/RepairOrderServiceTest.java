@@ -215,7 +215,7 @@ class RepairOrderServiceTest {
       List<RepairOrderEntity> entities = Collections.singletonList(repairOrderEntity);
       List<RepairOrderSummaryDTO> summaryDTOs = Collections.singletonList(repairOrderSummaryDTO);
 
-      when(repairOrderRepository.findByVehicleId(vehicleId)).thenReturn(entities);
+      when(repairOrderRepository.findByVehicleIdOrderById(vehicleId)).thenReturn(entities);
       when(repairOrderMapper.toSummaryDTOList(entities)).thenReturn(summaryDTOs);
 
       // When
@@ -224,7 +224,7 @@ class RepairOrderServiceTest {
       // Then
       assertThat(result).hasSize(1);
       assertThat(result.getFirst()).isEqualTo(repairOrderSummaryDTO);
-      verify(repairOrderRepository).findByVehicleId(vehicleId);
+      verify(repairOrderRepository).findByVehicleIdOrderById(vehicleId);
       verify(repairOrderMapper).toSummaryDTOList(entities);
     }
 

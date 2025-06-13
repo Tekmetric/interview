@@ -26,10 +26,4 @@ public record VehicleRequestDTO(
     String licensePlate
 ) {
 
-  // Factory method for creating with required fields
-  public static VehicleRequestDTO of(Long customerId, String make, String model, Integer year,
-      String licensePlate) {
-    return new VehicleRequestDTO(customerId, make, model, year, licensePlate);
-  }
-
 }

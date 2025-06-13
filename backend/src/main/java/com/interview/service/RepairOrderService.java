@@ -59,7 +59,7 @@ public class RepairOrderService {
   @Transactional(readOnly = true)
   public List<RepairOrderSummaryDTO> getRepairOrdersByVehicleId(Long vehicleId) {
     log.debug("Fetching repair orders for vehicle id: {}", vehicleId);
-    List<RepairOrderEntity> repairOrders = repairOrderRepository.findByVehicleId(vehicleId);
+    List<RepairOrderEntity> repairOrders = repairOrderRepository.findByVehicleIdOrderById(vehicleId);
     return repairOrderMapper.toSummaryDTOList(repairOrders);
   }
 

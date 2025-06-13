@@ -75,7 +75,7 @@ public class VehicleService {
   @Transactional(readOnly = true)
   public List<VehicleSummaryDTO> getVehiclesByCustomerId(Long customerId) {
     log.debug("Fetching vehicles for customer id: {}", customerId);
-    List<VehicleEntity> vehicles = vehicleRepository.findByCustomerId(customerId);
+    List<VehicleEntity> vehicles = vehicleRepository.findByCustomerIdOrderById(customerId);
     return vehicleMapper.toSummaryDTOList(vehicles);
   }
 

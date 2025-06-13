@@ -9,6 +9,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -87,6 +88,12 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
   }
 
+  /**
+   * Handles exceptions when a method argument type does not match the expected type.
+   *
+   * @param ex the exception containing details about the type mismatch
+   * @return a response entity with a detailed error response
+   */
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   public ResponseEntity<ErrorResponse> handleInvalidParameterExceptions(
       MethodArgumentTypeMismatchException ex) {
@@ -99,6 +106,12 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
   }
 
+  /**
+   * Handles exceptions when the request payload is not readable, such as when JSON parsing fails.
+   *
+   * @param ex the exception containing details about the unreadable payload
+   * @return a response entity with a detailed error response
+   */
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ErrorResponse> handleInvalidPayloadExceptions(
       HttpMessageNotReadableException ex) {
@@ -111,6 +124,13 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
   }
 
+  /**
+   * Handles exceptions when the request content type is not supported, such as when the client
+   * sends an unsupported media type.
+   *
+   * @param ex the exception containing details about the unsupported media type
+   * @return a response entity with a detailed error response
+   */
   @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
   public ResponseEntity<ErrorResponse> handleInvalidContentTypeExceptions(
       HttpMediaTypeNotSupportedException ex) {
@@ -118,6 +138,24 @@ public class GlobalExceptionHandler {
     ErrorResponse error = ErrorResponse.of(
         HttpStatus.BAD_REQUEST.value(),
         "Invalid Content Type",
+        ex.getMessage()
+    );
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+  }
+
+  /**
+   * Handles exceptions when a required request parameter or path variable is missing.
+   *
+   * @param ex the exception containing details about the missing parameter
+   * @return a response entity with a detailed error response
+   */
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  public ResponseEntity<ErrorResponse> handleMissingServletRequestParamExceptions(
+      MissingServletRequestParameterException ex) {
+    log.error("Missing request parameter or path variable error: {}", ex.getMessage());
+    ErrorResponse error = ErrorResponse.of(
+        HttpStatus.BAD_REQUEST.value(),
+        "Missing request parameter or path variable",
         ex.getMessage()
     );
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);

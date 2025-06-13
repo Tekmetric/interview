@@ -48,7 +48,7 @@ docker run -p 8080:8080 -e DB_PASSWORD=password -e API_PASSWORD=password tekmetr
 docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev tekmetric-backend-interview:latest
 ```
 
-### Local Development Tools
+## Local Development Tools
 
 * Swagger URI is available at: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 * H2 Console is available at: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
@@ -107,4 +107,4 @@ some features have been intentionally left out or simplified and could be improv
 - To further optimize the Docker image size, the image might be built using native compilation or carefully picking modules/JRE via JLink.
 - Logging should be further improved to output structured logs in JSON format, which is more suitable for log aggregation and analysis (e.g. ELK or Grafana stacks)
 - REST API should be secured using OAuth2 or JWT authentication instead of basic authentication.
-- REST API versioning strategy should be reconsidered as URL-based versioning can become cumbersome in the long run.
+- REST API versioning strategy should be reconsidered depending on the needs as URL-based versioning might become cumbersome in the long run.

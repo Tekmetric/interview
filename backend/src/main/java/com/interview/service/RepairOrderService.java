@@ -32,6 +32,7 @@ public class RepairOrderService {
   private final RepairOrderRepository repairOrderRepository;
   private final VehicleRepository vehicleRepository;
   private final RepairOrderMapper repairOrderMapper;
+  private static final String REPAIR_ORDER_NOT_FOUND = "Repair order not found with id: %d";
 
   @Transactional(readOnly = true)
   public List<RepairOrderSummaryDTO> getAllRepairOrders() {
@@ -52,7 +53,7 @@ public class RepairOrderService {
     log.debug("Fetching repair order with id: {}", id);
     RepairOrderEntity repairOrder = repairOrderRepository.findByIdWithVehicleAndCustomer(id)
         .orElseThrow(
-            () -> new ResourceNotFoundException("Repair order not found with id: " + id));
+            () -> new ResourceNotFoundException(String.format(REPAIR_ORDER_NOT_FOUND, id)));
     return repairOrderMapper.toResponseDTO(repairOrder);
   }
 
@@ -154,7 +155,7 @@ public class RepairOrderService {
 
     RepairOrderEntity existingRepairOrder = repairOrderRepository.findByIdWithVehicleAndCustomer(id)
         .orElseThrow(
-            () -> new ResourceNotFoundException("Repair order not found with id: " + id));
+            () -> new ResourceNotFoundException(String.format(REPAIR_ORDER_NOT_FOUND, id)));
 
     // Update fields using mapper
     VehicleEntity vehicle = existingRepairOrder.getVehicle();
@@ -176,7 +177,7 @@ public class RepairOrderService {
 
     RepairOrderEntity existingRepairOrder = repairOrderRepository.findByIdWithVehicleAndCustomer(id)
         .orElseThrow(
-            () -> new ResourceNotFoundException("Repair order not found with id: " + id));
+            () -> new ResourceNotFoundException(String.format(REPAIR_ORDER_NOT_FOUND, id)));
 
     existingRepairOrder.setStatus(status);
     RepairOrderEntity updatedRepairOrder = repairOrderRepository.save(existingRepairOrder);
@@ -189,7 +190,7 @@ public class RepairOrderService {
 
     RepairOrderEntity repairOrder = repairOrderRepository.findById(id)
         .orElseThrow(
-            () -> new ResourceNotFoundException("Repair order not found with id: " + id));
+            () -> new ResourceNotFoundException(String.format(REPAIR_ORDER_NOT_FOUND, id)));
     repairOrderRepository.delete(repairOrder);
     log.info("Repair order deleted successfully with id: {}", id);
   }

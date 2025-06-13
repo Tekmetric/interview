@@ -32,6 +32,7 @@ public class VehicleService {
   private final VehicleRepository vehicleRepository;
   private final CustomerRepository customerRepository;
   private final VehicleMapper vehicleMapper;
+  private static final String VEHICLE_NOT_FOUND = "Vehicle not found with id: %d";
 
   @Transactional(readOnly = true)
   public List<VehicleSummaryDTO> getAllVehicles() {
@@ -51,7 +52,7 @@ public class VehicleService {
   public VehicleResponseDTO getVehicleById(Long id) {
     log.debug("Fetching vehicle with id: {}", id);
     VehicleEntity vehicle = vehicleRepository.findByIdWithCustomer(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException(String.format(VEHICLE_NOT_FOUND, id)));
     return vehicleMapper.toResponseDTO(vehicle);
   }
 
@@ -59,7 +60,7 @@ public class VehicleService {
   public VehicleResponseDTO getVehicleByIdWithRepairOrders(Long id) {
     log.debug("Fetching vehicle with repair orders for id: {}", id);
     VehicleEntity vehicle = vehicleRepository.findByIdWithCustomerAndRepairOrders(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException(String.format(VEHICLE_NOT_FOUND, id)));
     return vehicleMapper.toResponseDTOWithRepairOrders(vehicle);
   }
 
@@ -103,7 +104,7 @@ public class VehicleService {
     log.debug("Updating vehicle with id: {}", id);
 
     VehicleEntity existingVehicle = vehicleRepository.findByIdWithCustomer(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException(String.format(VEHICLE_NOT_FOUND, id)));
 
     // Check if license plate is being changed and if new license plate already exists
     if (!existingVehicle.getLicensePlate().equals(vehicleRequest.licensePlate()) &&
@@ -130,7 +131,7 @@ public class VehicleService {
     log.debug("Deleting vehicle with id: {}", id);
 
     VehicleEntity vehicle = vehicleRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException(String.format(VEHICLE_NOT_FOUND, id)));
     vehicleRepository.delete(vehicle);
     log.info("Vehicle deleted successfully with id: {}", id);
   }

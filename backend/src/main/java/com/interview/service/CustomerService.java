@@ -28,6 +28,7 @@ public class CustomerService {
 
   private final CustomerRepository customerRepository;
   private final CustomerMapper customerMapper;
+  private static final String CUSTOMER_NOT_FOUND = "Customer not found with id: %d";
 
   @Transactional(readOnly = true)
   public List<CustomerSummaryDTO> getAllCustomers() {
@@ -47,7 +48,7 @@ public class CustomerService {
   public CustomerResponseDTO getCustomerById(Long id) {
     log.debug("Fetching customer with id: {}", id);
     CustomerEntity customer = customerRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException(String.format(CUSTOMER_NOT_FOUND, id)));
     return customerMapper.toResponseDTO(customer);
   }
 
@@ -55,7 +56,7 @@ public class CustomerService {
   public CustomerResponseDTO getCustomerByIdWithVehicles(Long id) {
     log.debug("Fetching customer with vehicles for id: {}", id);
     CustomerEntity customer = customerRepository.findByIdWithVehicles(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException(String.format(CUSTOMER_NOT_FOUND, id)));
     return customerMapper.toResponseDTOWithVehicles(customer);
   }
 
@@ -86,7 +87,7 @@ public class CustomerService {
     log.debug("Updating customer with id: {}", id);
 
     CustomerEntity existingCustomer = customerRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException(String.format(CUSTOMER_NOT_FOUND, id)));
 
     // Check if email is being changed and if new email already exists
     if (!existingCustomer.getEmail().equals(customerRequest.email()) &&
@@ -107,7 +108,7 @@ public class CustomerService {
     log.debug("Deleting customer with id: {}", id);
 
     CustomerEntity customer = customerRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException(String.format(CUSTOMER_NOT_FOUND, id)));
     customerRepository.delete(customer);
     log.info("Customer deleted successfully with id: {}", id);
   }

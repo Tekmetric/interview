@@ -8,6 +8,8 @@ It allows users to manage customer, vehicle and repair order records, including 
 - Java 21 or higher
 - Maven 3.9 or higher
 
+> Note: The project is developed using Google Java Style Guide, so it is recommended to use an IDE that supports this style guide for better code readability.
+
 ## Building the Project
 
 ### Source Code
@@ -28,7 +30,7 @@ docker build -t tekmetric-backend-interview:latest .
 
 ## Running the Project
 
-### 
+### Spring Boot Application
 
 To run the project, execute the following command in the backend directory:
 
@@ -58,11 +60,19 @@ docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev tekmetric-backend-intervie
 
 ## Running Tests
 
-To run the project, execute the following command in the backend directory:
+### Unit Tests and Integration Tests
+
+To run unit tests and integration tests, execute the following command in the backend directory:
 
 ```bash
 ./mvnw clean test
 ```
+
+### Manual Tests via Postman
+
+To run manual tests, you can download the api-docs.json from the [OpenAPI Specification](http://localhost:8080/v3/api-docs) and then "import" it into Postman to create a Collection.
+
+> Note: Make sure to set the username and password for basic authentication in the Postman environment variables to match the `API_USERNAME` and `API_PASSWORD` environment variables used in the project.
 
 ## Environment Variables
 

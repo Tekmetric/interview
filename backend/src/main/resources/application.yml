@@ -1,0 +1,154 @@
+# Server configuration for Tekmetric Backend
+server:
+  port: ${SERVER_PORT:8080}
+  http2:
+    enabled: true
+  compression:
+    enabled: true
+  # Don't accept new requests but allow existing requests to complete
+  shutdown: graceful
+
+spring:
+  application:
+    name: tekmetric-backend
+    instance-id: ${spring.application.name}-${random.value}
+
+  security:
+    user:
+      name: ${API_USERNAME:sa}
+      password: ${API_PASSWORD}
+
+  # Database-related configurations
+  # Flyway is a useful tool used for database migrations in production-ready microservices.
+  # Although we are using an in-memory H2 database for demo purposes,
+  # it is still a good practice to use it for managing database schema changes.
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  datasource:
+    hikari:
+      connection-timeout: 10000 # 10 seconds
+    # Ideally we should use an external real database in production!
+    url: jdbc:h2:mem:testdb;DATABASE_TO_UPPER=false
+    driverClassName: org.h2.Driver
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      # Validate the database schema based on the entity classes on startup (DB migration is handled by Flyway)
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.H2Dialect
+    # Disable Open Session in View
+    # See https://vladmihalcea.com/the-open-session-in-view-anti-pattern/ for more details
+    open-in-view: false
+    properties:
+      hibernate:
+        # To overcome the reserved keyword issues with H2 database
+        "globally_quoted_identifiers": "true"
+
+  # Disable Spring Boot's default banner
+  main:
+    banner-mode: off
+
+  # Disable static file serving
+  web:
+    resources:
+      add-mappings: false
+
+log:
+  # Log bean names during application startup
+  bean-names: ${LOG_BEAN_NAMES:false}
+  requests:
+    # Log incoming HTTP requests for any API endpoints
+    enabled: ${LOG_REQUESTS_ENABLED:false}
+    include-headers: ${LOG_REQUESTS_INCLUDE_HEADERS:false}
+
+# OpenAPI / Swagger configurations
+springdoc:
+  show-actuator: false
+  swagger-ui:
+    # Dısabled by default, can be enabled via environment variable or via dev profile
+    enabled: ${SWAGGER_ENABLED:false}
+    # Disable swagger-ui default (petstore) url:
+    disable-swagger-default-url: true
+    validator-url: none
+    use-root-path: true
+
+# Actuator configurations
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      instance-id: ${spring.application.instance-id}
+
+  endpoints:
+    web:
+      exposure:
+        # Only expose the specified endpoints
+        include: "info,metrics,health"
+      base-path: "/actuator"
+
+  endpoint:
+    health:
+      access: read_only
+      # Enable detailed health information
+      show-details: always
+      show-components: always
+      # Enable liveness and readiness probes
+      probes:
+        enabled: true
+      # Configure health groups
+      group:
+        db:
+          include: "db,diskSpace,ping"
+          show-details: always
+    info:
+      access: read_only
+
+  # Enable detailed info endpoint
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+
+  # Health indicator configuration
+  health:
+    # Enable liveness and readiness probes
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+    # Configure specific health indicators
+    db:
+      enabled: true
+    diskspace:
+      enabled: true
+    ping:
+      enabled: true
+
+# Configure info endpoint details
+info:
+  app:
+    name: "@project.name@"
+    version: "@project.version@"
+    description: "@project.description@"
+    java:
+      version: "${java.version}"
+      vendor: "${java.vendor}"
+
+# Log database queries with parameters via a datasource proxy
+# This is useful for debugging and performance analysis and a better alternative to using Hibernate's built-in logging
+# See https://vladmihalcea.com/log-sql-spring-boot/ for more details
+decorator:
+  datasource:
+    datasource-proxy:
+      slow-query:
+        enable-logging: true
+        log-level: WARN
+        threshold: 1
+      query:
+        enable-logging: true
+        log-level: DEBUG
+      logging: slf4j

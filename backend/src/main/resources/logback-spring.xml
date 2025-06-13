@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml"/>
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+	</root>
+
+  <!-- Authentication and authorization logs -->
+  <logger name="org.springframework.security" additivity="false" level="INFO">
+    <appender-ref ref="CONSOLE"/>
+  </logger>
+
+  <!-- Database query logs -->
+  <logger name="net.ttddyy.dsproxy.listener" additivity="false" level="DEBUG" >
+    <appender-ref ref="CONSOLE"/>
+  </logger>
+
+  <!-- Request logs if the related bean is activated -->
+  <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" additivity="false" level="DEBUG" >
+    <appender-ref ref="CONSOLE"/>
+  </logger>
+
+</configuration>

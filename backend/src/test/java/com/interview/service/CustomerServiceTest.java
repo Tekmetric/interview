@@ -97,7 +97,7 @@ class CustomerServiceTest {
       List<CustomerEntity> entities = Collections.singletonList(customerEntity);
       List<CustomerSummaryDTO> summaryDTOs = Collections.singletonList(customerSummaryDTO);
 
-      when(customerRepository.findAll()).thenReturn(entities);
+      when(customerRepository.findAllByOrderById()).thenReturn(entities);
       when(customerMapper.toSummaryDTOList(entities)).thenReturn(summaryDTOs);
 
       // When
@@ -106,7 +106,7 @@ class CustomerServiceTest {
       // Then
       assertThat(result).hasSize(1);
       assertThat(result.getFirst()).isEqualTo(customerSummaryDTO);
-      verify(customerRepository).findAll();
+      verify(customerRepository).findAllByOrderById();
       verify(customerMapper).toSummaryDTOList(entities);
     }
 

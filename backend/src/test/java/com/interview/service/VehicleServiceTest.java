@@ -122,7 +122,7 @@ class VehicleServiceTest {
       List<VehicleEntity> entities = Collections.singletonList(vehicleEntity);
       List<VehicleSummaryDTO> summaryDTOs = Collections.singletonList(vehicleSummaryDTO);
 
-      when(vehicleRepository.findAll()).thenReturn(entities);
+      when(vehicleRepository.findAllByOrderById()).thenReturn(entities);
       when(vehicleMapper.toSummaryDTOList(entities)).thenReturn(summaryDTOs);
 
       // When
@@ -131,7 +131,7 @@ class VehicleServiceTest {
       // Then
       assertThat(result).hasSize(1);
       assertThat(result.getFirst()).isEqualTo(vehicleSummaryDTO);
-      verify(vehicleRepository).findAll();
+      verify(vehicleRepository).findAllByOrderById();
       verify(vehicleMapper).toSummaryDTOList(entities);
     }
 

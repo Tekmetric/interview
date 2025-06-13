@@ -12,3 +12,21 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+
+node_modules
+dist
+build
+all-builds
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

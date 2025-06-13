@@ -61,17 +61,17 @@ docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev tekmetric-backend-intervie
 To run the project, execute the following command in the backend directory:
 
 ```bash
-./mvnw clean verify
+./mvnw clean test
 ```
 
 ## Environment Variables
 
 - `API_USERNAME`: The username for the default user. Default is `sa`.
-- `API_PASSWORD`: The password for the default user. Default is `password`.
-  This is required to run the project and automatically set as default value when using the dev profile.
+- `API_PASSWORD`: The password for the default user. Default is `password` using the dev profile.
+  This is required to run the project.
 - `DB_USERNAME`: The username for the H2 database. Default is `sa`.
-- `DB_PASSWORD`: The password for the H2 database. Default is `password`. 
-  This is required to run the project and automatically set as default value when using the dev profile.
+- `DB_PASSWORD`: The password for the H2 database. Default is `password` using the dev profile. 
+  This is required to run the project.
 - `SPRING_PROFILES_ACTIVE`: The active Spring profile. Default profile is configured for prod. 
   Set to `dev` to enable H2 Console and Swagger UI.
 - `H2_CONSOLE_ENABLED`: Set to `true` to enable the H2 Console. Default is `false`. 

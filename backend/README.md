@@ -1,39 +1,122 @@
-# Java Spring Boot API Coding Exercise
+# Basic Repair Shop Management Service
 
-## Steps to get started:
+This is Spring boot service which allows management of jobs & tasks within a repair shop.
 
-#### Prerequisites
-- Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
+## Features
+- CRUD operations for Jobs and Tasks
+- Authentication and authorization using JWT & Spring Security
+- Pagination, filtering and sorting for Jobs
+- Metrics & Tracing
+- DB Schema migrations
+- API Documentation in Swagger & OpenAPI
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+## Tech Stack
 
-#### Import project into IDE
-- Project root is located in `backend` folder
+- Java 21
+- Spring Boot 3
+- Spring Data JPA
+- H2 Database
+- Flyway (schema migration)
+- Lombok & MapStruct (for reducing boilerplate)
+- Zipkin (distributed tracing)
+- Micrometer Prometheus (exposes application metrics)
+- Grafana (for metrics dashboard)
+- Spring Boot Test
 
-#### Build and run your app
-- `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
+## Setup for local dev
 
-#### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
+Can be found [here](SETUP_LOCAL_DEV.md)
 
-#### After finishing the goals listed below create a PR
+## DB Diagram
 
-### Goals
-1. Design a CRUD API with data store using Spring Boot and in memory H2 database (pre-configured, see below)
-2. API should include one object with create, read, update, and delete operations. Read should include fetching a single item and list of items.
-3. Provide SQL create scripts for your object(s) in resources/data.sql
-4. Demo API functionality using API client tool
+```mermaid
+erDiagram
+    CAR ||--|{ JOB : has
+    CAR {
+        int id
+        text vin
+        text make
+        text model
+        int model_year
+        text customer
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    JOB ||--|{ TASK : has
+    JOB {
+        int id
+        int fk_car_id
+        text status
+        timestamp scheduled_at
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    TASK {
+        int id
+        int fk_job_id
+        text status
+        text title
+        text type
+        text description
+        text mechanic_name
+    }
+```
 
-### Considerations
-This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
+## API
 
-#### H2 Configuration
-- Console: http://localhost:8080/h2-console 
-- JDBC URL: jdbc:h2:mem:testdb
-- Username: sa
-- Password: password
+The API allows CRUD operations on jobs and tasks.
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+For jobs we have the following endpoints: 
+
+| Endpoint Path          | Allowed Methods  | Description                                                                            | Required role |
+|------------------------|------------------|----------------------------------------------------------------------------------------|---------------|
+| /api/v1/jobs/{id}      | GET, PUT, DELETE | Allows reading, updating and deleting a job by id.                                     | ADMIN         |
+| /api/v1/jobs           | POST             | Create a new job using JSON Request Body, a car is also created if id is not specified | ADMIN         |
+| /api/v1/jobs           | GET              | Find all jobs with pagination and optional status filtering                            | ADMIN         |
+| /api/v1/jobs/car/{vin} | GET              | Find all jobs by car VIN                                                               | USER or ADMIN |
+
+For tasks we have the following endpoints:
+
+| Endpoint Path          | Allowed Methods  | Description                                         | Required role |
+|------------------------|------------------|-----------------------------------------------------|---------------|
+| /api/v1/tasks/{id}     | GET, PUT, DELETE | Allows reading, updating and deleting a task by id. | ADMIN         |
+| /api/v1/jobs           | POST             | Create a new task using JSON Request Body           | ADMIN         |
+
+A CRUD for car entity is not offered. A car is created automatically when a job is created.
+
+### Swagger
+Swagger can be accessed at http://localhost:8080/swagger-ui/index.html.
+
+In addition, the OpenAPI specs are found at: http://localhost:8080/v3/api-docs
+
+## Security
+
+This application leverages Spring Security with OAuth2 Resource Server capabilities to secure its endpoints. 
+
+It relies on JWT (JSON Web Tokens) for authentication and role-based authorization.
+
+### Authentication
+
+All requests except initial resource found at `/api/welcome` are required to provide a valid JWT in `Authorization` header.
+
+The service will validate the JWT signature using the public key found at `resources/keys/public.pem` directory.
+
+***Note***: for production we would configure an external Authorization Provider (okta, google etc.) to obtain the keys from. 
+
+### Authorization
+
+Role-based authorization is set up such that the server will read roles from JWT claim `roles`.
+
+We use method-level security on the endpoints using `@PreAuthorize("hasRole({ROLE})")` to enforce that a user needs to have a specific role (ADMIN or USER) in order to access those resources.
+
+## Database migration
+
+We use flyway to manage database migrations. The scripts can be found at `src/main/resouces/database/migration`.
+
+## Potential Improvements
+
+- Automatically populate car db entity by using publicly available APIs
+- Fuzzy filtering which searches for a match in multiple fields
+- Improve testing by adding unit tests and more integration tests
+- Ability to run app in docker
+- Offer an SDK library for the service which allows other Java projects to integrate the API easily.

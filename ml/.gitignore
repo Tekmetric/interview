@@ -1,0 +1,31 @@
+# Virtual environment
+.venv/
+venv/
+
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# VSCode and other editor settings
+.vscode/
+.idea/
+
+# Jupyter Notebook checkpoints (if any)
+.ipynb_checkpoints/
+
+# MacOS system files
+.DS_Store
+
+# Logs and debug files
+*.log
+
+# Model artifacts and saved outputs (optional)
+*.joblib
+*.pkl
+
+# Test artifacts
+htmlcov/
+.pytest_cache/
+coverage.xml
+.DS_Store

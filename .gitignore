@@ -12,3 +12,9 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+*.iml
+
+# gradle
+backend/.gradle/
+backend/build
+

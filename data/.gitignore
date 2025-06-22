@@ -1,1 +1,10 @@
 .venv/
+.env
+output
+*.parquet
+.tox
+htmlcov
+__pycache__
+*.pyc
+.coverage
+coverage.xml

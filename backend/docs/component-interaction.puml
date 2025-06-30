@@ -1,0 +1,20 @@
+@startuml ComponentInteraction
+title Shop API Component Interaction
+
+actor Client
+
+rectangle "Resource\n(REST Controller)" as Resource
+rectangle "Service\n(Service Layer)" as Service
+rectangle "Mapper\n(MapStruct Mapper)" as Mapper
+rectangle "Repository\n(JPA Repository)" as Repository
+database "PostgreSQL\n(Database)" as DB
+
+Client -> Resource : HTTP Request
+Resource -> Service : findAll()
+Service -down-> Mapper : map
+Service -> Repository : findAll()
+Repository -> DB : SQL Queries
+Resource -> Client : HTTP Response (JSON)
+
+
+@enduml

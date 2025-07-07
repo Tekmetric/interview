@@ -12,3 +12,82 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+
+
+# ----------------------------
+# Python artifacts
+# ----------------------------
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.pyo
+*.pyd
+*.pdb
+*.whl
+*.log
+
+# Virtual environments
+.env/
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Pytest cache
+.cache/
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+*.py,cover
+
+# mypy
+.mypy_cache/
+
+# ----------------------------
+# macOS system files
+# ----------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Spotlight
+.Spotlight-V100
+
+# Trash
+.Trashes
+
+# macOS metadata files
+.fseventsd
+.com.apple.timemachine.donotpresent
+
+# ----------------------------
+# FAISS + embedding artifacts
+# ----------------------------
+embeddings.json
+index.faiss
+
+# ----------------------------
+# Empty dirs
+results/*
+!results/.gitkeep

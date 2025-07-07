@@ -1,0 +1,23 @@
+# Classifier behavior
+top_n: 5                 # Number of top matches to return if using 'top_n' mode
+threshold: 0.5           # Similarity threshold if using 'threshold' mode
+mode: "threshold"            # Either "top_n" or "threshold"
+
+# Field name in CSVs to classify
+field_name: "title"
+
+# FAISS / embedding settings
+embedding_model: "all-MiniLM-L6-v2"  # Hugging Face sentence-transformers model
+faiss_index_path: null               # If null, will build in-memory index at runtime
+
+# LLM agent
+batch_size: 3            # Number of sentences to classify at a time via LLM
+ollama_model: "mistral"  # LLM model to use for reasoning
+ollama_base_url: "http://localhost:11434"  # Ollama server URL (used for both local & Docker)
+
+# Output control
+output_dir: "results"
+timestamp_output: true   # Whether to add timestamp to result file names
+
+# Logging
+verbose: true

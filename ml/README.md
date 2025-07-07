@@ -98,6 +98,7 @@ pip install -r requirements.txt
 
 ```bash
 brew install ollama
+ollama serve
 ollama run mistral
 ```
 

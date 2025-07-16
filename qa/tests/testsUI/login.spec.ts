@@ -39,7 +39,7 @@ test.describe('Login Tests', () => {
     await loginPage.login(email, password); // Use the email and password from setup
 
     // Verify login success with dynamic first and last name
-    await loginPage.verifyLoginSuccess(userData.firstname, userData.lastname);
+    await loginPage.verifyLoggedInUser(userData.firstname, userData.lastname);
 
     await loginPage.logout();
   });

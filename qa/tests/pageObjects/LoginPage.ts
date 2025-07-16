@@ -8,7 +8,9 @@ export class LoginPage {
     private loginLink = 'a[href="/login"]';
     private logoutLink = 'a[href="/logout"]';
     private loginToYourAccountText = 'div[class="login-form"] h2';
-    private userInfoSelector = 'ul > li:nth-child(10) > a';
+    private userInfoSelector(firstName: string, lastName: string): string {
+        return `text=Logged in as ${firstName} ${lastName}`;
+    }
 
     constructor(page: Page) {
         this.page = page;
@@ -48,10 +50,11 @@ export class LoginPage {
         await this.page.click(this.loginButton);
     }
 
-    async verifyLoginSuccess(firstName: string, lastName: string) {
-    const expectedText = `Logged in as ${firstName} ${lastName}`;
-    await expect(this.page.locator(this.userInfoSelector)).toHaveText(expectedText);
-}
+    async verifyLoggedInUser(firstName: string, lastName: string) {
+        const loggedInText = this.page.locator(this.userInfoSelector(firstName, lastName));
+        await expect(loggedInText).toBeVisible();
+        await expect(loggedInText).toHaveText(`Logged in as ${firstName} ${lastName}`);
+    }
 
     async verifyLoginFailure() {
         await expect(this.page).toHaveURL('https://www.automationexercise.com/login');

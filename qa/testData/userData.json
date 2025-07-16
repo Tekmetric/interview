@@ -1,0 +1,29 @@
+{
+  "name": "John Doe",
+  "title": "Mr",
+  "birth_date": "10",
+  "birth_month": "October",
+  "birth_year": "1990",
+  "firstname": "John",
+  "lastname": "Doe",
+  "company": "Doe Industries",
+  "address1": "123 Main St",
+  "address2": "Suite 100",
+  "country": "United States",
+  "zipcode": "12345",
+  "state": "CA",
+  "city": "Los Angeles",
+  "mobile_number": "123-456-7890",
+  "password": "password123",
+  "cardDetails": {
+    "name": "John Doe",
+    "cardNumber": "34354354",
+    "cvv": "311",
+    "expMonth": "03",
+    "expYear": "2029"
+  },
+  "invalidUser": {
+    "email": "invalid@example.com",
+    "password": "wrongpassword"
+  }
+}

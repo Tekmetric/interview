@@ -1,4 +1,3 @@
-
 import * as userData from '../../testData/userData.json'; // Import user data
 import { generateUniqueEmail } from '../../utils/generateUniqueEmail'; // Import email generator
 import { test, expect, APIRequestContext, request } from '@playwright/test';

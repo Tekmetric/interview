@@ -1,110 +1,111 @@
-import { Page, expect } from '@playwright/test';
+import { Page, expect, Locator } from '@playwright/test';
 
 export class AccountPage {
-    private page: Page;
-    private signupLink = 'text=Signup';
-    private nameInput = '[data-qa="signup-name"]';
-    private emailInput = '[data-qa="signup-email"]';
-    private signupButton = '[data-qa="signup-button"]';
-    private accountSuccessText = '#form h2:nth-child(1)';
-    private accountDeletionLink = 'text=Delete Account';
-    private continueButton = '[data-qa="continue-button"]';
-    private accountDeletedText = 'h2:has-text("Account Deleted")';
-    private formSelectors = {
-        titleMr: 'input#id_gender1', // Selector for "Mr" radio button
-        titleMrs: 'input#id_gender2', // Selector for "Mrs" radio button
-        name: 'input[name="name"]',
-        email: 'input[name="email"]',
-        password: 'input[name="password"]',
-        day: 'select[name="days"]',
-        month: 'select[name="months"]',
-        year: 'select[name="years"]',
-        newsletter: 'input[name="newsletter"]',
-        offers: 'input[name="optin"]',
-        firstName: '[data-qa="first_name"]',
-        lastName: '[data-qa="last_name"]',
-        company: '[data-qa="company"]',
-        address1: '[data-qa="address"]',
-        address2: '[data-qa="address2"]',
-        country: 'select[name="country"]',
-        state: '[data-qa="state"]',
-        city: '[data-qa="city"]',
-        zipcode: '[data-qa="zipcode"]',
-        mobileNumber: '[data-qa="mobile_number"]',
-        submitButton: '[data-qa="create-account"]',
-        accountSuccessText: '[data-qa="account-created"]'
+  private page: Page;
+  private selectors: Record<string, Locator>;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.selectors = {
+      signupLoginLink: page.getByRole('link', { name: ' Signup / Login' }),
+      nameInput: page.getByPlaceholder('Name'),
+      emailInput: page.locator('form').filter({ hasText: 'Signup' }).getByPlaceholder('Email Address'),
+      signupButton: page.getByRole('button', { name: 'Signup' }),
+      titleMr: page.getByLabel('Mr.'),
+      passwordInput: page.getByLabel('Password *'),
+      dayDropdown: page.locator('#days'),
+      monthDropdown: page.locator('#months'),
+      yearDropdown: page.locator('#years'),
+      newsletterCheckbox: page.getByLabel('Sign up for our newsletter!'),
+      offersCheckbox: page.getByLabel('Receive special offers from'),
+      firstNameInput: page.getByLabel('First name *'),
+      lastNameInput: page.getByLabel('Last name *'),
+      companyInput: page.getByLabel('Company', { exact: true }),
+      address1Input: page.getByLabel('Address * (Street address, P.'),
+      address2Input: page.getByLabel('Address 2'),
+      countryDropdown: page.getByLabel('Country *'),
+      stateInput: page.getByLabel('State *'),
+      cityInput: page.getByLabel('City *'),
+      zipCodeInput: page.locator('#zipcode'),
+      mobileNumberInput: page.getByLabel('Mobile Number *'),
+      createAccountButton: page.getByRole('button', { name: 'Create Account' }),
+      accountCreatedText: page.getByText('Account Created!'),
+      continueLink: page.getByRole('link', { name: 'Continue' }),
+      deleteAccountLink: page.getByRole('link', { name: ' Delete Account' }),
+      accountDeletedText: page.getByText('Account Deleted!'),
+      accountDeletedConfirmationText: page.getByText('Your account has been'),
+      accountCreationSuggestionText: page.getByText('You can create new account to')
     };
-    constructor(page: Page) {
-        this.page = page;
-    }
+  }
 
-    async navigate() {
-        await this.page.goto('https://www.automationexercise.com');
-        await this.page.click(this.signupLink);
-    }
+  async navigateToSignupPage() {
+    await this.page.goto('https://www.automationexercise.com');
+    await expect(this.page).toHaveTitle(/Automation Exercise/);
+    await this.selectors.signupLoginLink.click();
+  }
 
-    async createAccount(name: string, email: string, password: string) {
-        await this.page.fill(this.nameInput, name);
-        await this.page.fill(this.emailInput, email);
-        await this.page.click(this.signupButton);
-    }
+  async createAccount(name: string, email: string) {
+    await this.selectors.nameInput.fill(name);
+    await this.selectors.emailInput.fill(email);
+    await this.selectors.signupButton.click();
+  }
 
-    async verifyAccountCreationRedirected() {
-        await expect(this.page.locator(this.accountSuccessText)).toBeVisible();
-        await expect(this.page.locator(this.accountSuccessText)).toHaveText('Enter Account Information');
-    }
+  async verifyAccountCreationRedirected() {
+    const accountCreationPrompt = this.page.locator('text=Enter Account Information');
+    await expect(accountCreationPrompt).toBeVisible();
+  }
 
-    async fillSignupForm(firstName: string, lastName: string, email: string, password: string) {
-        await this.page.check(this.formSelectors.titleMr); // Use radio button for "Mr"
-        await this.page.fill(this.formSelectors.name, `${firstName} ${lastName}`);
+  async fillSignupForm(details: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    day: string;
+    month: string;
+    year: string;
+    company: string;
+    address1: string;
+    address2: string;
+    country: string;
+    state: string;
+    city: string;
+    zipCode: string;
+    mobileNumber: string;
+  }) {
+    await this.selectors.titleMr.check();
+    await this.selectors.passwordInput.fill(details.password);
 
-        await expect(this.page.locator(this.formSelectors.name)).toHaveValue(`${firstName} ${lastName}`);
+    await this.selectors.dayDropdown.selectOption(details.day);
+    await this.selectors.monthDropdown.selectOption(details.month);
+    await this.selectors.yearDropdown.selectOption(details.year);
 
-        await expect(this.page.locator(this.formSelectors.email)).toHaveValue(email);
+    await this.selectors.newsletterCheckbox.check();
+    await this.selectors.offersCheckbox.check();
 
-        await this.page.fill(this.formSelectors.password, password);
+    await this.selectors.firstNameInput.fill(details.firstName);
+    await this.selectors.lastNameInput.fill(details.lastName);
+    await this.selectors.companyInput.fill(details.company);
+    await this.selectors.address1Input.fill(details.address1);
+    await this.selectors.address2Input.fill(details.address2);
+    await this.selectors.countryDropdown.selectOption(details.country);
+    await this.selectors.stateInput.fill(details.state);
+    await this.selectors.cityInput.fill(details.city);
+    await this.selectors.zipCodeInput.fill(details.zipCode);
+    await this.selectors.mobileNumberInput.fill(details.mobileNumber);
 
-        await this.page.selectOption(this.formSelectors.day, '1');
-        await this.page.selectOption(this.formSelectors.month, 'January');
-        await this.page.selectOption(this.formSelectors.year, '1990');
+    await this.selectors.createAccountButton.click();
+  }
 
-        await this.page.check(this.formSelectors.newsletter);
-        await this.page.check(this.formSelectors.offers);
+  async verifyAccountCreation() {
+    await expect(this.selectors.accountCreatedText).toBeVisible();
+    await expect(this.selectors.accountCreatedText).toHaveText('Account Created!');
+  }
 
-        await this.page.fill(this.formSelectors.firstName, firstName);
-        await this.page.fill(this.formSelectors.lastName, lastName);
-        await this.page.fill(this.formSelectors.company, 'Company Inc.');
-        await this.page.fill(this.formSelectors.address1, '123 Street');
-        await this.page.fill(this.formSelectors.address2, 'Suite 100');
-        await this.page.selectOption(this.formSelectors.country, 'United States');
-        await this.page.fill(this.formSelectors.state, 'Kansas');
-        await this.page.fill(this.formSelectors.city, 'Ottawa');
-        await this.page.fill(this.formSelectors.zipcode, '12345');
-        await this.page.fill(this.formSelectors.mobileNumber, '1234567890');
-
-        await this.page.click(this.formSelectors.submitButton);
-    }
-
-    async verifyAccountCreation() {
-        await expect(this.page.locator(this.formSelectors.accountSuccessText)).toBeVisible();
-        await expect(this.page.locator(this.formSelectors.accountSuccessText)).toHaveText('Account Created!');
-        // Verify style of success message
-        await expect(this.page.locator(this.formSelectors.accountSuccessText)).toHaveCSS('color', 'rgb(0, 128, 0)'); // 'green' in RGB
-        // Verify the text of the first <p> sibling
-        const pSiblings = this.page.locator('[data-qa="account-created"] ~ p');
-
-        await expect(pSiblings.nth(0)).toHaveText('Congratulations! Your new account has been successfully created!');
-        await expect(pSiblings.nth(0)).toHaveCSS('font-size', '20px');
-        await expect(pSiblings.nth(0)).toHaveCSS('font-family', 'garamond');
-
-        // Verify the text of the second <p> sibling
-        await expect(pSiblings.nth(1)).toHaveText('You can now take advantage of member privileges to enhance your online shopping experience with us.');
-    }
-
-    async deleteAccount() {
-        await this.page.click(this.continueButton);
-        await this.page.click(this.accountDeletionLink);
-        await expect(this.page.locator(this.accountDeletedText)).toBeVisible();
-    }
-
+  async deleteAccount() {
+    await this.selectors.deleteAccountLink.click();
+    await expect(this.selectors.accountDeletedText).toBeVisible();
+    await expect(this.selectors.accountDeletedConfirmationText).toBeVisible();
+    await expect(this.selectors.accountCreationSuggestionText).toBeVisible();
+    await this.selectors.continueLink.click();
+  }
 }

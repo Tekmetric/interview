@@ -3,57 +3,55 @@ import { LoginPage } from '../pageObjects/LoginPage';
 import { UserAccountAPI } from '../pageObjects/UserAccountAPI';
 import { generateUniqueEmail } from '../../utils/generateUniqueEmail';
 import * as userData from '../../testData/userData.json';
+import { getApiUrl } from '../../utils/envHelpers';
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Load environment variables
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+const apiUrl = getApiUrl();
 
 test.describe('Login Tests', () => {
   let email: string;
-  const password = userData.password; // Extract password from userData
+  const { password, firstname, lastname, invalidUser } = userData;
   let api: UserAccountAPI;
   let apiRequestContext: any;
-  let loginPage: LoginPage; // Declare loginPage outside of hooks for broader scope
+  let loginPage: LoginPage;
 
   test.beforeAll(async ({ playwright }) => {
     apiRequestContext = await playwright.request.newContext();
-    api = new UserAccountAPI(apiRequestContext, 'https://automationexercise.com/api');
+    api = new UserAccountAPI(apiRequestContext, apiUrl);
 
     email = generateUniqueEmail();
 
-    const createUserResponse = await api.createUser(email, password, { ...userData, email });
-    const createUserResponseData = await createUserResponse.json();
-    console.log('API Setup: Create user response:', createUserResponseData);
+    const response = await api.createUser(email, password, { ...userData, email });
+    console.log('Create user response:', await response.json());
   });
 
   test.beforeEach(async ({ page }) => {
-    loginPage = new LoginPage(page); // Initialize LoginPage before each test
-    await loginPage.navigateToLoginPage(); // Navigate to the login page
+    loginPage = new LoginPage(page);
+    await loginPage.navigateToLoginPage();
   });
 
   test('Verify all login page elements are displayed', async () => {
-    await loginPage.verifyLoginUI(); // Check UI elements
+    await loginPage.verifyLoginUI();
   });
 
   test('Successful login with valid credentials', async () => {
-    await loginPage.login(email, password); // Use the email and password from setup
-
-    // Verify successful login
-    await loginPage.verifyLoggedInUser(userData.firstname, userData.lastname);
-
+    await loginPage.login(email, password);
+    await loginPage.verifyLoggedInUser(firstname, lastname);
     await loginPage.logout();
   });
 
   test('Unsuccessful login with invalid credentials', async () => {
-    const { email: invalidEmail, password: invalidPassword } = userData.invalidUser;
-
-    await loginPage.login(invalidEmail, invalidPassword);
-
-    // Verify login failure due to incorrect credentials
+    await loginPage.login(invalidUser.email, invalidUser.password);
     await loginPage.verifyLoginFailure();
   });
 
   test.afterAll(async () => {
-    const deleteUserResponse = await api.deleteUser(email, password);
-    const deleteUserResponseData = await deleteUserResponse.json();
-    console.log('API Cleanup: Delete user response:', deleteUserResponseData);
-
+    const response = await api.deleteUser(email, password);
+    console.log('Delete user response:', await response.json());
     await apiRequestContext.dispose();
   });
 });

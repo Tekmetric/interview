@@ -5,60 +5,53 @@ import { UserAccountAPI } from '../pageObjects/UserAccountAPI';
 import { ProductAPI } from '../pageObjects/ProductAPI';
 import { generateUniqueEmail } from '../../utils/generateUniqueEmail';
 import * as userData from '../../testData/userData.json';
+import { getApiUrl } from '../../utils/envHelpers';
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Load environment variables
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+const apiUrl = getApiUrl();
 
 test.describe('Checkout Process', () => {
   let email: string;
-  const password = userData.password;
   let userApi: UserAccountAPI;
   let productApi: ProductAPI;
-  let apiRequestContext: any;
-  const searchTerm = 'Blue Top'; // Search for this item
+  const { password, productSearchTerms: searchTerms, cardDetails } = userData;
 
-  test.beforeAll(async ({ request, playwright }) => {
-    // Initialize API contexts
-    apiRequestContext = await playwright.request.newContext();
-    userApi = new UserAccountAPI(apiRequestContext, 'https://automationexercise.com/api');
-    productApi = new ProductAPI(apiRequestContext, 'https://automationexercise.com/api');
-
-    // Generate a unique email
+  test.beforeAll(async ({ playwright }) => {
+    const apiRequestContext = await playwright.request.newContext();
+    userApi = new UserAccountAPI(apiRequestContext, apiUrl);
+    productApi = new ProductAPI(apiRequestContext, apiUrl);
     email = generateUniqueEmail();
 
-    // Create user for test
-    const createUserResponse = await userApi.createUser(email, password, { ...userData, email });
-    const createUserResponseData = await createUserResponse.json();
-    console.log('API Setup: Create user response:', createUserResponseData);
-
-});
+    const response = await userApi.createUser(email, password, { ...userData, email });
+    console.log('Create user response:', await response.json());
+  });
 
   test('should complete the checkout process', async ({ page }) => {
     const checkoutPage = new CheckoutPage(page);
     const loginPage = new LoginPage(page);
 
-    // Navigate to home and perform login
     await checkoutPage.navigateToHomePage();
     await loginPage.login(email, password);
 
-    // Navigate to products page and find product by name
-    await page.goto(`https://www.automationexercise.com/products?search=${searchTerm}`);
+    for (const term of searchTerms) {
+      await page.goto(`/products?search=${encodeURIComponent(term)}`);
+      await productApi.searchProduct(term);
+      await checkoutPage.addProductToCart(term);
+    }
 
-    await productApi.searchProduct(searchTerm);
-    // Interact with product
-    await checkoutPage.addProductToCart(searchTerm);
-
-    // Proceed through checkout flow
     await checkoutPage.proceedToCheckout();
     await checkoutPage.placeOrder();
-    await checkoutPage.fillCardDetails(userData.cardDetails);
+    await checkoutPage.fillCardDetails(cardDetails);
     await checkoutPage.confirmOrder();
     await checkoutPage.expectOrderConfirmation();
   });
 
   test.afterAll(async () => {
-    // Cleanup user
-    const deleteUserResponse = await userApi.deleteUser(email, password);
-    const deleteUserResponseData = await deleteUserResponse.json();
-    console.log('API Cleanup: Delete user response:', deleteUserResponseData);
-
-    await apiRequestContext.dispose();
+    const response = await userApi.deleteUser(email, password);
+    console.log('Delete user response:', await response.json());
   });
 });

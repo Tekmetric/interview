@@ -25,5 +25,6 @@
   "invalidUser": {
     "email": "invalid@example.com",
     "password": "wrongpassword"
-  }
+  },
+  "productSearchTerms": ["Stylish Dress", "Blue Top", "Men Tshirt"]
 }

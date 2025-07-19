@@ -1,21 +1,26 @@
-import * as userData from '../../testData/userData.json'; // Import user data
-import { generateUniqueEmail } from '../../utils/generateUniqueEmail'; // Import email generator
-import { test, expect, APIRequestContext, request } from '@playwright/test';
+import { test, expect, APIRequestContext } from '@playwright/test';
+import * as userData from '../../testData/userData.json';
+import { generateUniqueEmail } from '../../utils/generateUniqueEmail';
 import { UserAccountAPI } from '../pageObjects/UserAccountAPI';
+import { getApiUrl } from '../../utils/envHelpers';
+import dotenv from 'dotenv';
+import path from 'path';
 
+// Load environment variables
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-let api: UserAccountAPI;
-let email: string;
-const password: string = userData.password;
-const baseUrl = 'https://automationexercise.com/api';
+const apiUrl = getApiUrl();
 
 test.describe.serial('User Account API Tests', () => {
+  let api: UserAccountAPI;
   let apiRequestContext: APIRequestContext;
+  let email: string;
+  const password: string = userData.password;
 
   test.beforeAll(async ({ playwright }) => {
     email = generateUniqueEmail();
     apiRequestContext = await playwright.request.newContext();
-    api = new UserAccountAPI(apiRequestContext, baseUrl);
+    api = new UserAccountAPI(apiRequestContext, apiUrl);
   });
 
   test.afterAll(async () => {

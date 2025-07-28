@@ -1,4 +1,4 @@
-import { Trending } from "@/components/trending";
+import { Trending } from "@/components/trending/trending";
 
 export default function Home() {
   return (

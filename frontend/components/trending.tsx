@@ -5,6 +5,8 @@ import { moviesMock } from "./movies.mock";
 import React, { useRef } from "react";
 import { cn } from "@/utils/cn";
 import { PosterCard } from "./poster-card";
+import { Section } from "@/components/ui/section";
+import { ChevronLeft, ChevronRight } from "@/components/ui/icons";
 
 export const Trending = () => {
   // const movies = await fetchTrendingMovies(1);
@@ -41,22 +43,15 @@ export const Trending = () => {
   };
 
   return (
-    <div
-      className={cn(
-        "max-w-[1280px] mx-auto",
-        "flex flex-col gap-4 items-start",
-        "overflow-hidden",
-        "p-4 my-10"
-      )}
-    >
-      <h2 className="text-accent text-3xl font-bold">Trending Movies</h2>
-      <Link
-        href="/trending"
-        className="group flex gap-2 items-center leading-none h-6"
-      >
-        <hr className="border-accent border-0 border-l-4 h-full rounded-full" />
-        View More <ChevronRight className="h-4 group-hover:text-accent" />
+    <Section className="my-20">
+      <Section.Header>Trending Movies</Section.Header>
+      <Link href="/trending">
+        <Section.Subheader>
+          View More
+          <Section.SubheaderIcon />
+        </Section.Subheader>
       </Link>
+
       <div
         data-testid="carousel-wrapper"
         className="relative isolate group w-full"
@@ -124,38 +119,6 @@ export const Trending = () => {
           })}
         </div>
       </div>
-    </div>
-  );
-};
-
-const ChevronLeft = (props: React.SVGProps<SVGSVGElement>) => {
-  return (
-    <svg
-      width="24"
-      height="24"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      role="presentation"
-      {...props}
-    >
-      <path d="M18.378 23.369c.398-.402.622-.947.622-1.516 0-.568-.224-1.113-.622-1.515l-8.249-8.34 8.25-8.34a2.16 2.16 0 0 0 .548-2.07A2.132 2.132 0 0 0 17.428.073a2.104 2.104 0 0 0-2.048.555l-9.758 9.866A2.153 2.153 0 0 0 5 12.009c0 .568.224 1.114.622 1.515l9.758 9.866c.808.817 2.17.817 2.998-.021z"></path>
-    </svg>
-  );
-};
-
-const ChevronRight = (props: React.SVGProps<SVGSVGElement>) => {
-  return (
-    <svg
-      width="24"
-      height="24"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      role="presentation"
-      {...props}
-    >
-      <path d="M5.622.631A2.153 2.153 0 0 0 5 2.147c0 .568.224 1.113.622 1.515l8.249 8.34-8.25 8.34a2.16 2.16 0 0 0-.548 2.07c.196.74.768 1.317 1.499 1.515a2.104 2.104 0 0 0 2.048-.555l9.758-9.866a2.153 2.153 0 0 0 0-3.03L8.62.61C7.812-.207 6.45-.207 5.622.63z"></path>
-    </svg>
+    </Section>
   );
 };

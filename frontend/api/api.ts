@@ -15,14 +15,16 @@ export type PosterSizes =
 const api = (path: string, options?: RequestInit) => {
   const { headers, ...rest } = options ?? {};
 
-  return fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      accept: "application/json",
-      Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
-      ...headers,
-    },
-    ...rest,
-  });
+  return fetch(
+    `${API_BASE_URL}${path}&api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+    {
+      headers: {
+        accept: "application/json",
+        ...headers,
+      },
+      ...rest,
+    }
+  );
 };
 
 export const fetchTrendingMovies = async (
@@ -34,6 +36,7 @@ export const fetchTrendingMovies = async (
   total_results: number;
 }> => {
   const response = await api(`trending/movie/day?language=en-US&page=${page}`);
+  await new Promise((resolve) => setTimeout(resolve, 1500));
 
   if (!response.ok) {
     throw new Error("An error occurred while fetching trending movies");

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PosterCard } from "../poster-card";
+import { PosterCard } from "@/components/ui/poster-card";
 import { Carousel } from "@/components/ui/carousel";
 import { Movie } from "@/api/types";
 

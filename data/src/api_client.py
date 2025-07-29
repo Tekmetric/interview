@@ -12,7 +12,7 @@ from urllib3.util.retry import Retry
 
 from .config import APIConfig
 from .models import CloseApproachData, ObjectDetails
-from .exceptions import NASAAPIError, RateLimitError, APITimeoutError
+from .models import NASAAPIError, RateLimitError, APITimeoutError
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class NASAAPIClient:
         retry_strategy = Retry(
             total=self.config.max_retries,
             status_forcelist=[429, 500, 502, 503, 504],
-            method_whitelist=["HEAD", "GET", "OPTIONS"],
+            allowed_methods=["HEAD", "GET", "OPTIONS"],
             backoff_factor=1
         )
         

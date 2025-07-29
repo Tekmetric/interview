@@ -11,7 +11,7 @@ from pyspark.sql.types import IntegerType
 
 from .config import Config
 from .models import NEORecord, CloseApproachData, ObjectDetails, Aggregations
-from .exceptions import DataProcessingError, SparkError
+from .models import DataProcessingError, SparkError
 
 logger = logging.getLogger(__name__)
 

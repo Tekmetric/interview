@@ -11,7 +11,7 @@ from pyspark.sql import DataFrame
 
 from .config import Config
 from .models import Aggregations, ProcessingResult
-from .exceptions import StorageError
+from .models import StorageError
 
 logger = logging.getLogger(__name__)
 

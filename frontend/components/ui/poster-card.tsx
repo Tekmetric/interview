@@ -99,3 +99,10 @@ PosterCard.Title = PosterCardTitle;
 PosterCard.Description = PosterCardDescription;
 
 export { PosterCard };
+
+export const PosterCardSkeleton = ({
+  className,
+  ...rest
+}: ComponentProps<typeof PosterCard>) => {
+  return <PosterCard className={cn("animate-pulse", className)} {...rest} />;
+};

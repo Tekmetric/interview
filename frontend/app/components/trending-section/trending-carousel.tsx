@@ -44,7 +44,7 @@ export const TrendingCarousel = () => {
       <Carousel.ScrollRightButton />
 
       <Carousel.Content>
-        {movies.map((movie) => {
+        {movies.map((movie, index) => {
           return (
             <PosterCard className="w-[185px] flex-shrink-0" key={movie.id}>
               <Link
@@ -56,6 +56,7 @@ export const TrendingCarousel = () => {
                   size="w185"
                   alt={`A poster of ${movie.original_title}`}
                   className="w-full"
+                  {...(index <= 5 && { priority: true })} // to improve LCP
                 />
               </Link>
               <PosterCard.Content>

@@ -8,7 +8,11 @@ export const metadata: Metadata = {
 };
 
 const Layout = ({ children }: { children: ReactNode }) => {
-  return children;
+  return (
+    <main className="md:max-w-[960px] lg:max-w-[1280px] mx-auto my-20">
+      {children}
+    </main>
+  );
 };
 
 export default Layout;

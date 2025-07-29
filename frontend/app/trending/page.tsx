@@ -14,6 +14,7 @@ const TrendingPage = () => {
     hasNextPage,
     isFetchingNextPage,
     isLoadingError,
+    refetch,
   } = useInfiniteTrendingMovies({
     getNextPageParam: (_lastPage, _allPages, lastPageParam) => {
       // set max loading pages as 5
@@ -26,29 +27,34 @@ const TrendingPage = () => {
   });
 
   if (isLoadingError) {
-    return <p>Something went wrong 😔</p>;
+    return (
+      <Section className="gap-10 h-[510px]">
+        <h1 className="text-5xl">Trending Movies</h1>
+        <div className="flex flex-col gap-2 items-center justify-center w-full h-full">
+          <p>Oops! Something went wrong...</p>
+          <Button onClick={() => refetch()}>Try Again</Button>
+        </div>
+      </Section>
+    );
   }
 
   const movies = data?.pages.flatMap((page) => page.results) ?? [];
-
   const showButtonOrLoader = (!isLoading && hasNextPage) || isFetchingNextPage;
 
   return (
-    <main className="md:max-w-[960px] lg:max-w-[1280px] mx-auto my-20">
-      <Section className="gap-10">
-        <h1 className="text-5xl">Trending Movies</h1>
-        <TrendingGrid isLoading={isLoading} movies={movies} />
+    <Section className="gap-10">
+      <h1 className="text-5xl">Trending Movies</h1>
+      <TrendingGrid isLoading={isLoading} movies={movies} />
 
-        {showButtonOrLoader && (
-          <div className="flex w-full justify-center">
-            {!isLoading && hasNextPage && !isFetchingNextPage && (
-              <Button onClick={() => fetchNextPage()}>Load More</Button>
-            )}
-            {isFetchingNextPage && <LoaderDots />}
-          </div>
-        )}
-      </Section>
-    </main>
+      {showButtonOrLoader && (
+        <div className="flex w-full justify-center">
+          {!isLoading && hasNextPage && !isFetchingNextPage && (
+            <Button onClick={() => fetchNextPage()}>Load More</Button>
+          )}
+          {isFetchingNextPage && <LoaderDots />}
+        </div>
+      )}
+    </Section>
   );
 };
 

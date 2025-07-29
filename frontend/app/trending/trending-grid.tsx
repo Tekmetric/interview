@@ -9,7 +9,10 @@ import { Movie } from "@/api/types";
 
 const Skeleton = ({ className }: { className?: string }) => {
   return (
-    <PosterCardSkeleton className={cn("w-full pb-[112px]", className)}>
+    <PosterCardSkeleton
+      className={cn("w-full pb-[112px]", className)}
+      data-testid="skeleton"
+    >
       <div className="aspect-[185/278]" />
     </PosterCardSkeleton>
   );
@@ -33,10 +36,11 @@ export const TrendingGrid = ({
           <Skeleton className="hidden lg:block" />
         </>
       )}
+
       {!isLoading &&
         movies.map((movie, index) => {
           return (
-            <PosterCard key={movie.id + index}>
+            <PosterCard key={movie.id + index} data-testid="poster-card">
               <Link
                 href={`movies/${movie.id}`}
                 className="hover:opacity-85 transition-opacity duration-200 relative group"

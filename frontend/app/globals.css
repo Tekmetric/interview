@@ -5,6 +5,7 @@
   --foreground: #171717;
   --accent: #f5c518;
   --poster-card-background: #1a1a1a;
+  --navbar-background: #222;
 }
 
 @theme inline {
@@ -14,6 +15,7 @@
   --font-mono: var(--font-geist-mono);
   --color-accent: var(--accent);
   --color-poster-card-background: var(--poster-card-background);
+  --color-navbar-background: var(--navbar-background);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,6 +24,7 @@
     --foreground: #ededed;
     --accent: #f5c518;
     --poster-card-background: #1a1a1a;
+    --navbar-background: #222;
   }
 }
 

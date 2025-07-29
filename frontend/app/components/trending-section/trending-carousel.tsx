@@ -12,7 +12,7 @@ export const TrendingCarousel = () => {
 
   if (isLoading) {
     return (
-      <Carousel className="w-full h-full">
+      <Carousel className="w-full h-full" data-testid="skeleton">
         <Carousel.Content className="h-full">
           <PosterCardSkeleton className="w-[185px] h-full shrink-0" />
           <PosterCardSkeleton className="w-[185px] h-full shrink-0" />
@@ -39,7 +39,7 @@ export const TrendingCarousel = () => {
   const movies = data?.pages?.[0].results ?? [];
 
   return (
-    <Carousel className="w-full">
+    <Carousel className="w-full" data-testid="carousel">
       <Carousel.ScrollLeftButton />
       <Carousel.ScrollRightButton />
 

@@ -36,7 +36,6 @@ export const fetchTrendingMovies = async (
   total_results: number;
 }> => {
   const response = await api(`trending/movie/day?language=en-US&page=${page}`);
-  await new Promise((resolve) => setTimeout(resolve, 1500));
 
   if (!response.ok) {
     throw new Error("An error occurred while fetching trending movies");

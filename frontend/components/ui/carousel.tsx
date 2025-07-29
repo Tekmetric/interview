@@ -134,7 +134,7 @@ const CarouselContent = ({
   return (
     <div
       ref={contentRef}
-      className={cn("flex space-x-4 overflow-auto no-scrollbar", className)}
+      className={cn("flex gap-4 overflow-auto no-scrollbar", className)}
       {...rest}
     />
   );

@@ -66,7 +66,7 @@ const PosterCardTitle = ({
   children: React.ReactNode;
 }) => {
   return (
-    <span title={title} className="text-white text-md line-clamp-2">
+    <span title={title} className="text-white text-md line-clamp-2 h-12">
       {children}
     </span>
   );

@@ -1,15 +1,11 @@
 import Link from "next/link";
 
 import { Section } from "@/components/ui/section";
-
-import { fetchTrendingMovies } from "@/api/api";
 import { TrendingCarousel } from "./trending-carousel";
 
-export const Trending = async () => {
-  const movies = await fetchTrendingMovies(1);
-
+export const TrendingSection = () => {
   return (
-    <Section className="my-20">
+    <Section className="my-20 h-[510px]">
       <Section.Header>Trending Movies</Section.Header>
       <Link href="/trending">
         <Section.Subheader>
@@ -17,8 +13,7 @@ export const Trending = async () => {
           <Section.SubheaderIcon />
         </Section.Subheader>
       </Link>
-
-      <TrendingCarousel movies={movies.results} />
+      <TrendingCarousel />
     </Section>
   );
 };

@@ -1,11 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { PosterCard } from "@/components/ui/poster-card";
+import { PosterCard, PosterCardSkeleton } from "@/components/ui/poster-card";
 import { Carousel } from "@/components/ui/carousel";
-import { Movie } from "@/api/types";
+import { Button } from "@/components/ui/button";
+import { useInfiniteTrendingMovies } from "@/api/hooks";
+import { cn } from "@/utils/cn";
 
-export const TrendingCarousel = ({ movies }: { movies: Movie[] }) => {
+export const TrendingCarousel = () => {
+  const { data, isError, isLoading, refetch } = useInfiniteTrendingMovies();
+
+  if (isLoading) {
+    return (
+      <Carousel className="w-full h-full">
+        <Carousel.Content className="h-full">
+          <PosterCardSkeleton className="w-[185px] h-full" />
+          <PosterCardSkeleton className="w-[185px] h-full" />
+          <PosterCardSkeleton className="w-[185px] h-full" />
+          <PosterCardSkeleton className="w-[185px] h-full" />
+          <PosterCardSkeleton className="w-[185px] h-full" />
+          <PosterCardSkeleton className="w-[185px] h-full" />
+        </Carousel.Content>
+      </Carousel>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div
+        className={cn("flex flex-col gap-2", "w-full items-center", "my-auto")}
+      >
+        <p>Oops! Something went wrong...</p>
+        <Button onClick={() => refetch()}>Try Again</Button>
+      </div>
+    );
+  }
+
+  const movies = data?.pages?.[0].results ?? [];
+
   return (
     <Carousel className="w-full">
       <Carousel.ScrollLeftButton />

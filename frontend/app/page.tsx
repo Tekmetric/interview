@@ -1,9 +1,9 @@
-import { Trending } from "@/components/trending/trending";
+import { TrendingSection } from "./components/trending-section/trending-section";
 
 export default function Home() {
   return (
     <main className="bg-background">
-      <Trending />
+      <TrendingSection />
     </main>
   );
 }

@@ -14,12 +14,12 @@ export const TrendingCarousel = () => {
     return (
       <Carousel className="w-full h-full">
         <Carousel.Content className="h-full">
-          <PosterCardSkeleton className="w-[185px] h-full" />
-          <PosterCardSkeleton className="w-[185px] h-full" />
-          <PosterCardSkeleton className="w-[185px] h-full" />
-          <PosterCardSkeleton className="w-[185px] h-full" />
-          <PosterCardSkeleton className="w-[185px] h-full" />
-          <PosterCardSkeleton className="w-[185px] h-full" />
+          <PosterCardSkeleton className="w-[185px] h-full shrink-0" />
+          <PosterCardSkeleton className="w-[185px] h-full shrink-0" />
+          <PosterCardSkeleton className="w-[185px] h-full shrink-0" />
+          <PosterCardSkeleton className="w-[185px] h-full shrink-0" />
+          <PosterCardSkeleton className="w-[185px] h-full shrink-0" />
+          <PosterCardSkeleton className="w-[185px] h-full shrink-0" />
         </Carousel.Content>
       </Carousel>
     );

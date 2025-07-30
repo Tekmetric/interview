@@ -24,25 +24,15 @@ echo "NASA_API_KEY=your_nasa_api_key_here" > .env
 
 ### Run the Processor
 
-**Option 1: Original Modular Version**
 ```bash
 source venv/bin/activate
-./venv/bin/python neo_data_processor_modular.py
+./venv/bin/python neo_data_processor.py
 ```
 
-**Option 2: NEW Distributed Version (Recommended)**
+**Performance Benchmarking:**
 ```bash
-source venv/bin/activate
-./venv/bin/python neo_data_processor_distributed.py
-```
-
-**Option 3: Performance Comparison**
-```bash
-# Compare single-threaded vs distributed performance
-./venv/bin/python neo_data_processor_distributed.py --compare
-
 # Run comprehensive benchmark
-./venv/bin/python neo_data_processor_distributed.py --benchmark
+./venv/bin/python neo_data_processor.py --benchmark
 ```
 
 ## 📊 **Requirements Fulfilled**
@@ -60,18 +50,14 @@ source venv/bin/activate
 
 ```
 src/
-├── config.py                    # Configuration management
-├── models.py                    # Data models + custom exceptions
-├── api_client.py                # NASA API integration (original)
-├── distributed_api_client.py    # NEW: Distributed NASA API client
-├── data_processor.py            # PySpark data processing (original)
-├── distributed_data_processor.py # NEW: Fully distributed data processor
-├── storage.py                   # Data lake operations
-├── neo_processor.py             # Pipeline orchestration (original)
-├── distributed_neo_processor.py # NEW: Distributed pipeline orchestrator
+├── config.py          # Configuration management
+├── models.py          # Data models + custom exceptions
+├── api_client.py      # Distributed NASA API client using Spark
+├── data_processor.py  # Distributed data processing using Spark
+├── storage.py         # Data lake operations
+├── neo_processor.py   # Distributed pipeline orchestrator
 └── __init__.py
-neo_data_processor_modular.py    # Original entry point
-neo_data_processor_distributed.py # NEW: Distributed entry point
+neo_data_processor.py   # Main entry point
 ```
 
 **Key Design Principles:**
@@ -116,15 +102,14 @@ Example output:
 
 ## 🚀 **Scalability Features**
 
-### **NEW: Distributed Processing (v2.0)**
-**Eliminates ALL Single-threaded Bottlenecks:**
+### **High-Performance Distributed Processing**
+**Spark-powered architecture that eliminates single-threaded bottlenecks:**
 - ⚡ **Distributed API Calls**: NASA API requests parallelized across Spark workers
 - ⚡ **Distributed Data Processing**: All operations use Spark DataFrames
-- ⚡ **Distributed Joins**: Replace Python loops with Spark distributed joins
-- ⚡ **Distributed Aggregations**: Calculate comprehensive statistics in parallel
+- ⚡ **Distributed Joins**: High-performance distributed joins and aggregations
 - 📊 **Performance Monitoring**: Real-time speed metrics and benchmarking
 
-**Performance Improvements:**
+**Performance Benefits:**
 - 3-5x faster processing for moderate datasets (100+ objects)
 - Linear scalability with Spark cluster size
 - Automatic optimal parallelism detection

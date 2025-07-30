@@ -37,11 +37,11 @@ class NEOPipeline:
         """
         self.config = config or Config.from_env()
         
-        # Initialize distributed data processor first (creates Spark session)
-        self.data_processor = DistributedDataProcessor(self.config)
+        # Initialize data processor first (creates Spark session)
+        self.data_processor = NEODataProcessor(self.config)
         
-        # Initialize distributed API client with Spark session
-        self.api_client = DistributedNASAAPIClient(
+        # Initialize API client with Spark session
+        self.api_client = NASAAPIClient(
             self.config.api, 
             self.data_processor.spark
         )
@@ -297,7 +297,7 @@ def process_neo_data_distributed(api_key: Optional[str] = None,
     if limit:
         config.processing.object_limit = limit
     
-    processor = DistributedNEOPipeline(config)
+    processor = NEOPipeline(config)
     return processor.run_distributed_pipeline(parallelism=parallelism)
 
 
@@ -320,7 +320,7 @@ def main():
     
     try:
         if args.benchmark:
-            processor = DistributedNEOPipeline()
+            processor = NEOPipeline()
             benchmark_results = processor.run_performance_benchmark([50, 100, 200])
             
             print("🏁 Benchmark Results:")

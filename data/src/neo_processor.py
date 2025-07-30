@@ -24,9 +24,8 @@ class NEOPipeline:
     Streamlined NEO data processing pipeline using only NeoWs API
     
     This pipeline is optimized for scalability and efficiency:
-    1. Single API call to NeoWs gets all required data (NEO + close approaches)
+    1. Single API call to NeoWs gets all required data (NEO + close approaches) (distributed fetching TBD)
     2. Distributed Spark processing handles hundreds of GB
-    3. Minimal code with maximum efficiency
     """
     
     def __init__(self, api_config: APIConfig, spark_config: SparkConfig, 
@@ -68,7 +67,7 @@ class NEOPipeline:
             
             logger.info(f"Successfully fetched NEO data. Extracting raw data...")
             
-            # Extract raw data with closest approach per NEO (Option A)
+            # Extract raw data with closest approach per NEO
             raw_data_df = self.data_processor.extract_raw_data_with_closest_approach(neo_dataframe)
             
             # Save raw data
@@ -80,8 +79,6 @@ class NEOPipeline:
             # Calculate aggregations directly from clean raw data (Option 1)
             aggregations = self.data_processor.calculate_aggregations_from_raw(raw_data_df)
             
-            # Validate data quality using raw data
-            quality_score = self.data_processor.validate_data_quality(raw_data_df)
             
             # Save aggregations (no longer saving processed_df)
             self._save_aggregations(aggregations)
@@ -94,7 +91,6 @@ class NEOPipeline:
                 close_approaches_count=aggregations.total_close_approaches,
                 processing_time_seconds=processing_time,
                 aggregations=aggregations,
-                data_quality_score=quality_score,
                 success=True
             )
             

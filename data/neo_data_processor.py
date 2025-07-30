@@ -40,32 +40,21 @@ def main():
         end_time = time.time()
         processing_time = end_time - start_time
         
-        print(f"\n✅ Processing Results:")
-        print(f"📊 Objects processed: {result.total_objects_processed}")
-        print(f"⏱️ Processing time: {processing_time:.2f} seconds")
-        print(f"⚡ Processing speed: {result.total_objects_processed/processing_time:.1f} objects/second")
-        print(f"🎯 Success rate: {(result.total_objects_processed if result.success else 0)/max(result.total_objects_processed, 1)*100:.1f}%")
-        print(f"📁 Success: {'✅ Yes' if result.success else '❌ No'}")
+        print(f"\nProcessing Results:")
+        print(f"Objects processed: {result.total_objects_processed}")
+        print(f"Processing time: {processing_time:.2f} seconds")
+        print(f"Processing speed: {result.total_objects_processed/processing_time:.1f} objects/second")
+        print(f"Success: {'Yes' if result.success else 'No'}")
         
         # Show aggregation results
         agg = result.aggregations
-        print(f"\n📈 Enhanced Aggregations:")
+        print(f"\nEnhanced Aggregations:")
         print(f"  • Close approaches < 0.2 AU: {agg.close_approaches_under_threshold}")
         print(f"  • Total objects processed: {agg.total_objects}")
         print(f"  • Approaches by year: {agg.approaches_by_year}")
         
-        # Show enhanced statistics if available
-        if agg.velocity_statistics:
-            vel_stats = agg.velocity_statistics
-            print(f"  • Velocity stats: avg={vel_stats.get('avg', 0):.1f} km/s, max={vel_stats.get('max', 0):.1f} km/s")
-        
-        if agg.distance_statistics:
-            dist_stats = agg.distance_statistics
-            print(f"  • Distance stats: avg={dist_stats.get('avg_au', 0):.3f} AU, min={dist_stats.get('min_au', 0):.3f} AU")
-        
-        if agg.hazard_distribution:
-            hazard_dist = agg.hazard_distribution
-            print(f"  • Hazard distribution: {hazard_dist}")
+        if agg.potentially_hazardous_count:
+            print(f"  • Potentially hazardous: {agg.potentially_hazardous_count}")
         
 
         
@@ -77,7 +66,7 @@ def main():
         return 0
         
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\nError: {e}")
         logging.error(f"Distributed pipeline failed: {e}", exc_info=True)
         return 1
 

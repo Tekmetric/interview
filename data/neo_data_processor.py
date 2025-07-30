@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-"""
-NASA Near Earth Object Data Processor
-
-High-performance NEO data processor using Spark for distributed processing.
-Fetches data from NASA APIs and processes it for analysis.
-"""
-
 import sys
 import logging
 from datetime import datetime
@@ -34,8 +27,8 @@ def main():
         
         start_time = time.time()
         result = process_neo_data_distributed(
-            limit=200,  # Process 100 objects for demonstration
-            parallelism=4  # Use 4 parallel partitions
+            limit=200,  # Per instructions, 200 objects - this could be a a param
+            parallelism=4  # Use 4 parallel partitions - this could be a param
         )
         end_time = time.time()
         processing_time = end_time - start_time
@@ -43,25 +36,25 @@ def main():
         print(f"\nProcessing Results:")
         print(f"Objects processed: {result.total_objects_processed}")
         print(f"Processing time: {processing_time:.2f} seconds")
-        print(f"Processing speed: {result.total_objects_processed/processing_time:.1f} objects/second")
+        print(f"Average Processing speed: {result.total_objects_processed/processing_time:.1f} objects/second")
         print(f"Success: {'Yes' if result.success else 'No'}")
         
         # Show aggregation results
         agg = result.aggregations
         print(f"\nEnhanced Aggregations:")
-        print(f"  • Close approaches < 0.2 AU: {agg.close_approaches_under_threshold}")
-        print(f"  • Total objects processed: {agg.total_objects}")
-        print(f"  • Approaches by year: {agg.approaches_by_year}")
+        print(f"* Close approaches < 0.2 AU: {agg.close_approaches_under_threshold}")
+        print(f"* Total objects processed: {agg.total_objects}")
+        print(f"* Approaches by year: {agg.approaches_by_year}")
         
         if agg.potentially_hazardous_count:
-            print(f"  • Potentially hazardous: {agg.potentially_hazardous_count}")
+            print(f"* Potentially hazardous: {agg.potentially_hazardous_count}")
         
 
         
-        # Show output structure (if available)
-        print(f"\n📂 Data saved to:")
-        print(f"  • Processed data: data/processed/neo/year={datetime.now().year}/")
-        print(f"  • Aggregations: data/aggregations/neo/year={datetime.now().year}/")
+        # Show output structure
+        print(f"\nData saved to:")
+        print(f"* Raw data: data/raw/neo/year={datetime.now().year}/")
+        print(f"* Aggregations: data/aggregations/neo/year={datetime.now().year}/")
         
         return 0
         

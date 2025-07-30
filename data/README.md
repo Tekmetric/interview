@@ -1,12 +1,49 @@
-# NASA Near Earth Object Data Processor
+# Python Coding Exercise
 
-A scalable Python application that fetches Near Earth Object (NEO) data from NASA's API and processes it using PySpark with a **clean modular architecture**.
+Your task is to build a python script to gather data from NASA's Near Earth Object Web Service API, and save that data. We'll also perform some aggregations to make reporting on Near Earth Objects simpler for our theoretical website.
 
-## 🎯 **Solution Overview**
+The page for the API is here: https://api.nasa.gov
 
-This project implements NASA NEO data processing requirements using a **production-ready modular architecture** that demonstrates software engineering best practices while keeping the code minimal and focused.
+To save our data, we'll write it out to the local filesystem as if we're saving it to an S3 Data Lake. This will save having to mess with AWS credentials. Your files should be saved in the same data directory in which this README resides, in whatever folder structure you would use to save the data in S3.
 
-## 🚀 **Quick Start**
+### Requirements
+- Create an account at [api.nasa.gov](https://api.nasa.gov) to get an API key
+- Find the docs for the Near Earth Object Web Service (below the signup on the same page)
+- Data should be saved in Parquet format
+- Design the code such that the scraping and processing part could easily be scaled up to tens of GBs of data but it can also be easily run 
+locally at development scale. 
+- Use the Browse API to request data
+    - There are over 1800 pages of near Earth objects, so we'll limit ourselves to gathering the first 200 near earth objects
+- We want to save the following columns in our file(s):
+    - id
+    - neo_reference_id
+    - name
+    - name_limited
+    - designation
+    - nasa_jpl_url
+    - absolute_magnitude_h
+    - is_potentially_hazardous_asteroid
+    - minimum estimated diameter in meters
+    - maximum estimated diameter in meters
+    - **closest** approach miss distance in kilometers
+    - **closest** approach date
+    - **closest** approach relative velocity in kilometers per second
+    - first observation date
+    - last observation date
+    - observations used
+    - orbital period
+- Store the following aggregations:
+    - The total number of times our 200 near earth objects approached closer than 0.2 astronomical units (found as miss_distance.astronomical)
+    - The number of close approaches recorded in each year present in the data
+
+### Submitting your coding exercise
+Once you have finished your script, please create a PR into Tekmetric/interview. Don't forget to update the gitignore if that is required!
+
+
+## **Solution Overview**
+
+This project implements NASA NEO data processing requirements using a **production-ready modular architecture**.
+## **Quick Start**
 
 ### Setup Environment
 ```bash
@@ -29,20 +66,8 @@ source venv/bin/activate
 ./venv/bin/python neo_data_processor.py
 ```
 
+## **Module Architecture**
 
-
-## 📊 **Requirements Fulfilled**
-
-✅ **Parquet format storage** - All data saved in efficient columnar format  
-✅ **Scalable design** - PySpark enables local dev → distributed clusters  
-✅ **First 200 NEO objects** - Fetched using NASA Browse API  
-✅ **All required columns** - Complete schema with 14 specified fields  
-✅ **Required aggregations** - Close approaches < 0.2 AU + yearly counts  
-✅ **S3-like structure** - Organized data lake with year-based partitioning  
-
-## 🏗️ **Modular Architecture**
-
-**Clean separation of concerns across focused modules:**
 
 ```
 src/
@@ -56,30 +81,23 @@ src/
 neo_data_processor.py   # Main entry point
 ```
 
-**Key Design Principles:**
-- **Single Responsibility** - Each module has one clear purpose
-- **Minimal Code** - Streamlined for take-home assignment
-- **Type Safety** - Full type hints for maintainability
-- **Error Handling** - Custom exceptions with clear context
-- **Resource Management** - Proper cleanup and session handling
 
-## 📂 **Output Structure**
 
-S3-like data lake structure with year-based partitioning:
+## **Output Structure**
+
+S3-like data lake structure with year/month/day-based partitioning:
 
 ```
 data/
-├── raw/neo/year=2025/
+├── raw/neo/year=2025/month=7/day=30
 │   ├── neo_raw_data.json          # JSON backup
 │   └── neo_raw_data.parquet       # Raw Parquet data
-├── processed/neo/year=2025/
-│   └── neo_processed_data.parquet # Cleaned, processed data
-└── aggregations/neo/year=2025/
+└── aggregations/neo/year=2025/month=7/day=30
     ├── neo_aggregations.json      # Summary statistics
     └── approaches_by_year.parquet  # Yearly approach counts
 ```
 
-## 📈 **Sample Results**
+## **Sample Results**
 
 The pipeline processes NEO data and calculates:
 
@@ -96,20 +114,18 @@ Example output:
 }
 ```
 
-## 🚀 **Scalability Features**
+## **Scalability Features**
 
 ### **High-Performance Distributed Processing**
-**Spark-powered architecture that eliminates single-threaded bottlenecks:**
-- ⚡ **Distributed API Calls**: NASA API requests parallelized across Spark workers
+**Spark-powered architecture that eliminates single-threaded bottlenecks:** (and creates other issues, similar to any respectable distributed system :D )
+- ⚡ **Distributed API Calls**: NASA API requests parallelized across Spark workers (TBD, not done yet)
 - ⚡ **Distributed Data Processing**: All operations use Spark DataFrames
 - ⚡ **Distributed Joins**: High-performance distributed joins and aggregations
-- 📊 **Performance Monitoring**: Real-time speed metrics
+- **Performance Monitoring**: Real-time speed metrics
 
 **Performance Benefits:**
-- 3-5x faster processing for moderate datasets (100+ objects)
 - Linear scalability with Spark cluster size
-- Automatic optimal parallelism detection
-- Enhanced statistics and data quality metrics
+- Adaptive query execution enabled and partition coallesece, which should improve performance (benchmark required to be more precise)
 
 ### **Local Development:**
 - Optimized Spark configuration for single machine
@@ -119,7 +135,7 @@ Example output:
 
 ### **Production Scale:**
 - Easy deployment to Spark clusters (EMR, Databricks, etc.)
-- Year-based partitioning for efficient querying
+- Date-based partitioning for efficient querying
 - Snappy compression for optimal storage/performance
 - Horizontal scaling across multiple nodes
 
@@ -133,23 +149,7 @@ spark = SparkSession.builder \
     .getOrCreate()
 ```
 
-## 💻 **Interactive Analysis**
-
-Comprehensive Jupyter notebook for data exploration:
-
-```bash
-source venv/bin/activate
-jupyter lab
-# Open neo_data_analysis.ipynb
-```
-
-**Analysis Features:**
-- Data loading and schema inspection
-- Interactive visualizations (matplotlib, seaborn, plotly)
-- Statistical analysis and insights
-- Custom analysis functions
-
-## 🔧 **API Integration**
+## **API Integration**
 
 **NASA APIs Used:**
 1. **Close Approach Data API** - NEO close approach records
@@ -160,48 +160,26 @@ jupyter lab
 - Comprehensive error handling and retry logic
 - Efficient data extraction and transformation
 
-## 🌐 **Monitoring**
+## **Monitoring**
 
 - **Spark UI**: Real-time job monitoring at `http://localhost:4040`
-- **Jupyter Lab**: Interactive analysis at `http://localhost:8888`
+- **Data quality counters**: Counters describing the data published at every stage. Currently they are only printed to console. Given a monitoring solution, these logs and other metrics should be published/exported into those systems. 
 
-## ⚙️ **Technical Stack**
+## **Technical Stack**
 
-- **Python 3.8+** with comprehensive type hints
+- **Python 3.8+** 
 - **PySpark 3.5.0** for distributed processing
 - **pandas** for data manipulation
 - **PyArrow** for efficient Parquet operations
 - **Jupyter** with visualization libraries
 
-## 🎯 **Key Achievements**
 
-1. **Functional Requirements** - All NASA API integration and processing requirements met
-2. **Scalable Architecture** - PySpark enables processing from MBs to TBs
-3. **Production Ready** - Modular design with proper error handling
-4. **Data Lake Design** - S3-compatible structure with efficient partitioning
-5. **Interactive Analysis** - Complete Jupyter-based exploration environment
-6. **Minimal Code** - Clean, focused implementation for take-home assignment
-
-## 🔄 **Development Workflow**
+## **Development Workflow**
 
 ```bash
 # Quick setup and test
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 echo "NASA_API_KEY=DEMO_KEY" > .env
-./venv/bin/python neo_data_processor_modular.py
+./venv/bin/python neo_data_processor.py
 ```
-
-## 📋 **Dependencies**
-
-- `requests` - NASA API HTTP client
-- `pyspark` - Distributed data processing
-- `pandas` - Data manipulation
-- `pyarrow` - Parquet operations
-- `python-dotenv` - Environment management
-- `jupyter` - Interactive analysis
-- `matplotlib/seaborn/plotly` - Visualizations
-
----
-
-**A production-ready modular architecture demonstrating software engineering best practices for scalable data processing.** 🚀

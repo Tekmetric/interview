@@ -21,10 +21,10 @@ logger = logging.getLogger(__name__)
 
 class NEOPipeline:
     """
-    Streamlined NEO data processing pipeline using only NeoWs API
+    Streamlined NEO data processing pipeline using NeoWs API
     
     This pipeline is optimized for scalability and efficiency:
-    1. Single API call to NeoWs gets all required data (NEO + close approaches) (distributed fetching TBD)
+    1. Single threaded API call to NeoWs gets all required data (NEO + close approaches) (distributed fetching TBD - it poses some challenges on its own)
     2. Distributed Spark processing handles hundreds of GB
     """
     
@@ -46,7 +46,7 @@ class NEOPipeline:
         
         Args:
             neo_limit: Maximum number of NEO objects to process
-            parallelism: Number of parallel partitions for Spark processing
+            parallelism: Number of parallel partitions for Spark processing - can be edited based on the hardware available and the expected data size
             
         Returns:
             ProcessingResult with pipeline execution details
@@ -211,72 +211,3 @@ def process_neo_data_distributed(limit: Optional[int] = None,
     pipeline = NEOPipeline(api_config, spark_config, processing_config)
     return pipeline.run_pipeline(limit, parallelism)
 
-
-def main():
-    """Main execution function"""
-    import argparse
-    import sys
-    
-    # Setup argument parser
-    parser = argparse.ArgumentParser(description='Process NEO data using distributed Spark processing')
-    parser.add_argument('--limit', type=int, default=200, 
-                       help='Maximum number of NEO objects to process (default: 200)')
-    parser.add_argument('--parallelism', type=int, 
-                       help='Number of parallel partitions for processing')
-    parser.add_argument('--api-key', type=str, 
-                       help='NASA API key (or set NASA_API_KEY environment variable)')
-    
-    args = parser.parse_args()
-    
-    # Setup logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-    
-    try:
-        logger.info("Starting distributed NEO data processing")
-        logger.info(f"Processing up to {args.limit} NEO objects")
-        if args.parallelism:
-            logger.info(f"Using {args.parallelism} parallel partitions")
-        
-        # Run distributed processing
-        result = process_neo_data_distributed(
-            limit=args.limit,
-            parallelism=args.parallelism
-        )
-        
-        # Display results
-        print("\n" + "="*60)
-        print("DISTRIBUTED NEO PROCESSING COMPLETE")
-        print("="*60)
-        print(f"NEO Objects Processed: {result.total_objects_processed}")
-        print(f"Close Approaches Found: {result.close_approaches_count}")
-        print(f"Processing Time: {result.processing_time_seconds:.2f} seconds")
-        print(f"Data Quality Score: {result.data_quality_score:.2f}")
-        
-        if result.aggregations:
-            print(f"\nAggregations:")
-            print(f"  Total Objects: {result.aggregations.total_objects}")
-            print(f"  Total Close Approaches: {result.aggregations.total_close_approaches}")
-            print(f"  Potentially Hazardous: {result.aggregations.potentially_hazardous_count}")
-            print(f"  Average Miss Distance: {result.aggregations.average_miss_distance_km:,.0f} km")
-            print(f"  Average Velocity: {result.aggregations.average_velocity_kms:.2f} km/s")
-        
-        if result.errors:
-            print(f"\nErrors encountered: {len(result.errors)}")
-            for error in result.errors[:5]:  # Show first 5 errors
-                print(f"  - {error}")
-        
-        print("="*60)
-        
-    except Exception as e:
-        logger.error(f"Processing failed: {e}")
-        print(f"Error: {e}")
-        return 1
-    
-    return 0
-
-
-if __name__ == "__main__":
-    exit(main()) 

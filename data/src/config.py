@@ -18,7 +18,7 @@ class APIConfig:
     api_key: str
     base_url: str = "https://api.nasa.gov"
     request_timeout: int = 30
-    rate_limit_delay: float = 3.0  # Increased from 1.0 to 3.0 for Browse API
+    rate_limit_delay: float = 3.0
     max_retries: int = 3
     
     @property

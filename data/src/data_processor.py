@@ -59,7 +59,7 @@ class NEODataProcessor:
         Calculate aggregations from raw data (1 row per NEO with closest approach)
         
         Args:
-            raw_df: Raw DataFrame with 17 columns, 1 row per NEO - selecting the closest approach per NEO
+            raw_df: Raw DataFrame with 17 columns, 1 row per NEO - the closest approach per NEO is selected or null if there are no close approaches
             
         Returns:
             Aggregations object with calculated metrics
@@ -141,8 +141,8 @@ class NEODataProcessor:
 
     def extract_raw_data_with_closest_approach(self, neo_df: DataFrame) -> DataFrame:
         """
-        Extract raw data with 17 specified columns using closest approach per NEO (Option A)
-        FIXED: Now keeps ALL NEO objects, including those without close approach data
+        Extract raw data with 17 specified columns using closest approach per NEO - not sure if I correctly understood the instructions here
+        I notice there are situations when there are no close approaches. However, I decided to keep those NEOs as well.
         
         Args:
             neo_df: Raw DataFrame from Browse API
@@ -256,8 +256,8 @@ class NEODataProcessor:
             
             final_count = raw_data_df.count()
             logger.info(f"Successfully extracted raw data: {final_count} NEO objects total")
-            logger.info(f"  • With close approaches: {with_count}")
-            logger.info(f"  • Without close approaches: {without_count}")
+            logger.info(f"With close approaches: {with_count}")
+            logger.info(f"Without close approaches: {without_count}")
             
             if final_count != total_input_count:
                 logger.warning(f"Object count mismatch: Input {total_input_count} → Output {final_count}")

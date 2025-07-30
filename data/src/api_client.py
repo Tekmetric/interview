@@ -30,7 +30,7 @@ class NASAAPIClient:
     def fetch_neo_data_distributed(self, limit: int = 200, parallelism: Optional[int] = None) -> DataFrame:
         """
         Fetch NEO data with embedded close approach data using NeoWs API
-        Simplified approach: initial iteration, fetch data sequentially, then distribute processing
+        Simplified approach: initial iteration, fetch data sequentially, then later we'll migrate to distribute fetching
         Distributed data fetching will pose additional challenges, so we'll use a simpler approach for now
         
         Args:

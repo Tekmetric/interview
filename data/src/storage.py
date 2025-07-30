@@ -21,13 +21,15 @@ class DataStorage:
     def __init__(self):
         self.base_output_dir = Path("data")
         self.current_year = datetime.now().year
+        self.current_month = datetime.now().month
+        self.current_day = datetime.now().day
         self._ensure_directories()
     
     def _ensure_directories(self):
         """Ensure required directories exist"""
         directories = [
-            self.base_output_dir / "raw" / "neo" / f"year={self.current_year}",
-            self.base_output_dir / "aggregations" / "neo" / f"year={self.current_year}",
+            self.base_output_dir / "raw" / "neo" / f"year={self.current_year}" / f"month={self.current_month}" / f"day={self.current_day}", # refactor this, we repeat this code 
+            self.base_output_dir / "aggregations" / "neo" / f"year={self.current_year}" / f"month={self.current_month}" / f"day={self.current_day}",
         ]
         for directory in directories:
             directory.mkdir(parents=True, exist_ok=True)
@@ -43,7 +45,7 @@ class DataStorage:
             Path to saved aggregations file
         """
         try:
-            output_path = self.base_output_dir / "aggregations" / "neo_aggregations.json"
+            output_path = self.base_output_dir / "aggregations" / "neo" / f"year={self.current_year}"/ f"month={self.current_month}" / f"day={self.current_day}" / "neo_aggregations.json"
             output_path.parent.mkdir(parents=True, exist_ok=True)
             
             with open(output_path, 'w') as f:
@@ -69,7 +71,7 @@ class DataStorage:
         
         try:
             # Use simple path construction like the constructor
-            base_path = self.base_output_dir / "raw" / "neo" / f"year={self.current_year}"
+            base_path = self.base_output_dir / "raw" / "neo" / f"year={self.current_year}" / f"month={self.current_month}" / f"day={self.current_day}"
             base_path.mkdir(parents=True, exist_ok=True)
             
             # Save as Parquet for efficient analytics

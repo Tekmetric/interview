@@ -217,20 +217,33 @@ class ProcessingResult:
 
 @dataclass 
 class Aggregations:
-    """Aggregation results"""
+    """Comprehensive aggregation results"""
     close_approaches_under_02_au: int
     approaches_by_year: Dict[int, int]
     total_objects_processed: int
     calculation_timestamp: str
+    velocity_statistics: Optional[Dict[str, float]] = None
+    distance_statistics: Optional[Dict[str, float]] = None
+    hazard_distribution: Optional[Dict[str, int]] = None
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
-        return {
+        result = {
             "close_approaches_under_02_au": self.close_approaches_under_02_au,
             "approaches_by_year": self.approaches_by_year,
             "total_objects_processed": self.total_objects_processed,
             "calculation_timestamp": self.calculation_timestamp,
         }
+        
+        # Add optional enhanced statistics if present
+        if self.velocity_statistics:
+            result["velocity_statistics"] = self.velocity_statistics
+        if self.distance_statistics:
+            result["distance_statistics"] = self.distance_statistics
+        if self.hazard_distribution:
+            result["hazard_distribution"] = self.hazard_distribution
+            
+        return result
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Aggregations':
@@ -240,4 +253,7 @@ class Aggregations:
             approaches_by_year=data["approaches_by_year"],
             total_objects_processed=data["total_objects_processed"],
             calculation_timestamp=data["calculation_timestamp"],
+            velocity_statistics=data.get("velocity_statistics"),
+            distance_statistics=data.get("distance_statistics"),
+            hazard_distribution=data.get("hazard_distribution"),
         ) 

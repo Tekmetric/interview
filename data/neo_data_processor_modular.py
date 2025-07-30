@@ -17,30 +17,19 @@ from src.neo_processor import process_neo_data
 
 
 def main():
-    """Main entry point using the refactored modular architecture"""
-    
-    print("🚀 NASA Near Earth Object Data Processor (Modular Version)")
-    print("="*60)
-    print("This version demonstrates:")
-    print("✅ Modular architecture with separated concerns")
-    print("✅ Configuration management")
-    print("✅ Type-safe data models")
-    print("✅ Robust error handling")
-    print("✅ Comprehensive logging")
-    print("✅ Easy testing and maintainability")
-    print("="*60)
+    """Main entry point"""
     
     try:
         # Run the pipeline using the convenience function
         result = process_neo_data(limit=50)  # Smaller limit for demo
         
-        print("\n🎉 Processing completed successfully!")
-        print(f"📊 Objects processed: {result.total_objects_processed}")
-        print(f"⏱️ Processing time: {result.processing_time_seconds:.2f} seconds")
-        print(f"📁 Output files created: {len(result.output_paths)}")
+        print("\n Processing completed successfully!")
+        print(f" Objects processed: {result.total_objects_processed}")
+        print(f"⏱ Processing time: {result.processing_time_seconds:.2f} seconds")
+        print(f" Output files created: {len(result.output_paths)}")
         
         # Show output structure
-        print("\n📂 Generated data structure:")
+        print("\n Generated data structure:")
         for name, path in result.output_paths.items():
             if path:
                 print(f"  • {name}: {path}")

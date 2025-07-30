@@ -1,11 +1,11 @@
 """
-NASA NeoWs API client using Spark for scalable data extraction
+NASA NeoWs API client using Spark for scalable data processing
 """
 
 import json
 import time
 import logging
-from typing import List, Dict, Any, Optional, Iterator
+from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 import requests
 from requests.adapters import HTTPAdapter
@@ -30,7 +30,7 @@ class NASAAPIClient:
     def fetch_neo_data_distributed(self, limit: int = 200, parallelism: Optional[int] = None) -> DataFrame:
         """
         Fetch NEO data with embedded close approach data using NeoWs API
-        This is the single source of truth - gets all required data in one call
+        Simplified approach: fetch data sequentially, then distribute processing
         
         Args:
             limit: Maximum number of NEO objects to fetch
@@ -41,88 +41,94 @@ class NASAAPIClient:
         """
         logger.info(f"Fetching {limit} NEO objects with close approach data using NeoWs API")
         
-        # Calculate date ranges to cover for distributed fetching
-        # NeoWs feed API works with date ranges (max 7 days per request)
-        date_ranges = self._generate_date_ranges(days_back=365)  # Cover last year
+        # Fetch data sequentially in the driver to avoid distributed HTTP issues
+        all_neo_data = self._fetch_neo_data_sequential(limit)
         
-        # Create DataFrame with date ranges for distributed processing
-        schema = StructType([
-            StructField("start_date", StringType(), False),
-            StructField("end_date", StringType(), False),
-            StructField("batch_id", IntegerType(), False)
-        ])
+        if not all_neo_data:
+            logger.warning("No NEO data retrieved")
+            return self._create_empty_neo_dataframe()
         
-        date_range_data = [
-            (start_date, end_date, i)
-            for i, (start_date, end_date) in enumerate(date_ranges)
-        ]
+        logger.info(f"Successfully collected {len(all_neo_data)} NEO objects. Creating Spark DataFrame...")
         
-        date_ranges_df = self.spark.createDataFrame(date_range_data, schema)
-        
-        # Set optimal parallelism
-        if parallelism:
-            date_ranges_df = date_ranges_df.repartition(parallelism)
-        else:
-            # Calculate optimal partitions
-            num_cores = int(self.spark.conf.get("spark.executor.instances", "1")) * \
-                       int(self.spark.conf.get("spark.executor.cores", "2"))
-            optimal_partitions = min(max(num_cores, 2), len(date_ranges))
-            date_ranges_df = date_ranges_df.repartition(optimal_partitions)
-        
-        logger.info(f"Using {date_ranges_df.rdd.getNumPartitions()} partitions for distributed NeoWs processing")
-        
-        # Broadcast config for workers
-        broadcast_config = self.spark.sparkContext.broadcast({
-            'api_key': self.config.api_key,
-            'base_url': self.config.base_url,
-            'neo_feed_endpoint': self.config.neo_feed_endpoint,
-            'request_timeout': self.config.request_timeout,
-            'rate_limit_delay': self.config.rate_limit_delay,
-            'max_retries': self.config.max_retries,
-        })
-        
-        # Process in parallel using mapPartitions
-        def process_date_range_partition(partition: Iterator) -> Iterator[Dict[str, Any]]:
-            """Process a partition of date ranges to get NEO data"""
-            return _process_neows_partition(partition, broadcast_config.value)
-        
-        # Execute distributed processing
-        results_rdd = date_ranges_df.rdd.mapPartitions(process_date_range_partition)
-        
-        # Collect results and create unified DataFrame
-        results = results_rdd.collect()
-        
-        # Combine all NEO data from different date ranges
-        all_neo_data = []
-        seen_neos = set()  # Track unique NEOs to avoid duplicates
-        
-        for result in results:
-            if result.get('success') and result.get('neo_data'):
-                for neo_data in result['neo_data']:
-                    neo_id = neo_data.get('id')
-                    if neo_id and neo_id not in seen_neos:
-                        all_neo_data.append(neo_data)
-                        seen_neos.add(neo_id)
-                        
-                        # Stop if we've reached the limit
-                        if len(all_neo_data) >= limit:
-                            break
-                if len(all_neo_data) >= limit:
-                    break
-        
-        # Limit to requested number
-        all_neo_data = all_neo_data[:limit]
-        
-        logger.info(f"Successfully collected {len(all_neo_data)} unique NEO objects with close approach data")
-        
-        # Convert to Spark DataFrame
-        if all_neo_data:
+        # Convert to Spark DataFrame for distributed processing
+        try:
             neo_df = self.spark.createDataFrame(all_neo_data)
+            
+            # Repartition for optimal processing if parallelism specified
+            if parallelism:
+                neo_df = neo_df.repartition(parallelism)
+            
             logger.info(f"Created Spark DataFrame with {neo_df.count()} NEO records")
             return neo_df
-        else:
-            # Return empty DataFrame with expected schema
+            
+        except Exception as e:
+            logger.error(f"Failed to create Spark DataFrame: {e}")
             return self._create_empty_neo_dataframe()
+    
+    def _fetch_neo_data_sequential(self, limit: int) -> List[Dict[str, Any]]:
+        """
+        Fetch NEO data sequentially from NeoWs API
+        This avoids distributed HTTP call issues
+        """
+        logger.info("Fetching NEO data sequentially from NeoWs API")
+        
+        session = self._create_session()
+        all_neo_data = []
+        seen_neos = set()
+        
+        try:
+            # Generate date ranges for the past year
+            date_ranges = self._generate_date_ranges(days_back=365)
+            
+            for i, (start_date, end_date) in enumerate(date_ranges):
+                if len(all_neo_data) >= limit:
+                    break
+                    
+                logger.info(f"Fetching NEOs for date range {start_date} to {end_date} ({i+1}/{len(date_ranges)})")
+                
+                # Rate limiting
+                if i > 0:
+                    time.sleep(self.config.rate_limit_delay)
+                
+                try:
+                    params = {
+                        'start_date': start_date,
+                        'end_date': end_date,
+                        'api_key': self.config.api_key
+                    }
+                    
+                    response = self._make_request(session, self.config.neo_feed_endpoint, params)
+                    data = response.json()
+                    
+                    # Extract NEO data from the response
+                    if 'near_earth_objects' in data:
+                        for date_key, neos_for_date in data['near_earth_objects'].items():
+                            for neo_data in neos_for_date:
+                                neo_id = neo_data.get('id')
+                                if neo_id and neo_id not in seen_neos:
+                                    all_neo_data.append(neo_data)
+                                    seen_neos.add(neo_id)
+                                    
+                                    # Stop if we've reached the limit
+                                    if len(all_neo_data) >= limit:
+                                        break
+                            if len(all_neo_data) >= limit:
+                                break
+                    
+                    logger.info(f"Collected {len(all_neo_data)} unique NEOs so far...")
+                    
+                except Exception as e:
+                    logger.warning(f"Failed to fetch data for range {start_date} to {end_date}: {e}")
+                    continue
+            
+            logger.info(f"Successfully fetched {len(all_neo_data)} unique NEO objects")
+            return all_neo_data[:limit]  # Ensure we don't exceed limit
+            
+        except Exception as e:
+            logger.error(f"Failed to fetch NEO data: {e}")
+            return []
+        finally:
+            session.close()
     
     def _generate_date_ranges(self, days_back: int = 365) -> List[tuple]:
         """Generate date ranges for NeoWs feed API (max 7 days per request)"""
@@ -144,7 +150,6 @@ class NASAAPIClient:
     
     def _create_empty_neo_dataframe(self) -> DataFrame:
         """Create empty DataFrame with expected NEO schema"""
-        # This would be based on the actual NeoWs response schema
         schema = StructType([
             StructField("id", StringType(), True),
             StructField("neo_reference_id", StringType(), True),
@@ -175,85 +180,21 @@ class NASAAPIClient:
         session.mount("https://", adapter)
         
         return session
-
-
-def _process_neows_partition(partition: Iterator, config: Dict[str, Any]) -> Iterator[Dict[str, Any]]:
-    """
-    Process a partition of date ranges to get NEO data from NeoWs API
-    This function runs on Spark workers
-    """
-    import requests
-    from requests.adapters import HTTPAdapter
-    from urllib3.util.retry import Retry
-    import time
-    import json
     
-    # Create session for this worker
-    session = requests.Session()
-    retry_strategy = Retry(
-        total=config['max_retries'],
-        status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["HEAD", "GET", "OPTIONS"],
-        backoff_factor=1
-    )
-    
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    session.mount("http://", adapter)
-    session.mount("https://", adapter)
-    
-    results = []
-    partition_items = list(partition)
-    
-    for i, row in enumerate(partition_items):
-        start_date = row['start_date']
-        end_date = row['end_date']
-        batch_id = row['batch_id']
-        
-        # Rate limiting within partition
-        if i > 0:
-            time.sleep(config['rate_limit_delay'])
-        
-        # Additional delay for different batches
-        if batch_id > 0:
-            time.sleep(config['rate_limit_delay'] * 0.5)
-        
+    def _make_request(self, session: requests.Session, url: str, 
+                     params: Dict[str, Any]) -> requests.Response:
+        """Make HTTP request with timeout and error handling"""
         try:
-            # Use NeoWs Feed API to get NEO data with close approaches
-            params = {
-                'start_date': start_date,
-                'end_date': end_date,
-                'api_key': config['api_key']
-            }
-            
-            response = session.get(
-                config['neo_feed_endpoint'],
-                params=params,
-                timeout=config['request_timeout']
-            )
+            response = session.get(url, params=params, timeout=self.config.request_timeout)
             response.raise_for_status()
+            return response
             
-            data = response.json()
-            
-            # Extract NEO data from the response
-            neo_data = []
-            if 'near_earth_objects' in data:
-                for date_key, neos_for_date in data['near_earth_objects'].items():
-                    neo_data.extend(neos_for_date)
-            
-            results.append({
-                'date_range': f"{start_date} to {end_date}",
-                'success': True,
-                'error': None,
-                'neo_data': neo_data
-            })
-            
-        except Exception as e:
-            results.append({
-                'date_range': f"{start_date} to {end_date}",
-                'success': False,
-                'error': str(e),
-                'neo_data': []
-            })
-    
-    session.close()
-    return iter(results) 
+        except requests.Timeout:
+            raise APITimeoutError(f"Request timeout for {url}")
+        except requests.RequestException as e:
+            if hasattr(e, 'response') and e.response is not None:
+                if e.response.status_code == 429:
+                    raise RateLimitError("Rate limit exceeded")
+                elif e.response.status_code >= 500:
+                    raise NASAAPIError(f"Server error ({e.response.status_code})")
+            raise NASAAPIError(f"Request failed: {e}") 

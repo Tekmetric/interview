@@ -70,26 +70,26 @@ class NEODataProcessor:
             logger.info(f"Input DataFrame has {neo_df.count()} records")
             neo_df.printSchema()
             
-            # Extract basic NEO information
+            # Extract basic NEO information based on actual NeoWs schema
             processed_df = neo_df.select(
                 col("id").alias("id"),
                 col("neo_reference_id").alias("neo_reference_id"),
                 col("name").alias("name"),
-                col("name_limited").alias("name_limited"),
-                col("designation").alias("designation"),
+                col("name").alias("name_limited"),  # Use name for name_limited since it doesn't exist
+                col("id").alias("designation"),  # Use id for designation since designation doesn't exist
                 col("nasa_jpl_url").alias("nasa_jpl_url"),
                 col("absolute_magnitude_h").cast("float").alias("absolute_magnitude_h"),
                 col("is_potentially_hazardous_asteroid").cast("boolean").alias("is_potentially_hazardous_asteroid"),
                 
-                # Extract diameter information from estimated_diameter
-                get_json_object(col("estimated_diameter"), "$.meters.estimated_diameter_min").cast("float").alias("minimum_estimated_diameter_meters"),
-                get_json_object(col("estimated_diameter"), "$.meters.estimated_diameter_max").cast("float").alias("maximum_estimated_diameter_meters"),
+                # Extract diameter information from estimated_diameter map
+                col("estimated_diameter")["meters"]["estimated_diameter_min"].cast("float").alias("minimum_estimated_diameter_meters"),
+                col("estimated_diameter")["meters"]["estimated_diameter_max"].cast("float").alias("maximum_estimated_diameter_meters"),
                 
-                # Extract orbital data
-                get_json_object(col("orbital_data"), "$.first_observation_date").alias("first_observation_date"),
-                get_json_object(col("orbital_data"), "$.last_observation_date").alias("last_observation_date"),
-                get_json_object(col("orbital_data"), "$.observations_used").cast("int").alias("observations_used"),
-                get_json_object(col("orbital_data"), "$.orbital_period").cast("float").alias("orbital_period"),
+                # For orbital data, we'll use defaults since it's not in the NeoWs response
+                lit(None).cast("string").alias("first_observation_date"),
+                lit(None).cast("string").alias("last_observation_date"),
+                lit(None).cast("int").alias("observations_used"),
+                lit(None).cast("float").alias("orbital_period"),
                 
                 # Keep close approach data for explosion
                 col("close_approach_data")
@@ -102,7 +102,7 @@ class NEODataProcessor:
                     explode(col("close_approach_data")).alias("close_approach")
                 ).drop("close_approach_data")
                 
-                # Extract close approach details
+                # Extract close approach details from the JSON string format
                 final_df = exploded_df.select(
                     "*",
                     get_json_object(col("close_approach"), "$.close_approach_date").alias("closest_approach_date"),

@@ -120,6 +120,16 @@ class CloseApproachData:
     miss_distance_au: float
     relative_velocity_kms: float
     
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for DataFrame creation"""
+        return {
+            'designation': self.designation,
+            'closest_approach_date': self.close_approach_date,
+            'closest_approach_miss_distance_kilometers': self.miss_distance_km,
+            'closest_approach_relative_velocity_kms': self.relative_velocity_kms,
+            'is_potentially_hazardous': False  # Default, will be updated from ObjectDetails
+        }
+    
     @classmethod
     def from_api_record(cls, record: List[str]) -> 'CloseApproachData':
         """Create from NASA API record format"""
@@ -146,6 +156,21 @@ class ObjectDetails:
     first_obs: Optional[str] = None
     last_obs: Optional[str] = None
     obs_used: Optional[int] = None
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for DataFrame creation"""
+        return {
+            'designation': self.designation,
+            'absolute_magnitude_h': self.absolute_magnitude,
+            'estimated_diameter_min_km': self.diameter_km * 0.8 if self.diameter_km else None,  # Estimate
+            'estimated_diameter_max_km': self.diameter_km * 1.2 if self.diameter_km else None,  # Estimate
+            'is_sentry_object': False,  # Default
+            'orbit_class': 'Unknown',  # Default
+            'orbital_period_days': self.orbital_period,
+            'perihelion_distance_au': None,  # Default
+            'aphelion_distance_au': None,   # Default
+            'eccentricity': None,           # Default
+        }
     
     @classmethod
     def from_api_response(cls, api_data: Dict[str, Any]) -> 'ObjectDetails':

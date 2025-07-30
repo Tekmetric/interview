@@ -14,20 +14,20 @@ load_dotenv()
 
 @dataclass
 class APIConfig:
-    """NASA API configuration"""
+    """NASA NeoWs API configuration"""
     api_key: str
-    base_url: str = "https://ssd-api.jpl.nasa.gov"
+    base_url: str = "https://api.nasa.gov"
     request_timeout: int = 30
     rate_limit_delay: float = 1.0
     max_retries: int = 3
     
     @property
-    def close_approach_endpoint(self) -> str:
-        return f"{self.base_url}/cad.api"
+    def neo_browse_endpoint(self) -> str:
+        return f"{self.base_url}/neo/rest/v1/neo/browse"
     
     @property
-    def sbdb_endpoint(self) -> str:
-        return f"{self.base_url}/sbdb.api"
+    def neo_feed_endpoint(self) -> str:
+        return f"{self.base_url}/neo/rest/v1/feed"
 
 
 @dataclass

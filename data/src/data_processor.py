@@ -4,7 +4,6 @@ Data processing module using Spark for NeoWs API data
 
 import logging
 from typing import Dict, Any, Optional
-from datetime import datetime
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import (
     col, explode, size, when, isnan, isnull, count, 
@@ -12,10 +11,6 @@ from pyspark.sql.functions import (
     stddev, year, lit, row_number
 )
 from pyspark.sql.window import Window
-from pyspark.sql.types import (
-    StructType, StructField, StringType, FloatType, BooleanType, 
-    IntegerType, DoubleType, ArrayType
-)
 
 from .config import SparkConfig
 from .models import Aggregations, DataProcessingError

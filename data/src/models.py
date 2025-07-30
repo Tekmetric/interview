@@ -3,8 +3,7 @@ Data models for NEO processing pipeline using NeoWs API
 """
 
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Any, List
-from datetime import datetime
+from typing import Optional, Dict, Any
 
 
 # Exception hierarchy for NEO processing errors
@@ -18,38 +17,13 @@ class NASAAPIError(NEOProcessorError):
     pass
 
 
-class RateLimitError(NASAAPIError):
-    """Exception raised when API rate limit is exceeded"""
-    pass
-
-
-class APITimeoutError(NASAAPIError):
-    """Exception raised when API request times out"""
-    pass
-
-
 class DataProcessingError(NEOProcessorError):
     """Exception raised during data processing"""
     pass
 
 
-class SparkError(DataProcessingError):
-    """Exception raised for Spark-related errors"""
-    pass
-
-
 class StorageError(NEOProcessorError):
     """Exception raised during data storage operations"""
-    pass
-
-
-class ConfigurationError(NEOProcessorError):
-    """Exception raised for configuration errors"""
-    pass
-
-
-class ValidationError(DataProcessingError):
-    """Exception raised during data validation"""
     pass
 
 

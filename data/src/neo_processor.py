@@ -5,7 +5,6 @@ NEO data processing pipeline using NeoWs API and distributed Spark processing
 import time
 import logging
 from typing import Optional, Dict, Any
-from datetime import datetime
 
 from .config import APIConfig, SparkConfig, ProcessingConfig
 from .api_client import NASAAPIClient
@@ -155,59 +154,8 @@ class NEOPipeline:
         except Exception as e:
             logger.warning(f"Error during cleanup: {e}")
     
-    def get_pipeline_status(self) -> Dict[str, Any]:
-        """Get status information about the pipeline"""
-        return {
-            "pipeline_type": "streamlined_neows_spark",
-            "api_config": {
-                "base_url": self.api_config.base_url,
-                "rate_limit_delay": self.api_config.rate_limit_delay,
-                "max_retries": self.api_config.max_retries
-            },
-            "spark_config": {
-                "app_name": self.spark_config.app_name,
-                "adaptive_enabled": self.spark_config.adaptive_enabled,
-                "arrow_enabled": self.spark_config.arrow_enabled
-            },
-            "processing_config": {
-                "object_limit": self.processing_config.object_limit,
-                "batch_size": self.processing_config.batch_size,
-                "close_approach_threshold_au": self.processing_config.close_approach_threshold_au
-            },
-            "components_initialized": {
-                "api_client": self.api_client is not None,
-                "data_processor": self.data_processor is not None,
-                "storage": self.storage is not None
-            }
-        }
 
 
-def process_neo_data_distributed(limit: Optional[int] = None, 
-                                parallelism: Optional[int] = None) -> ProcessingResult:
-    """
-    Main entry point for NEO data processing
-    
-    Args:
-        limit: Maximum number of NEO objects to process
-        parallelism: Number of parallel partitions for processing
-        
-    Returns:
-        ProcessingResult with execution details
-    """
-    from .config import APIConfig, SparkConfig, ProcessingConfig
-    
-    # Create configurations  
-    from .config import Config
-    config = Config()  # This will load from NASA_API_KEY env var or default to DEMO_KEY
-    api_config = config.api
-    spark_config = SparkConfig()
-    processing_config = ProcessingConfig()
-    
-    # Override limit if provided
-    if limit:
-        processing_config.object_limit = limit
-    
-    # Create and run pipeline
-    pipeline = NEOPipeline(api_config, spark_config, processing_config)
-    return pipeline.run_pipeline(limit, parallelism)
+
+
 

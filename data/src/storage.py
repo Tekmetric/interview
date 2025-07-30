@@ -36,7 +36,7 @@ class DataStorage:
     
     def save_aggregations(self, aggregations: Aggregations) -> str:
         """
-        Save aggregations as JSON
+        Save aggregations as JSON. For a real production system, we would use a different storage solution, like S3.
         
         Args:
             aggregations: Aggregations object to save
@@ -59,7 +59,7 @@ class DataStorage:
     
     def save_raw_data(self, raw_df: DataFrame) -> Dict[str, str]:
         """
-        Save raw data with 17 specified columns (Option A: one row per NEO)
+        Save raw data with 17 specified columns
         
         Args:
             raw_df: DataFrame with extracted raw data (17 columns, one row per NEO)

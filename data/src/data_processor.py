@@ -245,18 +245,31 @@ class NEODataProcessor:
         try:
             # Basic counts
             total_objects = raw_df.count()
-            total_approaches = total_objects  # 1 approach per NEO in raw data
+            
+            # Count objects that actually have close approach data (not null)
+            total_approaches = raw_df.filter(
+                col("closest_approach_miss_distance_km").isNotNull()
+            ).count()
+            
+            objects_without_approaches = total_objects - total_approaches
             
             # Close approaches under 0.2 AU threshold (convert km to AU: 1 AU ≈ 149,597,870.7 km)
             au_to_km = 149597870.7
             threshold_km = 0.2 * au_to_km  # 0.2 AU in kilometers
             
             close_approaches_under_threshold = raw_df.filter(
-                col("closest_approach_miss_distance_km") < threshold_km
+                col("closest_approach_miss_distance_km").isNotNull() &
+                (col("closest_approach_miss_distance_km") < threshold_km)
             ).count()
             
+            logger.info(f"Objects with close approaches: {total_approaches}")
+            logger.info(f"Objects without close approaches: {objects_without_approaches}")
+            
             # Approaches by year (extract year from closest_approach_date)
-            raw_with_year = raw_df.withColumn(
+            # Only for objects that have close approach data
+            raw_with_year = raw_df.filter(
+                col("closest_approach_date").isNotNull()
+            ).withColumn(
                 "approach_year",
                 year(col("closest_approach_date"))
             )
@@ -270,10 +283,10 @@ class NEODataProcessor:
                 for row in approaches_by_year_df
             }
             
-            # Average metrics
+            # Average metrics (only for objects with valid data)
             metrics = raw_df.agg(
-                avg("closest_approach_miss_distance_km").alias("avg_distance"),
-                avg("closest_approach_relative_velocity_kms").alias("avg_velocity"),
+                avg("closest_approach_miss_distance_km").alias("avg_distance"),  # Handles nulls automatically
+                avg("closest_approach_relative_velocity_kms").alias("avg_velocity"),  # Handles nulls automatically
                 avg("absolute_magnitude_h").alias("avg_magnitude"),
                 avg("minimum_estimated_diameter_meters").alias("avg_min_diameter"),
                 avg("maximum_estimated_diameter_meters").alias("avg_max_diameter")
@@ -302,8 +315,10 @@ class NEODataProcessor:
                 for row in size_dist_df
             }
             
-            # Velocity statistics
-            velocity_stats_df = raw_df.agg(
+            # Velocity statistics (only for objects with close approach data)
+            velocity_stats_df = raw_df.filter(
+                col("closest_approach_relative_velocity_kms").isNotNull()
+            ).agg(
                 avg("closest_approach_relative_velocity_kms").alias("mean"),
                 stddev("closest_approach_relative_velocity_kms").alias("stddev"),
                 spark_min("closest_approach_relative_velocity_kms").alias("min"),
@@ -317,8 +332,10 @@ class NEODataProcessor:
                 "max": float(velocity_stats_df['max'] or 0)
             }
             
-            # Distance statistics
-            distance_stats_df = raw_df.agg(
+            # Distance statistics (only for objects with close approach data)
+            distance_stats_df = raw_df.filter(
+                col("closest_approach_miss_distance_km").isNotNull()
+            ).agg(
                 avg("closest_approach_miss_distance_km").alias("mean"),
                 stddev("closest_approach_miss_distance_km").alias("stddev"),
                 spark_min("closest_approach_miss_distance_km").alias("min"),
@@ -411,61 +428,125 @@ class NEODataProcessor:
     def extract_raw_data_with_closest_approach(self, neo_df: DataFrame) -> DataFrame:
         """
         Extract raw data with 17 specified columns using closest approach per NEO (Option A)
+        FIXED: Now keeps ALL NEO objects, including those without close approach data
         
         Args:
             neo_df: Raw DataFrame from Browse API
             
         Returns:
-            DataFrame with 17 columns, one row per NEO using closest approach
+            DataFrame with 17 columns, one row per NEO (200 objects total)
         """
-        logger.info("Extracting raw data with closest approach per NEO")
+        logger.info("Extracting raw data with closest approach per NEO (keeping ALL objects)")
         
         try:
-            # First, explode close approach data to find closest approach per NEO
-            exploded_df = neo_df.select(
-                "*",
-                explode(col("close_approach_data")).alias("approach")
-            ).drop("close_approach_data")
+            total_input_count = neo_df.count()
+            logger.info(f"Input: {total_input_count} NEO objects")
             
-            # Add miss distance as numeric for finding minimum
-            with_distance = exploded_df.select(
-                "*",
-                col("approach.miss_distance.kilometers").cast("double").alias("miss_distance_km_numeric"),
-                col("approach.close_approach_date").alias("approach_date"),
-                col("approach.relative_velocity.kilometers_per_second").alias("approach_velocity_kms")
+            # Separate NEOs with and without close approach data
+            neos_with_approaches = neo_df.filter(
+                col("close_approach_data").isNotNull() & 
+                (size(col("close_approach_data")) > 0)
             )
             
-            # Find closest approach for each NEO (minimum miss distance)
-            
-            window = Window.partitionBy("id").orderBy("miss_distance_km_numeric")
-            closest_approaches = with_distance.select(
-                "*",
-                row_number().over(window).alias("rank")
-            ).filter(col("rank") == 1).drop("rank")
-            
-            # Extract the 17 required columns
-            raw_data_df = closest_approaches.select(
-                col("id").alias("id"),
-                col("neo_reference_id").alias("neo_reference_id"), 
-                col("name").alias("name"),
-                col("name_limited").alias("name_limited"),
-                col("designation").alias("designation"),
-                col("nasa_jpl_url").alias("nasa_jpl_url"),
-                col("absolute_magnitude_h").alias("absolute_magnitude_h"),
-                col("is_potentially_hazardous_asteroid").alias("is_potentially_hazardous_asteroid"),
-                col("estimated_diameter.meters.estimated_diameter_min").cast("double").alias("minimum_estimated_diameter_meters"),
-                col("estimated_diameter.meters.estimated_diameter_max").cast("double").alias("maximum_estimated_diameter_meters"),
-                col("miss_distance_km_numeric").alias("closest_approach_miss_distance_km"),
-                col("approach_date").alias("closest_approach_date"),
-                col("approach_velocity_kms").cast("double").alias("closest_approach_relative_velocity_kms"),
-                col("orbital_data.first_observation_date").alias("first_observation_date"),
-                col("orbital_data.last_observation_date").alias("last_observation_date"),
-                col("orbital_data.observations_used").cast("long").alias("observations_used"),
-                col("orbital_data.orbital_period").cast("double").alias("orbital_period")
+            neos_without_approaches = neo_df.filter(
+                col("close_approach_data").isNull() | 
+                (size(col("close_approach_data")) == 0)
             )
             
-            count = raw_data_df.count()
-            logger.info(f"Successfully extracted raw data: {count} NEO objects with closest approaches")
+            with_count = neos_with_approaches.count()
+            without_count = neos_without_approaches.count()
+            logger.info(f"NEOs with close approaches: {with_count}")
+            logger.info(f"NEOs without close approaches: {without_count}")
+            
+            # Process NEOs WITH close approach data (find closest approach)
+            if with_count > 0:
+                # Explode close approach data to find closest approach per NEO
+                exploded_df = neos_with_approaches.select(
+                    "*",
+                    explode(col("close_approach_data")).alias("approach")
+                ).drop("close_approach_data")
+                
+                # Add miss distance as numeric for finding minimum
+                with_distance = exploded_df.select(
+                    "*",
+                    col("approach.miss_distance.kilometers").cast("double").alias("miss_distance_km_numeric"),
+                    col("approach.close_approach_date").alias("approach_date"),
+                    col("approach.relative_velocity.kilometers_per_second").alias("approach_velocity_kms")
+                )
+                
+                # Find closest approach for each NEO (minimum miss distance)
+                window = Window.partitionBy("id").orderBy("miss_distance_km_numeric")
+                closest_approaches = with_distance.select(
+                    "*",
+                    row_number().over(window).alias("rank")
+                ).filter(col("rank") == 1).drop("rank")
+                
+                # Extract the 17 required columns for NEOs with approaches
+                raw_data_with_approaches = closest_approaches.select(
+                    col("id").alias("id"),
+                    col("neo_reference_id").alias("neo_reference_id"), 
+                    col("name").alias("name"),
+                    col("name_limited").alias("name_limited"),
+                    col("designation").alias("designation"),
+                    col("nasa_jpl_url").alias("nasa_jpl_url"),
+                    col("absolute_magnitude_h").alias("absolute_magnitude_h"),
+                    col("is_potentially_hazardous_asteroid").alias("is_potentially_hazardous_asteroid"),
+                    col("estimated_diameter.meters.estimated_diameter_min").cast("double").alias("minimum_estimated_diameter_meters"),
+                    col("estimated_diameter.meters.estimated_diameter_max").cast("double").alias("maximum_estimated_diameter_meters"),
+                    col("miss_distance_km_numeric").alias("closest_approach_miss_distance_km"),
+                    col("approach_date").alias("closest_approach_date"),
+                    col("approach_velocity_kms").cast("double").alias("closest_approach_relative_velocity_kms"),
+                    col("orbital_data.first_observation_date").alias("first_observation_date"),
+                    col("orbital_data.last_observation_date").alias("last_observation_date"),
+                    col("orbital_data.observations_used").cast("long").alias("observations_used"),
+                    col("orbital_data.orbital_period").cast("double").alias("orbital_period")
+                )
+            else:
+                raw_data_with_approaches = None
+            
+            # Process NEOs WITHOUT close approach data (use null values)
+            if without_count > 0:
+                raw_data_without_approaches = neos_without_approaches.select(
+                    col("id").alias("id"),
+                    col("neo_reference_id").alias("neo_reference_id"), 
+                    col("name").alias("name"),
+                    col("name_limited").alias("name_limited"),
+                    col("designation").alias("designation"),
+                    col("nasa_jpl_url").alias("nasa_jpl_url"),
+                    col("absolute_magnitude_h").alias("absolute_magnitude_h"),
+                    col("is_potentially_hazardous_asteroid").alias("is_potentially_hazardous_asteroid"),
+                    col("estimated_diameter.meters.estimated_diameter_min").cast("double").alias("minimum_estimated_diameter_meters"),
+                    col("estimated_diameter.meters.estimated_diameter_max").cast("double").alias("maximum_estimated_diameter_meters"),
+                    # Close approach fields as null for objects without approaches
+                    lit(None).cast("double").alias("closest_approach_miss_distance_km"),
+                    lit(None).cast("string").alias("closest_approach_date"),
+                    lit(None).cast("double").alias("closest_approach_relative_velocity_kms"),
+                    col("orbital_data.first_observation_date").alias("first_observation_date"),
+                    col("orbital_data.last_observation_date").alias("last_observation_date"),
+                    col("orbital_data.observations_used").cast("long").alias("observations_used"),
+                    col("orbital_data.orbital_period").cast("double").alias("orbital_period")
+                )
+            else:
+                raw_data_without_approaches = None
+            
+            # Union both sets to get ALL 200 objects
+            if raw_data_with_approaches is not None and raw_data_without_approaches is not None:
+                raw_data_df = raw_data_with_approaches.union(raw_data_without_approaches)
+            elif raw_data_with_approaches is not None:
+                raw_data_df = raw_data_with_approaches
+            elif raw_data_without_approaches is not None:
+                raw_data_df = raw_data_without_approaches
+            else:
+                # Should not happen, but handle edge case
+                raise DataProcessingError("No NEO data found")
+            
+            final_count = raw_data_df.count()
+            logger.info(f"Successfully extracted raw data: {final_count} NEO objects total")
+            logger.info(f"  • With close approaches: {with_count}")
+            logger.info(f"  • Without close approaches: {without_count}")
+            
+            if final_count != total_input_count:
+                logger.warning(f"Object count mismatch: Input {total_input_count} → Output {final_count}")
             
             return raw_data_df
             

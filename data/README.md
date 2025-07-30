@@ -42,13 +42,17 @@ Once you have finished your script, please create a PR into Tekmetric/interview.
 
 ## **Solution Overview**
 
-This project implements NASA NEO data processing requirements using PySpark which should accomodate any amount of data in the future and should be able to easily scale up. Cloud providers such as AWS and Azure both provide Spark support. Additionally, the current script, even though it uses Spark, it can run locally to for testing/developing purposes or on a single machine in production. The solution is by no means perfect and there are several potential improvements that can be done. 
+This project implements NASA NEO data processing requirements using PySpark which should accomodate any amount of data in the future and should be able to easily scale up. Cloud providers such as AWS and Azure both provide Spark support. Additionally, the current script, even though it uses Spark, it can run locally too for testing/developing purposes or on a single machine in production. The solution is by no means perfect and there are several potential improvements that can be done. 
 
 As an overview, the current implementation fetches data from the API in a distributed manner (i.e. the script starts a Spark app which instantiates several executors). Each of those executors is instructed what pages to request from the API and how to process those pages. When fetching small amounts of data, the overhead of managing an entire SPark context, multiple partitions and executors communication is actually not worth it. However, it pays off when the app is deployed in production and does ETL on big amounts of data. In that scenario, additional optimizations that Spark performs under the hood will be valuable. (query optimization, data shuffling optimization, etc). 
 
 I stored all the data on the local filesystem under a path that partitions the data by year, month and day (extracted from the date of the execution). This is not necessarily the best partitioning, but in the absence of other informations on what will that data be used for, this works. We can discuss more around this during our itnerview. 
 
 Monitoring should be implemented, other than Spark's default job monitoring (CPU, memory, networking). We should monitor data, publish counters, error counts and so on. 
+
+Considerations about re-using the same API_KEY in multiple executors must be discussed too. A single key used by 100 executors in parallel might get throtled. 
+
+Now, let's get a bit more technical...
 
 
 ## **Quick Start**

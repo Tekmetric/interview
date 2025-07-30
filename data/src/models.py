@@ -1,19 +1,16 @@
 """
-Data models, schemas, and exceptions for NEO data processing
+Data models for NEO processing pipeline
 """
 
-from typing import Optional, List, Dict, Any
-from dataclasses import dataclass
+from dataclasses import dataclass, fields, field
+from typing import Optional, Dict, Any, List
 from datetime import datetime
-from pyspark.sql.types import (
-    StructType, StructField, StringType, FloatType, BooleanType, 
-    IntegerType, DoubleType
-)
+from pyspark.sql.types import StructType, StructField, StringType, FloatType, BooleanType, IntegerType
 
 
-# Custom Exceptions
+# Exception hierarchy for NEO processing errors
 class NEOProcessorError(Exception):
-    """Base exception for NEO data processor"""
+    """Base exception for NEO processor errors"""
     pass
 
 
@@ -33,7 +30,7 @@ class APITimeoutError(NASAAPIError):
 
 
 class DataProcessingError(NEOProcessorError):
-    """Exception raised during data processing"""
+    """Exception raised for data processing errors"""
     pass
 
 
@@ -43,18 +40,57 @@ class SparkError(DataProcessingError):
 
 
 class StorageError(NEOProcessorError):
-    """Exception raised for storage operations"""
+    """Exception raised for data storage errors"""
     pass
 
 
 class ConfigurationError(NEOProcessorError):
-    """Exception raised for configuration issues"""
+    """Exception raised for configuration errors"""
     pass
 
 
 class ValidationError(NEOProcessorError):
     """Exception raised for data validation errors"""
     pass
+
+
+@dataclass
+class NEOObject:
+    """Near Earth Object from SBDB Query API"""
+    designation: str
+    full_name: Optional[str] = None
+    pdes: Optional[str] = None  # Primary designation
+    name: Optional[str] = None
+    prefix: Optional[str] = None
+    neo: Optional[bool] = None
+    pha: Optional[bool] = None  # Potentially Hazardous Asteroid
+    h_magnitude: Optional[float] = None  # Absolute magnitude
+    orbit_class: Optional[str] = None
+    moid: Optional[float] = None  # Minimum Orbit Intersection Distance
+    diameter_km: Optional[float] = None  # Diameter in kilometers
+    
+    @classmethod
+    def from_query_api_record(cls, data: Dict[str, Any]) -> 'NEOObject':
+        """Create NEOObject from SBDB Query API record"""
+        return cls(
+            designation=data.get('object', ''),
+            full_name=data.get('full_name'),
+            pdes=data.get('pdes'),
+            name=data.get('name'),
+            prefix=data.get('prefix'),
+            neo=data.get('neo') == '1' if data.get('neo') else None,
+            pha=data.get('pha') == '1' if data.get('pha') else None,
+            h_magnitude=float(data.get('H')) if data.get('H') else None,
+            orbit_class=data.get('class'),
+            moid=float(data.get('moid')) if data.get('moid') else None
+        )
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for DataFrame creation"""
+        return {
+            field.name: getattr(self, field.name)
+            for field in fields(self)
+        }
 
 
 @dataclass
@@ -95,18 +131,17 @@ class NEORecord:
             StructField("name_limited", StringType(), True),
             StructField("designation", StringType(), True),
             StructField("nasa_jpl_url", StringType(), True),
-            StructField("absolute_magnitude_h", DoubleType(), True),
+            StructField("absolute_magnitude_h", FloatType(), True),
             StructField("is_potentially_hazardous_asteroid", BooleanType(), True),
-            StructField("minimum_estimated_diameter_meters", DoubleType(), True),
-            StructField("maximum_estimated_diameter_meters", DoubleType(), True),
-            StructField("closest_approach_miss_distance_kilometers", DoubleType(), True),
+            StructField("minimum_estimated_diameter_meters", FloatType(), True),
+            StructField("maximum_estimated_diameter_meters", FloatType(), True),
+            StructField("closest_approach_miss_distance_kilometers", FloatType(), True),
             StructField("closest_approach_date", StringType(), True),
-            StructField("closest_approach_relative_velocity_kms", DoubleType(), True),
+            StructField("closest_approach_relative_velocity_kms", FloatType(), True),
             StructField("first_observation_date", StringType(), True),
             StructField("last_observation_date", StringType(), True),
             StructField("observations_used", IntegerType(), True),
-            StructField("orbital_period", DoubleType(), True),
-            StructField("miss_distance_astronomical", DoubleType(), True),
+            StructField("orbital_period", FloatType(), True),
         ])
 
 
@@ -114,11 +149,33 @@ class NEORecord:
 class CloseApproachData:
     """Close approach data from NASA API"""
     designation: str
-    object_name: str
     close_approach_date: str
     miss_distance_km: float
-    miss_distance_au: float
     relative_velocity_kms: float
+    
+    @classmethod
+    def from_api_record(cls, record: List[Any]) -> 'CloseApproachData':
+        """
+        Create CloseApproachData from Close Approach Data API record
+        
+        API record format (array):
+        [designation, orbit_id, jd, cd, dist, dist_min, dist_max, v_rel, v_inf, t_sigma_f, body, h, diameter, diameter_sigma, fullname]
+        """
+        # Record is an array, map to expected positions
+        designation = record[0] if len(record) > 0 else ""
+        close_approach_date = record[3] if len(record) > 3 else ""  # cd field
+        miss_distance_au = float(record[4]) if len(record) > 4 and record[4] else 0.0  # dist field in AU
+        relative_velocity_kms = float(record[7]) if len(record) > 7 and record[7] else 0.0  # v_rel field
+        
+        # Convert distance from AU to kilometers (1 AU ≈ 149,597,870.7 km)
+        miss_distance_km = miss_distance_au * 149597870.7
+        
+        return cls(
+            designation=designation,
+            close_approach_date=close_approach_date,
+            miss_distance_km=miss_distance_km,
+            relative_velocity_kms=relative_velocity_kms
+        )
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for DataFrame creation"""
@@ -129,156 +186,90 @@ class CloseApproachData:
             'closest_approach_relative_velocity_kms': self.relative_velocity_kms,
             'is_potentially_hazardous': False  # Default, will be updated from ObjectDetails
         }
-    
-    @classmethod
-    def from_api_record(cls, record: List[str]) -> 'CloseApproachData':
-        """Create from NASA API record format"""
-        return cls(
-            designation=record[0] if len(record) > 0 else "",
-            object_name=record[11] if len(record) > 11 else "",
-            close_approach_date=record[3] if len(record) > 3 else "",
-            miss_distance_km=float(record[4]) if len(record) > 4 and record[4] else 0.0,
-            miss_distance_au=float(record[5]) if len(record) > 5 and record[5] else 0.0,
-            relative_velocity_kms=float(record[7]) if len(record) > 7 and record[7] else 0.0,
-        )
 
 
 @dataclass
 class ObjectDetails:
-    """Detailed object data from SBDB API"""
-    object_name: str
+    """Detailed object information from SBDB API"""
     designation: str
-    neo_reference_id: Optional[str] = None
     absolute_magnitude: Optional[float] = None
     diameter_km: Optional[float] = None
-    is_pha: Optional[bool] = None
     orbital_period: Optional[float] = None
-    first_obs: Optional[str] = None
-    last_obs: Optional[str] = None
-    obs_used: Optional[int] = None
+    is_potentially_hazardous: Optional[bool] = None
+    
+    @classmethod
+    def from_api_response(cls, data: Dict[str, Any]) -> 'ObjectDetails':
+        """Create ObjectDetails from SBDB API response"""
+        obj_data = data.get('object', {})
+        
+        return cls(
+            designation=obj_data.get('des', ''),
+            absolute_magnitude=None,  # Would need to parse from phys_par section
+            diameter_km=None,  # Would need to parse from phys_par section
+            orbital_period=None,  # Would need to parse from orbit section
+            is_potentially_hazardous=obj_data.get('pha', False)
+        )
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for DataFrame creation"""
         return {
             'designation': self.designation,
             'absolute_magnitude_h': self.absolute_magnitude,
-            'estimated_diameter_min_km': self.diameter_km * 0.8 if self.diameter_km else None,  # Estimate
-            'estimated_diameter_max_km': self.diameter_km * 1.2 if self.diameter_km else None,  # Estimate
+            'estimated_diameter_min_km': self.diameter_km * 0.8 if self.diameter_km else None,
+            'estimated_diameter_max_km': self.diameter_km * 1.2 if self.diameter_km else None,
             'is_sentry_object': False,  # Default
             'orbit_class': 'Unknown',  # Default
             'orbital_period_days': self.orbital_period,
             'perihelion_distance_au': None,  # Default
-            'aphelion_distance_au': None,   # Default
-            'eccentricity': None,           # Default
+            'aphelion_distance_au': None,  # Default
+            'eccentricity': None,  # Default
         }
-    
-    @classmethod
-    def from_api_response(cls, api_data: Dict[str, Any]) -> 'ObjectDetails':
-        """Create from SBDB API response"""
-        obj_data = api_data.get('object', {})
-        
-        return cls(
-            object_name=obj_data.get('fullname', ''),
-            designation=obj_data.get('des', ''),
-            neo_reference_id=obj_data.get('spkid', ''),
-            absolute_magnitude=cls._safe_float(obj_data.get('H')),
-            diameter_km=cls._extract_diameter(api_data.get('phys_par', [])),
-            is_pha=obj_data.get('pha') == 'Y',
-            orbital_period=cls._extract_orbital_period(api_data.get('orbit', {})),
-            first_obs=obj_data.get('first_obs'),
-            last_obs=obj_data.get('last_obs'),
-            obs_used=cls._safe_int(obj_data.get('n_obs_used')),
-        )
-    
-    @staticmethod
-    def _safe_float(value: Any) -> Optional[float]:
-        """Safely convert to float"""
-        try:
-            return float(value) if value is not None else None
-        except (ValueError, TypeError):
-            return None
-    
-    @staticmethod
-    def _safe_int(value: Any) -> Optional[int]:
-        """Safely convert to int"""
-        try:
-            return int(value) if value is not None else None
-        except (ValueError, TypeError):
-            return None
-    
-    @staticmethod
-    def _extract_diameter(phys_params: List[Dict[str, Any]]) -> Optional[float]:
-        """Extract diameter from physical parameters"""
-        for param in phys_params:
-            if param.get('name') == 'diameter':
-                return ObjectDetails._safe_float(param.get('value'))
-        return None
-    
-    @staticmethod
-    def _extract_orbital_period(orbit_data: Dict[str, Any]) -> Optional[float]:
-        """Extract orbital period from orbit data"""
-        elements = orbit_data.get('elements', [])
-        for element in elements:
-            if element.get('name') == 'P':  # Period
-                return ObjectDetails._safe_float(element.get('value'))
-        return None
 
 
 @dataclass
-class ProcessingResult:
-    """Result of data processing pipeline"""
-    total_objects_processed: int
-    successful_records: int
-    failed_records: int
-    processing_time_seconds: float
-    output_paths: Dict[str, str]
-    aggregations: Dict[str, Any]
-    
-    def __post_init__(self):
-        """Validate processing result"""
-        if self.total_objects_processed != (self.successful_records + self.failed_records):
-            raise ValueError("Object counts don't match")
-
-
-@dataclass 
 class Aggregations:
-    """Comprehensive aggregation results"""
-    close_approaches_under_02_au: int
-    approaches_by_year: Dict[int, int]
-    total_objects_processed: int
-    calculation_timestamp: str
+    """Data aggregations and statistics"""
+    total_objects: int
+    total_close_approaches: int
+    potentially_hazardous_count: int
+    average_miss_distance_km: float
+    min_miss_distance_km: float
+    max_miss_distance_km: float
+    average_velocity_kms: float
+    time_range_start: str
+    time_range_end: str
     velocity_statistics: Optional[Dict[str, float]] = None
-    distance_statistics: Optional[Dict[str, float]] = None
+    distance_statistics: Optional[Dict[str, float]] = None  
     hazard_distribution: Optional[Dict[str, int]] = None
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
-        result = {
-            "close_approaches_under_02_au": self.close_approaches_under_02_au,
-            "approaches_by_year": self.approaches_by_year,
-            "total_objects_processed": self.total_objects_processed,
-            "calculation_timestamp": self.calculation_timestamp,
-        }
-        
-        # Add optional enhanced statistics if present
-        if self.velocity_statistics:
-            result["velocity_statistics"] = self.velocity_statistics
-        if self.distance_statistics:
-            result["distance_statistics"] = self.distance_statistics
-        if self.hazard_distribution:
-            result["hazard_distribution"] = self.hazard_distribution
-            
+        result = {}
+        for field in fields(self):
+            value = getattr(self, field.name)
+            result[field.name] = value
         return result
+
+
+@dataclass
+class ProcessingResult:
+    """Result of the complete NEO processing pipeline"""
+    neo_objects_count: int
+    close_approaches_count: int
+    object_details_count: int
+    processing_time_seconds: float
+    aggregations: Aggregations
+    data_quality_score: float
+    files_created: List[str] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
     
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Aggregations':
-        """Create from dictionary"""
-        return cls(
-            close_approaches_under_02_au=data["close_approaches_under_02_au"],
-            approaches_by_year=data["approaches_by_year"],
-            total_objects_processed=data["total_objects_processed"],
-            calculation_timestamp=data["calculation_timestamp"],
-            velocity_statistics=data.get("velocity_statistics"),
-            distance_statistics=data.get("distance_statistics"),
-            hazard_distribution=data.get("hazard_distribution"),
-        ) 
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for JSON serialization"""
+        result = {}
+        for field in fields(self):
+            value = getattr(self, field.name)
+            if field.name == 'aggregations':
+                result[field.name] = value.to_dict() if value else None
+            else:
+                result[field.name] = value
+        return result 

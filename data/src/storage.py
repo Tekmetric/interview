@@ -16,6 +16,81 @@ from .models import StorageError
 logger = logging.getLogger(__name__)
 
 
+class DataStorage:
+    """Simplified storage class for NEO data"""
+    
+    def __init__(self):
+        self.base_output_dir = Path("data")
+        self.current_year = datetime.now().year
+        self._ensure_directories()
+    
+    def _ensure_directories(self):
+        """Ensure all necessary directories exist"""
+        directories = [
+            self.base_output_dir / "raw",
+            self.base_output_dir / "processed", 
+            self.base_output_dir / "aggregations"
+        ]
+        for directory in directories:
+            directory.mkdir(parents=True, exist_ok=True)
+    
+    def save_dataframe(self, df: DataFrame, data_type: str, format: str = "parquet", 
+                      partition_by: List[str] = None) -> str:
+        """
+        Save DataFrame to storage
+        
+        Args:
+            df: Spark DataFrame to save
+            data_type: Type of data (e.g., 'processed', 'raw')
+            format: File format ('parquet', 'json')
+            partition_by: List of columns to partition by
+            
+        Returns:
+            Path to saved data
+        """
+        try:
+            output_path = self.base_output_dir / data_type / f"neo_{data_type}_data"
+            
+            writer = df.coalesce(1).write.mode("overwrite")
+            
+            if partition_by:
+                writer = writer.partitionBy(*partition_by)
+            
+            if format == "parquet":
+                writer.option("compression", "snappy").parquet(str(output_path))
+            elif format == "json":
+                writer.json(str(output_path))
+            
+            logger.info(f"Saved {data_type} data to {output_path}")
+            return str(output_path)
+            
+        except Exception as e:
+            raise StorageError(f"Failed to save {data_type} data: {e}")
+    
+    def save_aggregations(self, aggregations: Aggregations) -> str:
+        """
+        Save aggregations as JSON
+        
+        Args:
+            aggregations: Aggregations object to save
+            
+        Returns:
+            Path to saved aggregations
+        """
+        try:
+            output_path = self.base_output_dir / "aggregations" / "neo_aggregations.json"
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(output_path, 'w') as f:
+                json.dump(aggregations.to_dict(), f, indent=2, default=str)
+            
+            logger.info(f"Saved aggregations to {output_path}")
+            return str(output_path)
+            
+        except Exception as e:
+            raise StorageError(f"Failed to save aggregations: {e}")
+
+
 class DataLakeStorage:
     """Handles data storage operations for the NEO data lake"""
     

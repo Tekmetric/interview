@@ -16,7 +16,7 @@ from pyspark.sql.types import (
     IntegerType, DoubleType, TimestampType
 )
 
-from .config import Config
+from .config import SparkConfig
 from .models import NEORecord, CloseApproachData, ObjectDetails, Aggregations
 from .models import DataProcessingError, SparkError
 
@@ -29,17 +29,17 @@ class NEODataProcessor:
     Eliminates single-threaded Python bottlenecks
     """
     
-    def __init__(self, config: Config):
-        self.config = config
+    def __init__(self, spark_config: SparkConfig):
+        self.spark_config = spark_config
         self.spark = self._create_optimized_spark_session()
         
     def _create_optimized_spark_session(self) -> SparkSession:
         """Create and configure optimized Spark session"""
         try:
-            builder = SparkSession.builder.appName(self.config.spark.app_name)
+            builder = SparkSession.builder.appName(self.spark_config.app_name)
             
             # Apply base configurations
-            for key, value in self.config.spark.to_spark_configs().items():
+            for key, value in self.spark_config.to_spark_configs().items():
                 builder = builder.config(key, value)
             
             # Add optimizations for distributed processing
@@ -226,7 +226,7 @@ class NEODataProcessor:
             
             # Close approaches under threshold (distributed filter and count)
             close_approaches_count = df.filter(
-                col("miss_distance_astronomical") < self.config.processing.close_approach_threshold_au
+                col("miss_distance_astronomical") < 0.2  # Default 0.2 AU threshold
             ).count()
             
             # Yearly aggregations using distributed GroupBy
@@ -415,3 +415,12 @@ class NEODataProcessor:
                 logger.info("Spark session closed successfully")
         except Exception as e:
             logger.warning(f"Error closing Spark session: {e}") 
+
+    def cleanup(self):
+        """Clean up Spark resources"""
+        try:
+            if self.spark:
+                self.spark.stop()
+                logger.info("Spark session stopped")
+        except Exception as e:
+            logger.warning(f"Error cleaning up Spark session: {e}") 

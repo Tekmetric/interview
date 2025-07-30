@@ -162,16 +162,6 @@ spark = SparkSession.builder \
     .getOrCreate()
 ```
 
-## **API Integration**
-
-**NASA APIs Used:**
-1. **Close Approach Data API** - NEO close approach records
-2. **Small Body Database API** - Detailed object information
-
-**Features:**
-- Rate limiting for fair use compliance
-- Comprehensive error handling and retry logic
-- Efficient data extraction and transformation
 
 ## **Monitoring**
 

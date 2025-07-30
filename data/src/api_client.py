@@ -179,7 +179,7 @@ class NASAAPIClient:
         logger.info("Starting distributed API fetching")
         
         try:
-            # Calculate page distribution
+            # Calculate page distribution - this logic can be improved, this just for POC/MVP now
             page_size = 20  # Browse API standard page size
             total_pages = (limit + page_size - 1) // page_size  # Ceiling division
             
@@ -232,28 +232,22 @@ class NASAAPIClient:
                 lambda iterator: _fetch_pages_on_executor(iterator, api_key, endpoint_url)
             )
             
-            # Collect all results and flatten
-            all_neo_data = neo_data_rdd.collect()
-            flattened_data = []
-            partition_counts = []
+            # FIXED: Keep data distributed, avoid collect() bottleneck
+            # Flatten: RDD[List[NEO_Dict]] → RDD[NEO_Dict]
+            flattened_rdd = neo_data_rdd.flatMap(lambda partition_data: partition_data)
             
-            for i, partition_data in enumerate(all_neo_data):
-                partition_count = len(partition_data)
-                partition_counts.append(partition_count)
-                flattened_data.extend(partition_data)
-                logger.info(f"Partition {i}: collected {partition_count} objects")
+            # Get count without collecting data (only metadata to driver)
+            total_objects = flattened_rdd.count()
+            logger.info(f"Distributed fetching completed: {total_objects} NEO objects")
             
-            logger.info(f"Distributed fetching completed: {len(flattened_data)} NEO objects")
-            logger.info(f"Per-partition results: {partition_counts}, total: {sum(partition_counts)}")
-            
-            if not flattened_data:
+            if total_objects == 0:
                 logger.warning("No NEO data retrieved from distributed fetch")
                 return self._create_empty_neo_dataframe()
             
-            # Convert to DataFrame
-            json_strings = [json.dumps(neo) for neo in flattened_data]
-            neo_rdd = self.spark.sparkContext.parallelize(json_strings)
-            neo_df = self.spark.read.json(neo_rdd)
+            # Convert RDD to DataFrame directly (data stays distributed)
+            # Convert each NEO dict to JSON string within partitions
+            json_rdd = flattened_rdd.map(lambda neo: json.dumps(neo))
+            neo_df = self.spark.read.json(json_rdd)
             
             logger.info(f"Created Spark DataFrame with {neo_df.count()} NEO records")
             return neo_df

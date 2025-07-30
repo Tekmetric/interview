@@ -89,6 +89,46 @@ class DataStorage:
             
         except Exception as e:
             raise StorageError(f"Failed to save aggregations: {e}")
+    
+    def save_raw_data(self, raw_df: DataFrame) -> Dict[str, str]:
+        """
+        Save raw data with 17 specified columns (Option A: one row per NEO)
+        
+        Args:
+            raw_df: DataFrame with extracted raw data (17 columns, one row per NEO)
+            
+        Returns:
+            Dictionary with file paths
+        """
+        logger.info("Saving raw data...")
+        
+        try:
+            # Use simple path construction like the constructor
+            base_path = self.base_output_dir / "raw" / "neo" / f"year={self.current_year}"
+            base_path.mkdir(parents=True, exist_ok=True)
+            
+            # Save as Parquet for efficient analytics
+            parquet_path = base_path / "neo_raw_data.parquet"
+            raw_df.write.mode("overwrite").parquet(str(parquet_path))
+            
+            # Save as JSON for backup and easy inspection
+            json_path = base_path / "neo_raw_data.json"
+            # Convert to JSON via pandas for cleaner format
+            raw_data_list = raw_df.toPandas().to_dict('records')
+            with open(json_path, 'w') as f:
+                import json
+                json.dump(raw_data_list, f, indent=2)
+            
+            paths = {
+                "parquet": str(parquet_path),
+                "json": str(json_path)
+            }
+            
+            logger.info(f"Raw data saved to {base_path}")
+            return paths
+            
+        except Exception as e:
+            raise StorageError(f"Failed to save raw data: {e}")
 
 
 class DataLakeStorage:
@@ -135,30 +175,7 @@ class DataLakeStorage:
             
         except Exception as e:
             raise StorageError(f"Failed to save raw data: {e}")
-    
-    def save_processed_data(self, df: DataFrame) -> str:
-        """
-        Save processed data in Parquet format
-        
-        Args:
-            df: Processed Spark DataFrame
-            
-        Returns:
-            Path to saved data
-        """
-        logger.info("Saving processed data...")
-        
-        try:
-            # Use simple path construction like the constructor
-            base_path = self.base_output_dir / "processed" / "neo" / f"year={self.current_year}"
-            base_path.mkdir(parents=True, exist_ok=True)
-            parquet_path = base_path / "neo_processed_data.parquet"
-            
-            # Use the existing save_dataframe method
-            return self.save_dataframe(df, "processed", format="parquet")
-            
-        except Exception as e:
-            raise StorageError(f"Failed to save processed data: {e}")
+
     
     def save_aggregations(self, aggregations: Aggregations) -> Dict[str, str]:
         """

@@ -6,15 +6,13 @@ import json
 import time
 import logging
 from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col, lit, explode, size
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
-from .models import NASAAPIError
+from pyspark.sql.types import (
+    StructType, StructField, StringType, FloatType, BooleanType, 
+    ArrayType, IntegerType, DoubleType
+)
 
 from .config import APIConfig
 from .models import NASAAPIError, RateLimitError, APITimeoutError
@@ -32,7 +30,8 @@ class NASAAPIClient:
     def fetch_neo_data_distributed(self, limit: int = 200, parallelism: Optional[int] = None) -> DataFrame:
         """
         Fetch NEO data with embedded close approach data using NeoWs API
-        Simplified approach: fetch data sequentially, then distribute processing
+        Simplified approach: initial iteration, fetch data sequentially, then distribute processing
+        Distributed data fetching will pose additional challenges, so we'll use a simpler approach for now
         
         Args:
             limit: Maximum number of NEO objects to fetch
@@ -55,7 +54,6 @@ class NASAAPIClient:
         # Convert to Spark DataFrame for distributed processing
         try:
             # Convert dictionaries to JSON strings for proper schema inference
-            import json
             json_strings = [json.dumps(neo) for neo in all_neo_data]
             neo_rdd = self.spark.sparkContext.parallelize(json_strings)
             neo_df = self.spark.read.json(neo_rdd)
@@ -91,11 +89,6 @@ class NASAAPIClient:
         try:
             while len(all_neo_data) < limit:
                 logger.info(f"Requesting page {page} (have {len(all_neo_data)}/{limit} objects)")
-                
-                # Simple rate limiting - wait 2 seconds between requests
-                if page > 0:
-                    logger.info("Waiting 2 seconds for rate limiting...")
-                    time.sleep(2.0)
                 
                 # Build request parameters
                 params = {
@@ -184,76 +177,95 @@ class NASAAPIClient:
         finally:
             session.close()
     
-    def _generate_date_ranges(self, days_back: int = 365) -> List[tuple]:
-        """
-        Generate date ranges for API calls (kept for potential future use)
-        NOTE: Browse API uses pagination instead of date ranges
-        """
-        from datetime import datetime, timedelta
-        
-        end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=days_back)
-        date_ranges = []
 
-        current_date = start_date
-        
-        while current_date < end_date:
-            range_end = min(current_date + timedelta(days=6), end_date)  # Max 7 days
-            date_ranges.append((
-                current_date.strftime('%Y-%m-%d'),
-                range_end.strftime('%Y-%m-%d')
-            ))
-            current_date = range_end + timedelta(days=1)
-        
-        return date_ranges
-    
     def _create_empty_neo_dataframe(self) -> DataFrame:
-        """Create empty DataFrame with expected NEO schema"""
+        """Create empty DataFrame with expected NEO schema matching Browse API response"""
+        
+        # Define nested structures to match Browse API response
+        estimated_diameter_schema = StructType([
+            StructField("kilometers", StructType([
+                StructField("estimated_diameter_min", DoubleType(), True),
+                StructField("estimated_diameter_max", DoubleType(), True)
+            ]), True),
+            StructField("meters", StructType([
+                StructField("estimated_diameter_min", DoubleType(), True), 
+                StructField("estimated_diameter_max", DoubleType(), True)
+            ]), True),
+            StructField("miles", StructType([
+                StructField("estimated_diameter_min", DoubleType(), True),
+                StructField("estimated_diameter_max", DoubleType(), True)
+            ]), True),
+            StructField("feet", StructType([
+                StructField("estimated_diameter_min", DoubleType(), True),
+                StructField("estimated_diameter_max", DoubleType(), True)
+            ]), True)
+        ])
+        
+        # Close approach data structure
+        close_approach_schema = StructType([
+            StructField("close_approach_date", StringType(), True),
+            StructField("close_approach_date_full", StringType(), True),
+            StructField("epoch_date_close_approach", DoubleType(), True),
+            StructField("relative_velocity", StructType([
+                StructField("kilometers_per_second", StringType(), True),
+                StructField("kilometers_per_hour", StringType(), True),
+                StructField("miles_per_hour", StringType(), True)
+            ]), True),
+            StructField("miss_distance", StructType([
+                StructField("astronomical", StringType(), True),
+                StructField("lunar", StringType(), True), 
+                StructField("kilometers", StringType(), True),
+                StructField("miles", StringType(), True)
+            ]), True),
+            StructField("orbiting_body", StringType(), True)
+        ])
+        
+        # Orbital data structure
+        orbital_data_schema = StructType([
+            StructField("orbit_id", StringType(), True),
+            StructField("orbit_determination_date", StringType(), True),
+            StructField("first_observation_date", StringType(), True),
+            StructField("last_observation_date", StringType(), True),
+            StructField("data_arc_in_days", IntegerType(), True),
+            StructField("observations_used", IntegerType(), True),
+            StructField("orbit_uncertainty", StringType(), True),
+            StructField("minimum_orbit_intersection", StringType(), True),
+            StructField("jupiter_tisserand_invariant", StringType(), True),
+            StructField("epoch_osculation", StringType(), True),
+            StructField("eccentricity", StringType(), True),
+            StructField("semi_major_axis", StringType(), True),
+            StructField("inclination", StringType(), True),
+            StructField("ascending_node_longitude", StringType(), True),
+            StructField("orbital_period", StringType(), True),
+            StructField("perihelion_distance", StringType(), True),
+            StructField("perihelion_argument", StringType(), True),
+            StructField("aphelion_distance", StringType(), True),
+            StructField("perihelion_time", StringType(), True),
+            StructField("mean_anomaly", StringType(), True),
+            StructField("mean_motion", StringType(), True),
+            StructField("equinox", StringType(), True),
+            StructField("orbit_class", StructType([
+                StructField("orbit_class_type", StringType(), True),
+                StructField("orbit_class_description", StringType(), True),
+                StructField("orbit_class_range", StringType(), True)
+            ]), True)
+        ])
+        
+        # Main schema matching Browse API response
         schema = StructType([
             StructField("id", StringType(), True),
             StructField("neo_reference_id", StringType(), True),
             StructField("name", StringType(), True),
+            StructField("name_limited", StringType(), True),
+            StructField("designation", StringType(), True),
             StructField("nasa_jpl_url", StringType(), True),
-            StructField("absolute_magnitude_h", StringType(), True),
-            StructField("estimated_diameter", StringType(), True),
-            StructField("is_potentially_hazardous_asteroid", StringType(), True),
-            StructField("close_approach_data", StringType(), True),
+            StructField("absolute_magnitude_h", DoubleType(), True),
+            StructField("estimated_diameter", estimated_diameter_schema, True),
+            StructField("is_potentially_hazardous_asteroid", BooleanType(), True),
+            StructField("close_approach_data", ArrayType(close_approach_schema), True),
+            StructField("orbital_data", orbital_data_schema, True),
+            StructField("is_sentry_object", BooleanType(), True)
         ])
         
         return self.spark.createDataFrame([], schema)
-    
-    def _create_session(self) -> requests.Session:
-        """Create HTTP session with retry strategy"""
-        session = requests.Session()
-        
-        # Configure retry strategy
-        retry_strategy = Retry(
-            total=self.config.max_retries,
-            status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["HEAD", "GET", "OPTIONS"],
-            backoff_factor=1
-        )
-        
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        session.mount("http://", adapter)
-        session.mount("https://", adapter)
-        
-        return session
-    
-    def _make_request(self, session: requests.Session, url: str, 
-                     params: Dict[str, Any]) -> requests.Response:
-        """Make HTTP request with timeout and error handling"""
-        try:
-            response = session.get(url, params=params, timeout=self.config.request_timeout)
-            response.raise_for_status()
-            return response
-            
-        except requests.Timeout:
-            raise APITimeoutError(f"Request timeout for {url}")
-        except requests.RequestException as e:
-            if hasattr(e, 'response') and e.response is not None:
-                if e.response.status_code == 429:
-                    raise RateLimitError("Rate limit exceeded")
-                elif e.response.status_code >= 500:
-                    raise NASAAPIError(f"Server error ({e.response.status_code})")
-            raise NASAAPIError(f"Request failed: {e}") 
+ 

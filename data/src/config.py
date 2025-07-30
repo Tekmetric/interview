@@ -24,10 +24,6 @@ class APIConfig:
     @property
     def neo_browse_endpoint(self) -> str:
         return f"{self.base_url}/neo/rest/v1/neo/browse"
-    
-    @property
-    def neo_feed_endpoint(self) -> str:
-        return f"{self.base_url}/neo/rest/v1/feed"
 
 
 @dataclass

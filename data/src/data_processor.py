@@ -9,23 +9,24 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import (
     col, explode, size, when, isnan, isnull, count, 
     sum as spark_sum, avg, min as spark_min, max as spark_max, 
-    stddev, year, month, dayofmonth, regexp_extract,
-    from_json, split, lit
+    stddev, year, month, dayofmonth, lit, row_number
 )
+from pyspark.sql.window import Window
 from pyspark.sql.types import (
     StructType, StructField, StringType, FloatType, BooleanType, 
     IntegerType, DoubleType, ArrayType
 )
 
 from .config import SparkConfig
-from .models import Aggregations
-from .models import DataProcessingError, SparkError
+from .models import Aggregations, DataProcessingError
 
 logger = logging.getLogger(__name__)
 
 
 class NEODataProcessor:
-    """Data processor for NeoWs API data using Spark"""
+    """
+    Distributed data processor for NEO data using Spark
+    """
     
     def __init__(self, spark_config: SparkConfig):
         self.spark_config = spark_config
@@ -51,10 +52,12 @@ class NEODataProcessor:
             return spark
             
         except Exception as e:
-            raise SparkError(f"Failed to create Spark session: {e}")
+            raise DataProcessingError(f"Failed to create Spark session: {e}")
     
     def process_neo_dataframe(self, neo_df: DataFrame) -> DataFrame:
         """
+        DEPRECATED: This method has data quality issues and is replaced by extract_raw_data_with_closest_approach
+        
         Process NeoWs DataFrame to extract all required columns
         
         Args:
@@ -63,61 +66,24 @@ class NEODataProcessor:
         Returns:
             Processed DataFrame with flattened structure and required columns
         """
-        logger.info("Processing NeoWs DataFrame to extract required columns")
+        logger.warning("DEPRECATED: process_neo_dataframe has data quality issues. Use extract_raw_data_with_closest_approach instead.")
         
+        # For backward compatibility, just return a basic processed version
+        # This should not be used in the main pipeline anymore (Option 1)
         try:
-            # First, let's examine the structure of the DataFrame
             logger.info(f"Input DataFrame has {neo_df.count()} records")
-            neo_df.printSchema()
             
-            # Extract basic NEO information based on actual NeoWs schema
+            # Basic processing for backward compatibility only
             processed_df = neo_df.select(
                 col("id").alias("id"),
                 col("neo_reference_id").alias("neo_reference_id"),
                 col("name").alias("name"),
-                col("name").alias("name_limited"),  # Use name for name_limited since it doesn't exist
-                col("id").alias("designation"),  # Use id for designation since designation doesn't exist
-                col("nasa_jpl_url").alias("nasa_jpl_url"),
                 col("absolute_magnitude_h").cast("float").alias("absolute_magnitude_h"),
-                col("is_potentially_hazardous_asteroid").cast("boolean").alias("is_potentially_hazardous_asteroid"),
-                
-                # Extract diameter information from estimated_diameter map
-                col("estimated_diameter")["meters"]["estimated_diameter_min"].cast("float").alias("minimum_estimated_diameter_meters"),
-                col("estimated_diameter")["meters"]["estimated_diameter_max"].cast("float").alias("maximum_estimated_diameter_meters"),
-                
-                # For orbital data, we'll use defaults since it's not in the NeoWs response
-                lit(None).cast("string").alias("first_observation_date"),
-                lit(None).cast("string").alias("last_observation_date"),
-                lit(None).cast("int").alias("observations_used"),
-                lit(None).cast("float").alias("orbital_period"),
-                
-                # Keep close approach data for explosion
-                col("close_approach_data")
+                col("is_potentially_hazardous_asteroid").cast("boolean").alias("is_potentially_hazardous_asteroid")
             )
             
-            # Explode close approach data to get one row per close approach
-            if "close_approach_data" in processed_df.columns:
-                exploded_df = processed_df.select(
-                    "*",
-                    explode(col("close_approach_data")).alias("close_approach")
-                ).drop("close_approach_data")
-                
-                # Extract close approach details from the struct format (Browse API)
-                final_df = exploded_df.select(
-                    "*",
-                    col("close_approach.close_approach_date").alias("closest_approach_date"),
-                    col("close_approach.miss_distance.kilometers").cast("float").alias("closest_approach_miss_distance_kilometers"),
-                    col("close_approach.relative_velocity.kilometers_per_second").cast("float").alias("closest_approach_relative_velocity_kms"),
-                    col("close_approach.miss_distance.astronomical").cast("float").alias("miss_distance_astronomical")
-                ).drop("close_approach")
-            else:
-                final_df = processed_df
-            
-            # Add computed columns for analysis
-            final_df = self._add_computed_columns(final_df)
-            
-            logger.info(f"Successfully processed DataFrame with {final_df.count()} rows")
-            return final_df
+            logger.warning(f"Deprecated method processed {processed_df.count()} rows - consider using raw data approach")
+            return processed_df
             
         except Exception as e:
             raise DataProcessingError(f"Failed to process NEO DataFrame: {e}")
@@ -264,6 +230,140 @@ class NEODataProcessor:
         except Exception as e:
             raise DataProcessingError(f"Failed to calculate aggregations: {e}")
     
+    def calculate_aggregations_from_raw(self, raw_df: DataFrame) -> Aggregations:
+        """
+        Calculate comprehensive aggregations from raw data (1 row per NEO with closest approach)
+        
+        Args:
+            raw_df: Raw DataFrame with 17 columns, 1 row per NEO
+            
+        Returns:
+            Aggregations object with calculated metrics
+        """
+        logger.info("Calculating aggregations from raw data")
+        
+        try:
+            # Basic counts
+            total_objects = raw_df.count()
+            total_approaches = total_objects  # 1 approach per NEO in raw data
+            
+            # Close approaches under 0.2 AU threshold (convert km to AU: 1 AU ≈ 149,597,870.7 km)
+            au_to_km = 149597870.7
+            threshold_km = 0.2 * au_to_km  # 0.2 AU in kilometers
+            
+            close_approaches_under_threshold = raw_df.filter(
+                col("closest_approach_miss_distance_km") < threshold_km
+            ).count()
+            
+            # Approaches by year (extract year from closest_approach_date)
+            raw_with_year = raw_df.withColumn(
+                "approach_year",
+                year(col("closest_approach_date"))
+            )
+            
+            approaches_by_year_df = raw_with_year.filter(
+                col("approach_year").isNotNull()
+            ).groupBy("approach_year").count().collect()
+            
+            approaches_by_year = {
+                int(row['approach_year']): row['count'] 
+                for row in approaches_by_year_df
+            }
+            
+            # Average metrics
+            metrics = raw_df.agg(
+                avg("closest_approach_miss_distance_km").alias("avg_distance"),
+                avg("closest_approach_relative_velocity_kms").alias("avg_velocity"),
+                avg("absolute_magnitude_h").alias("avg_magnitude"),
+                avg("minimum_estimated_diameter_meters").alias("avg_min_diameter"),
+                avg("maximum_estimated_diameter_meters").alias("avg_max_diameter")
+            ).collect()[0]
+            
+            # Potentially hazardous count
+            pha_count = raw_df.filter(
+                col("is_potentially_hazardous_asteroid") == True
+            ).count()
+            
+            # Size distribution based on max diameter
+            raw_with_size = raw_df.withColumn(
+                "size_category",
+                when(col("maximum_estimated_diameter_meters") < 100, "Small")
+                .when(col("maximum_estimated_diameter_meters") < 1000, "Medium") 
+                .when(col("maximum_estimated_diameter_meters") < 10000, "Large")
+                .otherwise("Very Large")
+            )
+            
+            size_dist_df = raw_with_size.filter(
+                col("size_category").isNotNull()
+            ).groupBy("size_category").count().collect()
+            
+            size_distribution = {
+                row['size_category']: row['count'] 
+                for row in size_dist_df
+            }
+            
+            # Velocity statistics
+            velocity_stats_df = raw_df.agg(
+                avg("closest_approach_relative_velocity_kms").alias("mean"),
+                stddev("closest_approach_relative_velocity_kms").alias("stddev"),
+                spark_min("closest_approach_relative_velocity_kms").alias("min"),
+                spark_max("closest_approach_relative_velocity_kms").alias("max")
+            ).collect()[0]
+            
+            velocity_statistics = {
+                "mean": float(velocity_stats_df['mean'] or 0),
+                "stddev": float(velocity_stats_df['stddev'] or 0),
+                "min": float(velocity_stats_df['min'] or 0),
+                "max": float(velocity_stats_df['max'] or 0)
+            }
+            
+            # Distance statistics
+            distance_stats_df = raw_df.agg(
+                avg("closest_approach_miss_distance_km").alias("mean"),
+                stddev("closest_approach_miss_distance_km").alias("stddev"),
+                spark_min("closest_approach_miss_distance_km").alias("min"),
+                spark_max("closest_approach_miss_distance_km").alias("max")
+            ).collect()[0]
+            
+            distance_statistics = {
+                "mean": float(distance_stats_df['mean'] or 0),
+                "stddev": float(distance_stats_df['stddev'] or 0),
+                "min": float(distance_stats_df['min'] or 0),
+                "max": float(distance_stats_df['max'] or 0)
+            }
+            
+            # Additional metrics from raw data
+            orbital_data_available = raw_df.filter(
+                col("orbital_period").isNotNull() & 
+                col("observations_used").isNotNull()
+            ).count()
+            
+            avg_orbital_period = raw_df.agg(
+                avg("orbital_period").alias("avg_period")
+            ).collect()[0]['avg_period']
+            
+            logger.info(f"Calculated aggregations for {total_objects} NEO objects")
+            
+            return Aggregations(
+                total_objects=total_objects,
+                total_close_approaches=total_approaches,
+                close_approaches_under_threshold=close_approaches_under_threshold,
+                approaches_by_year=approaches_by_year,
+                potentially_hazardous_count=pha_count,
+                average_miss_distance_km=float(metrics['avg_distance'] or 0),
+                average_velocity_kms=float(metrics['avg_velocity'] or 0),
+                average_magnitude=float(metrics['avg_magnitude'] or 0),
+                size_distribution=size_distribution,
+                velocity_statistics=velocity_statistics,
+                distance_statistics=distance_statistics,
+                orbital_data_coverage=orbital_data_available / total_objects if total_objects > 0 else 0,
+                average_orbital_period_days=float(avg_orbital_period or 0)
+            )
+            
+        except Exception as e:
+            logger.error(f"Failed to calculate aggregations from raw data: {e}")
+            raise DataProcessingError(f"Aggregation calculation failed: {e}")
+    
     def validate_data_quality(self, df: DataFrame) -> float:
         """Validate data quality and return quality score"""
         logger.info("Validating data quality")
@@ -307,3 +407,68 @@ class NEODataProcessor:
                 logger.info("Spark session stopped")
         except Exception as e:
             logger.warning(f"Error cleaning up Spark session: {e}") 
+
+    def extract_raw_data_with_closest_approach(self, neo_df: DataFrame) -> DataFrame:
+        """
+        Extract raw data with 17 specified columns using closest approach per NEO (Option A)
+        
+        Args:
+            neo_df: Raw DataFrame from Browse API
+            
+        Returns:
+            DataFrame with 17 columns, one row per NEO using closest approach
+        """
+        logger.info("Extracting raw data with closest approach per NEO")
+        
+        try:
+            # First, explode close approach data to find closest approach per NEO
+            exploded_df = neo_df.select(
+                "*",
+                explode(col("close_approach_data")).alias("approach")
+            ).drop("close_approach_data")
+            
+            # Add miss distance as numeric for finding minimum
+            with_distance = exploded_df.select(
+                "*",
+                col("approach.miss_distance.kilometers").cast("double").alias("miss_distance_km_numeric"),
+                col("approach.close_approach_date").alias("approach_date"),
+                col("approach.relative_velocity.kilometers_per_second").alias("approach_velocity_kms")
+            )
+            
+            # Find closest approach for each NEO (minimum miss distance)
+            
+            window = Window.partitionBy("id").orderBy("miss_distance_km_numeric")
+            closest_approaches = with_distance.select(
+                "*",
+                row_number().over(window).alias("rank")
+            ).filter(col("rank") == 1).drop("rank")
+            
+            # Extract the 17 required columns
+            raw_data_df = closest_approaches.select(
+                col("id").alias("id"),
+                col("neo_reference_id").alias("neo_reference_id"), 
+                col("name").alias("name"),
+                col("name_limited").alias("name_limited"),
+                col("designation").alias("designation"),
+                col("nasa_jpl_url").alias("nasa_jpl_url"),
+                col("absolute_magnitude_h").alias("absolute_magnitude_h"),
+                col("is_potentially_hazardous_asteroid").alias("is_potentially_hazardous_asteroid"),
+                col("estimated_diameter.meters.estimated_diameter_min").cast("double").alias("minimum_estimated_diameter_meters"),
+                col("estimated_diameter.meters.estimated_diameter_max").cast("double").alias("maximum_estimated_diameter_meters"),
+                col("miss_distance_km_numeric").alias("closest_approach_miss_distance_km"),
+                col("approach_date").alias("closest_approach_date"),
+                col("approach_velocity_kms").cast("double").alias("closest_approach_relative_velocity_kms"),
+                col("orbital_data.first_observation_date").alias("first_observation_date"),
+                col("orbital_data.last_observation_date").alias("last_observation_date"),
+                col("orbital_data.observations_used").cast("long").alias("observations_used"),
+                col("orbital_data.orbital_period").cast("double").alias("orbital_period")
+            )
+            
+            count = raw_data_df.count()
+            logger.info(f"Successfully extracted raw data: {count} NEO objects with closest approaches")
+            
+            return raw_data_df
+            
+        except Exception as e:
+            logger.error(f"Failed to extract raw data: {e}")
+            raise DataProcessingError(f"Raw data extraction failed: {e}") 

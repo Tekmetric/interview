@@ -66,26 +66,32 @@ class NEOPipeline:
             logger.info(f"Extracting {limit} NEO objects with close approach data from NeoWs API")
             neo_dataframe = self.api_client.fetch_neo_data_distributed(limit, parallelism)
             
-            logger.info(f"Successfully fetched NEO data. Processing with Spark...")
+            logger.info(f"Successfully fetched NEO data. Extracting raw data...")
             
-            # Process and analyze the data
-            processed_df = self.data_processor.process_neo_dataframe(neo_dataframe)
+            # Extract raw data with closest approach per NEO (Option A)
+            raw_data_df = self.data_processor.extract_raw_data_with_closest_approach(neo_dataframe)
             
-            # Calculate aggregations
-            aggregations = self.data_processor.calculate_aggregations(processed_df)
+            # Save raw data
+            logger.info("Saving raw data files...")
+            self.storage.save_raw_data(raw_data_df)
             
-            # Validate data quality
-            quality_score = self.data_processor.validate_data_quality(processed_df)
+            logger.info(f"Raw data saved. Calculating aggregations from raw data...")
             
-            # Save results
-            self._save_results(processed_df, aggregations)
+            # Calculate aggregations directly from clean raw data (Option 1)
+            aggregations = self.data_processor.calculate_aggregations_from_raw(raw_data_df)
+            
+            # Validate data quality using raw data
+            quality_score = self.data_processor.validate_data_quality(raw_data_df)
+            
+            # Save aggregations (no longer saving processed_df)
+            self._save_aggregations(aggregations)
             
             # Calculate metrics
             processing_time = time.time() - start_time
             
             result = ProcessingResult(
-                total_objects_processed=processed_df.count(),
-                close_approaches_count=self._count_close_approaches(processed_df),
+                total_objects_processed=raw_data_df.count(),
+                close_approaches_count=aggregations.total_close_approaches,
                 processing_time_seconds=processing_time,
                 aggregations=aggregations,
                 data_quality_score=quality_score,
@@ -132,45 +138,18 @@ class NEOPipeline:
         except Exception as e:
             raise DataProcessingError(f"Failed to initialize components: {e}")
     
-    def _count_close_approaches(self, df) -> int:
-        """Count total close approaches in the processed data"""
+    def _save_aggregations(self, aggregations: Aggregations):
+        """Save aggregations (streamlined pipeline - Option 1)"""
         try:
-            # Count rows where close approach data exists
-            from pyspark.sql.functions import col, isnotnull, size
-            
-            # If close_approach_data is an array, count total elements
-            # If it's a single record per row, count non-null rows
-            if 'close_approach_data' in df.columns:
-                close_approach_count = df.filter(
-                    isnotnull(col('close_approach_data'))
-                ).count()
-            else:
-                # If data is already flattened, count rows with approach data
-                close_approach_count = df.filter(
-                    isnotnull(col('closest_approach_date'))
-                ).count()
-            
-            return close_approach_count
-            
-        except Exception as e:
-            logger.warning(f"Failed to count close approaches: {e}")
-            return 0
-    
-    def _save_results(self, processed_df, aggregations: Aggregations):
-        """Save processed data and aggregations"""
-        try:
-            logger.info("Saving processed data and aggregations")
-            
-            # Save processed NEO data using the existing save_dataframe method
-            self.storage.save_dataframe(processed_df, "processed", format="parquet")
+            logger.info("Saving aggregations")
             
             # Save aggregations
             self.storage.save_aggregations(aggregations)
             
-            logger.info("Data successfully saved")
+            logger.info("Aggregations successfully saved")
             
         except Exception as e:
-            raise StorageError(f"Failed to save results: {e}")
+            raise StorageError(f"Failed to save aggregations: {e}")
     
     def _cleanup(self):
         """Clean up resources"""

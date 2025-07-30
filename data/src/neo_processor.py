@@ -161,8 +161,8 @@ class NEOPipeline:
         try:
             logger.info("Saving processed data and aggregations")
             
-            # Save processed NEO data
-            self.storage.save_processed_data(processed_df)
+            # Save processed NEO data using the existing save_dataframe method
+            self.storage.save_dataframe(processed_df, "processed", format="parquet")
             
             # Save aggregations
             self.storage.save_aggregations(aggregations)
@@ -221,8 +221,10 @@ def process_neo_data_distributed(limit: Optional[int] = None,
     """
     from .config import APIConfig, SparkConfig, ProcessingConfig
     
-    # Create configurations
-    api_config = APIConfig(api_key='DEMO_KEY')  # Will be overridden by env var if available
+    # Create configurations  
+    from .config import Config
+    config = Config()  # This will load from NASA_API_KEY env var or default to DEMO_KEY
+    api_config = config.api
     spark_config = SparkConfig()
     processing_config = ProcessingConfig()
     

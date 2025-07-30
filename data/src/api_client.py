@@ -14,6 +14,8 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit, explode, size
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
+from .models import NASAAPIError
+
 from .config import APIConfig
 from .models import NASAAPIError, RateLimitError, APITimeoutError
 
@@ -52,7 +54,11 @@ class NASAAPIClient:
         
         # Convert to Spark DataFrame for distributed processing
         try:
-            neo_df = self.spark.createDataFrame(all_neo_data)
+            # Convert dictionaries to JSON strings for proper schema inference
+            import json
+            json_strings = [json.dumps(neo) for neo in all_neo_data]
+            neo_rdd = self.spark.sparkContext.parallelize(json_strings)
+            neo_df = self.spark.read.json(neo_rdd)
             
             # Repartition for optimal processing if parallelism specified
             if parallelism:
@@ -67,75 +73,128 @@ class NASAAPIClient:
     
     def _fetch_neo_data_sequential(self, limit: int) -> List[Dict[str, Any]]:
         """
-        Fetch NEO data sequentially from NeoWs API
-        This avoids distributed HTTP call issues
+        Fetch NEO data from NASA Browse API with simple pagination
         """
-        logger.info("Fetching NEO data sequentially from NeoWs API")
+        logger.info(f"Starting fresh Browse API fetch for {limit} NEO objects")
         
-        session = self._create_session()
         all_neo_data = []
-        seen_neos = set()
+        page = 0
+        page_size = 20  # Browse API standard page size
+        
+        # Create a simple requests session
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'NEO-Data-Processor/1.0',
+            'Accept': 'application/json'
+        })
         
         try:
-            # Generate date ranges for the past year
-            date_ranges = self._generate_date_ranges(days_back=365)
-            
-            for i, (start_date, end_date) in enumerate(date_ranges):
-                if len(all_neo_data) >= limit:
-                    break
-                    
-                logger.info(f"Fetching NEOs for date range {start_date} to {end_date} ({i+1}/{len(date_ranges)})")
+            while len(all_neo_data) < limit:
+                logger.info(f"Requesting page {page} (have {len(all_neo_data)}/{limit} objects)")
                 
-                # Rate limiting
-                if i > 0:
-                    time.sleep(self.config.rate_limit_delay)
+                # Simple rate limiting - wait 2 seconds between requests
+                if page > 0:
+                    logger.info("Waiting 2 seconds for rate limiting...")
+                    time.sleep(2.0)
                 
+                # Build request parameters
+                params = {
+                    'page': page,
+                    'size': min(page_size, limit - len(all_neo_data)),
+                    'api_key': self.config.api_key
+                }
+                
+                # Make the API request with timeout
                 try:
-                    params = {
-                        'start_date': start_date,
-                        'end_date': end_date,
-                        'api_key': self.config.api_key
-                    }
+                    logger.info(f"GET {self.config.neo_browse_endpoint} with params: {params}")
+                    response = session.get(
+                        self.config.neo_browse_endpoint,
+                        params=params,
+                        timeout=60  # Longer timeout to avoid hangs
+                    )
                     
-                    response = self._make_request(session, self.config.neo_feed_endpoint, params)
-                    data = response.json()
+                    logger.info(f"Response received: {response.status_code}")
                     
-                    # Extract NEO data from the response
-                    if 'near_earth_objects' in data:
-                        for date_key, neos_for_date in data['near_earth_objects'].items():
-                            for neo_data in neos_for_date:
-                                neo_id = neo_data.get('id')
-                                if neo_id and neo_id not in seen_neos:
-                                    all_neo_data.append(neo_data)
-                                    seen_neos.add(neo_id)
-                                    
-                                    # Stop if we've reached the limit
-                                    if len(all_neo_data) >= limit:
-                                        break
-                            if len(all_neo_data) >= limit:
-                                break
+                    # Simple error handling
+                    if response.status_code == 429:
+                        logger.warning("Rate limited (429) - waiting 30 seconds")
+                        time.sleep(30)
+                        continue  # Retry the same page
                     
-                    logger.info(f"Collected {len(all_neo_data)} unique NEOs so far...")
+                    if response.status_code != 200:
+                        logger.error(f"API error {response.status_code}: {response.text[:200]}")
+                        raise NASAAPIError(f"Browse API returned {response.status_code}")
                     
-                except Exception as e:
-                    logger.warning(f"Failed to fetch data for range {start_date} to {end_date}: {e}")
-                    continue
+                    # Parse response
+                    try:
+                        data = response.json()
+                    except Exception as e:
+                        logger.error(f"Failed to parse JSON: {e}")
+                        raise NASAAPIError(f"Invalid JSON response: {e}")
+                    
+                    # Extract NEO objects
+                    if 'near_earth_objects' not in data:
+                        logger.error(f"No 'near_earth_objects' key in response. Keys: {list(data.keys())}")
+                        raise NASAAPIError("Unexpected API response structure")
+                    
+                    page_neos = data['near_earth_objects']
+                    logger.info(f"Found {len(page_neos)} NEOs on page {page}")
+                    
+                    # Check if we've reached the end
+                    if not page_neos:
+                        logger.info("No more NEO objects available - reached end of dataset")
+                        break
+                    
+                    # Add NEOs to our collection
+                    before_count = len(all_neo_data)
+                    for neo in page_neos:
+                        if len(all_neo_data) >= limit:
+                            break
+                        all_neo_data.append(neo)
+                    
+                    added = len(all_neo_data) - before_count
+                    logger.info(f"Added {added} NEOs (total: {len(all_neo_data)})")
+                    
+                    # Check if this was the last page (partial page indicates end)
+                    if len(page_neos) < page_size:
+                        logger.info("Received partial page - reached end of dataset")
+                        break
+                    
+                    page += 1
+                    
+                    # Safety check to prevent infinite loops
+                    if page > 50:  # Max 50 pages (1000 objects)
+                        logger.warning("Reached maximum page limit (50) - stopping")
+                        break
+                        
+                except requests.exceptions.Timeout:
+                    logger.error(f"Request timeout on page {page}")
+                    raise NASAAPIError(f"Request timeout on page {page}")
+                    
+                except requests.exceptions.RequestException as e:
+                    logger.error(f"Request failed on page {page}: {e}")
+                    raise NASAAPIError(f"Request failed: {e}")
             
-            logger.info(f"Successfully fetched {len(all_neo_data)} unique NEO objects")
-            return all_neo_data[:limit]  # Ensure we don't exceed limit
+            logger.info(f"Browse API fetch completed: {len(all_neo_data)} objects collected")
+            return all_neo_data
             
         except Exception as e:
-            logger.error(f"Failed to fetch NEO data: {e}")
-            return []
+            logger.error(f"Browse API fetch failed: {e}")
+            raise
         finally:
             session.close()
     
     def _generate_date_ranges(self, days_back: int = 365) -> List[tuple]:
-        """Generate date ranges for NeoWs feed API (max 7 days per request)"""
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=days_back)
+        """
+        Generate date ranges for API calls (kept for potential future use)
+        NOTE: Browse API uses pagination instead of date ranges
+        """
+        from datetime import datetime, timedelta
         
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=days_back)
         date_ranges = []
+
         current_date = start_date
         
         while current_date < end_date:

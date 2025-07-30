@@ -10,7 +10,7 @@ from pyspark.sql.functions import (
     col, explode, size, when, isnan, isnull, count, 
     sum as spark_sum, avg, min as spark_min, max as spark_max, 
     stddev, year, month, dayofmonth, regexp_extract,
-    get_json_object, from_json, split, lit
+    from_json, split, lit
 )
 from pyspark.sql.types import (
     StructType, StructField, StringType, FloatType, BooleanType, 
@@ -102,13 +102,13 @@ class NEODataProcessor:
                     explode(col("close_approach_data")).alias("close_approach")
                 ).drop("close_approach_data")
                 
-                # Extract close approach details from the JSON string format
+                # Extract close approach details from the struct format (Browse API)
                 final_df = exploded_df.select(
                     "*",
-                    get_json_object(col("close_approach"), "$.close_approach_date").alias("closest_approach_date"),
-                    get_json_object(col("close_approach"), "$.miss_distance.kilometers").cast("float").alias("closest_approach_miss_distance_kilometers"),
-                    get_json_object(col("close_approach"), "$.relative_velocity.kilometers_per_second").cast("float").alias("closest_approach_relative_velocity_kms"),
-                    get_json_object(col("close_approach"), "$.miss_distance.astronomical").cast("float").alias("miss_distance_astronomical")
+                    col("close_approach.close_approach_date").alias("closest_approach_date"),
+                    col("close_approach.miss_distance.kilometers").cast("float").alias("closest_approach_miss_distance_kilometers"),
+                    col("close_approach.relative_velocity.kilometers_per_second").cast("float").alias("closest_approach_relative_velocity_kms"),
+                    col("close_approach.miss_distance.astronomical").cast("float").alias("miss_distance_astronomical")
                 ).drop("close_approach")
             else:
                 final_df = processed_df

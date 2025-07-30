@@ -66,6 +66,20 @@ class Aggregations:
     velocity_statistics: Dict[str, float] = field(default_factory=dict)
     distance_statistics: Dict[str, float] = field(default_factory=dict)
     hazard_distribution: Dict[str, int] = field(default_factory=dict)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert Aggregations to dictionary for JSON serialization"""
+        return {
+            "close_approaches_under_threshold": self.close_approaches_under_threshold,
+            "approaches_by_year": self.approaches_by_year,
+            "average_miss_distance_km": self.average_miss_distance_km,
+            "average_relative_velocity_kms": self.average_relative_velocity_kms,
+            "potentially_hazardous_count": self.potentially_hazardous_count,
+            "size_distribution": self.size_distribution,
+            "velocity_statistics": self.velocity_statistics,
+            "distance_statistics": self.distance_statistics,
+            "hazard_distribution": self.hazard_distribution
+        }
 
 
 @dataclass

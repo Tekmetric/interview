@@ -149,13 +149,13 @@ class DataLakeStorage:
         logger.info("Saving processed data...")
         
         try:
-            base_path = self.config.storage.get_processed_data_path(self.current_year)
+            # Use simple path construction like the constructor
+            base_path = self.base_output_dir / "processed" / "neo" / f"year={self.current_year}"
+            base_path.mkdir(parents=True, exist_ok=True)
             parquet_path = base_path / "neo_processed_data.parquet"
             
-            self._save_parquet(df, parquet_path)
-            
-            logger.info(f"Processed data saved to {parquet_path}")
-            return str(parquet_path)
+            # Use the existing save_dataframe method
+            return self.save_dataframe(df, "processed", format="parquet")
             
         except Exception as e:
             raise StorageError(f"Failed to save processed data: {e}")
@@ -173,28 +173,33 @@ class DataLakeStorage:
         logger.info("Saving aggregations...")
         
         try:
-            base_path = self.config.storage.get_aggregations_path(self.current_year)
+            # Use simple path construction like the constructor
+            base_path = self.base_output_dir / "aggregations" / "neo" / f"year={self.current_year}"
+            base_path.mkdir(parents=True, exist_ok=True)
             
             # Save as JSON
             json_path = base_path / "neo_aggregations.json"
-            self._save_json(aggregations.to_dict(), json_path)
+            with open(json_path, 'w') as f:
+                import json
+                json.dump(aggregations.to_dict(), f, indent=2)
             
-            # Save yearly approach data as Parquet for analytics
+            # Save yearly approach data as JSON for simplicity  
             if aggregations.approaches_by_year:
                 yearly_data = [
                     {"year": year, "approach_count": count}
                     for year, count in aggregations.approaches_by_year.items()
                 ]
                 
-                # This would require a Spark session, so we'll create a simple CSV instead
-                # or handle this in the main processor where Spark is available
-                parquet_path = self._save_yearly_data_as_parquet(yearly_data, base_path)
+                # Save yearly data as separate JSON file
+                yearly_json_path = base_path / "approaches_by_year.json"
+                with open(yearly_json_path, 'w') as f:
+                    json.dump(yearly_data, f, indent=2)
             else:
-                parquet_path = None
+                yearly_json_path = None
             
             paths = {
                 "json": str(json_path),
-                "parquet": str(parquet_path) if parquet_path else None
+                "yearly_json": str(yearly_json_path) if yearly_json_path else None
             }
             
             logger.info(f"Aggregations saved to {base_path}")

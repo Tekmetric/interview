@@ -8,6 +8,7 @@ Fetches data from NASA APIs and processes it for analysis.
 
 import sys
 import logging
+from datetime import datetime
 import time
 from pathlib import Path
 
@@ -43,36 +44,35 @@ def main():
         print(f"📊 Objects processed: {result.total_objects_processed}")
         print(f"⏱️ Processing time: {processing_time:.2f} seconds")
         print(f"⚡ Processing speed: {result.total_objects_processed/processing_time:.1f} objects/second")
-        print(f"🎯 Success rate: {(result.successful_records/result.total_objects_processed)*100:.1f}%")
-        print(f"📁 Output files: {len(result.output_paths)}")
+        print(f"🎯 Success rate: {(result.total_objects_processed if result.success else 0)/max(result.total_objects_processed, 1)*100:.1f}%")
+        print(f"📁 Success: {'✅ Yes' if result.success else '❌ No'}")
         
         # Show aggregation results
         agg = result.aggregations
         print(f"\n📈 Enhanced Aggregations:")
-        print(f"  • Close approaches < 0.2 AU: {agg['close_approaches_under_02_au']}")
-        print(f"  • Total objects processed: {agg['total_objects_processed']}")
-        print(f"  • Approaches by year: {agg['approaches_by_year']}")
+        print(f"  • Close approaches < 0.2 AU: {agg.close_approaches_under_threshold}")
+        print(f"  • Total objects processed: {agg.total_objects}")
+        print(f"  • Approaches by year: {agg.approaches_by_year}")
         
         # Show enhanced statistics if available
-        if 'velocity_statistics' in agg:
-            vel_stats = agg['velocity_statistics']
-            print(f"  • Velocity stats: avg={vel_stats['avg']:.1f} km/s, max={vel_stats['max']:.1f} km/s")
+        if agg.velocity_statistics:
+            vel_stats = agg.velocity_statistics
+            print(f"  • Velocity stats: avg={vel_stats.get('avg', 0):.1f} km/s, max={vel_stats.get('max', 0):.1f} km/s")
         
-        if 'distance_statistics' in agg:
-            dist_stats = agg['distance_statistics']
-            print(f"  • Distance stats: avg={dist_stats['avg_au']:.3f} AU, min={dist_stats['min_au']:.3f} AU")
+        if agg.distance_statistics:
+            dist_stats = agg.distance_statistics
+            print(f"  • Distance stats: avg={dist_stats.get('avg_au', 0):.3f} AU, min={dist_stats.get('min_au', 0):.3f} AU")
         
-        if 'hazard_distribution' in agg:
-            hazard_dist = agg['hazard_distribution']
+        if agg.hazard_distribution:
+            hazard_dist = agg.hazard_distribution
             print(f"  • Hazard distribution: {hazard_dist}")
         
 
         
-        # Show output structure
-        print(f"\n📂 Generated data structure:")
-        for name, path in result.output_paths.items():
-            if path:
-                print(f"  • {name}: {path}")
+        # Show output structure (if available)
+        print(f"\n📂 Data saved to:")
+        print(f"  • Processed data: data/processed/neo/year={datetime.now().year}/")
+        print(f"  • Aggregations: data/aggregations/neo/year={datetime.now().year}/")
         
         return 0
         

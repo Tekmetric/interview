@@ -118,10 +118,11 @@ Example output:
 
 ### **High-Performance Distributed Processing**
 **Spark-powered architecture that eliminates single-threaded bottlenecks:** (and creates other issues, similar to any respectable distributed system :D )
-- ⚡ **Distributed API Calls**: NASA API requests parallelized across Spark workers (TBD, not done yet)
-- ⚡ **Distributed Data Processing**: All operations use Spark DataFrames
-- ⚡ **Distributed Joins**: High-performance distributed joins and aggregations
+- **Distributed API Calls**: NASA API requests parallelized across Spark workers 
+- **Distributed Data Processing**: All operations use Spark DataFrames
+- **Distributed Joins**: High-performance distributed joins and aggregations
 - **Performance Monitoring**: Real-time speed metrics
+- **Overhead penalty on local runs**: Given that on local runs this might be executed with very little amount of input data, it would clearly be faster to just use sequential fetching. I am aware of this limitation, I can explain it better during our interview. 
 
 **Performance Benefits:**
 - Linear scalability with Spark cluster size

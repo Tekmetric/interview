@@ -233,48 +233,6 @@ class NEOPipeline:
             "available_data": self.storage.list_available_data(),
         }
     
-    def run_performance_benchmark(self, sizes: list = [50, 100, 200]) -> Dict[str, Any]:
-        """
-        Run performance benchmark comparing different processing sizes
-        
-        Args:
-            sizes: List of object counts to test
-            
-        Returns:
-            Dictionary with benchmark results
-        """
-        logger.info(f"🏁 Running distributed processing benchmark for sizes: {sizes}")
-        
-        benchmark_results = {}
-        
-        for size in sizes:
-            logger.info(f"Benchmarking size: {size} objects")
-            start_time = time.time()
-            
-            try:
-                # Run with different parallelism levels
-                optimal_parallelism = min(size // 5, self.data_processor.spark.sparkContext.defaultParallelism)
-                result = self.run_distributed_pipeline(limit=size, parallelism=optimal_parallelism)
-                
-                end_time = time.time()
-                processing_time = end_time - start_time
-                
-                benchmark_results[size] = {
-                    "processing_time_seconds": processing_time,
-                    "objects_per_second": size / processing_time,
-                    "parallelism_used": optimal_parallelism,
-                    "success_rate": (result.successful_records / result.total_objects_processed) * 100,
-                    "aggregations_calculated": len(result.aggregations),
-                }
-                
-                logger.info(f"✅ Size {size}: {processing_time:.2f}s ({size/processing_time:.1f} obj/s)")
-                
-            except Exception as e:
-                logger.error(f"❌ Benchmark failed for size {size}: {e}")
-                benchmark_results[size] = {"error": str(e)}
-        
-        logger.info("🏁 Benchmark completed")
-        return benchmark_results
 
 
 # Convenience function for distributed processing
@@ -306,12 +264,11 @@ def main():
     """Main entry point when run as a distributed script"""
     import argparse
     
-    parser = argparse.ArgumentParser(description="Distributed NASA Near Earth Object Data Processor")
+    parser = argparse.ArgumentParser(description="NASA Near Earth Object Data Processor")
     parser.add_argument("--limit", type=int, default=200, help="Number of objects to process")
     parser.add_argument("--parallelism", type=int, help="Number of parallel partitions for API calls")
     parser.add_argument("--api-key", type=str, help="NASA API key")
     parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
-    parser.add_argument("--benchmark", action="store_true", help="Run performance benchmark")
     
     args = parser.parse_args()
     
@@ -319,29 +276,17 @@ def main():
         logging.getLogger().setLevel(logging.DEBUG)
     
     try:
-        if args.benchmark:
-            processor = NEOPipeline()
-            benchmark_results = processor.run_performance_benchmark([50, 100, 200])
-            
-            print("🏁 Benchmark Results:")
-            for size, metrics in benchmark_results.items():
-                if "error" not in metrics:
-                    print(f"  {size} objects: {metrics['processing_time_seconds']:.2f}s "
-                          f"({metrics['objects_per_second']:.1f} obj/s)")
-                else:
-                    print(f"  {size} objects: ERROR - {metrics['error']}")
-        else:
-            result = process_neo_data_distributed(
-                api_key=args.api_key, 
-                limit=args.limit,
-                parallelism=args.parallelism
-            )
-            
-            print("🎉 Distributed processing completed successfully!")
-            print(f"📊 Objects processed: {result.total_objects_processed}")
-            print(f"⏱️ Processing time: {result.processing_time_seconds:.2f} seconds")
-            print(f"⚡ Processing speed: {result.total_objects_processed/result.processing_time_seconds:.1f} objects/second")
-            print(f"📁 Output paths: {list(result.output_paths.keys())}")
+        result = process_neo_data_distributed(
+            api_key=args.api_key, 
+            limit=args.limit,
+            parallelism=args.parallelism
+        )
+        
+        print("🎉 Processing completed successfully!")
+        print(f"📊 Objects processed: {result.total_objects_processed}")
+        print(f"⏱️ Processing time: {result.processing_time_seconds:.2f} seconds")
+        print(f"⚡ Processing speed: {result.total_objects_processed/result.processing_time_seconds:.1f} objects/second")
+        print(f"📁 Output paths: {list(result.output_paths.keys())}")
         
     except Exception as e:
         print(f"❌ Error: {e}")

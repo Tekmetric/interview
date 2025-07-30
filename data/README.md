@@ -29,11 +29,7 @@ source venv/bin/activate
 ./venv/bin/python neo_data_processor.py
 ```
 
-**Performance Benchmarking:**
-```bash
-# Run comprehensive benchmark
-./venv/bin/python neo_data_processor.py --benchmark
-```
+
 
 ## 📊 **Requirements Fulfilled**
 
@@ -107,7 +103,7 @@ Example output:
 - ⚡ **Distributed API Calls**: NASA API requests parallelized across Spark workers
 - ⚡ **Distributed Data Processing**: All operations use Spark DataFrames
 - ⚡ **Distributed Joins**: High-performance distributed joins and aggregations
-- 📊 **Performance Monitoring**: Real-time speed metrics and benchmarking
+- 📊 **Performance Monitoring**: Real-time speed metrics
 
 **Performance Benefits:**
 - 3-5x faster processing for moderate datasets (100+ objects)

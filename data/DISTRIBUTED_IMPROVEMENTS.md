@@ -39,11 +39,7 @@ source venv/bin/activate
 ./venv/bin/python neo_data_processor.py
 ```
 
-### 2. Performance Benchmarking
-```bash
-# Run comprehensive benchmark
-./venv/bin/python neo_data_processor.py --benchmark
-```
+
 
 ### 3. Custom Configuration
 ```python
@@ -136,7 +132,7 @@ result = process_neo_data_distributed(
 ## 🚀 Next Steps
 
 1. **Test the distributed version** with your typical workloads
-2. **Run benchmarks** to see actual performance improvements
+2. **Test different dataset sizes** to see performance improvements
 3. **Configure parallelism** based on your system resources
 4. **Deploy to Spark clusters** for production-scale processing
 

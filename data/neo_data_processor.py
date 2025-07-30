@@ -20,15 +20,6 @@ from src.neo_processor import process_neo_data_distributed, NEOPipeline
 def main():
     """Main entry point for NASA NEO data processing"""
     
-    print("🚀 NASA Near Earth Object Data Processor")
-    print("="*60)
-    print("Features:")
-    print("✅ Distributed data extraction using Spark")
-    print("✅ High-performance data processing")
-    print("✅ Comprehensive analytics and aggregations")
-    print("✅ Real-time performance monitoring")
-    print("="*60)
-    
     # Configure logging
     logging.basicConfig(
         level=logging.INFO,
@@ -37,12 +28,12 @@ def main():
     
     try:
         # Run processing pipeline
-        print("\n🎯 Running processing pipeline...")
+        print("\n Running processing pipeline...")
         print("-" * 40)
         
         start_time = time.time()
         result = process_neo_data_distributed(
-            limit=100,  # Process 100 objects for demonstration
+            limit=200,  # Process 100 objects for demonstration
             parallelism=4  # Use 4 parallel partitions
         )
         end_time = time.time()
@@ -75,9 +66,7 @@ def main():
             hazard_dist = agg['hazard_distribution']
             print(f"  • Hazard distribution: {hazard_dist}")
         
-        # Performance benchmarking available
-        print(f"\n🏁 Performance Benchmarking Available:")
-        print(f"Run with --benchmark flag to test different dataset sizes")
+
         
         # Show output structure
         print(f"\n📂 Generated data structure:")
@@ -94,54 +83,14 @@ def main():
 
 
 
-
-
-def run_benchmark():
-    """Run comprehensive performance benchmark"""
-    
-    print("\n🏁 Comprehensive Performance Benchmark")
-    print("="*80)
-    
-    try:
-        processor = NEOPipeline()
-        results = processor.run_performance_benchmark([25, 50, 100])
-        
-        print("\n📊 Benchmark Results:")
-        print(f"{'Size':<10} {'Time (s)':<12} {'Speed (obj/s)':<15} {'Parallelism':<12} {'Success %':<10}")
-        print("-" * 65)
-        
-        for size, metrics in results.items():
-            if "error" not in metrics:
-                print(f"{size:<10} {metrics['processing_time_seconds']:<12.2f} "
-                      f"{metrics['objects_per_second']:<15.1f} "
-                      f"{metrics['parallelism_used']:<12} "
-                      f"{metrics['success_rate']:<10.1f}")
-            else:
-                print(f"{size:<10} ERROR: {metrics['error']}")
-        
-        return 0
-        
-    except Exception as e:
-        print(f"❌ Benchmark failed: {e}")
-        return 1
-
-
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description="Distributed NASA NEO Data Processor")
+    parser = argparse.ArgumentParser(description="NASA NEO Data Processor")
 
-    parser.add_argument("--benchmark", action="store_true", 
-                        help="Run comprehensive performance benchmark")
     parser.add_argument("--verbose", "-v", action="store_true", 
                         help="Enable verbose logging")
     
     args = parser.parse_args()
     
-    if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
-    
-    if args.benchmark:
-        exit(run_benchmark())
-    else:
-        exit(main()) 
+    exit(main()) 

@@ -8,7 +8,8 @@ from pathlib import Path
 # Add src directory to path so we can import our modules
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from src.neo_processor import process_neo_data_distributed, NEOPipeline
+from src.neo_processor import NEOPipeline
+from src.config import APIConfig, SparkConfig, ProcessingConfig
 
 
 def main():
@@ -26,10 +27,21 @@ def main():
         print("-" * 40)
         
         start_time = time.time()
-        result = process_neo_data_distributed(
-            limit=200,  # Per instructions, 200 objects - this could be a a param
-            parallelism=4  # Use 4 parallel partitions - this could be a param
+        
+        # Create configurations
+        from src.config import Config
+        config = Config()  # This will load from NASA_API_KEY env var or default to DEMO_KEY
+        api_config = config.api
+        spark_config = SparkConfig()
+        processing_config = ProcessingConfig(object_limit=200)  # Per instructions, 200 objects
+        
+        # Create and run pipeline
+        pipeline = NEOPipeline(api_config, spark_config, processing_config)
+        result = pipeline.run_pipeline(
+            neo_limit=200,  # Per instructions, 200 objects - this could be a param
+            parallelism=4   # Use 4 parallel partitions - this could be a param
         )
+        
         end_time = time.time()
         processing_time = end_time - start_time
         

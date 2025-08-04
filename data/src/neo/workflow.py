@@ -29,7 +29,7 @@ def run(limit: int, threshold_au: float, output_dir: Path):
         return
 
     logger.info(f"Processing {len(neos)} Near Earth Object(s)")
-    processed_neos = process_neos(neos)
+    processed_neos = asyncio.run(process_neos(neos, max_concurrency=10))
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -45,7 +45,7 @@ def run(limit: int, threshold_au: float, output_dir: Path):
 
     close_approaches = count_close_approaches(neos, threshold_au=threshold_au)
     logger.info(
-        f"🚀 Found {close_approaches} times when our {limit} Near Earth Object(s) "
+        f"Found {close_approaches} times when our {limit} Near Earth Object(s) "
         f"approached closer than {threshold_au} astronomical units"
     )
 
@@ -62,6 +62,6 @@ def run(limit: int, threshold_au: float, output_dir: Path):
     approaches = sum(close_approaches_per_year.values())
     logger.info(f"📊 Summary: {approaches} approaches across {years} years (avg: {(approaches / years):.1f} per year)")
 
-    logger.info("🏆 Top years with most approaches:")
+    logger.info("Top years with most approaches:")
     for year, count in sorted(close_approaches_per_year.items(), key=lambda x: x[1], reverse=True)[:10]:
         logger.info(f"   {year}: {count} approaches")

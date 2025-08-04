@@ -1,0 +1,42 @@
+[project]
+name = "neo"
+version = "0.1.0"
+description = "Near Earth Objects processing workflow tool"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "typer",
+    "pyarrow",
+    "aiohttp",
+    "tenacity",
+    "fsspec"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.optional-dependencies]
+static-checks = ["black", "flake8", "isort", "pre-commit"]
+test = ["pytest", "pytest-asyncio"]
+
+[project.scripts]
+neo = "neo.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/neo", "src/_neo"]
+
+[tool.isort]
+profile = "black"
+line_length = 120
+skip_gitignore = false
+
+[tool.black]
+line-length = 120
+
+[tool.pytest.ini_options]
+addopts = "-m 'not smoketest and not integrationtest'"
+markers = [
+    "smoketest: mark a test as a smoke test",
+    "integrationtest: mark a test as an integration test"
+]

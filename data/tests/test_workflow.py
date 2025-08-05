@@ -17,7 +17,7 @@ async def test_run_workflow_mocked(sample_neos_models: list[NearEarthObject], tm
         new_callable=AsyncMock,
         return_value=sample_neos_models,
     ):
-        await workflow.run(limit=1, threshold_au=0.2, output_dir=tmp_path)
+        await workflow.run(limit=2, threshold_au=0.2, output_dir=tmp_path)
 
     parquet_files = list(tmp_path.rglob("*.parquet"))
     assert parquet_files, "No parquet files found in output directory"
@@ -26,7 +26,7 @@ async def test_run_workflow_mocked(sample_neos_models: list[NearEarthObject], tm
     assert output_filepath.exists()
 
     table = pq.read_table(output_filepath)
-    assert table.num_rows == 3
+    assert table.num_rows == 2
 
 
 @pytest.mark.integrationtest

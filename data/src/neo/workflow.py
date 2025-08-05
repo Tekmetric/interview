@@ -13,7 +13,7 @@ from _neo.logger import logger
 from _neo.process import count_close_approaches, count_close_approaches_per_year, process_neos
 
 
-async def run(limit: int, threshold_au: float, output_dir: Path):
+async def run(limit: int, threshold_au: float, output_dir: Path) -> None:
     """Run NEO workflow."""
     logger.info(f"Fetching {limit} Near Earth Object(s)")
 

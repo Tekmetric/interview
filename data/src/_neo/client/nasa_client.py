@@ -177,9 +177,7 @@ class NeoClient:
                 *guard_semaphore((self._list_page(p, page_size) for p in range(start, end)), semaphore)
             )
 
-            batch = [neo for page in pages for neo in page]
-            batch = batch[:remaining]
-
+            batch = [neo for page in pages for neo in page][:remaining]
             if not batch:
                 raise NeosNotFoundError("No Near Earth Objects found.")
 

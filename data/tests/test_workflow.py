@@ -33,7 +33,6 @@ async def test_run_workflow_mocked(sample_neos_models: list[NearEarthObject], tm
 @pytest.mark.asyncio
 async def test_run_workflow(tmp_path: Path):
     """Test the NEO workflow with data fetch."""
-    # Make sure NASA_API_KEY is set in your environment
     if not os.getenv("NASA_API_KEY"):
         pytest.skip("NASA_API_KEY not set in environment")
 

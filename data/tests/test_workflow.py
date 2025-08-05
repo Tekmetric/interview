@@ -13,7 +13,10 @@ def test_run_workflow_mocked(neos: list[dict], tmp_path: Path):
     with patch("neo.workflow.fetch_neos", return_value=neos):
         workflow.run(limit=1, threshold_au=0.2, output_dir=tmp_path)
 
-    output_filepath = tmp_path / "neos.parquet"
+    parquet_files = list(tmp_path.rglob("*.parquet"))
+    assert parquet_files, "No parquet files found in output directory"
+
+    output_filepath = parquet_files[0]
     assert output_filepath.exists()
 
     table = pq.read_table(output_filepath)
@@ -29,7 +32,10 @@ def test_run_workflow(tmp_path: Path):
 
     workflow.run(limit=1, threshold_au=0.2, output_dir=tmp_path)
 
-    output_filepath = tmp_path / "neos.parquet"
+    parquet_files = list(tmp_path.rglob("*.parquet"))
+    assert parquet_files, "No parquet files found in output directory"
+
+    output_filepath = parquet_files[0]
     assert output_filepath.exists()
 
     table = pq.read_table(output_filepath)

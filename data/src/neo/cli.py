@@ -1,16 +1,21 @@
+import asyncio
 import logging
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Optional
 
 import typer
+from typing_extensions import Annotated
 
+from _neo.logger import configure_logger, logger
 from neo import workflow
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", datefmt="%H:%M:%S")
-logger = logging.getLogger("neo")
-
 cli = typer.Typer(name="neo", pretty_exceptions_show_locals=False)
+
+
+@cli.callback()
+def init(verbose: Annotated[Optional[bool], typer.Option("--verbose", "-v", help="Enable verbose output")] = False):
+    configure_logger(verbose)
 
 
 @cli.command()
@@ -22,13 +27,10 @@ def run(
     ),
 ):
     """Run the data processing workflow."""
-    workflow.run(limit, threshold_au, output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-
-@cli.command()
-def version():
-    """Show package version information."""
-    typer.echo("neo:0.1.0")
+    configure_logger(logger.handlers[0].level == logging.DEBUG, log_file_path=output_dir / "neo.log")
+    asyncio.run(workflow.run(limit, threshold_au, output_dir))
 
 
 def main():

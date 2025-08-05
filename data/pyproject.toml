@@ -8,8 +8,11 @@ dependencies = [
     "typer",
     "pyarrow",
     "aiohttp",
+    "aiohttp_retry",
     "tenacity",
-    "fsspec"
+    "fsspec",
+    "pydantic"
+
 ]
 
 [build-system]

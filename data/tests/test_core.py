@@ -98,9 +98,10 @@ async def test_fetch_neos_raises_error():
             await fetch_neos()
 
 
-def test_process_neos(neos: list[dict]):
+@pytest.mark.asyncio
+async def test_process_neos(neos: list[dict]):
     """Test processing NEO data into a PyArrow Table."""
-    table = process_neos(neos)
+    table = await process_neos(neos)
 
     assert isinstance(table, pa.Table)
     assert table.num_rows == 1

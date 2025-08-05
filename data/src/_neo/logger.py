@@ -1,6 +1,10 @@
+import asyncio
 import logging
 import logging.config
-from typing import Any
+import time
+import tracemalloc
+from functools import wraps
+from typing import Any, Callable
 
 LOGGING_CONFIG_TEMPLATE = {
     "version": 1,
@@ -30,6 +34,42 @@ LOGGING_CONFIG_TEMPLATE = {
         },
     },
 }
+
+
+def profile(func: Callable) -> Callable:
+    """Decorator to profile execution time and memory usage of sync or async functions."""
+
+    @wraps(func)
+    async def async_wrapper(*args, **kwargs) -> Any:
+        tracemalloc.start()
+        start_time = time.perf_counter()
+        try:
+            return await func(*args, **kwargs)
+        finally:
+            end_time = time.perf_counter()
+            current, peak = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
+            logger.info(
+                f"[PROFILE] {func.__name__} took {end_time - start_time:.4f}s | "
+                f"Current memory: {current / 1024:.2f} KB | Peak memory: {peak / 1024:.2f} KB"
+            )
+
+    @wraps(func)
+    def sync_wrapper(*args, **kwargs) -> Any:
+        tracemalloc.start()
+        start_time = time.perf_counter()
+        try:
+            return func(*args, **kwargs)
+        finally:
+            end_time = time.perf_counter()
+            current, peak = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
+            logger.info(
+                f"[PROFILE] {func.__name__} took {end_time - start_time:.4f}s | "
+                f"Current memory: {current / 1024:.2f} KB | Peak memory: {peak / 1024:.2f} KB"
+            )
+
+    return async_wrapper if asyncio.iscoroutinefunction(func) else sync_wrapper
 
 
 def configure_logger(

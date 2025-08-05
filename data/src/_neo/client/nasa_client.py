@@ -7,6 +7,7 @@ from typing import Coroutine
 from aiohttp_retry import ExponentialRetry, RetryClient
 
 from _neo.client.models import NearEarthObject
+from _neo.logger import profile
 
 NEO_BASE_URL = "https://api.nasa.gov/neo/rest/v1/neo/browse"
 """Base URL for NASA NEO API"""
@@ -116,6 +117,7 @@ class NeoClient:
             data = await response.json()
             return [NearEarthObject.model_validate(obj) for obj in data.get("near_earth_objects", [])]
 
+    @profile
     async def list_entries(
         self, limit: int = 200, page_size: int = 20, max_concurrency: int = 10
     ) -> list[NearEarthObject]:

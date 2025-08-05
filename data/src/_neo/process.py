@@ -5,6 +5,7 @@ import pyarrow as pa
 
 from _neo.client.models import NearEarthObject
 from _neo.client.nasa_client import guard_semaphore
+from _neo.logger import profile
 
 NEO_SCHEMA = pa.schema(
     [
@@ -50,6 +51,7 @@ async def _process_neo(neo: NearEarthObject) -> dict:
     return base
 
 
+@profile
 async def process_neos(neos: list[NearEarthObject], max_concurrency: int = 10) -> pa.Table:
     """
     Concurrently process a list of NearEarthObject models into a dataframe.
@@ -72,6 +74,7 @@ async def process_neos(neos: list[NearEarthObject], max_concurrency: int = 10) -
     return pa.Table.from_pylist(rows, schema=NEO_SCHEMA)
 
 
+@profile
 def count_close_approaches(neos: list[NearEarthObject], threshold_au: float = 0.2) -> int:
     """Count the number of close approaches below a given threshold.
 
@@ -90,6 +93,7 @@ def count_close_approaches(neos: list[NearEarthObject], threshold_au: float = 0.
     )
 
 
+@profile
 def count_close_approaches_per_year(neos: list[NearEarthObject]) -> dict[int, int]:
     """Count the number of close approaches recorded in each year.
 

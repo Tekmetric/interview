@@ -38,8 +38,8 @@ async def _process_neo(neo: NearEarthObject) -> dict:
     Returns:
         A row with selected and computed NEO fields.
     """
-    base = neo.model_dump(exclude={"estimated_diameter", "close_approach_data"})
-    base.update(
+    row = neo.model_dump(exclude={"estimated_diameter", "close_approach_data"})
+    row.update(
         {
             "estimated_diameter_min_m": neo.estimated_diameter.meters.estimated_diameter_min,
             "estimated_diameter_max_m": neo.estimated_diameter.meters.estimated_diameter_max,
@@ -48,7 +48,7 @@ async def _process_neo(neo: NearEarthObject) -> dict:
             "closest_relative_velocity_kps": neo.closest_relative_velocity_kps,
         }
     )
-    return base
+    return row
 
 
 @profile
@@ -64,13 +64,13 @@ async def process_neos(neos: list[NearEarthObject], max_concurrency: int = 10) -
         A PyArrow Table containing the processed NEO data.
     """
     semaphore = asyncio.Semaphore(max_concurrency)
+
     rows = await asyncio.gather(
         *guard_semaphore(
             [_process_neo(neo) for neo in neos],
             semaphore,
         )
     )
-
     return pa.Table.from_pylist(rows, schema=NEO_SCHEMA)
 
 

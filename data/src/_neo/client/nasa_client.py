@@ -2,7 +2,7 @@ import asyncio
 import math
 import os
 from collections.abc import Iterable
-from typing import Coroutine
+from typing import AsyncGenerator, Coroutine
 
 from aiohttp_retry import ExponentialRetry, RetryClient
 
@@ -102,7 +102,7 @@ class NeoClient:
             page_size: Number of items per page.
 
         Returns:
-            List of Near Earth Object(s).
+            List of Near Earth Object(s) models.
         """
         if not self._client:
             raise RuntimeError("Client must be used within an async context manager.")
@@ -130,7 +130,7 @@ class NeoClient:
             max_concurrency: Maximum number of concurrent fetch tasks.
 
         Returns:
-            List of Near Earth Object(s).
+            List of Near Earth Object(s) models.
 
         Raises:
             NeosNotFoundError: If no NEOs are found.
@@ -148,3 +148,43 @@ class NeoClient:
             raise NeosNotFoundError("No Near Earth Objects found.")
 
         return result
+
+    async def list_entries_batch(
+        self, limit: int = 200, max_concurrency: int = 10, page_size: int = 20, batch_size: int = 10
+    ) -> AsyncGenerator[list[NearEarthObject], None]:
+        """
+        Async generator yielding lists of NearEarthObjects in batches.
+
+        Args:
+            limit: Total number of NEOs to fetch.
+            page_size: Number of items per page.
+            max_concurrency: Max concurrent requests allowed.
+            page_size: Number of entries per page.
+            batch_size: Number of pages fetched per batch.
+
+        Yields:
+            Lists of NearEarthObject models per batch.
+        """
+        semaphore = asyncio.Semaphore(max_concurrency)
+
+        total_pages = math.ceil(limit / page_size)
+        remaining = limit
+
+        for start in range(0, total_pages, batch_size):
+            end = min(start + batch_size, total_pages)
+
+            pages = await asyncio.gather(
+                *guard_semaphore((self._list_page(p, page_size) for p in range(start, end)), semaphore)
+            )
+
+            batch = [neo for page in pages for neo in page]
+            batch = batch[:remaining]
+
+            if not batch:
+                raise NeosNotFoundError("No Near Earth Objects found.")
+
+            yield batch
+
+            remaining -= len(batch)
+            if remaining <= 0:
+                return

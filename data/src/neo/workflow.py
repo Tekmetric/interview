@@ -2,6 +2,7 @@ import json
 import uuid
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 import fsspec
 import pyarrow.parquet as pq
@@ -14,11 +15,6 @@ from _neo.process import count_close_approaches, count_close_approaches_per_year
 async def run(limit: int, threshold_au: float, output_dir: Path):
     """Run NEO workflow."""
     logger.info(f"Fetching {limit} Near Earth Object(s)")
-    async with NasaClient() as client:
-        neos = await client.neo.list_entries(limit)
-
-    logger.info(f"Processing {len(neos)} Near Earth Object(s)")
-    processed_neos = await process_neos(neos, max_concurrency=10)
 
     partition_dir = (
         output_dir / f"neos/year={date.today().year}/month={date.today().month:02d}/day={date.today().day:02d}"
@@ -26,17 +22,27 @@ async def run(limit: int, threshold_au: float, output_dir: Path):
     partition_dir.mkdir(parents=True, exist_ok=True)
 
     neos_filepath = partition_dir / f"neos-{uuid.uuid4().hex}.parquet"
-    logger.info(f"Writing processed NEO data to {neos_filepath}")
-    with fsspec.open(neos_filepath, "wb") as f:
-        pq.write_table(processed_neos, f)
 
-    close_approaches = count_close_approaches(neos, threshold_au=threshold_au)
+    close_approaches = 0
+    close_approaches_per_year: dict[int, Any] = {}
+
+    async with NasaClient() as client:
+        async for batch in client.neo.list_entries_batch(limit=limit):
+            logger.info(f"Processing batch of {len(batch)} Near Earth Object(s)")
+            rows = await process_neos(batch, max_concurrency=10)
+
+            logger.info(f"Writing processed NEO rows to {neos_filepath}")
+            with fsspec.open(neos_filepath, "wb") as f:
+                pq.write_table(rows, f)
+
+            close_approaches += count_close_approaches(batch, threshold_au=threshold_au)
+            for year, count in count_close_approaches_per_year(batch).items():
+                close_approaches_per_year[year] = close_approaches_per_year.get(year, 0) + count
+
     logger.info(
         f"Found {close_approaches} times when our {limit} Near Earth Object(s) "
         f"approached closer than {threshold_au} astronomical units"
     )
-
-    close_approaches_per_year = count_close_approaches_per_year(neos)
 
     aggregations_filepath = partition_dir / f"aggregations-{uuid.uuid4().hex}.json"
     logger.info(f"Writing aggregations to {aggregations_filepath}")

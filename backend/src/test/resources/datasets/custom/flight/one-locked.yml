@@ -1,0 +1,30 @@
+# A scheduled flight used to test the "seats locked when SCHEDULED" rule
+plane:
+  - id: 1
+    registration_number: "YR-AAA"
+    manufacturer: "Airbus"
+    model: "A320"
+    seat_capacity: 180
+    range_km: 6100
+    status: "IN_SERVICE"
+    version: 0
+    created_by: 900
+    updated_by: 900
+
+flight:
+  - id: 201
+    code: "LOCK1"
+    departure_airport: "OTP"
+    arrival_airport: "LHR"
+    departure_time: "2025-08-11 09:30:00"
+    arrival_time:   "2025-08-11 11:50:00"
+    status: "SCHEDULED"
+    available_seats: 150
+    price: 199.99
+    currency: "EUR"
+    terminal: "T1"
+    gate: "A3"
+    plane_id: 1
+    version: 0
+    created_by: 900
+    updated_by: 900

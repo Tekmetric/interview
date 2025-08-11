@@ -1,0 +1,10 @@
+app_user:
+  - id: 900
+    username: "admin"
+    email: "admin@example.com"
+    full_name: "Admin"
+    role: "ADMIN"
+    status: "ACTIVE"
+    # Replace the password_hash below with the one you generate in step 2. admin123
+    password_hash: "$2a$10$HLg/f22SLx73fCwLwc8KSurSkzFRUPsx/BAaseb5lzXfgfY1hGGEa"
+    version: 0

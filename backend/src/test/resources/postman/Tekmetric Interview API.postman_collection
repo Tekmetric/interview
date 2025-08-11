@@ -1,0 +1,337 @@
+{
+	"info": {
+		"_postman_id": "f9e43fe4-87ef-4ebd-8d77-f51d21f293e7",
+		"name": "Tekmetric Interview API - Flight (Basic Auth)",
+		"description": "Complete collection for Flight endpoints (create, get, update, delete, search) with Basic authentication.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1896847",
+		"_collection_link": "https://winter-astronaut-794797.postman.co/workspace/My-Workspace~02787e41-3c05-4126-8580-9273cbb7f472/collection/1896847-f9e43fe4-87ef-4ebd-8d77-f51d21f293e7?action=share&source=collection_link&creator=1896847"
+	},
+	"item": [
+		{
+			"name": "Flight - Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Status is 200 or 201', function () {",
+							"  pm.expect([200,201]).to.include(pm.response.code);",
+							"});",
+							"try {",
+							"  const json = pm.response.json();",
+							"  if (json && json.id) { pm.environment.set('flightId', json.id); }",
+							"} catch(e) { /* ignore */ }"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"code\": \"TM100\",\n  \"departureAirport\": \"OTP\",\n  \"arrivalAirport\": \"LHR\",\n  \"departureTime\": \"2025-08-11T09:30:00\",\n  \"arrivalTime\": \"2025-08-11T11:50:00\",\n  \"status\": \"SCHEDULED\",\n  \"availableSeats\": 150,\n  \"price\": 199.99,\n  \"currency\": \"EUR\",\n  \"terminal\": \"T1\",\n  \"gate\": \"A3\",\n  \"planeId\": \"{{planeId}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/flight/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"flight",
+						""
+					]
+				},
+				"description": "Create a new flight."
+			},
+			"response": []
+		},
+		{
+			"name": "Flight - Get by ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Status is 200', function(){ pm.response.to.have.status(200); });"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/flight/{{flightId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"flight",
+						"{{flightId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Flight - Update",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Status is 200', function(){ pm.response.to.have.status(200); });"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"code\": \"TM100\",\n  \"departureAirport\": \"OTP\",\n  \"arrivalAirport\": \"LHR\",\n  \"departureTime\": \"2025-08-11T09:30:00\",\n  \"arrivalTime\": \"2025-08-11T11:50:00\",\n  \"status\": \"SCHEDULED\",\n  \"availableSeats\": 150,\n  \"price\": 219.49,\n  \"currency\": \"EUR\",\n  \"terminal\": \"T1\",\n  \"gate\": \"A4\",\n  \"planeId\": \"{{planeId}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/flight/{{flightId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"flight",
+						"{{flightId}}"
+					]
+				},
+				"description": "Update an existing flight by ID."
+			},
+			"response": []
+		},
+		{
+			"name": "Flight - Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Status is 204', function(){ pm.response.to.have.status(204); });"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/flight/{{flightId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"flight",
+						"{{flightId}}"
+					]
+				},
+				"description": "Delete a flight by ID."
+			},
+			"response": []
+		},
+		{
+			"name": "Flight - Search (no pagination)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Status is 200', function(){ pm.response.to.have.status(200); });",
+							"pm.test('Body is an array', function(){",
+							"  const body = pm.response.json();",
+							"  pm.expect(Array.isArray(body)).to.be.true;",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/flight?departureAirport={{depAirport}}&arrivalAirport={{arrAirport}}&status={{status}}&planeId={{planeId}}&depFrom={{depFrom}}&depTo={{depTo}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"flight"
+					],
+					"query": [
+						{
+							"key": "departureAirport",
+							"value": "{{depAirport}}"
+						},
+						{
+							"key": "arrivalAirport",
+							"value": "{{arrAirport}}"
+						},
+						{
+							"key": "status",
+							"value": "{{status}}"
+						},
+						{
+							"key": "planeId",
+							"value": "{{planeId}}"
+						},
+						{
+							"key": "depFrom",
+							"value": "{{depFrom}}"
+						},
+						{
+							"key": "depTo",
+							"value": "{{depTo}}"
+						}
+					]
+				},
+				"description": "Returns a List<FlightDto>."
+			},
+			"response": []
+		},
+		{
+			"name": "Flight - Search (paginated)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Status is 200', function(){ pm.response.to.have.status(200); });",
+							"pm.test('Has content[]', function(){",
+							"  const body = pm.response.json();",
+							"  pm.expect(body).to.be.an('object');",
+							"  pm.expect(body).to.have.property('content');",
+							"  pm.expect(Array.isArray(body.content)).to.be.true;",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/flight?departureAirport={{depAirport}}&arrivalAirport={{arrAirport}}&status={{status}}&planeId={{planeId}}&depFrom={{depFrom}}&depTo={{depTo}}&page={{page}}&size={{size}}&sort={{sort}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"flight"
+					],
+					"query": [
+						{
+							"key": "departureAirport",
+							"value": "{{depAirport}}"
+						},
+						{
+							"key": "arrivalAirport",
+							"value": "{{arrAirport}}"
+						},
+						{
+							"key": "status",
+							"value": "{{status}}"
+						},
+						{
+							"key": "planeId",
+							"value": "{{planeId}}"
+						},
+						{
+							"key": "depFrom",
+							"value": "{{depFrom}}"
+						},
+						{
+							"key": "depTo",
+							"value": "{{depTo}}"
+						},
+						{
+							"key": "page",
+							"value": "{{page}}"
+						},
+						{
+							"key": "size",
+							"value": "{{size}}"
+						},
+						{
+							"key": "sort",
+							"value": "{{sort}}"
+						}
+					]
+				},
+				"description": "Returns a Spring Page<FlightDto> (content[], totalElements, ...)."
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "{{username}}",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			}
+		]
+	}
+}

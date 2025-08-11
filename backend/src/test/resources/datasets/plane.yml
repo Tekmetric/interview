@@ -1,0 +1,11 @@
+plane:
+  - id: 1
+    registration_number: "YR-AAA"
+    manufacturer: "Airbus"
+    model: "A320"
+    seat_capacity: 180
+    range_km: 6100
+    status: "IN_SERVICE"
+    version: 0
+    created_by: 900
+    updated_by: 900

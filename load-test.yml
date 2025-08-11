@@ -1,0 +1,79 @@
+config:
+  target: 'http://localhost:8080'
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 10
+      name: "Ramp up load"
+    - duration: 300
+      arrivalRate: 20
+      name: "Sustained load"
+  defaults:
+    headers:
+      Authorization: 'Basic YWRtaW46YWRtaW4xMjM='  # admin:admin123 in base64
+      Content-Type: 'application/json'
+  processor: "./load-test-processor.js"
+
+scenarios:
+  - name: "Product Management Flow"
+    weight: 40
+    flow:
+      - get:
+          url: "/api/products"
+      - get:
+          url: "/api/products/{{ $randomInt(1, 10) }}"
+      - post:
+          url: "/api/products"
+          json:
+            sku: "LOAD-{{ $randomString() }}"
+            name: "Load Test Product {{ $randomInt(1, 1000) }}"
+            category: "{{ $pick(['Electronics', 'Furniture', 'Office Supplies']) }}"
+            unit: "each"
+            price: "{{ $randomInt(10, 500) }}.99"
+          capture:
+            json: "$.id"
+            as: "productId"
+      - get:
+          url: "/api/products/{{ productId }}"
+
+  - name: "Inventory Operations"
+    weight: 35
+    flow:
+      - get:
+          url: "/api/inventory"
+      - get:
+          url: "/api/inventory/search"
+          qs:
+            category: "{{ $pick(['Electronics', 'Furniture', 'Office Supplies']) }}"
+      - post:
+          url: "/api/inventory/movements"
+          json:
+            productId: "{{ $randomInt(1, 10) }}"
+            warehouseId: 1
+            movementType: "{{ $pick(['IN', 'OUT']) }}"
+            movementReason: "{{ $pick(['PURCHASE', 'SALE', 'ADJUSTMENT']) }}"
+            quantity: "{{ $randomInt(1, 50) }}"
+            unitCost: "{{ $randomInt(5, 100) }}.00"
+            referenceNumber: "LOAD-REF-{{ $randomString() }}"
+            notes: "Load test movement"
+
+  - name: "Search and Filter"
+    weight: 25
+    flow:
+      - get:
+          url: "/api/products/search"
+          qs:
+            search: "{{ $pick(['laptop', 'mouse', 'desk', 'pen', 'chair']) }}"
+      - get:
+          url: "/api/products"
+          qs:
+            category: "Electronics"
+            active: true
+            page: "{{ $randomInt(0, 3) }}"
+            size: 20
+      - get:
+          url: "/api/inventory/low-stock"
+          qs:
+            threshold: "{{ $randomInt(10, 50) }}"

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 @ToString
 // TODO EXPLAIN: why dto, no certain fields
 // TODO EXPLAIN: Jackson, serialization
-public class CustomerDto {
+public class CustomerDto implements Serializable {
     @JsonProperty("customer_id")
     private String id;
     @JsonInclude(JsonInclude.Include.NON_NULL)

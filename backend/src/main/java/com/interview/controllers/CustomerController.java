@@ -10,6 +10,7 @@ import com.interview.mappers.CustomerMapper;
 import com.interview.repositories.CustomerRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,6 +38,7 @@ public class CustomerController {
     @GetMapping
     // TODO EXPLAIN: Iterable not List
     // TODO EXPLAIN: required = false, defaultValue = "", name = "sort"
+    @Cacheable(value = "customers", key = "#sort", unless = "#result.isEmpty()")
     public Iterable<CustomerDto> getAllCustomers(@RequestParam(required = false, defaultValue = "", name = "sort") String sort) {
         // Map of allowed sort keys (case-insensitive) to actual entity field names
         Map<String, String> sortMapping = Map.of(

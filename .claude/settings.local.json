@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git reset:*)",
+      "Bash(docker-compose down:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(GIT_COMMITTER_DATE=\"2025-08-06 09:00:00 -0400\" git commit --date=\"2025-08-06 09:00:00 -0400\" --author=\"Robert Puscasu <puscasu.robert1@gmail.com>\" -m \"Initialize Spring Boot project with Maven\n\n- Set up basic Spring Boot 3.5.4 with Java 21\n- Add core dependencies: web, data-jpa, flyway, postgresql\n- Configure project structure for inventory management system\")",
+      "Bash(GIT_COMMITTER_DATE=\"2025-08-06 09:00:00 -0400\" git commit --date=\"2025-08-06 09:00:00 -0400\" --author=\"Robert Puscasu <puscasu.robert1@gmail.com>\" -m \"Initialize Spring Boot project\n\n- Basic Spring Boot 3.5.4 setup with Java 21\n- Core dependencies: web, data-jpa, postgresql\n- Main application class\")",
+      "Bash(GIT_COMMITTER_DATE=\"2025-08-07 09:00:00 -0400\" git commit --date=\"2025-08-07 09:00:00 -0400\" --author=\"Robert Puscasu <puscasu.robert1@gmail.com>\" -m \"Add repository layer with custom queries\n\n- ProductRepository with search and category filtering\n- InventoryItemRepository with low stock detection\n- StockMovementRepository for movement history\n- WarehouseRepository for location management\n- Custom queries for business-specific needs\")",
+      "Bash(GIT_COMMITTER_DATE=\"2025-08-07 10:30:00 -0400\" git commit --date=\"2025-08-07 10:30:00 -0400\" --author=\"Robert Puscasu <puscasu.robert1@gmail.com>\" -m \"Implement core business logic services\n\n- ProductService with CRUD operations and validation\n- InventoryService with stock management and movement tracking\n- Transactional boundaries and error handling\n- Business rules for inventory adjustments\")",
+      "Bash(mvn test:*)",
+      "Bash(rm:*)",
+      "Bash(git log:*)"
+    ],
+    "deny": []
+  }
+}

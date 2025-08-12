@@ -1,0 +1,55 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [ master ]
+  workflow_run:
+    workflows: ["Continuous Integration"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    name: Deploy Application
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'push' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+        tags: inventory-management:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Deploy with Docker Compose
+      run: |
+        docker-compose down || true
+        docker-compose up -d
+
+    - name: Wait for application startup
+      run: |
+        timeout 120 bash -c '
+        until curl -f http://localhost:8080/actuator/health; do
+          echo "Waiting for application to start..."
+          sleep 5
+        done'
+
+    - name: Run smoke tests
+      run: |
+        echo "Running post-deployment smoke tests..."
+        curl -f http://localhost:8080/actuator/health
+        curl -f -u admin:admin123 http://localhost:8080/api/products/active
+
+    - name: Cleanup
+      if: always()
+      run: docker-compose down

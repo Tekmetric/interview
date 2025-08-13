@@ -26,7 +26,7 @@ public class CustomerDto implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+//    @JsonFormat(pattern = "yyyy-MM-dd")
     // TODO EXPLAIN: "2025-08-07T17:06:33.349278"
     private LocalDateTime createdAt;
 }

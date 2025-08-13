@@ -1,17 +1,21 @@
 package com.interview.controllers;
 
 import com.interview.config.CustomerConfig;
-import com.interview.dtos.ChangePasswordRequest;
-import com.interview.dtos.CustomerDto;
-import com.interview.dtos.RegisterCustomerRequest;
-import com.interview.dtos.UpdateCustomerRequest;
+import com.interview.dtos.*;
 import com.interview.entity.Customer;
 import com.interview.mappers.CustomerMapper;
 import com.interview.repositories.CustomerRepository;
+import com.interview.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -32,25 +36,66 @@ public class CustomerController {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final CustomerConfig customerConfig;
+    private final CustomerService customerService;
 
-    // TODO add api in path?
-    // TODO EXPLAIN: GetMapping vs RequestMapping
+//    // TODO add api in path?
+//    // TODO EXPLAIN: GetMapping vs RequestMapping
+//    @GetMapping
+//    // TODO EXPLAIN: Iterable not List
+//    // TODO EXPLAIN: required = false, defaultValue = "", name = "sort"
+//    @Cacheable(value = "customers", key = "#sort", unless = "#result.isEmpty()")
+//    public Iterable<CustomerDto> getAllCustomers(@RequestParam(required = false, defaultValue = "", name = "sort") String sort) {
+//        // Map of allowed sort keys (case-insensitive) to actual entity field names
+//        Map<String, String> sortMapping = Map.of(
+//                "email", "email",
+//                "lastname", "lastName"
+//        );
+//
+//        String normalizedSort = sortMapping.getOrDefault(sort.toLowerCase(), "lastName");
+//
+//        // TODO EXPLAIN: lambda -> method reference
+//        // customer -> customerMapper.toDto(customer)
+//        return customerRepository.findAll(Sort.by(normalizedSort)).stream().map(customerMapper::toDto).toList();
+//    }
+
+//    @GetMapping
+//    @Cacheable(value = "customers", key = "#sort + '-' + #page + '-' + #size", unless = "#result.isEmpty()")
+//    public Page<CustomerDto> getAllCustomers(
+//            @RequestParam(required = false, defaultValue = "", name = "sort") String sort,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "3") int size) {
+//
+//        // Map of allowed sort keys (case-insensitive) to actual entity field names
+//        Map<String, String> sortMapping = Map.of(
+//                "email", "email",
+//                "lastname", "lastName"
+//        );
+//
+//        String normalizedSort = sortMapping.getOrDefault(sort.toLowerCase(), "lastName");
+//
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(normalizedSort));
+//
+//        return customerRepository.findAll(pageable).map(customerMapper::toDto);
+//    }
+
+//    @GetMapping
+//    public PagedModel<EntityModel<CustomerDto>> getAllCustomers(
+//            @RequestParam(required = false, defaultValue = "", name = "sort") String sort,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "3") int size,
+//            PagedResourcesAssembler<CustomerDto> assembler) {
+//
+//        Page<CustomerDto> dtoPage = customerService.getCustomers(sort, page, size);
+//        return assembler.toModel(dtoPage);
+//    }
+
     @GetMapping
-    // TODO EXPLAIN: Iterable not List
-    // TODO EXPLAIN: required = false, defaultValue = "", name = "sort"
-    @Cacheable(value = "customers", key = "#sort", unless = "#result.isEmpty()")
-    public Iterable<CustomerDto> getAllCustomers(@RequestParam(required = false, defaultValue = "", name = "sort") String sort) {
-        // Map of allowed sort keys (case-insensitive) to actual entity field names
-        Map<String, String> sortMapping = Map.of(
-                "email", "email",
-                "lastname", "lastName"
-        );
+    public CustomerPageDto getAllCustomers(
+            @RequestParam(required = false, defaultValue = "", name = "sort") String sort,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
 
-        String normalizedSort = sortMapping.getOrDefault(sort.toLowerCase(), "lastName");
-
-        // TODO EXPLAIN: lambda -> method reference
-        // customer -> customerMapper.toDto(customer)
-        return customerRepository.findAll(Sort.by(normalizedSort)).stream().map(customerMapper::toDto).toList();
+        return customerService.getCustomers(sort, page, size);
     }
 
     @GetMapping("/{id}")

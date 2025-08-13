@@ -84,20 +84,18 @@ public class RedisCacheConfig {
         ObjectMapper objectMapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule()) // for Java 8 dates
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                // if not activated, get LinkedHashMap instead of the actual DTO class when deserializing collections or polymorphic fields.
                 .activateDefaultTyping(
                         LaissezFaireSubTypeValidator.instance,
                         ObjectMapper.DefaultTyping.NON_FINAL,
                         JsonTypeInfo.As.PROPERTY
                 );
 
-        GenericJackson2JsonRedisSerializer serializer =
-                new GenericJackson2JsonRedisSerializer(objectMapper);
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
 
         return RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(serializer)
                 );
     }
-
-
 }

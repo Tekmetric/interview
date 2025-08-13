@@ -1,0 +1,25 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: interview-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - interview-network
+
+  app:
+    build: .
+    container_name: interview-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    networks:
+      - interview-network
+
+networks:
+  interview-network:
+    driver: bridge

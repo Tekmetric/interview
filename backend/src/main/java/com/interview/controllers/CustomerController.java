@@ -9,6 +9,7 @@ import com.interview.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,57 +30,7 @@ public class CustomerController {
     private final CustomerMapper customerMapper;
     private final CustomerConfig customerConfig;
     private final CustomerService customerService;
-
-//    // TODO add api in path?
-//    // TODO EXPLAIN: GetMapping vs RequestMapping
-//    @GetMapping
-//    // TODO EXPLAIN: Iterable not List
-//    // TODO EXPLAIN: required = false, defaultValue = "", name = "sort"
-//    @Cacheable(value = "customers", key = "#sort", unless = "#result.isEmpty()")
-//    public Iterable<CustomerDto> getAllCustomers(@RequestParam(required = false, defaultValue = "", name = "sort") String sort) {
-//        // Map of allowed sort keys (case-insensitive) to actual entity field names
-//        Map<String, String> sortMapping = Map.of(
-//                "email", "email",
-//                "lastname", "lastName"
-//        );
-//
-//        String normalizedSort = sortMapping.getOrDefault(sort.toLowerCase(), "lastName");
-//
-//        // TODO EXPLAIN: lambda -> method reference
-//        // customer -> customerMapper.toDto(customer)
-//        return customerRepository.findAll(Sort.by(normalizedSort)).stream().map(customerMapper::toDto).toList();
-//    }
-
-//    @GetMapping
-//    @Cacheable(value = "customers", key = "#sort + '-' + #page + '-' + #size", unless = "#result.isEmpty()")
-//    public Page<CustomerDto> getAllCustomers(
-//            @RequestParam(required = false, defaultValue = "", name = "sort") String sort,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "3") int size) {
-//
-//        // Map of allowed sort keys (case-insensitive) to actual entity field names
-//        Map<String, String> sortMapping = Map.of(
-//                "email", "email",
-//                "lastname", "lastName"
-//        );
-//
-//        String normalizedSort = sortMapping.getOrDefault(sort.toLowerCase(), "lastName");
-//
-//        Pageable pageable = PageRequest.of(page, size, Sort.by(normalizedSort));
-//
-//        return customerRepository.findAll(pageable).map(customerMapper::toDto);
-//    }
-
-//    @GetMapping
-//    public PagedModel<EntityModel<CustomerDto>> getAllCustomers(
-//            @RequestParam(required = false, defaultValue = "", name = "sort") String sort,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "3") int size,
-//            PagedResourcesAssembler<CustomerDto> assembler) {
-//
-//        Page<CustomerDto> dtoPage = customerService.getCustomers(sort, page, size);
-//        return assembler.toModel(dtoPage);
-//    }
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping
     public ResponseEntity<CustomerPageDto> getAllCustomers(
@@ -118,8 +69,11 @@ public class CustomerController {
         }
 
         Customer customer = customerMapper.toEntity(request);
+        // Hash password before saving
+        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         customerRepository.save(customer);
         URI uri = uriBuilder.path("/api/customers/{id}").buildAndExpand(customer.getId()).toUri();
+
         // TODO EXPLAIN: return ResponseEntity.status(HttpStatus.CREATED).body(customerMapper.toDto(customer));
         // return location, good rest practice
         return ResponseEntity.created(uri).body(customerMapper.toDto(customer));
@@ -165,13 +119,22 @@ public class CustomerController {
             return ResponseEntity.notFound().build();
         }
 
-        if (!customer.getPassword().equals(request.getOldPassword())) {
+        String hashedOldPasswordFromRequest = passwordEncoder.encode(request.getOldPassword());
+
+        System.out.println("old password OG: " + request.getOldPassword());
+        System.out.println("old password: " + hashedOldPasswordFromRequest);
+        System.out.println("db password: " + customer.getPassword());
+
+        // With BCrypt (Spring Security's default), hashing the same password twice produces different hashes
+        // (due to the random salt), so equals() will almost never match.
+        if (!passwordEncoder.matches(request.getOldPassword(), customer.getPassword())) {
             // TODO EXPLAIN: 400 Bad Request vs UNAUTHORIZED
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         // TODO EXPLAIN: no need to user mapper, which is for large/complex objects
-        customer.setPassword(request.getNewPassword());
+        // Encode the new password and save
+        customer.setPassword(passwordEncoder.encode(request.getNewPassword()));
         customerRepository.save(customer);
 
         return ResponseEntity.noContent().build();

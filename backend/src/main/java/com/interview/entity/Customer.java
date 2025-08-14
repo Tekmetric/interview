@@ -34,7 +34,7 @@ public class Customer {
 //    @Lowercase(message = "Email must be in lowercase")
     private String email;
 
-    @Column(name = "password", nullable = false, length = 25)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
     // TODO EXPLAIN: insertable = false, Hibernate won’t insert or update this column — only DB default will work — and your entity won’t have the field populated until after a reload.

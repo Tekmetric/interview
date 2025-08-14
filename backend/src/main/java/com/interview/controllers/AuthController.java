@@ -1,8 +1,10 @@
 package com.interview.controllers;
 
+import com.interview.dto.JwtResponse;
 import com.interview.dto.LoginRequest;
 import com.interview.entity.Customer;
 import com.interview.repositories.CustomerRepository;
+import com.interview.service.JwtService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,12 +19,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final CustomerRepository customerRepository;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(
+    public ResponseEntity<JwtResponse> login(
             @Valid @RequestBody LoginRequest request) {
         // Use Spring Security’s AuthenticationManager to conduct authentication (email exists and password match)
         authenticationManager.authenticate(
@@ -32,7 +33,9 @@ public class AuthController {
             )
         );
 
-        return ResponseEntity.ok().build();
+        var token = jwtService.generateToken(request.getEmail());
+
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
     // If authentication fails return 401 Unauthorized

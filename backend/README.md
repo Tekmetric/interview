@@ -39,6 +39,14 @@ This is an open ended exercise for you to showcase what you know! We encourage y
 Once you have finished the coding exercise please create a PR into Tekmetric/interview
 
 
+docker run --name redis -p 6379:6379 -d redis:latest
+mvn clean package && java -jar target/interview-1.0-SNAPSHOT.jar
+docker exec -it redis redis-cli
+
+docker compose up --build
+docker exec -it interview-redis redis-cli
+
+
 
 
 docker compose up --build

@@ -40,6 +40,8 @@ Once you have finished the coding exercise please create a PR into Tekmetric/int
 
 
 docker run --name redis -p 6379:6379 -d redis:latest
+docker start redis
+docker restart redis
 mvn clean package && java -jar target/interview-1.0-SNAPSHOT.jar
 docker exec -it redis redis-cli
 
@@ -47,9 +49,4 @@ docker compose up --build
 docker exec -it interview-redis redis-cli
 
 
-docker run --name redis -p 6379:6379 -d redis:latest
-mvn clean package && java -jar target/interview-1.0-SNAPSHOT.jar
-docker exec -it redis redis-cli
 
-docker compose up --build
-docker exec -it interview-redis redis-cli

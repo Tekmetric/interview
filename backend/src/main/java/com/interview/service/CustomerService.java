@@ -34,7 +34,7 @@ public class CustomerService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(normalizedSort));
         Page<CustomerDto> pageResult = customerRepository.findAll(pageable).map(customerMapper::toDto);
-        System.out.println("hahaha");
+
         return new CustomerPageDto(
                 pageResult.getContent(),
                 pageResult.getNumber(),

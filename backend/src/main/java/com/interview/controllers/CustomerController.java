@@ -83,7 +83,7 @@ public class CustomerController {
 
     @GetMapping
     public ResponseEntity<CustomerPageDto> getAllCustomers(
-            @RequestParam(required = false, defaultValue = "", name = "sort") String sort,
+            @RequestParam(required = false, defaultValue = "lastName", name = "sort") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size) {
 

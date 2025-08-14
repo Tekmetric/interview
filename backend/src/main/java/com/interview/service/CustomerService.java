@@ -1,7 +1,7 @@
 package com.interview.service;
 
-import com.interview.dtos.CustomerDto;
-import com.interview.dtos.CustomerPageDto;
+import com.interview.dto.CustomerDto;
+import com.interview.dto.CustomerPageDto;
 import com.interview.mappers.CustomerMapper;
 import com.interview.repositories.CustomerRepository;
 import lombok.AllArgsConstructor;

@@ -1,8 +1,8 @@
 package com.interview.mappers;
 
-import com.interview.dtos.CustomerDto;
-import com.interview.dtos.RegisterCustomerRequest;
-import com.interview.dtos.UpdateCustomerRequest;
+import com.interview.dto.CustomerDto;
+import com.interview.dto.RegisterCustomerRequest;
+import com.interview.dto.UpdateCustomerRequest;
 import com.interview.entity.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

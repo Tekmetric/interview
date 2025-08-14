@@ -1,7 +1,7 @@
 package com.interview.controllers;
 
 import com.interview.config.CustomerConfig;
-import com.interview.dtos.*;
+import com.interview.dto.*;
 import com.interview.entity.Customer;
 import com.interview.mappers.CustomerMapper;
 import com.interview.repositories.CustomerRepository;

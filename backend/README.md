@@ -43,3 +43,9 @@ Once you have finished the coding exercise please create a PR into Tekmetric/int
 
 docker compose up --build
 docker exec -it interview-redis redis-cli
+
+
+
+
+docker compose up --build
+docker exec -it interview-redis redis-cli

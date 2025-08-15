@@ -10,6 +10,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,4 +29,5 @@ public class CustomerDto implements Serializable {
 //    @JsonFormat(pattern = "yyyy-MM-dd")
     // TODO EXPLAIN: "2025-08-07T17:06:33.349278"
     private LocalDateTime createdAt;
+    private List<AddressDto> addresses;
 }

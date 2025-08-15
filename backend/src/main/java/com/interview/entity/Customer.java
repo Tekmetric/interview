@@ -49,6 +49,7 @@ public class Customer {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    // Do not use cascade = CascadeType.REMOVE for cascade deletion on JPA level, which can cause N + 1 problem
     @OneToMany(mappedBy = "customer")
     @Builder.Default
     private List<Address> addresses = new ArrayList<>();

@@ -49,6 +49,11 @@ docker compose up --build
 docker exec -it interview-redis redis-cli
 
 
+### Rabbit
+http://localhost:15672/
+
+
+
 
 
 

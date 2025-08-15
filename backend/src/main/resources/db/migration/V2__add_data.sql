@@ -19,11 +19,11 @@ INSERT INTO addresses (id, street, city, zip, state, customer_id) VALUES
 -- Becker: 2 addresses
 INSERT INTO addresses (id, street, city, zip, state, customer_id) VALUES
 ('660e8400-e29b-41d4-a716-446655440002', '789 Becker Road', 'Chicago', '60601', 'IL', '550e8400-e29b-41d4-a716-446655440002'),
-('660e8400-e29b-41d4-a716-446655440003', '321 Second Home Blvd', 'Miami', '33101', 'FL', '550e8400-e29b-41d4-a716-446655440002');
+('660e8400-e29b-41d4-a716-446655440003', '321 Second Becker Home Blvd', 'Miami', '33101', 'FL', '550e8400-e29b-41d4-a716-446655440002');
 
 -- Bukayo Saka: 2 addresses
 INSERT INTO addresses (id, street, city, zip, state, customer_id) VALUES
 ('660e8400-e29b-41d4-a716-446655440004', '555 Saka Lane', 'Seattle', '98101', 'WA', '550e8400-e29b-41d4-a716-446655440003'),
-('660e8400-e29b-41d4-a716-446655440005', '777 Arsenal Way', 'Portland', '97201', 'OR', '550e8400-e29b-41d4-a716-446655440003');
+('660e8400-e29b-41d4-a716-446655440005', '777 Saka Way', 'Portland', '97201', 'OR', '550e8400-e29b-41d4-a716-446655440003');
 
 -- Mo Salah: 0 addresses (no insert needed)

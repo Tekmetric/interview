@@ -4,7 +4,6 @@ import com.interview.config.CustomerConfig;
 import com.interview.dto.*;
 import com.interview.entity.Customer;
 import com.interview.mappers.CustomerMapper;
-import com.interview.repositories.CustomerRepository;
 import com.interview.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -28,7 +27,6 @@ import java.util.UUID;
 // TODO EXPLAIN: mapping CustomerController to the customer endpoint
 @RequestMapping("/api/customers")
 public class CustomerController {
-    private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final CustomerConfig customerConfig;
     private final CustomerService customerService;
@@ -46,7 +44,7 @@ public class CustomerController {
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDto> getCustomer(@PathVariable UUID id) {
         // TODO EXPLAIN: orElse, var vs customer
-        Customer customer = customerRepository.findById(id).orElse(null);
+        Customer customer = customerService.findCustomerById(id).orElse(null);
 
         if (customer == null) {
             // TODO EXPLAIN: return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -65,7 +63,7 @@ public class CustomerController {
             UriComponentsBuilder uriBuilder) {
 
         int lastNameCountThreshold = customerConfig.getThreshold();
-        if (customerRepository.countByLastName(request.getLastName()) == lastNameCountThreshold) {
+        if (customerService.countByLastName(request.getLastName()) == lastNameCountThreshold) {
             String message = "Can not create customer. Same last name should not appear more than " + lastNameCountThreshold + " times";
             log.warn(message);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
@@ -74,7 +72,7 @@ public class CustomerController {
         Customer customer = customerMapper.toEntity(request);
         // Hash password before saving
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
-        customerRepository.save(customer);
+        customer = customerService.createCustomer(customer);
         URI uri = uriBuilder.path("/api/customers/{id}").buildAndExpand(customer.getId()).toUri();
 
         // TODO EXPLAIN: return ResponseEntity.status(HttpStatus.CREATED).body(customerMapper.toDto(customer));
@@ -87,13 +85,13 @@ public class CustomerController {
             @PathVariable(name = "customer_id") UUID id,
             @RequestBody UpdateCustomerRequest request
     ) {
-        Customer customer = customerRepository.findById(id).orElse(null);
+        Customer customer = customerService.findCustomerById(id).orElse(null);
         if (customer == null) {
             return ResponseEntity.notFound().build();
         }
 
         customerMapper.update(request, customer);
-        customerRepository.save(customer);
+        customer = customerService.updateCustomer(customer);
 
         return ResponseEntity.ok(customerMapper.toDto(customer));
     }
@@ -101,12 +99,12 @@ public class CustomerController {
     // TODO EXPLAIN: 1. happy case 204 no content 2. non-exist customer, 404
     @DeleteMapping("/{customer_id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable(name = "customer_id") UUID id) {
-        Customer customer = customerRepository.findById(id).orElse(null);
+        Customer customer = customerService.findCustomerById(id).orElse(null);
         if (customer == null) {
             return ResponseEntity.notFound().build();
         }
 
-        customerRepository.delete(customer);
+        customerService.deleteCustomer(customer);
 
         return ResponseEntity.noContent().build();
     }
@@ -117,7 +115,7 @@ public class CustomerController {
     public ResponseEntity<Void> changePassword(
             @PathVariable(name = "customer_id") UUID id,
             @RequestBody ChangePasswordRequest request) {
-        Customer customer = customerRepository.findById(id).orElse(null);
+        Customer customer = customerService.findCustomerById(id).orElse(null);
         if (customer == null) {
             return ResponseEntity.notFound().build();
         }
@@ -134,7 +132,7 @@ public class CustomerController {
         // TODO EXPLAIN: no need to user mapper, which is for large/complex objects
         // Encode the new password and save
         customer.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        customerRepository.save(customer);
+        customerService.updateCustomer(customer);
 
         return ResponseEntity.noContent().build();
     }

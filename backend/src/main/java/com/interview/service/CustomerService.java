@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Service
@@ -49,5 +50,25 @@ public class CustomerService {
 
     public Optional<Customer> findCustomerByEmail(String email) {
         return customerRepository.findByEmail(email);
+    }
+
+    public Optional<Customer> findCustomerById(UUID id) {
+        return customerRepository.findById(id);
+    }
+
+    public Customer createCustomer(Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    public Customer updateCustomer(Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    public void deleteCustomer(Customer customer) {
+        customerRepository.delete(customer);
+    }
+
+    public long countByLastName(String lastName) {
+        return customerRepository.countByLastName(lastName);
     }
 }

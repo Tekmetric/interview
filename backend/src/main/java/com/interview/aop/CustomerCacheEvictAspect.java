@@ -1,6 +1,7 @@
 package com.interview.aop;
 
 import org.aspectj.lang.JoinPoint;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 @Aspect
+@Slf4j
 @Component
 public class CustomerCacheEvictAspect {
 
@@ -27,7 +29,7 @@ public class CustomerCacheEvictAspect {
         Cache cache = cacheManager.getCache("customers");
         if (cache != null) {
             cache.clear();
-            System.out.println("Evicted all entries from 'customers' cache after method: " + joinPoint.getSignature());
+            log.info("Evicted all entries from 'customers' cache after method: {}", joinPoint.getSignature());
         }
     }
 }

@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -15,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @AllArgsConstructor
+@Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
@@ -24,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null) {
-            System.out.println("No JWT token found");
+            log.warn("No JWT token found");
             // Resume processing across the chain because some of the APIs does not require
             filterChain.doFilter(request, response);
             return;
@@ -32,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // authHeader.startsWith("Bearer ") enforces the Authorization header to start with Bearer, to follow rest convention
         if (!authHeader.startsWith("Bearer ")) {
-            System.out.println("JWT does not start with Bearer");
+            log.warn("JWT does not start with Bearer");
             // Resume processing across the chain because some of the APIs does not require
             filterChain.doFilter(request, response);
             return;
@@ -40,13 +42,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = authHeader.replace("Bearer ", "");
         if (!jwtService.validateToken(token)) {
-            System.out.println("Invalid JWT token");
+            log.warn("Invalid JWT token");
             // Resume processing across the chain because some of the APIs does not require
             filterChain.doFilter(request, response);
             return;
         }
 
-        System.out.println("JWT token is valid");
+        log.info("JWT token is valid");
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
             // Use the customer id (UUID) as principal of the authentication
             jwtService.getCustomerIdFromToken(token),

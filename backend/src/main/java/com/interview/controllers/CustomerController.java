@@ -9,6 +9,7 @@ import com.interview.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
+@Slf4j
 // TODO EXPLAIN: mapping CustomerController to the customer endpoint
 @RequestMapping("/api/customers")
 public class CustomerController {
@@ -64,8 +66,9 @@ public class CustomerController {
 
         int lastNameCountThreshold = customerConfig.getThreshold();
         if (customerRepository.countByLastName(request.getLastName()) == lastNameCountThreshold) {
-            System.out.println("too many customers");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Same last name should not appear more than " + lastNameCountThreshold + " times");
+            String message = "Can not create customer. Same last name should not appear more than " + lastNameCountThreshold + " times";
+            log.warn(message);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
 
         Customer customer = customerMapper.toEntity(request);
@@ -120,10 +123,6 @@ public class CustomerController {
         }
 
         String hashedOldPasswordFromRequest = passwordEncoder.encode(request.getOldPassword());
-
-        System.out.println("old password OG: " + request.getOldPassword());
-        System.out.println("old password: " + hashedOldPasswordFromRequest);
-        System.out.println("db password: " + customer.getPassword());
 
         // With BCrypt (Spring Security's default), hashing the same password twice produces different hashes
         // (due to the random salt), so equals() will almost never match.

@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class CacheWarmUpRunner implements CommandLineRunner {
-
     private final CustomerService customerService;
     private final CacheManager cacheManager;
 
+    // Run after the Spring Boot starts up.
     @Override
     public void run(String... args) {
         log.info("Clearing 'customers' cache on startup...");

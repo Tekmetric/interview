@@ -40,11 +40,11 @@ public class CustomerService {
         Page<CustomerDto> pageResult = customerRepository.findAll(pageable).map(customerMapper::toDto);
 
         return new CustomerPageDto(
-                pageResult.getContent(),
-                pageResult.getNumber(),
-                pageResult.getSize(),
-                pageResult.getTotalElements(),
-                pageResult.getTotalPages()
+            pageResult.getContent(),
+            pageResult.getNumber(),
+            pageResult.getSize(),
+            pageResult.getTotalElements(),
+            pageResult.getTotalPages()
         );
     }
 

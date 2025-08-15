@@ -23,9 +23,9 @@ public class UserService implements UserDetailsService {
                 () -> new UsernameNotFoundException("User not found"));
 
         return new User(
-                customer.getEmail(),
-                customer.getPassword(),
-                Collections.emptyList()
+            customer.getEmail(),
+            customer.getPassword(),
+            Collections.emptyList()
         );
     }
 }

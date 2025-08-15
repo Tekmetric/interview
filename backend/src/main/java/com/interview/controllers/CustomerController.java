@@ -3,6 +3,7 @@ package com.interview.controllers;
 import com.interview.config.CustomerConfig;
 import com.interview.dto.*;
 import com.interview.entity.Customer;
+import com.interview.entity.Role;
 import com.interview.mappers.CustomerMapper;
 import com.interview.service.CustomerService;
 import jakarta.validation.Valid;
@@ -72,7 +73,9 @@ public class CustomerController {
         Customer customer = customerMapper.toEntity(request);
         // Hash password before saving
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
+        customer.setRole(Role.USER);
         customer = customerService.createCustomer(customer);
+
         URI uri = uriBuilder.path("/api/customers/{id}").buildAndExpand(customer.getId()).toUri();
 
         // TODO EXPLAIN: return ResponseEntity.status(HttpStatus.CREATED).body(customerMapper.toDto(customer));

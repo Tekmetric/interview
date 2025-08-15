@@ -1,5 +1,6 @@
 package com.interview.filter;
 
+import com.interview.entity.Role;
 import com.interview.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,12 +9,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Slf4j
@@ -48,12 +52,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        UUID customerId = jwtService.getCustomerIdFromToken(token);
+        Role customerRole = jwtService.getCustomerRoleFromToken(token);
+
         log.info("JWT token is valid");
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
             // Use the customer id (UUID) as principal of the authentication
-            jwtService.getCustomerIdFromToken(token),
+            customerId,
             null,
-            null
+            List.of(new SimpleGrantedAuthority("ROLE_" + customerRole))
         );
         authentication.setDetails(
                 new WebAuthenticationDetailsSource().buildDetails(request)

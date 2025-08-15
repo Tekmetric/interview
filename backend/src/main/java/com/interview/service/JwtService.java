@@ -1,7 +1,7 @@
 package com.interview.service;
 
-
 import com.interview.entity.Customer;
+import com.interview.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -16,10 +16,11 @@ import java.util.UUID;
 public class JwtService {
     @Value("${jwt.hamc.key}")
     private String jwtHmacKey;
+    
+    @Value("${jwt.token.expiration}")
+    private long jwtTokenExpiration;
 
     public String generateToken(Customer customer) {
-        // TODO put in config, 1 day
-        final long tokenExpiration = 86400;
 
         return Jwts.builder()
                 // sub: subject, unique identifier for the customer
@@ -27,11 +28,11 @@ public class JwtService {
                 .claim("email", customer.getEmail())
                 .claim("firstname", customer.getFirstName())
                 .claim("lastname", customer.getLastName())
+                .claim("role", customer.getRole())
                 // iat: issued at (epoch), time at which the token was issued
                 .issuedAt(new Date())
                 // exp: expiration time (epoch)
-                .expiration(new Date(System.currentTimeMillis() + 1000 * tokenExpiration))
-                // TODO put in config
+                .expiration(new Date(System.currentTimeMillis() + 1000 * jwtTokenExpiration))
                 // sign with HMAC key
                 .signWith(Keys.hmacShaKeyFor(jwtHmacKey.getBytes()))
                 .compact();
@@ -56,5 +57,9 @@ public class JwtService {
 
     public UUID getCustomerIdFromToken(String token) {
         return UUID.fromString(getClaims(token).getSubject());
+    }
+
+    public Role getCustomerRoleFromToken(String token) {
+        return Role.valueOf(getClaims(token).get("role", String.class));
     }
 }

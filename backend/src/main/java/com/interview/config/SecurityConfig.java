@@ -1,5 +1,6 @@
 package com.interview.config;
 
+import com.interview.entity.Role;
 import com.interview.filter.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -70,6 +71,10 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         // Allow all to access login
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        // Allow everyone to create a customer (no authentication required)
+                        .requestMatchers(HttpMethod.POST, "/api/customers").permitAll()
+                        // Only ADMIN can DELETE a customer by ID
+                        .requestMatchers(HttpMethod.DELETE, "/api/customers/{id}").hasRole(Role.ADMIN.name())
                         // Require authentication for all others
                         .anyRequest().authenticated()
                 )

@@ -3,7 +3,6 @@ package com.interview.controllers;
 import com.interview.config.CustomerConfig;
 import com.interview.dto.*;
 import com.interview.entity.Customer;
-import com.interview.entity.Role;
 import com.interview.mappers.CustomerMapper;
 import com.interview.service.CustomerService;
 import jakarta.validation.Valid;
@@ -19,7 +18,6 @@ import org.springframework.http.HttpStatus;
 
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -71,11 +69,7 @@ public class CustomerController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
 
-        Customer customer = customerMapper.toEntity(request);
-        // Hash password before saving
-        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
-        customer.setRole(Role.USER);
-        customer = customerService.createCustomer(customer);
+        Customer customer = customerService.createCustomer(request);
 
         URI uri = uriBuilder.path("/api/customers/{id}").buildAndExpand(customer.getId()).toUri();
 

@@ -1,10 +1,14 @@
 package com.interview.dto;
 
+import com.interview.entity.Role;
 import com.interview.validation.Lowercase;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.List;
 
 // TODO EXPLAIN: Getters, Setters, toString(), equals(), hashCode(), A required-arguments constructor
 @Data
@@ -25,4 +29,12 @@ public class RegisterCustomerRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 6, max = 25, message = "Password must be between 6 and 25 characters")
     private String password;
+
+    // If role is not provided in the request, default as USER
+    private Role role = Role.USER;
+
+    // Optional addresses
+    // Validates nested objects
+    @Valid
+    private List<CreateAddressRequest> addresses;
 }

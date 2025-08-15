@@ -2,6 +2,7 @@ package com.interview.service;
 
 import com.interview.dto.CustomerDto;
 import com.interview.dto.CustomerPageDto;
+import com.interview.entity.Customer;
 import com.interview.mappers.CustomerMapper;
 import com.interview.repositories.CustomerRepository;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -20,6 +22,7 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
+    // TODO result.content.isEmpty()
     @Cacheable(value = "customers", key = "#sort + '-' + #page + '-' + #size", unless = "#result.content.isEmpty()")
     public CustomerPageDto getCustomers(String sort, int page, int size) {
         Map<String, String> sortMapping = Map.of(
@@ -42,5 +45,9 @@ public class CustomerService {
                 pageResult.getTotalElements(),
                 pageResult.getTotalPages()
         );
+    }
+
+    public Optional<Customer> findCustomerByEmail(String email) {
+        return customerRepository.findByEmail(email);
     }
 }

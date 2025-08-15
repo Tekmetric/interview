@@ -48,7 +48,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         System.out.println("JWT token is valid");
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            jwtService.getEmailFromToken(token),
+            // Use the customer id (UUID) as principal of the authentication
+            jwtService.getCustomerIdFromToken(token),
             null,
             null
         );

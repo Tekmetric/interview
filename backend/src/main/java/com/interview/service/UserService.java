@@ -13,7 +13,7 @@ import java.util.Collections;
 
 @AllArgsConstructor
 @Service
-// This service is ussed for user login by Spring Security
+// This service is used for user login authentication by Spring Security
 public class UserService implements UserDetailsService {
     private final CustomerRepository customerRepository;
 

@@ -20,6 +20,8 @@ CREATE TABLE addresses (
     zip VARCHAR(20) NOT NULL,
     state VARCHAR(50) NOT NULL,
     customer_id UUID,
+    version INTEGER NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- Cascade delete on DB level, not on JPA-level, which can cause N + 1 problem
     CONSTRAINT fk_address_customer FOREIGN KEY (customer_id) REFERENCES customer(id) ON DELETE CASCADE
 );

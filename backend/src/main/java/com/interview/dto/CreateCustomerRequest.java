@@ -12,7 +12,7 @@ import java.util.List;
 
 // TODO EXPLAIN: Getters, Setters, toString(), equals(), hashCode(), A required-arguments constructor
 @Data
-public class RegisterCustomerRequest {
+public class CreateCustomerRequest {
     private String firstName;
 
     // TODO EXPLAIN: validation
@@ -34,7 +34,7 @@ public class RegisterCustomerRequest {
     private Role role = Role.USER;
 
     // Optional addresses
-    // Validates nested objects
+    // @Valid: Validates nested objects
     @Valid
     private List<CreateAddressRequest> addresses;
 }

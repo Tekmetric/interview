@@ -9,21 +9,21 @@ INSERT INTO customer (id, first_name, last_name, email, password, role, version)
 
 -- Insert addresses for customers
 -- Admin Staff: 1 address
-INSERT INTO addresses (id, street, city, zip, state, customer_id) VALUES
-('660e8400-e29b-41d4-a716-446655440000', '123 Admin Street', 'New York', '10001', 'NY', '550e8400-e29b-41d4-a716-446655440000');
+INSERT INTO addresses (id, street, city, zip, state, customer_id, version) VALUES
+('660e8400-e29b-41d4-a716-446655440000', '123 Admin Street', 'New York', '10001', 'NY', '550e8400-e29b-41d4-a716-446655440000', 1);
 
 -- Cole Palmer: 1 address  
-INSERT INTO addresses (id, street, city, zip, state, customer_id) VALUES
-('660e8400-e29b-41d4-a716-446655440001', '456 Palmer Avenue', 'Los Angeles', '90210', 'CA', '550e8400-e29b-41d4-a716-446655440001');
+INSERT INTO addresses (id, street, city, zip, state, customer_id, version) VALUES
+('660e8400-e29b-41d4-a716-446655440001', '456 Palmer Avenue', 'Los Angeles', '90210', 'CA', '550e8400-e29b-41d4-a716-446655440001', 1);
 
 -- Becker: 2 addresses
-INSERT INTO addresses (id, street, city, zip, state, customer_id) VALUES
-('660e8400-e29b-41d4-a716-446655440002', '789 Becker Road', 'Chicago', '60601', 'IL', '550e8400-e29b-41d4-a716-446655440002'),
-('660e8400-e29b-41d4-a716-446655440003', '321 Second Becker Home Blvd', 'Miami', '33101', 'FL', '550e8400-e29b-41d4-a716-446655440002');
+INSERT INTO addresses (id, street, city, zip, state, customer_id, version) VALUES
+('660e8400-e29b-41d4-a716-446655440002', '789 Becker Road', 'Chicago', '60601', 'IL', '550e8400-e29b-41d4-a716-446655440002', 1),
+('660e8400-e29b-41d4-a716-446655440003', '321 Second Becker Home Blvd', 'Miami', '33101', 'FL', '550e8400-e29b-41d4-a716-446655440002', 1);
 
 -- Bukayo Saka: 2 addresses
-INSERT INTO addresses (id, street, city, zip, state, customer_id) VALUES
-('660e8400-e29b-41d4-a716-446655440004', '555 Saka Lane', 'Seattle', '98101', 'WA', '550e8400-e29b-41d4-a716-446655440003'),
-('660e8400-e29b-41d4-a716-446655440005', '777 Saka Way', 'Portland', '97201', 'OR', '550e8400-e29b-41d4-a716-446655440003');
+INSERT INTO addresses (id, street, city, zip, state, customer_id, version) VALUES
+('660e8400-e29b-41d4-a716-446655440004', '555 Saka Lane', 'Seattle', '98101', 'WA', '550e8400-e29b-41d4-a716-446655440003', 1),
+('660e8400-e29b-41d4-a716-446655440005', '777 Saka Way', 'Portland', '97201', 'OR', '550e8400-e29b-41d4-a716-446655440003', 1);
 
 -- Mo Salah: 0 addresses (no insert needed)

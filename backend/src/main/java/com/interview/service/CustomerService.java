@@ -1,14 +1,16 @@
 package com.interview.service;
 
 import com.interview.dto.CustomerResponse;
-import com.interview.dto.CustomerPageDto;
-import com.interview.dto.RegisterCustomerRequest;
+import com.interview.dto.PagedResponse;
+import com.interview.dto.CreateCustomerRequest;
 import com.interview.entity.Address;
 import com.interview.entity.Customer;
 import com.interview.mapper.CustomerMapper;
+import com.interview.mapper.AddressMapper;
 import com.interview.repository.AddressRepository;
 import com.interview.repository.CustomerRepository;
 import com.interview.specification.SpecificationUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,19 +28,21 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final AddressRepository addressRepository;
     private final CustomerMapper customerMapper;
+    private final AddressMapper addressMapper;
     private final PasswordEncoder passwordEncoder;
 
-    // result.content.isEmpty(): If CustomerPageDto.content is empty, do not cache the result
+    // result.content.isEmpty(): If PagedResponse.content is empty, do not cache the result
     // the cache key must match the method's param names exactly (case-sensitive)
     // cache key example: "customers::email-0-9-beck-co"
     @Cacheable(value = "customers", key = "#sort + '-' + #page + '-' + #size + '-' + #lastName + '-' + #firstName", unless = "#result.content.isEmpty()")
-    public CustomerPageDto getCustomers(String sort, int page, int size, String lastName, String firstName) {
+    public PagedResponse<CustomerResponse> getCustomers(String sort, int page, int size, String lastName, String firstName) {
         Map<String, String> sortMapping = Map.of(
                 "email", "email",
                 "lastname", "lastName"
@@ -57,7 +61,7 @@ public class CustomerService {
         
         Page<CustomerResponse> pageResult = customerRepository.findAll(spec, pageable).map(customerMapper::toDto);
 
-        return new CustomerPageDto(
+        return new PagedResponse<>(
             pageResult.getContent(),
             pageResult.getNumber(),
             pageResult.getSize(),
@@ -75,7 +79,7 @@ public class CustomerService {
     }
 
     @Transactional
-    public Customer createCustomer(RegisterCustomerRequest request) {
+    public Customer createCustomer(CreateCustomerRequest request) {
         // Create customer entity from request
         Customer customer = customerMapper.toEntity(request);
 
@@ -89,13 +93,8 @@ public class CustomerService {
         if (request.getAddresses() != null && !request.getAddresses().isEmpty()) {
             List<Address> addresses = request.getAddresses().stream()
                     .map(addressReq -> {
-                        Address address = Address.builder()
-                                .street(addressReq.getStreet())
-                                .city(addressReq.getCity())
-                                .zip(addressReq.getZip())
-                                .state(addressReq.getState())
-                                .customer(savedCustomer)
-                                .build();
+                        Address address = addressMapper.toEntity(addressReq);
+                        address.setCustomer(savedCustomer);
                         return address;
                     })
                     .collect(Collectors.toList());
@@ -107,14 +106,16 @@ public class CustomerService {
         return savedCustomer;
     }
 
-    public Customer updateCustomer(Customer updatedCustomer, Integer expectedVersion) {
+    public Customer updateCustomer(Customer updatedCustomer, int customerVersionInDB, int customerVersionInRequest) {
         // Optimistic locking check
-        int customerVersionInDB = updatedCustomer.getVersion();
-        if (expectedVersion == null || expectedVersion < customerVersionInDB) {
-            throw new RuntimeException("Update conflict: The customer was modified by another transaction. Please reload and try again.");
+        log.info("customerVersionInDB: {}, customerVersionInRequest: {}", customerVersionInDB, customerVersionInRequest);
+        if (customerVersionInRequest < customerVersionInDB) {
+            String msg = "Update conflict: The customer was modified by another transaction. Please reload and try again.";
+            log.warn(msg);
+            throw new RuntimeException(msg);
         }
         
-        // Increment version for optimistic locking
+        // Increment version since it is updated
         updatedCustomer.setVersion(customerVersionInDB + 1);
         return updateCustomer(updatedCustomer);
     }

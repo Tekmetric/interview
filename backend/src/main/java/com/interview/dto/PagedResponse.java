@@ -6,11 +6,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+// Generic PageResponse DTO which can be used by pagination of different entities
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CustomerPageDto {
-    private List<CustomerResponse> content;
+public class PagedResponse<T> {
+    private List<T> content;
     private int page;
     private int size;
     private long totalElements;

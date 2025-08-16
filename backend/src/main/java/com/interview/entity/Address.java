@@ -3,6 +3,7 @@ package com.interview.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
@@ -35,4 +36,13 @@ public class Address {
     @JoinColumn(name = "customer_id")
     @ToString.Exclude
     private Customer customer;
+
+    // Without @Builder.Default, version would be null because the builder ignores the field's inline initialization.
+    @Column(name = "version", nullable = false, columnDefinition = "INTEGER DEFAULT 1")
+    @Builder.Default
+    private Integer version = 1;
+
+    // updatable = false: Hibernate ignores this field in the UPDATE SQL.
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createdAt;
 }

@@ -33,7 +33,7 @@ public class CustomerController {
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping
-    public ResponseEntity<CustomerPageDto> getAllCustomers(
+    public ResponseEntity<PagedResponse<CustomerResponse>> getAllCustomers(
             @RequestParam(required = false, defaultValue = "lastName", name = "sort") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size,
@@ -61,7 +61,7 @@ public class CustomerController {
     // TODO EXPLAIN: 1. happy case 200 2. non-exist customer, 404
     @PostMapping
     public ResponseEntity<CustomerResponse> createCustomer(
-            @Valid @RequestBody RegisterCustomerRequest request,
+            @Valid @RequestBody CreateCustomerRequest request,
             UriComponentsBuilder uriBuilder) {
 
         int lastNameCountThreshold = customerConfig.getThreshold();
@@ -91,11 +91,14 @@ public class CustomerController {
             return ResponseEntity.notFound().build();
         }
 
+        int customerVersionInDB = existingCustomer.getVersion();
+        int customerVersionInRequest = request.getVersion();
+
         // Apply the updates from request to existingCustomer
         customerMapper.update(request, existingCustomer);
 
         try {
-            Customer updatedCustomer = customerService.updateCustomer(existingCustomer, request.getVersion());
+            Customer updatedCustomer = customerService.updateCustomer(existingCustomer, customerVersionInDB, customerVersionInRequest);
             return ResponseEntity.ok(customerMapper.toDto(updatedCustomer));
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Update conflict")) {

@@ -42,9 +42,10 @@ public class Customer {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    // updatable = false: Hibernate ignores this field in the UPDATE SQL.
     // TODO EXPLAIN: insertable = false, Hibernate won’t insert or update this column — only DB default will work — and your entity won’t have the field populated until after a reload.
 //    @Column(name = "created_at", nullable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     // TODO EXPLAIN: Hibernate to handle the timestamp
     @CreationTimestamp
     private LocalDateTime createdAt;

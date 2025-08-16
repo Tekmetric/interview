@@ -46,8 +46,19 @@ Once you have finished the coding exercise please create a PR into Tekmetric/int
 docker run --name redis -p 6379:6379 -d redis:latest
 docker start redis
 docker restart redis
-mvn clean package && java -jar target/interview-1.0-SNAPSHOT.jar
 docker exec -it redis redis-cli
+
+mvn clean package && java -jar target/interview-1.0-SNAPSHOT.jar
+
+
+docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+docker start rabbitmq
+docker stop rabbitmq
+
+
+
+
+
 
 docker compose up --build
 docker exec -it interview-redis redis-cli
@@ -55,6 +66,7 @@ docker exec -it interview-redis redis-cli
 
 ### Rabbit
 http://localhost:15672/
+guest/guest
 
 
 

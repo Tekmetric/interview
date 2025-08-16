@@ -4,6 +4,7 @@ import com.interview.config.CustomerConfig;
 import com.interview.dto.*;
 import com.interview.entity.Customer;
 import com.interview.mapper.CustomerMapper;
+import com.interview.service.EventPublisher;
 import com.interview.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class CustomerController {
     private final CustomerConfig customerConfig;
     private final CustomerService customerService;
     private final PasswordEncoder passwordEncoder;
+    private final EventPublisher eventPublisher;
 
     @GetMapping
     public ResponseEntity<PagedResponse<CustomerResponse>> getAllCustomers(
@@ -72,6 +74,9 @@ public class CustomerController {
         }
 
         Customer customer = customerService.createCustomer(request);
+
+        // Publish message for email notification
+        eventPublisher.publishCustomerCreatedEvent(customer);
 
         URI uri = uriBuilder.path("/api/customers/{id}").buildAndExpand(customer.getId()).toUri();
 

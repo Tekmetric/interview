@@ -14,9 +14,23 @@ services:
       - "8080:8080"
     depends_on:
       - redis
+      - rabbitmq
     environment:
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    networks:
+      - interview-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: interview-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"  # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     networks:
       - interview-network
 

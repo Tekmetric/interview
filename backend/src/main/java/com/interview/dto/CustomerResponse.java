@@ -30,5 +30,5 @@ public class CustomerResponse implements Serializable {
 //    @JsonFormat(pattern = "yyyy-MM-dd")
     // TODO EXPLAIN: "2025-08-07T17:06:33.349278"
     private LocalDateTime createdAt;
-    private List<AddressDto> addresses;
+    private List<AddressResponse> addresses;
 }

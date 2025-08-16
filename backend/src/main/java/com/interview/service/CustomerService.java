@@ -1,14 +1,14 @@
 package com.interview.service;
 
-import com.interview.dto.CustomerDto;
+import com.interview.dto.CustomerResponse;
 import com.interview.dto.CustomerPageDto;
 import com.interview.dto.RegisterCustomerRequest;
 import com.interview.entity.Address;
 import com.interview.entity.Customer;
-import com.interview.mappers.CustomerMapper;
-import com.interview.repositories.AddressRepository;
-import com.interview.repositories.CustomerRepository;
-import com.interview.specification.CustomerSpecifications;
+import com.interview.mapper.CustomerMapper;
+import com.interview.repository.AddressRepository;
+import com.interview.repository.CustomerRepository;
+import com.interview.specification.SpecificationUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -34,9 +34,11 @@ public class CustomerService {
     private final CustomerMapper customerMapper;
     private final PasswordEncoder passwordEncoder;
 
-    // TODO result.content.isEmpty()
-    @Cacheable(value = "customers", key = "#sort + '-' + #page + '-' + #size + '-' + #lastname", unless = "#result.content.isEmpty()")
-    public CustomerPageDto getCustomers(String sort, int page, int size, String lastname) {
+    // result.content.isEmpty(): If CustomerPageDto.content is empty, do not cache the result
+    // the cache key must match the method's param names exactly (case-sensitive)
+    // cache key example: "customers::email-0-9-beck-co"
+    @Cacheable(value = "customers", key = "#sort + '-' + #page + '-' + #size + '-' + #lastName + '-' + #firstName", unless = "#result.content.isEmpty()")
+    public CustomerPageDto getCustomers(String sort, int page, int size, String lastName, String firstName) {
         Map<String, String> sortMapping = Map.of(
                 "email", "email",
                 "lastname", "lastName"
@@ -48,8 +50,12 @@ public class CustomerService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(normalizedSort));
-        Specification<Customer> spec = CustomerSpecifications.fuzzySearchLastName(lastname);
-        Page<CustomerDto> pageResult = customerRepository.findAll(spec, pageable).map(customerMapper::toDto);
+        
+        // Combine specifications using OR logic
+        Specification<Customer> spec = SpecificationUtils.<Customer>fuzzySearch("lastName", lastName)
+                .or(SpecificationUtils.<Customer>fuzzySearch("firstName", firstName));
+        
+        Page<CustomerResponse> pageResult = customerRepository.findAll(spec, pageable).map(customerMapper::toDto);
 
         return new CustomerPageDto(
             pageResult.getContent(),
@@ -123,11 +129,5 @@ public class CustomerService {
 
     public long countByLastName(String lastName) {
         return customerRepository.countByLastName(lastName);
-    }
-
-    @Cacheable(value = "customers-with-addresses")
-    public List<CustomerDto> getAllCustomersWithAddresses() {
-        List<Customer> customers = customerRepository.findAllWithAddresses();
-        return customers.stream().map(customerMapper::toDto).collect(Collectors.toList());
     }
 }

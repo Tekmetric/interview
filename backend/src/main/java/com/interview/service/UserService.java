@@ -1,7 +1,7 @@
 package com.interview.service;
 
 import com.interview.entity.Customer;
-import com.interview.repositories.CustomerRepository;
+import com.interview.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

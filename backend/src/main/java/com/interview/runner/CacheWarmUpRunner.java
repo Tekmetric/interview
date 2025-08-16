@@ -24,6 +24,6 @@ public class CacheWarmUpRunner implements CommandLineRunner {
         }
 
         log.info("Warming up 'customers' cache on startup...");
-        customerService.getCustomers("lastName", 0, 3, null);
+        customerService.getCustomers("lastName", 0, 3, null, null);
     }
 }

@@ -36,9 +36,10 @@ public class CustomerController {
     public ResponseEntity<CustomerPageDto> getAllCustomers(
             @RequestParam(required = false, defaultValue = "lastName", name = "sort") String sort,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "3") int size,
+            @RequestParam(required = false) String lastname) {
 
-        return ResponseEntity.ok(customerService.getCustomers(sort, page, size));
+        return ResponseEntity.ok(customerService.getCustomers(sort, page, size, lastname));
     }
 
     @GetMapping("/{id}")

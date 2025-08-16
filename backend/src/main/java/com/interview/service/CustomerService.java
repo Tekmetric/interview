@@ -8,6 +8,7 @@ import com.interview.entity.Customer;
 import com.interview.mappers.CustomerMapper;
 import com.interview.repositories.AddressRepository;
 import com.interview.repositories.CustomerRepository;
+import com.interview.specification.CustomerSpecifications;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +35,8 @@ public class CustomerService {
     private final PasswordEncoder passwordEncoder;
 
     // TODO result.content.isEmpty()
-    @Cacheable(value = "customers", key = "#sort + '-' + #page + '-' + #size", unless = "#result.content.isEmpty()")
-    public CustomerPageDto getCustomers(String sort, int page, int size) {
+    @Cacheable(value = "customers", key = "#sort + '-' + #page + '-' + #size + '-' + #lastname", unless = "#result.content.isEmpty()")
+    public CustomerPageDto getCustomers(String sort, int page, int size, String lastname) {
         Map<String, String> sortMapping = Map.of(
                 "email", "email",
                 "lastname", "lastName"
@@ -46,7 +48,8 @@ public class CustomerService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(normalizedSort));
-        Page<CustomerDto> pageResult = customerRepository.findAll(pageable).map(customerMapper::toDto);
+        Specification<Customer> spec = CustomerSpecifications.fuzzySearchLastName(lastname);
+        Page<CustomerDto> pageResult = customerRepository.findAll(spec, pageable).map(customerMapper::toDto);
 
         return new CustomerPageDto(
             pageResult.getContent(),

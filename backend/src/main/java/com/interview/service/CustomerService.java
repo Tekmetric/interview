@@ -7,6 +7,7 @@ import com.interview.entity.Address;
 import com.interview.entity.Customer;
 import com.interview.mapper.CustomerMapper;
 import com.interview.mapper.AddressMapper;
+import com.interview.mapper.PageMapper;
 import com.interview.repository.AddressRepository;
 import com.interview.repository.CustomerRepository;
 import com.interview.specification.SpecificationUtils;
@@ -22,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +38,7 @@ public class CustomerService {
     private final AddressRepository addressRepository;
     private final CustomerMapper customerMapper;
     private final AddressMapper addressMapper;
+    private final PageMapper pageMapper;
     private final PasswordEncoder passwordEncoder;
 
     // result.content.isEmpty(): If PagedResponse.content is empty, do not cache the result
@@ -54,20 +57,16 @@ public class CustomerService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(normalizedSort));
-        
-        // Combine specifications using OR logic
-        Specification<Customer> spec = SpecificationUtils.<Customer>fuzzySearch("lastName", lastName)
-                .or(SpecificationUtils.<Customer>fuzzySearch("firstName", firstName));
+
+        // lastName or firstName, if lastName/firstName is provided
+        Specification<Customer> spec = SpecificationUtils.orSpecs(Arrays.asList(
+                SpecificationUtils.fuzzySearch("lastName", lastName),
+                SpecificationUtils.fuzzySearch("firstName", firstName)
+        ));
         
         Page<CustomerResponse> pageResult = customerRepository.findAll(spec, pageable).map(customerMapper::toDto);
 
-        return new PagedResponse<>(
-            pageResult.getContent(),
-            pageResult.getNumber(),
-            pageResult.getSize(),
-            pageResult.getTotalElements(),
-            pageResult.getTotalPages()
-        );
+        return pageMapper.toPagedResponse(pageResult);
     }
 
     public Optional<Customer> findCustomerByEmail(String email) {

@@ -1,5 +1,5 @@
 -- Drops the tables if they already exist (helps in-memory reset)
-DROP TABLE IF EXISTS addresses;
+DROP TABLE IF EXISTS address;
 DROP TABLE IF EXISTS customer;
 
 CREATE TABLE customer (
@@ -13,7 +13,7 @@ CREATE TABLE customer (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE addresses (
+CREATE TABLE address (
     id UUID PRIMARY KEY,
     street VARCHAR(255) NOT NULL,
     city VARCHAR(100) NOT NULL,
@@ -27,4 +27,4 @@ CREATE TABLE addresses (
 );
 
 CREATE INDEX idx_customer_email ON customer(email);
-CREATE INDEX idx_address_customer_id ON addresses(customer_id);
+CREATE INDEX idx_address_customer_id ON address(customer_id);

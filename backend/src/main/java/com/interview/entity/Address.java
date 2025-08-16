@@ -2,6 +2,7 @@ package com.interview.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "addresses")
+@Table(name = "address")
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -43,6 +44,11 @@ public class Address {
     private Integer version = 1;
 
     // updatable = false: Hibernate ignores this field in the UPDATE SQL.
+    // @CreationTimestamp: the AddressMapper leaves createdAt filed as null, which cause the SQL insert to explicit set
+    // createdAt as null in DB and will not trigger the default date creation logic in
+    // DB. The DB default takes effect only if createdAt field is omitted in SQL insert.
+    // So on the JPA level, use @CreationTimestamp to create the timestamp and insert into the DB.
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 }

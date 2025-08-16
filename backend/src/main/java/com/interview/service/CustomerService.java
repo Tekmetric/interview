@@ -98,6 +98,18 @@ public class CustomerService {
         return savedCustomer;
     }
 
+    public Customer updateCustomer(Customer updatedCustomer, Integer expectedVersion) {
+        // Optimistic locking check
+        int customerVersionInDB = updatedCustomer.getVersion();
+        if (expectedVersion == null || expectedVersion < customerVersionInDB) {
+            throw new RuntimeException("Update conflict: The customer was modified by another transaction. Please reload and try again.");
+        }
+        
+        // Increment version for optimistic locking
+        updatedCustomer.setVersion(customerVersionInDB + 1);
+        return updateCustomer(updatedCustomer);
+    }
+
     public Customer updateCustomer(Customer customer) {
         return customerRepository.save(customer);
     }

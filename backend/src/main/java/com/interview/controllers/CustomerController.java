@@ -81,28 +81,37 @@ public class CustomerController {
     @PutMapping("/{customer_id}")
     public ResponseEntity<CustomerDto> updateCustomer(
             @PathVariable(name = "customer_id") UUID id,
-            @RequestBody UpdateCustomerRequest request
+            @Valid @RequestBody UpdateCustomerRequest request
     ) {
-        Customer customer = customerService.findCustomerById(id).orElse(null);
-        if (customer == null) {
+        Customer existingCustomer = customerService.findCustomerById(id).orElse(null);
+
+        if (existingCustomer == null) {
             return ResponseEntity.notFound().build();
         }
 
-        customerMapper.update(request, customer);
-        customer = customerService.updateCustomer(customer);
+        // Apply the updates from request to existingCustomer
+        customerMapper.update(request, existingCustomer);
 
-        return ResponseEntity.ok(customerMapper.toDto(customer));
+        try {
+            Customer updatedCustomer = customerService.updateCustomer(existingCustomer, request.getVersion());
+            return ResponseEntity.ok(customerMapper.toDto(updatedCustomer));
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Update conflict")) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+            }
+            throw e;
+        }
     }
 
     // TODO EXPLAIN: 1. happy case 204 no content 2. non-exist customer, 404
     @DeleteMapping("/{customer_id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable(name = "customer_id") UUID id) {
-        Customer customer = customerService.findCustomerById(id).orElse(null);
-        if (customer == null) {
+        Customer existingCustomer = customerService.findCustomerById(id).orElse(null);
+        if (existingCustomer == null) {
             return ResponseEntity.notFound().build();
         }
 
-        customerService.deleteCustomer(customer);
+        customerService.deleteCustomer(existingCustomer);
 
         return ResponseEntity.noContent().build();
     }
@@ -112,25 +121,23 @@ public class CustomerController {
     @PostMapping("/{customer_id}/change-password")
     public ResponseEntity<Void> changePassword(
             @PathVariable(name = "customer_id") UUID id,
-            @RequestBody ChangePasswordRequest request) {
-        Customer customer = customerService.findCustomerById(id).orElse(null);
-        if (customer == null) {
+            @Valid @RequestBody ChangePasswordRequest request) {
+        Customer existingCustomer = customerService.findCustomerById(id).orElse(null);
+        if (existingCustomer == null) {
             return ResponseEntity.notFound().build();
         }
 
-        String hashedOldPasswordFromRequest = passwordEncoder.encode(request.getOldPassword());
-
         // With BCrypt (Spring Security's default), hashing the same password twice produces different hashes
         // (due to the random salt), so equals() will almost never match.
-        if (!passwordEncoder.matches(request.getOldPassword(), customer.getPassword())) {
+        if (!passwordEncoder.matches(request.getOldPassword(), existingCustomer.getPassword())) {
             // TODO EXPLAIN: 400 Bad Request vs UNAUTHORIZED
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         // TODO EXPLAIN: no need to user mapper, which is for large/complex objects
         // Encode the new password and save
-        customer.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        customerService.updateCustomer(customer);
+        existingCustomer.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        customerService.updateCustomer(existingCustomer);
 
         return ResponseEntity.noContent().build();
     }

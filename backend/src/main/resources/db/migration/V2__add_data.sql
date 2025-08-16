@@ -1,11 +1,11 @@
 -- The password is hash("password").
 -- This is for demo purpose only. In prod, should not have hashed password in migration script.
-INSERT INTO customer (id, first_name, last_name, email, password, role) VALUES
-('550e8400-e29b-41d4-a716-446655440000', 'Admin', 'Staff', 'admin@example.com', '$2a$10$eaL0IQoCyvofGqC.Fn1z7.Szyh4jXCeHcBvOAkuss6j3Ww8gQMhjm', 'ADMIN'),
-('550e8400-e29b-41d4-a716-446655440001', 'Cole', 'Palmer', 'x@example.com', '$2a$10$eaL0IQoCyvofGqC.Fn1z7.Szyh4jXCeHcBvOAkuss6j3Ww8gQMhjm', 'USER'),
-('550e8400-e29b-41d4-a716-446655440002', null, 'Becker', 'y@example.com', '$2a$10$eaL0IQoCyvofGqC.Fn1z7.Szyh4jXCeHcBvOAkuss6j3Ww8gQMhjm', 'USER'),
-('550e8400-e29b-41d4-a716-446655440003', 'Bukayo', 'Saka', 'z@example.com', '$2a$10$eaL0IQoCyvofGqC.Fn1z7.Szyh4jXCeHcBvOAkuss6j3Ww8gQMhjm', 'USER'),
-('550e8400-e29b-41d4-a716-446655440004', 'Mo', 'Salah', 'w@example.com', '$2a$10$eaL0IQoCyvofGqC.Fn1z7.Szyh4jXCeHcBvOAkuss6j3Ww8gQMhjm', 'USER');
+INSERT INTO customer (id, first_name, last_name, email, password, role, version) VALUES
+('550e8400-e29b-41d4-a716-446655440000', 'Admin', 'Staff', 'admin@example.com', '$2a$10$eaL0IQoCyvofGqC.Fn1z7.Szyh4jXCeHcBvOAkuss6j3Ww8gQMhjm', 'ADMIN', 1),
+('550e8400-e29b-41d4-a716-446655440001', 'Cole', 'Palmer', 'x@example.com', '$2a$10$eaL0IQoCyvofGqC.Fn1z7.Szyh4jXCeHcBvOAkuss6j3Ww8gQMhjm', 'USER', 1),
+('550e8400-e29b-41d4-a716-446655440002', null, 'Becker', 'y@example.com', '$2a$10$eaL0IQoCyvofGqC.Fn1z7.Szyh4jXCeHcBvOAkuss6j3Ww8gQMhjm', 'USER', 1),
+('550e8400-e29b-41d4-a716-446655440003', 'Bukayo', 'Saka', 'z@example.com', '$2a$10$eaL0IQoCyvofGqC.Fn1z7.Szyh4jXCeHcBvOAkuss6j3Ww8gQMhjm', 'USER', 1),
+('550e8400-e29b-41d4-a716-446655440004', 'Mo', 'Salah', 'w@example.com', '$2a$10$eaL0IQoCyvofGqC.Fn1z7.Szyh4jXCeHcBvOAkuss6j3Ww8gQMhjm', 'USER', 1);
 
 -- Insert addresses for customers
 -- Admin Staff: 1 address

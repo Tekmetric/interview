@@ -49,6 +49,10 @@ public class Customer {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Column(name = "version", nullable = false, columnDefinition = "INTEGER DEFAULT 1")
+    @Builder.Default
+    private Integer version = 1;
+
     // Do not use cascade = CascadeType.REMOVE for cascade deletion on JPA level, which can cause N + 1 problem
     @OneToMany(mappedBy = "customer")
     @Builder.Default

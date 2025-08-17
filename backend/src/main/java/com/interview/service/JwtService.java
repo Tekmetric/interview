@@ -1,26 +1,31 @@
 package com.interview.service;
 
+import com.interview.config.JwtConfig;
 import com.interview.entity.Customer;
 import com.interview.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.UUID;
 
+@AllArgsConstructor
 @Service
 public class JwtService {
-    @Value("${jwt.hamc.key}")
-    private String jwtHmacKey;
-    
-    @Value("${jwt.token.expiration}")
-    private long jwtTokenExpiration;
+    private final JwtConfig jwtConfig;
 
-    public String generateToken(Customer customer) {
+    public String generateAccessToken(Customer customer) {
+        return generateToken(customer, jwtConfig.getAccessTokenExpiration());
+    }
+
+    public String generateRefreshToken(Customer customer) {
+        return generateToken(customer, jwtConfig.getRefreshTokenExpiration());
+    }
+
+    public String generateToken(Customer customer, long tokenExpiration) {
 
         return Jwts.builder()
                 // sub: subject, unique identifier for the customer
@@ -32,9 +37,9 @@ public class JwtService {
                 // iat: issued at (epoch), time at which the token was issued
                 .issuedAt(new Date())
                 // exp: expiration time (epoch)
-                .expiration(new Date(System.currentTimeMillis() + 1000 * jwtTokenExpiration))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * tokenExpiration))
                 // sign with HMAC key
-                .signWith(Keys.hmacShaKeyFor(jwtHmacKey.getBytes()))
+                .signWith(jwtConfig.getSecretKey())
                 .compact();
     }
 
@@ -49,7 +54,7 @@ public class JwtService {
 
     private Claims getClaims(String token) {
         return Jwts.parser()
-            .verifyWith(Keys.hmacShaKeyFor(jwtHmacKey.getBytes()))
+            .verifyWith(jwtConfig.getSecretKey())
             .build()
             .parseSignedClaims(token)
             .getPayload();

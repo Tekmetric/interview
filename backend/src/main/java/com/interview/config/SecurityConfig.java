@@ -71,6 +71,8 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         // Allow all to access login
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        // Allow access to refresh access token
+                        .requestMatchers(HttpMethod.POST, "/auth/refresh").permitAll()
                         // Allow everyone to create a customer (no authentication required)
                         .requestMatchers(HttpMethod.POST, "/api/customers").permitAll()
                         // Only ADMIN can DELETE a customer by ID

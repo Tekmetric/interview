@@ -1,6 +1,7 @@
 package com.interview.service;
 
 import com.interview.config.JwtConfig;
+import com.interview.dto.Jwt;
 import com.interview.entity.Customer;
 import com.interview.entity.Role;
 import io.jsonwebtoken.Claims;
@@ -17,54 +18,47 @@ import java.util.UUID;
 public class JwtService {
     private final JwtConfig jwtConfig;
 
-    public String generateAccessToken(Customer customer) {
+    public Jwt generateAccessToken(Customer customer) {
         return generateToken(customer, jwtConfig.getAccessTokenExpiration());
     }
 
-    public String generateRefreshToken(Customer customer) {
+    public Jwt generateRefreshToken(Customer customer) {
         return generateToken(customer, jwtConfig.getRefreshTokenExpiration());
     }
 
-    public String generateToken(Customer customer, long tokenExpiration) {
-
-        return Jwts.builder()
+    public Jwt generateToken(Customer customer, long tokenExpiration) {
+        Claims claims = Jwts.claims()
                 // sub: subject, unique identifier for the customer
                 .subject(customer.getId().toString())
-                .claim("email", customer.getEmail())
-                .claim("firstname", customer.getFirstName())
-                .claim("lastname", customer.getLastName())
-                .claim("role", customer.getRole())
+                .add("email", customer.getEmail())
+                .add("firstname", customer.getFirstName())
+                .add("lastname", customer.getLastName())
+                .add("role", customer.getRole())
                 // iat: issued at (epoch), time at which the token was issued
                 .issuedAt(new Date())
                 // exp: expiration time (epoch)
                 .expiration(new Date(System.currentTimeMillis() + 1000 * tokenExpiration))
-                // sign with HMAC key
-                .signWith(jwtConfig.getSecretKey())
-                .compact();
+                .build();
+
+        return new Jwt(claims, jwtConfig.getSecretKey());
     }
 
-    public boolean validateToken(String token) {
+    // If parse failed, return null
+    public Jwt parseToken(String token) {
         try {
-            Claims claims = getClaims(token);
-            return claims.getExpiration().after(new Date());
+            var claims = getClaims(token);
+            return new Jwt(claims, jwtConfig.getSecretKey());
         } catch (JwtException e) {
-            return false;
+            return null;
         }
     }
 
+    // Verifies the token and return claims
     private Claims getClaims(String token) {
         return Jwts.parser()
-            .verifyWith(jwtConfig.getSecretKey())
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
-    }
-
-    public UUID getCustomerIdFromToken(String token) {
-        return UUID.fromString(getClaims(token).getSubject());
-    }
-
-    public Role getCustomerRoleFromToken(String token) {
-        return Role.valueOf(getClaims(token).get("role", String.class));
+                .verifyWith(jwtConfig.getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

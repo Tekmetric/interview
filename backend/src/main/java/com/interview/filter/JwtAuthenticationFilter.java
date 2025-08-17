@@ -1,5 +1,6 @@
 package com.interview.filter;
 
+import com.interview.dto.Jwt;
 import com.interview.entity.Role;
 import com.interview.service.JwtService;
 import jakarta.servlet.FilterChain;
@@ -45,22 +46,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.replace("Bearer ", "");
-        if (!jwtService.validateToken(token)) {
+        Jwt jwt = jwtService.parseToken(token);
+        if (jwt == null || jwt.isExpired()) {
             log.warn("Invalid JWT token");
             // Resume processing across the chain because some of the APIs does not require
             filterChain.doFilter(request, response);
             return;
         }
 
-        UUID customerId = jwtService.getCustomerIdFromToken(token);
-        Role customerRole = jwtService.getCustomerRoleFromToken(token);
-
         log.info("JWT token is valid");
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
             // Use the customer id (UUID) as principal of the authentication
-            customerId,
+            jwt.getCustomerId(),
             null,
-            List.of(new SimpleGrantedAuthority("ROLE_" + customerRole))
+            List.of(new SimpleGrantedAuthority("ROLE_" + jwt.getRole()))
         );
         authentication.setDetails(
                 new WebAuthenticationDetailsSource().buildDetails(request)

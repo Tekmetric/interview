@@ -157,7 +157,7 @@ public class CustomerController {
     public ResponseEntity<Map<String, String>> handleValidationErrors(
             MethodArgumentNotValidException exception
     ) {
-        var errors = new HashMap<String, String>();
+        Map<String, String> errors = new HashMap<String, String>();
 
         exception.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());

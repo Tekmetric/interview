@@ -15,6 +15,6 @@ public class EmailEventDto {
     private String email;
     // e.g., "CUSTOMER_CREATED"
     private String eventType;
-    // Schema-free JSON data
+    // Schema-free JSON data to contain any data in the event
     private Map<String, Object> additionalData;
 }

@@ -1,6 +1,7 @@
 package com.interview.controller;
 
 import com.interview.config.JwtConfig;
+import com.interview.dto.Jwt;
 import com.interview.dto.JwtResponse;
 import com.interview.dto.LoginRequest;
 import com.interview.entity.Customer;
@@ -16,6 +17,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @AllArgsConstructor
 @RestController
@@ -42,10 +45,10 @@ public class AuthController {
 
         Customer customer = customerService.findCustomerByEmail(request.getEmail()).orElseThrow();
 
-        String accessToken = jwtService.generateAccessToken(customer);
-        String refreshToken = jwtService.generateRefreshToken(customer);
+        Jwt accessToken = jwtService.generateAccessToken(customer);
+        Jwt refreshToken = jwtService.generateRefreshToken(customer);
 
-        var cookie = new Cookie("refreshToken", refreshToken);
+        Cookie cookie = new Cookie("refreshToken", refreshToken.toString());
         // Set refreshToken into HttpOnly to prevent client-side JavaScript from accessing the token
         cookie.setHttpOnly(true);
         // browser only automatically sends to the server when hitting the /auth/refresh endpoint
@@ -56,7 +59,7 @@ public class AuthController {
         cookie.setSecure(true);
         response.addCookie(cookie);
 
-        return ResponseEntity.ok(new JwtResponse(accessToken));
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
 
     // Use POST instead of GET because this api produces a new token
@@ -64,16 +67,16 @@ public class AuthController {
     public ResponseEntity<JwtResponse> refresh(
             @CookieValue(value = "refreshToken") String refreshToken
     ) {
-        if (!jwtService.validateToken(refreshToken)) {
+        Jwt jwt = jwtService.parseToken(refreshToken);
+        if (jwt == null || jwt.isExpired()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         // Only create and return a new access token if the customer still exists
-        var customerId = jwtService.getCustomerIdFromToken(refreshToken);
-        var customer = customerService.findCustomerById(customerId).orElseThrow();
-        var accessToken = jwtService.generateAccessToken(customer);
+        Customer customer = customerService.findCustomerById(jwt.getCustomerId()).orElseThrow();
+        Jwt accessToken = jwtService.generateAccessToken(customer);
 
-        return ResponseEntity.ok(new JwtResponse(accessToken));
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
 
     // If login/authentication fails return 401 Unauthorized

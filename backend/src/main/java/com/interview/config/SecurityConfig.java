@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -34,7 +36,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        var provider = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder());
         provider.setUserDetailsService(userDetailsService);
         return provider;
@@ -65,8 +67,6 @@ public class SecurityConfig {
 
                 // Authorize requests
                 .authorizeHttpRequests(auth -> auth
-                        // Allow all to access /api/customers/**
-//                        .requestMatchers("/api/customers/**").permitAll()
                         // Allow all to access H2 console URLs
                         .requestMatchers("/h2-console/**").permitAll()
                         // Allow all to access login
@@ -86,7 +86,19 @@ public class SecurityConfig {
                 // processed before any default username/password authentication logic.
                 // If the JWT is valid, jwtAuthenticationFilter sets the authentication, and the request can proceed
                 // without triggering form login.
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                .exceptionHandling(c -> {
+                    // When an unauthenticated request tries to access a protected resource, return 401
+                    // E.g., if no/invalid/expired JWT Access token, return 401
+                    c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+                    // When the user is logged in but lacks the required role/authority, return 403
+                    // E.g., if wrong role, return 403
+                    c.accessDeniedHandler(
+                        (request, response, accessDeniedException) ->
+                        response.setStatus(HttpStatus.FORBIDDEN.value())
+                    );
+                });
 
         return http.build();
     }

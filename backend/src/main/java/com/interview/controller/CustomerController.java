@@ -25,7 +25,6 @@ import java.util.UUID;
 @RestController
 @AllArgsConstructor
 @Slf4j
-// TODO EXPLAIN: mapping CustomerController to the customer endpoint
 @RequestMapping("/api/customers")
 public class CustomerController {
     private final CustomerMapper customerMapper;
@@ -47,20 +46,16 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerResponse> getCustomer(@PathVariable UUID id) {
-        // TODO EXPLAIN: orElse, var vs customer
         Customer customer = customerService.findCustomerById(id).orElse(null);
 
         if (customer == null) {
-            // TODO EXPLAIN: return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             // use static factory methods
             return ResponseEntity.notFound().build();
         }
 
-        // TODO EXPLAIN: return new ResponseEntity<>(customerDto, HttpStatus.OK);
         return ResponseEntity.ok(customerMapper.toDto(customer));
     }
 
-    // TODO EXPLAIN: 1. happy case 200 2. non-exist customer, 404
     @PostMapping
     public ResponseEntity<CustomerResponse> createCustomer(
             @Valid @RequestBody CreateCustomerRequest request,
@@ -80,7 +75,6 @@ public class CustomerController {
 
         URI uri = uriBuilder.path("/api/customers/{id}").buildAndExpand(customer.getId()).toUri();
 
-        // TODO EXPLAIN: return ResponseEntity.status(HttpStatus.CREATED).body(customerMapper.toDto(customer));
         // return location, good rest practice
         return ResponseEntity.created(uri).body(customerMapper.toDto(customer));
     }
@@ -113,7 +107,7 @@ public class CustomerController {
         }
     }
 
-    // TODO EXPLAIN: 1. happy case 204 no content 2. non-exist customer, 404
+    // 1. happy case 204 no content, 2. non-exist customer 404
     @DeleteMapping("/{customer_id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable(name = "customer_id") UUID id) {
         Customer existingCustomer = customerService.findCustomerById(id).orElse(null);
@@ -126,7 +120,7 @@ public class CustomerController {
         return ResponseEntity.noContent().build();
     }
 
-    // TODO EXPLAIN: 1. happy case 204 no content 2. 401 unauthorized 3.non-exist customer, 404
+    // 1. happy case 204 no content, 2. 401 unauthorized, 3.non-exist customer 404
     // Action-based updates
     @PostMapping("/{customer_id}/change-password")
     public ResponseEntity<Void> changePassword(
@@ -140,11 +134,9 @@ public class CustomerController {
         // With BCrypt (Spring Security's default), hashing the same password twice produces different hashes
         // (due to the random salt), so equals() will almost never match.
         if (!passwordEncoder.matches(request.getOldPassword(), existingCustomer.getPassword())) {
-            // TODO EXPLAIN: 400 Bad Request vs UNAUTHORIZED
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        // TODO EXPLAIN: no need to user mapper, which is for large/complex objects
         // Encode the new password and save
         existingCustomer.setPassword(passwordEncoder.encode(request.getNewPassword()));
         customerService.updateCustomer(existingCustomer);
@@ -152,7 +144,6 @@ public class CustomerController {
         return ResponseEntity.noContent().build();
     }
 
-    // TODO EXPLAIN: local
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationErrors(
             MethodArgumentNotValidException exception

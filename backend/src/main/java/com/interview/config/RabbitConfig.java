@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableRabbit
 public class RabbitConfig {
-
     @Value("${app.rabbitmq.queue.customer-email}")
     private String emailQueue;
 

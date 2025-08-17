@@ -17,8 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-// TODO EXPLAIN: why dto, no certain fields
-// TODO EXPLAIN: Jackson, serialization
 public class CustomerResponse {
     @JsonProperty("customer_id")
     private String id;
@@ -27,8 +25,6 @@ public class CustomerResponse {
     private String lastName;
     private String email;
     private Integer version;
-//    @JsonFormat(pattern = "yyyy-MM-dd")
-    // TODO EXPLAIN: "2025-08-07T17:06:33.349278"
     private LocalDateTime createdAt;
     private List<AddressResponse> addresses;
 }

@@ -8,7 +8,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-// TODO EXPLAIN: ModelMapper vs MapStruct, generated code
 // uses = {AddressMapper.class} enables MapStruct to use AddressMapper inside CustomerMapper for nested object
 // relationships.
 @Mapper(componentModel = "spring", uses = {AddressMapper.class})
@@ -20,7 +19,6 @@ public interface CustomerMapper {
     @Mapping(target = "version", ignore = true)
     Customer toEntity(CreateCustomerRequest request);
     
-    // TODO EXPLAIN: @MappingTarget
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "role", ignore = true)

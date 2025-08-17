@@ -10,19 +10,16 @@ import lombok.Data;
 
 import java.util.List;
 
-// TODO EXPLAIN: Getters, Setters, toString(), equals(), hashCode(), A required-arguments constructor
 @Data
 public class CreateCustomerRequest {
     private String firstName;
 
-    // TODO EXPLAIN: validation
     @NotBlank(message = "Last name is required")
     @Size(max = 50, message = "Last name must be no longer than 50 characters")
     private String lastName;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
-    // TODO EXPLAIN: MethodArgumentNotValidException, Spring MVC validates a controller method param DTO
     @Lowercase(message = "Email must be in lowercase")
     private String email;
 
@@ -34,7 +31,7 @@ public class CreateCustomerRequest {
     private Role role = Role.USER;
 
     // Optional addresses
-    // @Valid: Validates nested objects
+    // @Valid: Validate nested objects (a customer has a list of nested addresses)
     @Valid
     private List<CreateAddressRequest> addresses;
 }

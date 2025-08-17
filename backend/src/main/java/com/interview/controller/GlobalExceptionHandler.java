@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    // TODO EXPLAIN: global
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         if (ex.getRequiredType() != null && ex.getRequiredType().equals(UUID.class)) {

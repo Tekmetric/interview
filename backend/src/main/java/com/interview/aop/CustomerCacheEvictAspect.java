@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class CustomerCacheEvictAspect {
-
     private final CacheManager cacheManager;
 
     @Autowired

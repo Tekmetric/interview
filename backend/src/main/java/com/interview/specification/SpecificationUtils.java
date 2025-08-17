@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class SpecificationUtils {
-
     public static <T> Specification<T> fuzzySearch(final String fieldName, final String searchValue) {
         if (searchValue == null || searchValue.trim().isEmpty()) {
             return null; // No constraint when search value is empty

@@ -3,7 +3,6 @@ package com.interview.service;
 import com.interview.config.JwtConfig;
 import com.interview.dto.Jwt;
 import com.interview.entity.Customer;
-import com.interview.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -11,7 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Service

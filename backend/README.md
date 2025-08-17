@@ -1,79 +1,117 @@
-# Java Spring Boot API Coding Exercise
+## Data Schema
 
-## Steps to get started:
+### Customer
+### Address
+a customer can have multiple addresses
 
-#### Prerequisites
-- Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
+---
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+## Features & Tech Stacks
 
-#### Import project into IDE
-- Project root is located in `backend` folder
+### CRUD APIs for Customer
+- **Create a single customer with addresses**
+    - Public API for registration (no JWT authentication required)
+    - Business rule: no more than 3 users with the same last name in the database
+    - Include `Location` header in response (REST convention)
+- **Read all customers**
+    - Pagination by page number and page size
+    - Sort by email or last name
+    - Generic fuzzy search using Spring Data JPA Specification
+- **Read one customer by ID**
+- **Update a customer** (addresses updated via a separate API)
+    - Optimistic update using row version
+- **Update password**
+    - Action-based update by providing old and new passwords
+- **Delete a customer by ID**
+    - Only Admin role can delete a customer
 
-#### Build and run your app
-- `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
+### Authentication & Authorization
+- **Login API**
+    - Authenticate via email/password using Spring Security
+    - Returns JWT access token in response body
+    - Returns JWT refresh token in `HttpOnly` header
+- **Refresh API**
+    - Pass in the JWT refresh token and receive a new JWT access token
+- **Role-based authorization**
+    - Admin and User have different permissions on APIs
+- **Password hashing**
+    - Passwords hashed with `BCryptPasswordEncoder`
+    - Authentication via `AuthenticationManager`
 
-#### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
+### Data & Persistence
+- `JPA / Hibernate` for ORM
+- `H2` in-memory database
+- `UUID` as primary key (for security & horizontal scalability)
+- One-to-many relationship: one customer can have many addresses
+- Avoid `N+1 problem
+    - `@EntityGraph` to avoid N+1 on read
+    - Use database cascade instead of JPA cascade to avoid N+1 on deletion
+- Transactions
+    - Customer creation and addresses insertion done in a single DB transaction
 
-#### After finishing the goals listed below create a PR
+### DTO & Validation
+- DTOs hide internal entities and support different request/response formats
+- Generic page DTO for pagination
+- Jakarta Bean Validation for field validation
+- Custom validation annotations (e.g., `@Lowercase`)
+- MapStruct used for DTO ↔ Entity mapping
 
-### Goals
-1. Design a CRUD API with data store using Spring Boot and in memory H2 database (pre-configured, see below)
-2. API should include one object with create, read, update, and delete operations. Read should include fetching a single item and list of items.
-3. Provide SQL create scripts for your object(s) in resources/data.sql
-4. Demo API functionality using API client tool
+### Configuration & Caching
+- Redis for in-memory caching
+- Cache warmup using `CommandLineRunner` on app startup
+- Cache eviction after create/update/delete via Spring AOP
+- Complex cache keys using SpEL (sort, page number, page size, etc.)
 
-### Considerations
-This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
+### Exception Handling
+- Global-level and Controller-level exception handling via `@ExceptionHandler`
 
-#### H2 Configuration
-- Console: http://localhost:8080/h2-console 
+### Additional Tools & Practices
+- Controller ↔ Service ↔ Repository
+- Lombok to reduce boilerplate
+- Read configs from `application.properties` via a Config class or `@Value`
+- Dockerization
+- Unit tests using Spring Test (MockMvc) and Mockito
+
+---
+
+## Build and run your app
+
+### Docker (Recommended)
+- Run `docker compose up --build`
+- To check redis `docker exec -it interview-redis redis-cli`
+
+### Non-docker
+- Run `docker run --name redis -p 6379:6379 -d redis:latest` (first time only)
+  - `docker start redis`
+  - `docker stop redis`
+- Run `docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management` (first time only)
+  - `docker start rabbitmq` 
+  - `docker stop rabbitmq`
+- Run `mvn clean package -DskipTests && java -jar target/interview-1.0-SNAPSHOT.jar`
+
+### H2 Configuration
+- Console: http://localhost:8080/h2-console
 - JDBC URL: jdbc:h2:mem:testdb
 - Username: sa
 - Password: password
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+### Rabbit Management UI
+- Console: http://localhost:15672/
+- Username: guest
+- Password: guest
+
+
+### Run Test
+- All tests: `mvn test`
+- Single test: `mvn test -Dtest=CustomerControllerTest#shouldGetCustomersWithPaginationAndSorting`
 
 
 
 
 
 
-docker run --name redis -p 6379:6379 -d redis:latest
-docker start redis
-docker restart redis
-docker exec -it redis redis-cli
-
-mvn clean package && java -jar target/interview-1.0-SNAPSHOT.jar
-
-mvn clean package -DskipTests && java -jar target/interview-1.0-SNAPSHOT.jar
-
-docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
-docker start rabbitmq
-docker stop rabbitmq
 
 
-
-
-
-
-docker compose up --build
-docker exec -it interview-redis redis-cli
-
-
-### Rabbit
-http://localhost:15672/
-guest/guest
-
-
-
-
-
-mvn test -Dtest=CustomerControllerTest#shouldGetCustomersWithPaginationAndSorting
 
 
 

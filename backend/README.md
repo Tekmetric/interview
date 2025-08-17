@@ -50,6 +50,7 @@ docker exec -it redis redis-cli
 
 mvn clean package && java -jar target/interview-1.0-SNAPSHOT.jar
 
+mvn clean package -DskipTests && java -jar target/interview-1.0-SNAPSHOT.jar
 
 docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 docker start rabbitmq
@@ -72,7 +73,7 @@ guest/guest
 
 
 
-
+mvn test -Dtest=CustomerControllerTest#shouldGetCustomersWithPaginationAndSorting
 
 
 

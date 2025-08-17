@@ -19,7 +19,7 @@ import java.util.List;
 @ToString
 // TODO EXPLAIN: why dto, no certain fields
 // TODO EXPLAIN: Jackson, serialization
-public class CustomerResponse implements Serializable {
+public class CustomerResponse {
     @JsonProperty("customer_id")
     private String id;
     @JsonInclude(JsonInclude.Include.NON_NULL)

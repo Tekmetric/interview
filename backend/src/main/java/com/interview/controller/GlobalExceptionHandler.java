@@ -8,17 +8,27 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<Map<String, Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String message;
         if (ex.getRequiredType() != null && ex.getRequiredType().equals(UUID.class)) {
-            return ResponseEntity.badRequest().body("Invalid UUID format: " + ex.getValue());
+            message = "Invalid UUID format: " + ex.getValue();
+        } else {
+            message = "Invalid parameter: " + ex.getName();
         }
-        // fallback for other types
-        return ResponseEntity.badRequest().body("Invalid parameter: " + ex.getName());
+        
+        Map<String, Object> errorBody = Map.of(
+            "status", 400,
+            "error", "Bad Request",
+            "message", message
+        );
+        
+        return ResponseEntity.badRequest().body(errorBody);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
@@ -26,7 +36,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> errorBody = Map.of(
                 "status", ex.getStatusCode().value(),
                 "error", ((HttpStatus) ex.getStatusCode()).getReasonPhrase(),
-                "message", ex.getReason()
+                "message", Optional.ofNullable(ex.getReason()).orElse("No reason provided")
         );
 
         return ResponseEntity.status(ex.getStatusCode()).body(errorBody);

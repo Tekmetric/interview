@@ -46,13 +46,7 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerResponse> getCustomer(@PathVariable UUID id) {
-        Customer customer = customerService.findCustomerById(id).orElse(null);
-
-        if (customer == null) {
-            // use static factory methods
-            return ResponseEntity.notFound().build();
-        }
-
+        Customer customer = findCustomerByIdOrThrow(id);
         return ResponseEntity.ok(customerMapper.toDto(customer));
     }
 
@@ -84,11 +78,7 @@ public class CustomerController {
             @PathVariable(name = "customer_id") UUID id,
             @Valid @RequestBody UpdateCustomerRequest request
     ) {
-        Customer existingCustomer = customerService.findCustomerById(id).orElse(null);
-
-        if (existingCustomer == null) {
-            return ResponseEntity.notFound().build();
-        }
+        Customer existingCustomer = findCustomerByIdOrThrow(id);
 
         int customerVersionInDB = existingCustomer.getVersion();
         int customerVersionInRequest = request.getVersion();
@@ -110,13 +100,8 @@ public class CustomerController {
     // 1. happy case 204 no content, 2. non-exist customer 404
     @DeleteMapping("/{customer_id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable(name = "customer_id") UUID id) {
-        Customer existingCustomer = customerService.findCustomerById(id).orElse(null);
-        if (existingCustomer == null) {
-            return ResponseEntity.notFound().build();
-        }
-
+        Customer existingCustomer = findCustomerByIdOrThrow(id);
         customerService.deleteCustomer(existingCustomer);
-
         return ResponseEntity.noContent().build();
     }
 
@@ -126,10 +111,7 @@ public class CustomerController {
     public ResponseEntity<Void> changePassword(
             @PathVariable(name = "customer_id") UUID id,
             @Valid @RequestBody ChangePasswordRequest request) {
-        Customer existingCustomer = customerService.findCustomerById(id).orElse(null);
-        if (existingCustomer == null) {
-            return ResponseEntity.notFound().build();
-        }
+        Customer existingCustomer = findCustomerByIdOrThrow(id);
 
         // With BCrypt (Spring Security's default), hashing the same password twice produces different hashes
         // (due to the random salt), so equals() will almost never match.
@@ -142,6 +124,11 @@ public class CustomerController {
         customerService.updateCustomer(existingCustomer);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private Customer findCustomerByIdOrThrow(UUID id) {
+        return customerService.findCustomerById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

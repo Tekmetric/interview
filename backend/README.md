@@ -44,7 +44,7 @@ a customer can have multiple addresses
 - `H2` in-memory database
 - `UUID` as primary key (for security & horizontal scalability)
 - One-to-many relationship: one customer can have many addresses
-- Avoid `N+1 problem
+- Avoid N+1 problem
     - `@EntityGraph` to avoid N+1 on read
     - Use database cascade instead of JPA cascade to avoid N+1 on deletion
 - Transactions
@@ -79,17 +79,19 @@ a customer can have multiple addresses
 ## Future Considerations
 
 - Address entity CRUD
-- Add logout feature to invalid the token
+- Logout feature to invalid the JWT token
 - Rate limiter
 - API monitoring and pressure testing
 - Internationalization
 - Account lockout after failed login attempts
-- Add 2FA support
+- 2FA support
 - Audit trail
 - API versioning
 - Environment profiles
 - CI/CD pipeline
 - Use application.yml
+- Restructure the packages by domain (Customer, Address, etc.)
+
 ---
 
 ## Build and Run

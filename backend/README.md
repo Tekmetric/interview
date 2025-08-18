@@ -28,6 +28,7 @@ a customer can have multiple addresses
 ### Authentication & Authorization
 - **Login API**
     - Authenticate via email/password using Spring Security
+    - Use stateless JWT for horizontal scalability
     - Returns JWT access token in response body
     - Returns JWT refresh token in `HttpOnly` header
 - **Refresh API**
@@ -74,7 +75,22 @@ a customer can have multiple addresses
 
 ---
 
-## Build and run your app
+## Future Considerations
+
+- Address entity CRUD
+- Add logout feature to invalid the token
+- Rate limiter
+- API monitoring and pressure testing
+- Internationalization
+- Account lockout after failed login attempts
+- Add 2FA support
+- Audit trail
+- API versioning
+- Environment profiles
+- CI/CD pipeline
+---
+
+## Build and Run
 
 ### Docker (Recommended)
 - Run `docker compose up --build`
@@ -100,10 +116,14 @@ a customer can have multiple addresses
 - Username: guest
 - Password: guest
 
+### OpenAPI
+- Swagger UI: http://localhost:8080/swagger-ui/index.html#/
+- raw OpenAPI specification: http://localhost:8080/api-docs
 
 ### Run Test
 - All tests: `mvn test`
 - Single test: `mvn test -Dtest=CustomerControllerTest#shouldGetCustomersWithPaginationAndSorting`
+
 
 
 

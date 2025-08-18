@@ -28,9 +28,7 @@ public class JwtService {
         Claims claims = Jwts.claims()
                 // sub: subject, unique identifier for the customer
                 .subject(customer.getId().toString())
-                .add("email", customer.getEmail())
-                .add("firstname", customer.getFirstName())
-                .add("lastname", customer.getLastName())
+                // add role for role-based authorization
                 .add("role", customer.getRole())
                 // iat: issued at (epoch), time at which the token was issued
                 .issuedAt(new Date())
@@ -44,7 +42,7 @@ public class JwtService {
     // If parse failed, return null
     public Jwt parseToken(String token) {
         try {
-            var claims = getClaims(token);
+            Claims claims = getClaims(token);
             return new Jwt(claims, jwtConfig.getSecretKey());
         } catch (JwtException e) {
             return null;

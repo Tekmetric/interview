@@ -16,12 +16,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.http.HttpStatus;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Tag(name = "Customer Management", description = "APIs for managing customers")
 @RestController
 @AllArgsConstructor
 @Slf4j
@@ -33,14 +39,19 @@ public class CustomerController {
     private final PasswordEncoder passwordEncoder;
     private final EventPublisher eventPublisher;
 
+    @Operation(summary = "Get a list of customers",
+        description = "Retrieve a paginated list of customers with optional sorting, pagination and fuzzy search")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved customers"),
+        @ApiResponse(responseCode = "401", description = "Invalid/expired JWT access token")
+    })
     @GetMapping
     public ResponseEntity<PagedResponse<CustomerResponse>> getAllCustomers(
-            @RequestParam(required = false, defaultValue = "lastName", name = "sort") String sort,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size,
-            @RequestParam(required = false, name = "lastname") String lastName,
-            @RequestParam(required = false, name = "firstname") String firstName) {
-
+        @Parameter(description = "Sort field (optional, default: lastName)") @RequestParam(required = false, defaultValue = "lastName", name = "sort") String sort,
+        @Parameter(description = "Page number (optional, 0-based)") @RequestParam(defaultValue = "0") int page,
+        @Parameter(description = "Page size (optional, default: 3)") @RequestParam(defaultValue = "3") int size,
+        @Parameter(description = "last name (optional, fuzzy search)") @RequestParam(required = false, name = "lastname") String lastName,
+        @Parameter(description = "first name (optional, fuzzy search)") @RequestParam(required = false, name = "firstname") String firstName) {
         return ResponseEntity.ok(customerService.getCustomers(sort, page, size, lastName, firstName));
     }
 
@@ -52,8 +63,8 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<CustomerResponse> createCustomer(
-            @Valid @RequestBody CreateCustomerRequest request,
-            UriComponentsBuilder uriBuilder) {
+        @Valid @RequestBody CreateCustomerRequest request,
+        UriComponentsBuilder uriBuilder) {
 
         int lastNameCountThreshold = customerConfig.getThreshold();
         if (customerService.countByLastName(request.getLastName()) == lastNameCountThreshold) {
@@ -75,8 +86,8 @@ public class CustomerController {
 
     @PutMapping("/{customer_id}")
     public ResponseEntity<CustomerResponse> updateCustomer(
-            @PathVariable(name = "customer_id") UUID id,
-            @Valid @RequestBody UpdateCustomerRequest request
+        @PathVariable(name = "customer_id") UUID id,
+        @Valid @RequestBody UpdateCustomerRequest request
     ) {
         Customer existingCustomer = findCustomerByIdOrThrow(id);
 
@@ -109,8 +120,8 @@ public class CustomerController {
     // Action-based updates
     @PostMapping("/{customer_id}/change-password")
     public ResponseEntity<Void> changePassword(
-            @PathVariable(name = "customer_id") UUID id,
-            @Valid @RequestBody ChangePasswordRequest request) {
+        @PathVariable(name = "customer_id") UUID id,
+        @Valid @RequestBody ChangePasswordRequest request) {
         Customer existingCustomer = findCustomerByIdOrThrow(id);
 
         // With BCrypt (Spring Security's default), hashing the same password twice produces different hashes
@@ -132,9 +143,7 @@ public class CustomerController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(
-            MethodArgumentNotValidException exception
-    ) {
+    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException exception) {
         Map<String, String> errors = new HashMap<String, String>();
 
         exception.getBindingResult().getFieldErrors().forEach(error -> {

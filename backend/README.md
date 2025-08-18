@@ -72,6 +72,7 @@ a customer can have multiple addresses
 - Read configs from `application.properties` via a Config class or `@Value`
 - Dockerization
 - Unit tests using Spring Test (MockMvc) and Mockito
+- OpenAPI, Swagger UI
 
 ---
 
@@ -88,6 +89,7 @@ a customer can have multiple addresses
 - API versioning
 - Environment profiles
 - CI/CD pipeline
+- Use application.yml
 ---
 
 ## Build and Run

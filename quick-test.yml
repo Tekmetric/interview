@@ -1,0 +1,25 @@
+config:
+  target: 'http://localhost:8080'
+  phases:
+    - duration: 30
+      arrivalRate: 2
+      name: "Quick test"
+  defaults:
+    headers:
+      Authorization: 'Basic YWRtaW46YWRtaW4xMjM='  # admin:admin123 in base64
+
+scenarios:
+  - name: "API Health Check"
+    flow:
+      - get:
+          url: "/actuator/health"
+      - get:
+          url: "/api/products"
+      - get:
+          url: "/api/products/active"  
+      - get:
+          url: "/api/products/categories"
+      - get:
+          url: "/api/inventory"
+      - get:
+          url: "/api/inventory/low-stock?threshold=10"

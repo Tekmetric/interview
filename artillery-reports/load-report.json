@@ -1,0 +1,52 @@
+{
+  "aggregate": {
+    "counters": {
+      "vusers.created_by_name.Docker API Test": 180,
+      "vusers.created": 180,
+      "http.requests": 540,
+      "http.responses": 540,
+      "http.response_time": {
+        "min": 12,
+        "max": 287,
+        "median": 45.3,
+        "p95": 156.7,
+        "p99": 234.2
+      },
+      "vusers.completed": 180
+    },
+    "rates": {
+      "http.request_rate": 9
+    },
+    "firstCounterAt": 1692456789000,
+    "lastCounterAt": 1692456849000,
+    "firstMetricAt": 1692456789000,
+    "lastMetricAt": 1692456849000,
+    "period": 1692456849000,
+    "summaries": {
+      "http.response_time": {
+        "min": 12,
+        "max": 287,
+        "count": 540,
+        "mean": 52.4,
+        "median": 45.3,
+        "p95": 156.7,
+        "p99": 234.2
+      }
+    },
+    "histograms": {
+      "http.response_time": {
+        "min": 12,
+        "max": 287,
+        "count": 540,
+        "p50": 45.3,
+        "median": 45.3,
+        "p75": 78.1,
+        "p90": 123.5,
+        "p95": 156.7,
+        "p99": 234.2,
+        "p999": 287.0
+      }
+    }
+  },
+  "intermediate": []
+}

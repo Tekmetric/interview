@@ -1,0 +1,182 @@
+// Color maps for annotation categories
+$category-colors: (
+  'red': #ff4444,
+  'yellow': #ffbb33,
+  'green': #00C851
+);
+
+// Mixins for annotation elements
+@mixin category-styles($category) {
+  @if map-has-key($category-colors, $category) {
+    $color: map-get($category-colors, $category);
+    border: 2px solid $color;
+    background-color: rgba($color, 0.2);
+    
+    &.selected {
+      border-width: 3px;
+      background-color: rgba($color, 0.3);
+    }
+  }
+}
+
+// Annotation overlay styles
+.annotation-overlay {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  touch-action: none; /* Prevent default touch behaviors like scrolling */
+}
+
+.annotation-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  cursor: crosshair;
+  z-index: 1;
+}
+
+.annotation-box {
+  position: absolute;
+  border: 2px solid;
+  cursor: pointer;
+  z-index: 10;
+  
+  &.category-red {
+    @include category-styles('red');
+  }
+  
+  &.category-yellow {
+    @include category-styles('yellow');
+  }
+  
+  &.category-green {
+    @include category-styles('green');
+  }
+  
+  &.selected {
+    border-width: 3px;
+  }
+}
+
+.annotation-label {
+  position: absolute;
+  top: -25px;
+  left: 0;
+  background: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  input {
+    border: none;
+    outline: none;
+    font-size: 12px;
+    width: 80px;
+    min-width: 80px;
+    max-width: 120px;
+    padding: 2px 4px;
+    background: transparent;
+  }
+  
+  span {
+    cursor: pointer;
+    min-width: 60px;
+  }
+}
+
+.category-selector {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.category-option {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  padding: 0;
+  
+  &.category-red {
+    background: #ff4444;
+  }
+  
+  &.category-yellow {
+    background: #ffbb33;
+  }
+  
+  &.category-green {
+    background: #00C851;
+  }
+  
+  &:hover {
+    transform: scale(1.2);
+  }
+}
+
+.delete-annotation {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #dc3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background: #c82333;
+  }
+}
+
+.resize-handle {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  background: #007bff;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: se-resize;
+  z-index: 10;
+  
+  &:hover {
+    background: #0056b3;
+    transform: scale(1.2);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .annotation-label {
+    font-size: 10px;
+    
+    input {
+      width: 60px;
+      min-width: 60px;
+      max-width: 80px;
+      font-size: 10px;
+    }
+  }
+}

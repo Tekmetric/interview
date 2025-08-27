@@ -1,0 +1,40 @@
+# Rivals
+.svn
+.hg
+
+# Mac OS
+.DS_Store
+
+# Editor backup
+*.swp
+*~
+
+# IntelliJ IDEA project config
+.idea/
+*.iws
+*.ipr
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# Maven
+target/
+.mvn
+*/src/gen/java
+
+# Gradle
+.gradle/
+
+.apt_generated_tests
+
+#lombok
+.factorypath
+
+# app
+state/
+
+.vscode/

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import beerLogo from '/beer.svg'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,7 +25,7 @@ function App() {
   const breweries: Brewery[] = useMemo(() => data ?? [], [data])
 
   const debouncedQuery = useDebounce(query, 100)
-  const { data: suggestions, isFetching: isFetchingAc } = useQuery({
+  const { data: suggestions, isFetching: isFetchingAc, refetch: refetchAc } = useQuery({
     queryKey: ["autocomplete", debouncedQuery],
     queryFn: () => fetchBreweriesAutocomplete(debouncedQuery, 8),
     enabled: debouncedQuery.trim().length >= 2,
@@ -40,6 +40,7 @@ function App() {
   }
   const [acOpen, setAcOpen] = useState(false)
   const [hasFocus, setHasFocus] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
     if (hasFocus && debouncedQuery.trim().length >= 2) setAcOpen(true)
     else if (!hasFocus) setAcOpen(false)
@@ -70,6 +71,7 @@ function App() {
             placeholder="Search breweries by name, city, or state"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            ref={inputRef}
             onFocus={() => setHasFocus(true)}
             onBlur={() => setTimeout(() => { setHasFocus(false); setAcOpen(false); }, 100)}
             onKeyDown={(e) => {
@@ -79,7 +81,13 @@ function App() {
               }
             }}
           />
-          <Button type="button" onClick={() => {/* will wire search in next step */}}>
+          <Button type="button" onClick={() => {
+            inputRef.current?.focus()
+            if (query.trim().length >= 2) {
+              setAcOpen(true)
+              refetchAc()
+            }
+          }}>
             Search
           </Button>
           <Button
@@ -91,7 +99,14 @@ function App() {
                 const { latitude, longitude } = pos.coords;
                 const city = await reverseGeocodeCity(latitude, longitude);
                 const pick = city?.city || city?.locality || city?.principalSubdivision || city?.countryName;
-                if (pick) setQuery(pick);
+                if (pick) {
+                  setQuery(pick)
+                  inputRef.current?.focus()
+                  if (pick.trim().length >= 2) {
+                    setAcOpen(true)
+                    refetchAc()
+                  }
+                }
               });
             }}
             title="Use my location"

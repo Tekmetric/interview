@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import beerLogo from '/beer.svg'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -10,6 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchRandomBreweries } from '@/api/breweries'
 import type { Brewery } from '@/api/breweries'
 import { BreweryCard } from '@/components/BreweryCard'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 function App() {
   const [query, setQuery] = useState("")
@@ -22,13 +22,11 @@ function App() {
 
   return (
     <div className="mx-auto max-w-6xl p-8 space-y-10">
-      <div className="flex items-center justify-center gap-6">
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="h-24 transition hover:drop-shadow-[0_0_2em_#646cffaa]" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="h-24 transition hover:drop-shadow-[0_0_2em_#61dafbaa]" alt="React logo" />
-        </a>
+      <div className="flex justify-end">
+        <ThemeToggle />
+      </div>
+      <div className="flex items-center justify-center">
+        <img src={beerLogo} className="h-24 drop-shadow" alt="Brewfinder logo" />
       </div>
       <div className="text-center space-y-3">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Find your next brewery</h1>

@@ -6,9 +6,10 @@ import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useQuery } from '@tanstack/react-query'
-import { fetchRandomBreweries } from '@/api/breweries'
+import { fetchRandomBreweries, fetchBreweriesAutocomplete, type BreweryAutocomplete } from '@/api/breweries'
 import type { Brewery } from '@/api/breweries'
 import { BreweryCard } from '@/components/BreweryCard'
+import { useDebounce } from '@uidotdev/usehooks'
 import { ThemeToggle } from '@/components/ThemeToggle'
 
 function App() {
@@ -19,6 +20,15 @@ function App() {
     staleTime: 1000 * 60 * 5,
   })
   const breweries: Brewery[] = useMemo(() => data ?? [], [data])
+
+  const debouncedQuery = useDebounce(query, 100)
+  const { data: suggestions } = useQuery({
+    queryKey: ["autocomplete", debouncedQuery],
+    queryFn: () => fetchBreweriesAutocomplete(debouncedQuery, 8),
+    enabled: debouncedQuery.trim().length >= 2,
+    staleTime: 1000 * 60 * 10,
+  })
+  const ac: BreweryAutocomplete[] = suggestions ?? []
 
   return (
     <div className="mx-auto max-w-6xl p-8 space-y-10">
@@ -35,7 +45,7 @@ function App() {
         </p>
       </div>
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto relative">
         <Label htmlFor="search" className="sr-only">Search breweries</Label>
         <div className="flex gap-2">
           <Input id="search" placeholder="Search breweries by name, city, or state" value={query} onChange={(e) => setQuery(e.target.value)} />
@@ -43,6 +53,24 @@ function App() {
             Search
           </Button>
         </div>
+        {ac.length > 0 && (
+          <div className="absolute mt-2 w-full z-10">
+            <Card className="p-2 divide-y max-h-[60vh] overflow-y-auto">
+              {ac.map((s) => (
+                <button
+                  key={s.id}
+                  className="w-full text-left px-3 py-2 hover:bg-accent rounded-md"
+                  onClick={() => setQuery(s.name)}
+                >
+                  <div className="font-medium truncate">{s.name}</div>
+                  {(s.city || s.state) && (
+                    <div className="text-xs text-muted-foreground truncate">{[s.city, s.state].filter(Boolean).join(', ')}</div>
+                  )}
+                </button>
+              ))}
+            </Card>
+          </div>
+        )}
         <div className="flex items-center gap-2 mt-2">
           <Button variant="ghost" type="button" onClick={() => refetch()} disabled={isFetching}>
             {isFetching ? 'Refreshing…' : 'Refresh random' }

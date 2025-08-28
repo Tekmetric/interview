@@ -41,4 +41,23 @@ export async function searchBreweriesByQuery(query: string, limit: number = 10):
   return data;
 }
 
+export type BreweryAutocomplete = {
+  id: string
+  name: string
+  brewery_type?: string
+  city?: string
+  state?: string
+};
+
+export async function fetchBreweriesAutocomplete(query: string, limit: number = 8): Promise<BreweryAutocomplete[]> {
+  if (!query) return [];
+  const url = `${API_BASE}/breweries/autocomplete?query=${encodeURIComponent(query)}&per_page=${limit}`;
+  const res = await fetch(url, { headers: { "accept": "application/json" } });
+  if (!res.ok) {
+    throw new Error(`Failed to autocomplete breweries: ${res.status}`);
+  }
+  const data = (await res.json()) as BreweryAutocomplete[];
+  return data;
+}
+
 

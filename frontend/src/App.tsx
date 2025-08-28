@@ -56,8 +56,8 @@ function App() {
 
       <div className="max-w-2xl mx-auto relative">
         <Label htmlFor="search" className="sr-only">Search breweries</Label>
-        <div className="flex gap-2">
-          <Input id="search" placeholder="Search breweries by name, city, or state" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Input id="search" className="w-full" placeholder="Search breweries by name, city, or state" value={query} onChange={(e) => setQuery(e.target.value)} />
           <Button type="button" onClick={() => {/* will wire search in next step */}}>
             Search
           </Button>

@@ -60,4 +60,12 @@ export async function fetchBreweriesAutocomplete(query: string, limit: number = 
   return data;
 }
 
+export async function fetchBreweryById(id: string): Promise<Brewery | null> {
+  const url = `${API_BASE}/breweries/${encodeURIComponent(id)}`;
+  const res = await fetch(url, { headers: { "accept": "application/json" } });
+  if (!res.ok) return null;
+  const data = (await res.json()) as Brewery;
+  return data ?? null;
+}
+
 

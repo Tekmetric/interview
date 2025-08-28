@@ -13,6 +13,7 @@ import { useDebounce } from '@uidotdev/usehooks'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { reverseGeocodeCity } from '@/api/geocode'
 import { Navigation } from 'lucide-react'
+import { BreweryDialog } from '@/components/BreweryDialog'
 
 function App() {
   const [query, setQuery] = useState("")
@@ -31,6 +32,12 @@ function App() {
     staleTime: 1000 * 60 * 10,
   })
   const ac: BreweryAutocomplete[] = suggestions ?? []
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const openDialog = (id: string) => {
+    setSelectedId(id)
+    setDialogOpen(true)
+  }
 
   return (
     <div className="mx-auto max-w-6xl p-8 space-y-10">
@@ -79,7 +86,7 @@ function App() {
                 <button
                   key={s.id}
                   className="w-full text-left px-3 py-2 hover:bg-accent rounded-md"
-                  onClick={() => setQuery(s.name)}
+                  onClick={() => { setQuery(s.name); openDialog(s.id); }}
                 >
                   <div className="font-medium truncate">{s.name}</div>
                   {(s.city || s.state) && (
@@ -115,9 +122,11 @@ function App() {
         )}
 
         {!isLoading && !isError && breweries.map((b) => (
-          <BreweryCard key={b.id} brewery={b} />
+          <BreweryCard key={b.id} brewery={b} onOpen={openDialog} />
         ))}
       </div>
+
+      <BreweryDialog id={selectedId} open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>
   )
 }

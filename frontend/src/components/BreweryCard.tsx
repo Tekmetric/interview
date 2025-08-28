@@ -4,15 +4,16 @@ import { Badge } from "@/components/ui/badge";
 
 type Props = {
   brewery: Brewery;
+  onOpen?: (id: string) => void;
 }
 
-export function BreweryCard({ brewery }: Props) {
+export function BreweryCard({ brewery, onOpen }: Props) {
   const addressParts = [brewery.street, brewery.city, brewery.state, brewery.postal_code, brewery.country]
     .filter(Boolean)
     .join(", ");
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col cursor-pointer" onClick={() => onOpen?.(brewery.id)}>
       <CardHeader>
         <CardTitle className="line-clamp-1">{brewery.name}</CardTitle>
         <CardDescription className="flex items-center gap-2">

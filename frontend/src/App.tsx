@@ -12,7 +12,7 @@ import { BreweryCard } from '@/components/BreweryCard'
 import { useDebounce } from '@uidotdev/usehooks'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { reverseGeocodeCity } from '@/api/geocode'
-import { Navigation, SearchX } from 'lucide-react'
+import { Navigation, SearchX, Loader2 } from 'lucide-react'
 import { BreweryDialog } from '@/components/BreweryDialog'
 
 function App() {
@@ -41,6 +41,7 @@ function App() {
   const [acOpen, setAcOpen] = useState(false)
   const [hasFocus, setHasFocus] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const [locating, setLocating] = useState(false)
   useEffect(() => {
     if (hasFocus && debouncedQuery.trim().length >= 2) setAcOpen(true)
     else if (!hasFocus) setAcOpen(false)
@@ -93,26 +94,44 @@ function App() {
           <Button
             type="button"
             variant="secondary"
+            className="w-[180px]"
             onClick={() => {
               if (!navigator.geolocation) return;
+              setLocating(true)
               navigator.geolocation.getCurrentPosition(async (pos) => {
                 const { latitude, longitude } = pos.coords;
-                const city = await reverseGeocodeCity(latitude, longitude);
-                const pick = city?.city || city?.locality || city?.principalSubdivision || city?.countryName;
-                if (pick) {
-                  setQuery(pick)
-                  inputRef.current?.focus()
-                  if (pick.trim().length >= 2) {
-                    setAcOpen(true)
-                    refetchAc()
+                try {
+                  const city = await reverseGeocodeCity(latitude, longitude);
+                  const pick = city?.city || city?.locality || city?.principalSubdivision || city?.countryName;
+                  if (pick) {
+                    setQuery(pick)
+                    inputRef.current?.focus()
+                    if (pick.trim().length >= 2) {
+                      setAcOpen(true)
+                      refetchAc()
+                    }
                   }
+                } finally {
+                  setLocating(false)
                 }
+              }, () => {
+                setLocating(false)
               });
             }}
             title="Use my location"
+            disabled={locating}
           >
-            <Navigation className="h-4 w-4 mr-2" />
-            Use my location
+            {locating ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Locating...
+              </>
+            ) : (
+              <>
+                <Navigation className="h-4 w-4 mr-2" />
+                Use my location
+              </>
+            )}
           </Button>
         </div>
         {acOpen && (

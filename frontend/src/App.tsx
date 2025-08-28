@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import beerLogo from '/beer.svg'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -38,6 +38,13 @@ function App() {
     setSelectedId(id)
     setDialogOpen(true)
   }
+  const [acOpen, setAcOpen] = useState(false)
+  const [hasFocus, setHasFocus] = useState(false)
+  useEffect(() => {
+    if (hasFocus && debouncedQuery.trim().length >= 2 && ac.length > 0) setAcOpen(true)
+    else if (!hasFocus) setAcOpen(false)
+  }, [ac, hasFocus, debouncedQuery])
+  
 
   return (
     <div className="mx-auto max-w-6xl p-8 space-y-10">
@@ -57,7 +64,21 @@ function App() {
       <div className="max-w-2xl mx-auto relative">
         <Label htmlFor="search" className="sr-only">Search breweries</Label>
         <div className="flex flex-col sm:flex-row gap-2">
-          <Input id="search" className="w-full" placeholder="Search breweries by name, city, or state" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Input
+            id="search"
+            className="w-full"
+            placeholder="Search breweries by name, city, or state"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setHasFocus(true)}
+            onBlur={() => setTimeout(() => { setHasFocus(false); setAcOpen(false); }, 100)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                setAcOpen(false)
+                ;(e.target as HTMLInputElement).blur()
+              }
+            }}
+          />
           <Button type="button" onClick={() => {/* will wire search in next step */}}>
             Search
           </Button>
@@ -79,14 +100,14 @@ function App() {
             Use my location
           </Button>
         </div>
-        {ac.length > 0 && (
+        {acOpen && ac.length > 0 && (
           <div className="absolute mt-2 w-full z-10">
             <Card className="p-2 divide-y max-h-[60vh] overflow-y-auto">
               {ac.map((s) => (
                 <button
                   key={s.id}
                   className="w-full text-left px-3 py-2 hover:bg-accent rounded-md"
-                  onClick={() => { setQuery(s.name); openDialog(s.id); }}
+                  onClick={() => { setQuery(s.name); setAcOpen(false); openDialog(s.id); }}
                 >
                   <div className="font-medium truncate">{s.name}</div>
                   {(s.city || s.state) && (

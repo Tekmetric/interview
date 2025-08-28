@@ -12,7 +12,7 @@ import { BreweryCard } from '@/components/BreweryCard'
 import { useDebounce } from '@uidotdev/usehooks'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { reverseGeocodeCity } from '@/api/geocode'
-import { Navigation } from 'lucide-react'
+import { Navigation, SearchX } from 'lucide-react'
 import { BreweryDialog } from '@/components/BreweryDialog'
 
 function App() {
@@ -25,7 +25,7 @@ function App() {
   const breweries: Brewery[] = useMemo(() => data ?? [], [data])
 
   const debouncedQuery = useDebounce(query, 100)
-  const { data: suggestions } = useQuery({
+  const { data: suggestions, isFetching: isFetchingAc } = useQuery({
     queryKey: ["autocomplete", debouncedQuery],
     queryFn: () => fetchBreweriesAutocomplete(debouncedQuery, 8),
     enabled: debouncedQuery.trim().length >= 2,
@@ -41,9 +41,9 @@ function App() {
   const [acOpen, setAcOpen] = useState(false)
   const [hasFocus, setHasFocus] = useState(false)
   useEffect(() => {
-    if (hasFocus && debouncedQuery.trim().length >= 2 && ac.length > 0) setAcOpen(true)
+    if (hasFocus && debouncedQuery.trim().length >= 2) setAcOpen(true)
     else if (!hasFocus) setAcOpen(false)
-  }, [ac, hasFocus, debouncedQuery])
+  }, [hasFocus, debouncedQuery])
   
 
   return (
@@ -100,21 +100,31 @@ function App() {
             Use my location
           </Button>
         </div>
-        {acOpen && ac.length > 0 && (
+        {acOpen && (
           <div className="absolute mt-2 w-full z-10">
             <Card className="p-2 divide-y max-h-[60vh] overflow-y-auto">
-              {ac.map((s) => (
-                <button
-                  key={s.id}
-                  className="w-full text-left px-3 py-2 hover:bg-accent rounded-md"
-                  onClick={() => { setQuery(s.name); setAcOpen(false); openDialog(s.id); }}
-                >
-                  <div className="font-medium truncate">{s.name}</div>
-                  {(s.city || s.state) && (
-                    <div className="text-xs text-muted-foreground truncate">{[s.city, s.state].filter(Boolean).join(', ')}</div>
-                  )}
-                </button>
-              ))}
+              {ac.length === 0 && !isFetchingAc ? (
+                <div className="flex items-center gap-3 p-4 text-sm text-muted-foreground">
+                  <SearchX className="h-5 w-5" />
+                  <div>
+                    <div>No breweries found.</div>
+                    <div>Try searching for something like <span className="font-medium text-foreground">"New York"</span>.</div>
+                  </div>
+                </div>
+              ) : (
+                ac.map((s) => (
+                  <button
+                    key={s.id}
+                    className="w-full text-left px-3 py-2 hover:bg-accent rounded-md"
+                    onClick={() => { setQuery(s.name); setAcOpen(false); openDialog(s.id); }}
+                  >
+                    <div className="font-medium truncate">{s.name}</div>
+                    {(s.city || s.state) && (
+                      <div className="text-xs text-muted-foreground truncate">{[s.city, s.state].filter(Boolean).join(', ')}</div>
+                    )}
+                  </button>
+                ))
+              )}
             </Card>
           </div>
         )}

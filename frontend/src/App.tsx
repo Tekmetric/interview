@@ -11,6 +11,8 @@ import type { Brewery } from '@/api/breweries'
 import { BreweryCard } from '@/components/BreweryCard'
 import { useDebounce } from '@uidotdev/usehooks'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { reverseGeocodeCity } from '@/api/geocode'
+import { Navigation } from 'lucide-react'
 
 function App() {
   const [query, setQuery] = useState("")
@@ -51,6 +53,23 @@ function App() {
           <Input id="search" placeholder="Search breweries by name, city, or state" value={query} onChange={(e) => setQuery(e.target.value)} />
           <Button type="button" onClick={() => {/* will wire search in next step */}}>
             Search
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => {
+              if (!navigator.geolocation) return;
+              navigator.geolocation.getCurrentPosition(async (pos) => {
+                const { latitude, longitude } = pos.coords;
+                const city = await reverseGeocodeCity(latitude, longitude);
+                const pick = city?.city || city?.locality || city?.principalSubdivision || city?.countryName;
+                if (pick) setQuery(pick);
+              });
+            }}
+            title="Use my location"
+          >
+            <Navigation className="h-4 w-4 mr-2" />
+            Use my location
           </Button>
         </div>
         {ac.length > 0 && (

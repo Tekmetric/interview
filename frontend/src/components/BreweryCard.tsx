@@ -1,0 +1,39 @@
+import type { Brewery } from "@/api/breweries";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+type Props = {
+  brewery: Brewery;
+}
+
+export function BreweryCard({ brewery }: Props) {
+  const addressParts = [brewery.street, brewery.city, brewery.state, brewery.postal_code, brewery.country]
+    .filter(Boolean)
+    .join(", ");
+
+  return (
+    <Card className="h-full flex flex-col">
+      <CardHeader>
+        <CardTitle className="line-clamp-1">{brewery.name}</CardTitle>
+        <CardDescription className="flex items-center gap-2">
+          <Badge variant="secondary" className="capitalize">{brewery.brewery_type}</Badge>
+          {brewery.city && <span>{brewery.city}{brewery.state ? `, ${brewery.state}` : ""}</span>}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-2 text-sm">
+        {addressParts && <div className="text-muted-foreground">{addressParts}</div>}
+        {brewery.phone && <div><span className="text-muted-foreground">Phone:</span> {brewery.phone}</div>}
+        {brewery.website_url && (
+          <a href={brewery.website_url} target="_blank" className="text-primary underline underline-offset-4 truncate">
+            {brewery.website_url}
+          </a>
+        )}
+      </CardContent>
+      <CardFooter className="mt-auto">
+        <div className="text-xs text-muted-foreground">ID: {brewery.id}</div>
+      </CardFooter>
+    </Card>
+  );
+}
+
+

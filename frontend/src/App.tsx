@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, Suspense } from "react";
+import { useEffect, useRef, useState, Suspense, useDeferredValue } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,8 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
  
 import { useDebounce } from "@uidotdev/usehooks";
-import { useRandomBreweries } from "@/hooks/useRandomBreweries";
-import { useBreweriesAutocomplete } from "@/hooks/useBreweriesAutocomplete";
+import { useQueryClient } from "@tanstack/react-query";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { reverseGeocodeCity } from "@/api/geocode";
 import { Navigation, Loader2 } from "lucide-react";
@@ -19,10 +18,11 @@ import { AutocompleteList } from "@/components/AutocompleteList";
 
 function App() {
   const [query, setQuery] = useState("");
-  const { refetch, isFetching: isFetchingRandom } = useRandomBreweries(4);
+  const debouncedQuery = useDebounce(query, 300);
+  const deferredQuery = useDeferredValue(debouncedQuery);
 
-  const debouncedQuery = useDebounce(query, 100);
-  const { refetch: refetchAutocomplete } = useBreweriesAutocomplete(debouncedQuery, 8);
+  const queryClient = useQueryClient();
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const openDialog = (id: string) => {
@@ -31,8 +31,9 @@ function App() {
   };
   const [autocompleteOpen, setAutocompleteOpen] = useState(false);
   const [hasFocus, setHasFocus] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const [locating, setLocating] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (hasFocus && debouncedQuery.trim().length >= 2) setAutocompleteOpen(true);
@@ -79,7 +80,7 @@ function App() {
               inputRef.current?.focus();
               if (query.trim().length >= 2) {
                 setAutocompleteOpen(true);
-                refetchAutocomplete();
+                queryClient.invalidateQueries({ queryKey: ["autocomplete", debouncedQuery, 8] });
               }
             }}
           >
@@ -107,7 +108,7 @@ function App() {
                       inputRef.current?.focus();
                       if (pick.trim().length >= 2) {
                         setAutocompleteOpen(true);
-                        refetchAutocomplete();
+                        queryClient.invalidateQueries({ queryKey: ["autocomplete", pick, 8] });
                       }
                     }
                   } finally {
@@ -138,7 +139,7 @@ function App() {
         {autocompleteOpen && (
           <Suspense fallback={<Card className="p-3 text-sm text-muted-foreground">Loading…</Card>}>
             <AutocompleteList
-              query={debouncedQuery}
+              query={deferredQuery}
               onPick={(id, name) => {
                 setQuery(name);
                 setAutocompleteOpen(false);
@@ -147,19 +148,6 @@ function App() {
             />
           </Suspense>
         )}
-        <div className="flex items-center gap-2 mt-2">
-          <Button
-            variant="ghost"
-            type="button"
-            onClick={() => refetch()}
-            disabled={isFetchingRandom}
-          >
-            {isFetchingRandom ? "Refreshing…" : "Refresh random"}
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Showing 4 random breweries
-          </span>
-        </div>
       </div>
 
       <Suspense

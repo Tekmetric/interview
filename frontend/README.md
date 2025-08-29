@@ -1,21 +1,23 @@
 # Tech Interview Project
 
-## Steps to get started:
+## Brewery Finder app
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+Quickly find brewery nearby or by their name with the brewery finder app.
 
-#### Let's install the project locally
+<video height="400" src="./src/assets/showcase.mp4"></video>
+
+
+#### To run the project
 `npm install`
 
-#### Let's start the project locally
-`npm start`
+`npm run dev`
 
-### Goals
-1. Fetch Data from the backend Crud API you created or from a public API
-2. Display data from API onto your page (Table, List, etc.)
-3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
-4. Have fun
+## Highlights
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+- Powered by public APIs from Openbrewery DB and Bigdatacloud for geo location
+- Vite powered React SPA with TypeScript and ESLint
+- Modular architecture with concerns split among reusable API, hooks, components, providers (Context API)
+- Uses recently introduced concepts such as suspense and deferred value
+- UX powered by the shadcn design system with dark/light mode support, preference inferred from user browser
+- Tanstack Queries simplifying state management
+- Tailwind CSS simplifies UI styling

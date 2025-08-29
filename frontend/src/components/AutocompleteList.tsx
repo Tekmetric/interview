@@ -3,7 +3,13 @@ import { useBreweriesAutocomplete } from "@/hooks/useBreweriesAutocomplete";
 import type { BreweryAutocomplete } from "@/api/breweries";
 import { SearchX } from "lucide-react";
 
-export function AutocompleteList({ query, onPick }: { query: string; onPick: (id: string, name: string) => void }) {
+export function AutocompleteList({
+  query,
+  onPick,
+}: {
+  query: string;
+  onPick: (id: string, name: string) => void;
+}) {
   const { data } = useBreweriesAutocomplete(query, 8);
   const suggestions: BreweryAutocomplete[] = data ?? [];
   return (
@@ -15,7 +21,7 @@ export function AutocompleteList({ query, onPick }: { query: string; onPick: (id
             <div>
               <div>No breweries found.</div>
               <div>
-                Try searching for something like <span className="font-medium text-foreground">"New York"</span>.
+              Try searching for something like <span className="font-medium text-foreground">"New York"</span>.
               </div>
             </div>
           </div>
@@ -28,7 +34,11 @@ export function AutocompleteList({ query, onPick }: { query: string; onPick: (id
             >
               <div className="font-medium truncate">{suggestion.name}</div>
               {(suggestion.city || suggestion.state) && (
-                <div className="text-xs text-muted-foreground truncate">{[suggestion.city, suggestion.state].filter(Boolean).join(", ")}</div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {[suggestion.city, suggestion.state]
+                    .filter(Boolean)
+                    .join(", ")}
+                </div>
               )}
             </button>
           ))
@@ -37,5 +47,3 @@ export function AutocompleteList({ query, onPick }: { query: string; onPick: (id
     </div>
   );
 }
-
-

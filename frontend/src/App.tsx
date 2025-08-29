@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
- 
+
 import { useDebounce } from "@uidotdev/usehooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -36,7 +36,8 @@ function App() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (hasFocus && debouncedQuery.trim().length >= 2) setAutocompleteOpen(true);
+    if (hasFocus && debouncedQuery.trim().length >= 2)
+      setAutocompleteOpen(true);
     else if (!hasFocus) setAutocompleteOpen(false);
   }, [hasFocus, debouncedQuery]);
 
@@ -80,7 +81,9 @@ function App() {
               inputRef.current?.focus();
               if (query.trim().length >= 2) {
                 setAutocompleteOpen(true);
-                queryClient.invalidateQueries({ queryKey: ["autocomplete", debouncedQuery, 8] });
+                queryClient.invalidateQueries({
+                  queryKey: ["autocomplete", debouncedQuery, 8],
+                });
               }
             }}
           >
@@ -108,7 +111,9 @@ function App() {
                       inputRef.current?.focus();
                       if (pick.trim().length >= 2) {
                         setAutocompleteOpen(true);
-                        queryClient.invalidateQueries({ queryKey: ["autocomplete", pick, 8] });
+                        queryClient.invalidateQueries({
+                          queryKey: ["autocomplete", pick, 8],
+                        });
                       }
                     }
                   } finally {
@@ -117,7 +122,7 @@ function App() {
                 },
                 () => {
                   setLocating(false);
-                }
+                },
               );
             }}
             title="Use my location"
@@ -137,7 +142,13 @@ function App() {
           </Button>
         </div>
         {autocompleteOpen && (
-          <Suspense fallback={<Card className="p-3 text-sm text-muted-foreground">Loading…</Card>}>
+          <Suspense
+            fallback={
+              <Card className="p-3 text-sm text-muted-foreground">
+                Loading…
+              </Card>
+            }
+          >
             <AutocompleteList
               query={deferredQuery}
               onPick={(id, name) => {

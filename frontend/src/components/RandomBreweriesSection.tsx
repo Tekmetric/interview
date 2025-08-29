@@ -4,7 +4,11 @@ import type { Brewery } from "@/api/breweries";
 import { BreweryCard } from "@/components/BreweryCard";
 import { Button } from "@/components/ui/button";
 
-export function RandomBreweriesSection({ onOpen }: { onOpen: (id: string) => void }) {
+export function RandomBreweriesSection({
+  onOpen,
+}: {
+  onOpen: (id: string) => void;
+}) {
   const { data, refetch, isFetching } = useRandomBreweries(4);
   const queryClient = useQueryClient();
   const breweries: Brewery[] = data ?? [];
@@ -23,7 +27,9 @@ export function RandomBreweriesSection({ onOpen }: { onOpen: (id: string) => voi
         >
           {isFetching ? "Refreshing…" : "Refresh random"}
         </Button>
-        <span className="text-sm text-muted-foreground">Showing 4 random breweries</span>
+        <span className="text-sm text-muted-foreground">
+          Showing 4 random breweries
+        </span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {breweries.map((brewery) => (
@@ -33,5 +39,3 @@ export function RandomBreweriesSection({ onOpen }: { onOpen: (id: string) => voi
     </>
   );
 }
-
-

@@ -8,5 +8,3 @@ export function useRandomBreweries(count: number = 4) {
     staleTime: 1000 * 60 * 5,
   });
 }
-
-

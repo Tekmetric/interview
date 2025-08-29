@@ -2,7 +2,11 @@ import type { Brewery } from "@/api/breweries";
 import { useRandomBreweries } from "@/hooks/useRandomBreweries";
 import { BreweryCard } from "@/components/BreweryCard";
 
-export function RandomBreweriesGrid({ onOpen }: { onOpen: (id: string) => void }) {
+export function RandomBreweriesGrid({
+  onOpen,
+}: {
+  onOpen: (id: string) => void;
+}) {
   const { data } = useRandomBreweries(4);
   const breweries: Brewery[] = data ?? [];
   return (
@@ -13,5 +17,3 @@ export function RandomBreweriesGrid({ onOpen }: { onOpen: (id: string) => void }
     </div>
   );
 }
-
-

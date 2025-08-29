@@ -28,7 +28,7 @@ function applyThemeToDocument(theme: ThemeValue) {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeValue>(
-    () => localStorage.getItem("theme") as ThemeValue
+    () => localStorage.getItem("theme") as ThemeValue,
   );
 
   // Apply theme on mount and whenever it changes
@@ -50,7 +50,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const resolvedDark = useMemo(
     () => theme === "dark" || (theme == null && getSystemPrefersDark()),
-    [theme]
+    [theme],
   );
 
   const setTheme = (value: ThemeValue) => setThemeState(value);
@@ -65,7 +65,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<ThemeContextValue>(
     () => ({ theme, resolvedDark, setTheme, cycleTheme }),
-    [theme, resolvedDark]
+    [theme, resolvedDark],
   );
 
   return (

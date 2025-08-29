@@ -49,8 +49,8 @@ export function BreweryDialog({ id, open, onOpenChange }: Props) {
     ? brewery.latitude && brewery.longitude
       ? GOOGLE_MAPS_COORDS_URL(brewery.latitude, brewery.longitude)
       : address
-      ? GOOGLE_MAPS_SEARCH_URL(address)
-      : undefined
+        ? GOOGLE_MAPS_SEARCH_URL(address)
+        : undefined
     : undefined;
 
   return (
@@ -181,5 +181,5 @@ const GOOGLE_MAPS_COORDS_URL = (lat: string, lon: string) =>
   `https://www.google.com/maps?q=${encodeURIComponent(`${lat},${lon}`)}`;
 const GOOGLE_MAPS_SEARCH_URL = (query: string) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    query
+    query,
   )}`;

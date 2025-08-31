@@ -1,0 +1,197 @@
+package com.interview.controllers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.interview.dtos.VehiclePatchDTO;
+import com.interview.dtos.VehicleRequestDTO;
+import com.interview.mappers.VehicleMapper;
+import com.interview.repositories.VehicleRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
+class VehicleControllerIntegrationTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private VehicleRepository repository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private VehicleMapper vehicleMapper;
+
+    private VehicleRequestDTO sampleRequest;
+
+    @BeforeEach
+    void setup() {
+        sampleRequest = VehicleRequestDTO.builder()
+                .vin("VIN123")
+                .make("Honda")
+                .model("Civic")
+                .manufactureYear(2020)
+                .licensePlate("ABC123")
+                .ownerName("John Doe")
+                .build();
+    }
+
+    @Test
+    void createVehicle_returnsCreatedVehicle() throws Exception {
+        mockMvc.perform(post("/api/v1/vehicles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(sampleRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.vin").value("VIN123"))
+                .andExpect(jsonPath("$.make").value("Honda"))
+                .andExpect(jsonPath("$.ownerName").value("John Doe"));
+    }
+
+    @Test
+    void createVehicle_validationError_returns400() throws Exception {
+        VehicleRequestDTO invalidRequest = VehicleRequestDTO.builder()
+                .vin("")
+                .make("")
+                .model("Civic")
+                .manufactureYear(1800)
+                .ownerName("")
+                .build();
+
+        mockMvc.perform(post("/api/v1/vehicles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Validation Failed"))
+                .andExpect(jsonPath("$.detail").value("One or more fields in the request body failed validation."))
+                .andExpect(jsonPath("$.errors.vin").value("must not be blank"))
+                .andExpect(jsonPath("$.errors.make").value("must not be blank"))
+                .andExpect(jsonPath("$.errors.ownerName").value("must not be blank"));
+    }
+
+    @Test
+    void getVehicleById_returnsVehicle() throws Exception {
+        var created = repository.save(vehicleMapper.toEntity(sampleRequest));
+
+        mockMvc.perform(get("/api/v1/vehicles/{id}", created.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.id").value(created.getId()))
+                .andExpect(jsonPath("$.vin").value("VIN123"));
+    }
+
+    @Test
+    void getVehicleById_notFound_returns404() throws Exception {
+        mockMvc.perform(get("/api/v1/vehicles/{id}", 999))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Vehicle with id: 999 not found"));
+    }
+
+    @Test
+    void updateVehicle_returnsUpdatedVehicle() throws Exception {
+        var created = repository.save(vehicleMapper.toEntity(sampleRequest));
+
+        VehicleRequestDTO updateRequest = VehicleRequestDTO.builder()
+                .vin("VIN123")
+                .make("Tesla")
+                .model("Model 3")
+                .manufactureYear(2023)
+                .licensePlate("NEW123")
+                .ownerName("Jane Doe")
+                .build();
+
+        mockMvc.perform(put("/api/v1/vehicles/{id}", created.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(created.getId()))
+                .andExpect(jsonPath("$.make").value("Tesla"))
+                .andExpect(jsonPath("$.model").value("Model 3"))
+                .andExpect(jsonPath("$.ownerName").value("Jane Doe"))
+                .andExpect(jsonPath("$.licensePlate").value("NEW123"));
+    }
+
+    @Test
+    void updateVehicle_notFound_returns404() throws Exception {
+        VehicleRequestDTO updateRequest = VehicleRequestDTO.builder()
+                .vin("VIN999")
+                .make("Tesla")
+                .model("Model S")
+                .manufactureYear(2023)
+                .licensePlate("NEW999")
+                .ownerName("Jane Doe")
+                .build();
+
+        mockMvc.perform(put("/api/v1/vehicles/{id}", 999)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Vehicle with id: 999 not found"));
+    }
+
+    @Test
+    void patchVehicle_returnsPatchedVehicle() throws Exception {
+        var created = repository.save(vehicleMapper.toEntity(sampleRequest));
+
+        VehiclePatchDTO patch = VehiclePatchDTO.builder()
+                .make("Toyota")
+                .build();
+
+        mockMvc.perform(patch("/api/v1/vehicles/{id}", created.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(patch)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(created.getId()))
+                .andExpect(jsonPath("$.make").value("Toyota"))
+                .andExpect(jsonPath("$.model").value("Civic")); // unchanged
+    }
+
+    @Test
+    void deleteVehicle_returnsNoContent() throws Exception {
+        var created = repository.save(vehicleMapper.toEntity(sampleRequest));
+
+        mockMvc.perform(delete("/api/v1/vehicles/{id}", created.getId()))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteVehicle_notFound_returns404() throws Exception {
+        mockMvc.perform(delete("/api/v1/vehicles/{id}", 999))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Vehicle with id: 999 not found"));
+    }
+
+    @Test
+    void findByVin_returnsVehicle() throws Exception {
+        var created = repository.save(vehicleMapper.toEntity(sampleRequest));
+
+        mockMvc.perform(get("/api/v1/vehicles/vin/{vin}", "VIN123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(created.getId()))
+                .andExpect(jsonPath("$.vin").value("VIN123"));
+    }
+
+    @Test
+    void createVehicle_conflict_returns409() throws Exception {
+        repository.save(vehicleMapper.toEntity(sampleRequest));
+
+        mockMvc.perform(post("/api/v1/vehicles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(sampleRequest)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail").value("Vehicle with VIN already exists: VIN123"));
+    }
+}

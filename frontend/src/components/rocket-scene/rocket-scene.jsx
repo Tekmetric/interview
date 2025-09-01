@@ -1,6 +1,8 @@
 import styles from "./rocket-scene.module.css";
 import RocketModel from "../rocket-model";
 import { useState, useEffect } from "react";
+import RocketFlightSpecs from "../rocket-flight-specs";
+import RocketSpecs from "../rocket-specs";
 import Button from "../button";
 
 export default function RocketScene({ rocket }) {
@@ -36,11 +38,17 @@ export default function RocketScene({ rocket }) {
           <span className="landing-text">Landing..</span>
         )}
       </div>
-      <RocketModel
-        rocketState={rocketState}
-        height={rocket.height.meters}
-        width={rocket.diameter.meters}
-      />
+      <div>
+        <RocketModel
+          rocketState={rocketState}
+          height={rocket.height.meters}
+          width={rocket.diameter.meters}
+        />
+      </div>
+      <div>
+        {rocketState === "idle" && <RocketSpecs rocket={rocket} />}
+        {rocketState === "takeoff" && <RocketFlightSpecs rocket={rocket} />}
+      </div>
     </li>
   );
 }

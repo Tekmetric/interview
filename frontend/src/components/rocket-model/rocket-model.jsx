@@ -7,6 +7,7 @@ export default function RocketModel({
   height,
   width,
   landing_legs,
+  payload,
 }) {
   const { maxRocketDimensions } = useRockets();
   if (!maxRocketDimensions) return null;
@@ -33,7 +34,7 @@ export default function RocketModel({
         width: `${displayWidth}px`,
       }}
     >
-      <div className={styles.payload}></div>
+      {payload && <div className={styles.payload}></div>}
       <div className={styles.booster}>
         <div className={styles.flame}>
           <div className={styles.fire}></div>

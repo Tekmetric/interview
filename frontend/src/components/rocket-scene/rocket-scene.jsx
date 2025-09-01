@@ -19,6 +19,15 @@ export default function RocketScene({ rocket }) {
     landRocket();
   }, []);
 
+  let payload = true;
+  if (rocketState === "landing") {
+    payload = false;
+  }
+
+  if (rocket.second_stage.reusable) {
+    payload = true;
+  }
+
   return (
     <li className={styles.rocketScene} id={rocket.id}>
       <div>
@@ -44,6 +53,7 @@ export default function RocketScene({ rocket }) {
           landing_legs={rocket.landing_legs}
           height={rocket.height.meters}
           width={rocket.diameter.meters}
+          payload={payload}
         />
       </div>
       <div>

@@ -154,7 +154,7 @@ export const UsersPage: React.FC = () => {
     return (
       <div className='py-12 text-center'>
         <h2 className='mb-4 text-2xl font-bold status-error'>Error Loading Users</h2>
-        <p className='mb-4 text-gray-600 dark:text-gray-400'>{String(error)}</p>
+        <p className='mb-4 text-gray-600 dark:text-gray-400'>{error.message}</p>
         <button onClick={() => refetch()} className='btn-primary'>
           Try Again
         </button>

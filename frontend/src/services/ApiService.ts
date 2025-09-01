@@ -125,7 +125,7 @@ export class ApiService {
         })
       );
     } catch (error) {
-      throw this.createApiError(error);
+      throw ApiService.createApiError(error);
     }
   }
 
@@ -155,7 +155,7 @@ export class ApiService {
         company: user.company || 'No Company',
       };
     } catch (error) {
-      throw this.createApiError(error);
+      throw ApiService.createApiError(error);
     }
   }
 
@@ -199,7 +199,7 @@ export class ApiService {
         company: newUser.company || userData.company,
       };
     } catch (error) {
-      throw this.createApiError(error);
+      throw ApiService.createApiError(error);
     }
   }
 
@@ -244,7 +244,7 @@ export class ApiService {
         company: updatedUser.company || userData.company || '',
       };
     } catch (error) {
-      throw this.createApiError(error);
+      throw ApiService.createApiError(error);
     }
   }
 
@@ -267,7 +267,7 @@ export class ApiService {
       // Mockapi.io returns the deleted object or empty response for successful deletion
       return true;
     } catch (error) {
-      throw this.createApiError(error);
+      throw ApiService.createApiError(error);
     }
   }
 

@@ -27,21 +27,19 @@ export interface FilterConfig {
 }
 
 export interface ApiError {
-  operation: 'create' | 'update' | 'delete' | 'view';
   message: string;
-  details?: string;
   timestamp: Date;
 }
 
 // API response types
 export interface ApiUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
   phone: string;
-  company?: {
-    name: string;
-  };
+  status?: string;
+  createdAt?: string;
+  company?: string;
 }
 
 // Theme types

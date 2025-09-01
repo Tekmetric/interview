@@ -6,7 +6,7 @@ import ToastContainer, { ToastContainerProps } from './ToastContainer';
 
 // Mock the Toast component to simplify testing
 vi.mock('./Toast', () => ({
-  default: ({ id, title, type, onClose }: any) => (
+  Toast: ({ id, title, type, onClose }: any) => (
     <div
       data-testid={`toast-${id}`}
       role="alert"

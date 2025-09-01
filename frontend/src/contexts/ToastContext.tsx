@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 
-import ToastContainer from '../components/ToastContainer';
+import { ToastContainer } from '../components/ToastContainer';
 import { useToast } from '../hooks/useToast';
 
 interface ToastContextType {

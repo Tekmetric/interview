@@ -12,7 +12,7 @@ import { useToast } from '../hooks/useToast';
 
 // Test component to access toast context
 const TestComponent: React.FC = () => {
-  const { success, error, warning, info, removeToast, clearAllToasts } = useToastContext();
+  const { success, error, removeToast, clearAllToasts } = useToastContext();
 
   return (
     <div>
@@ -21,12 +21,6 @@ const TestComponent: React.FC = () => {
       </button>
       <button data-testid='error-btn' onClick={() => error('Error!', 'Error message')}>
         Error Toast
-      </button>
-      <button data-testid='warning-btn' onClick={() => warning('Warning!', 'Warning message')}>
-        Warning Toast
-      </button>
-      <button data-testid='info-btn' onClick={() => info('Info!', 'Info message')}>
-        Info Toast
       </button>
       <button data-testid='remove-btn' onClick={() => removeToast('test-id')}>
         Remove Toast
@@ -45,8 +39,6 @@ describe('ToastContext', () => {
     clearAllToasts: vi.fn(),
     success: vi.fn(),
     error: vi.fn(),
-    warning: vi.fn(),
-    info: vi.fn(),
   };
 
   beforeEach(() => {
@@ -74,8 +66,6 @@ describe('ToastContext', () => {
 
       expect(screen.getByTestId('success-btn')).toBeInTheDocument();
       expect(screen.getByTestId('error-btn')).toBeInTheDocument();
-      expect(screen.getByTestId('warning-btn')).toBeInTheDocument();
-      expect(screen.getByTestId('info-btn')).toBeInTheDocument();
     });
 
     it('renders ToastContainer with toasts', () => {
@@ -146,34 +136,6 @@ describe('ToastContext', () => {
       expect(mockUseToast.error).toHaveBeenCalledWith('Error!', 'Error message');
     });
 
-    it('provides warning toast function', () => {
-      render(
-        <ToastProvider>
-          <TestComponent />
-        </ToastProvider>
-      );
-
-      act(() => {
-        screen.getByTestId('warning-btn').click();
-      });
-
-      expect(mockUseToast.warning).toHaveBeenCalledWith('Warning!', 'Warning message');
-    });
-
-    it('provides info toast function', () => {
-      render(
-        <ToastProvider>
-          <TestComponent />
-        </ToastProvider>
-      );
-
-      act(() => {
-        screen.getByTestId('info-btn').click();
-      });
-
-      expect(mockUseToast.info).toHaveBeenCalledWith('Info!', 'Info message');
-    });
-
     it('provides removeToast function', () => {
       render(
         <ToastProvider>
@@ -211,26 +173,20 @@ describe('ToastContext', () => {
         clearAllToasts: vi.fn(),
         success: vi.fn().mockReturnValue('success-id'),
         error: vi.fn().mockReturnValue('error-id'),
-        warning: vi.fn().mockReturnValue('warning-id'),
-        info: vi.fn().mockReturnValue('info-id'),
       };
 
       (useToast as ReturnType<typeof vi.fn>).mockReturnValue(customMockUseToast);
 
       const TestReturnValues: React.FC = () => {
-        const { success, error, warning, info } = useToastContext();
+        const { success, error } = useToastContext();
 
         const handleTest = () => {
           const successId = success('Test');
           const errorId = error('Test');
-          const warningId = warning('Test');
-          const infoId = info('Test');
 
           // Store return values in DOM for testing
           document.body.setAttribute('data-success-id', successId);
           document.body.setAttribute('data-error-id', errorId);
-          document.body.setAttribute('data-warning-id', warningId);
-          document.body.setAttribute('data-info-id', infoId);
         };
 
         return (
@@ -252,8 +208,6 @@ describe('ToastContext', () => {
 
       expect(document.body.getAttribute('data-success-id')).toBe('success-id');
       expect(document.body.getAttribute('data-error-id')).toBe('error-id');
-      expect(document.body.getAttribute('data-warning-id')).toBe('warning-id');
-      expect(document.body.getAttribute('data-info-id')).toBe('info-id');
     });
   });
 });

@@ -8,10 +8,6 @@
     align-items: flex-end; 
 }
 
-.rocketSpecs div {
-    margin: 0 0 1rem 0;   
-}
-
 .rocketSpecs p {
     margin: 5px 0;
 }

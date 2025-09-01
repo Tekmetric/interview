@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Sky from "./components/sky/sky";
+import Sky from "./components/sky";
 class App extends Component {
   render() {
     return (

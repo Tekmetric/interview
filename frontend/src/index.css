@@ -1,5 +1,6 @@
 :root {
   --color-black: #242424;
+  --color-white: #ffffff;
 }
 
 * {
@@ -15,6 +16,7 @@ body {
   background-color: var(--color-black);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: var(--color-white);
 }
 
 .App {

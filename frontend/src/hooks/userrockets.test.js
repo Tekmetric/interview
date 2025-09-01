@@ -14,8 +14,8 @@ function TestComponent() {
       data-rockets={JSON.stringify(hookResult.rockets)}
       data-loading={hookResult.loading}
       data-error={hookResult.error}
-      data-max-height={hookResult.maxRocketHeight}
-      data-max-diameter={hookResult.maxRocketDiameter}
+      data-max-height={hookResult.maxRocketDimensions?.height}
+      data-max-diameter={hookResult.maxRocketDimensions?.diameter}
     />
   );
 }

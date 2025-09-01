@@ -5,14 +5,14 @@ import Rockets from "./components/rockets-list";
 import { useRockets } from "./hooks/useRockets";
 
 function App() {
-  const { rockets, loading, error } = useRockets();
+  const { rockets, maxRocketDimensions, loading, error } = useRockets();
 
   return (
     <div className="App">
       <Sky />
       {loading && <Loader text="Fetching Rockets..." />}
       {error && <div>{error}</div>}
-      {rockets && <Rockets rockets={rockets} />}
+      {maxRocketDimensions !== undefined && <Rockets rockets={rockets} />}
     </div>
   );
 }

@@ -14,8 +14,8 @@ function TestComponent() {
       data-rockets={JSON.stringify(hookResult.rockets)}
       data-loading={hookResult.loading}
       data-error={hookResult.error}
-      data-max-height={hookResult.getMaxRocketHeight()}
-      data-max-diameter={hookResult.getMaxRocketDiameter()}
+      data-max-height={hookResult.maxRocketHeight}
+      data-max-diameter={hookResult.maxRocketDiameter}
     />
   );
 }
@@ -55,15 +55,14 @@ describe("useRockets", () => {
     const rockets = JSON.parse(resultElement.getAttribute("data-rockets"));
     const loading = resultElement.getAttribute("data-loading");
     const error = resultElement.getAttribute("data-error");
-    const getMaxRocketHeight = resultElement.getAttribute("data-max-height");
-    const getMaxRocketDiameter =
-      resultElement.getAttribute("data-max-diameter");
+    const maxRocketHeight = resultElement.getAttribute("data-max-height");
+    const maxRocketDiameter = resultElement.getAttribute("data-max-diameter");
 
     expect(loading).toBe("false");
     expect(rockets).toEqual(mockResult);
     expect(error).toBe(null);
-    expect(getMaxRocketHeight).toBe("118");
-    expect(getMaxRocketDiameter).toBe("12.2");
+    expect(maxRocketHeight).toBe("118");
+    expect(maxRocketDiameter).toBe("12.2");
   });
 
   it("Should show an error message if the fetch fails", async () => {

@@ -41,6 +41,7 @@ export default function RocketScene({ rocket }) {
       <div>
         <RocketModel
           rocketState={rocketState}
+          landing_legs={rocket.landing_legs}
           height={rocket.height.meters}
           width={rocket.diameter.meters}
         />

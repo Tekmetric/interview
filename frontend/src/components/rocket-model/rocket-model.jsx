@@ -1,9 +1,14 @@
 import styles from "./rocket-model.module.css";
 import { useRockets } from "../../hooks/useRockets";
+import LandingLegs from "../landing-legs";
 
-export default function RocketModel({ rocketState, height, width }) {
+export default function RocketModel({
+  rocketState,
+  height,
+  width,
+  landing_legs,
+}) {
   const { maxRocketDimensions } = useRockets();
-
   if (!maxRocketDimensions) return null;
 
   const browserHeight = window.innerHeight;
@@ -34,6 +39,8 @@ export default function RocketModel({ rocketState, height, width }) {
           <div className={styles.shadows}></div>
         </div>
       </div>
+
+      {landing_legs.number > 0 && <LandingLegs rocketState={rocketState} />}
     </div>
   );
 }

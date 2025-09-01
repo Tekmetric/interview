@@ -1,0 +1,154 @@
+.leg {
+  position: absolute;
+  background: #333;
+  bottom: 47.0588235294px;
+  height: 28px;
+  border-radius: 50%;
+  transform-origin: bottom;
+  transition: transform 1s cubic-bezier(0.52, 0.22, 0.89, 0.73), height 1s linear;
+  transition-delay: .7s;
+  will-change: transform, height;
+}
+  
+.leg.leg1 {
+  width: 5px;
+  left: -3px;
+}
+  
+.leg.leg2 {
+  width: 5px;
+  right: -3px;
+}
+  
+.leg.leg3 {
+  width: 6px;
+  margin: auto;
+  left: 0;
+  right: 0;
+}
+  
+.stand {
+  position: absolute;
+  bottom: 0;
+  transform-origin: bottom;
+  height: 80px;
+  transition: transform 1s cubic-bezier(0.52, 0.22, 0.89, 0.73), 1s linear;
+  transition-delay: .7s;
+}
+  
+.stand.stand1 {
+  margin: auto;
+  left: 0;
+  right: 0;
+  width: 26px;
+  border-radius: 200% 200% 0 0;
+  border-top-left-radius: 80% 90%;
+  border-top-right-radius: 80% 90%;
+  border: 10px solid #555;
+  will-change: transform;
+}
+
+.stand.stand2 {
+  width: 8px;
+  left: -5px;
+  border-top-left-radius: 80% 90%;
+  border-bottom-left-radius: 80% 90%;
+  background: #555;
+  will-change: transform;
+}
+
+.stand.stand2:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #353535;
+  bottom: -5px;
+  border-radius: 50%;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.stand.stand3 {
+  width: 8px;
+  right: -5px;
+  border-top-right-radius: 80% 90%;
+  border-bottom-right-radius: 80% 90%;
+  background: #555;
+  will-change: transform;
+}
+
+.stand.stand3:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #353535;
+  bottom: -5px;
+  border-radius: 50%;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+
+.leg.idle {
+  height: 105px;
+}
+
+.leg.leg1.idle {
+    transform: rotateZ(-146deg);
+}
+
+.leg.leg2.idle {
+    transform: rotateZ(146deg);
+}
+
+.leg.leg3.idle {
+    transform: rotateX(-146deg);
+    z-index: 10;
+}
+
+.stand.stand1.idle {
+  transform: rotateX(-125deg);
+}
+
+.stand.stand2.idle {
+  transform: rotateZ(-125deg);
+}
+
+.stand.stand3.idle {
+  transform: rotateZ(125deg);
+}
+
+.leg.landing {
+  height: 105px;
+}
+
+.leg.leg1.landing {
+    transform: rotateZ(-146deg);
+}
+
+.leg.leg2.landing {
+    transform: rotateZ(146deg);
+}
+
+.leg.leg3.landing {
+    transform: rotateX(-146deg);
+    z-index: 10;
+}
+
+.stand.stand1.landing {
+  transform: rotateX(-125deg);
+}
+
+.stand.stand2.landing {
+  transform: rotateZ(-125deg);
+}
+
+.stand.stand3.landing {
+  transform: rotateZ(125deg);
+}

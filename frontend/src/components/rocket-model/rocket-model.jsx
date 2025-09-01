@@ -33,6 +33,7 @@ export default function RocketModel({
         width: `${displayWidth}px`,
       }}
     >
+      <div className={styles.payload}></div>
       <div className={styles.booster}>
         <div className={styles.flame}>
           <div className={styles.fire}></div>

@@ -9,5 +9,29 @@
     left: 0;
     right: 0;
     margin: auto;
+    will-change: transform;
 }
 
+.rocket.takeoff {
+    animation: takeoff 4s cubic-bezier(1,0,.94,.57) forwards;
+}
+  
+.rocket.landing {
+    animation: landing 4s cubic-bezier(.57,.94,0,1) forwards;
+}
+
+@keyframes takeoff {
+    100% {
+      transform: translate(0, calc(-400vh - 150px));
+    }
+}
+  
+@keyframes landing {
+    0% {
+      transform: translate(0, calc(-400vh - 150px));
+    }
+    100% {
+      transform: translate(0, 0);
+    }
+}
+  

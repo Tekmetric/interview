@@ -16,9 +16,13 @@ export default function RocketModel({ rocketState, height, width }) {
   const displayHeight = heightRatio * maxDisplayHeight;
   const displayWidth = diameterRatio * maxDisplayWidth;
 
+  const rocketClass = rocketState
+    ? `${styles.rocket} ${styles[rocketState]}`
+    : styles.rocket;
+
   return (
     <div
-      className={`${styles.rocket} ${rocketState}`}
+      className={rocketClass}
       style={{
         height: `${displayHeight}px`,
         width: `${displayWidth}px`,

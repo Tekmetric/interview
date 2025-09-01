@@ -1,21 +1,43 @@
-# Tech Interview Project
+A React TypeScript application for user management with a clean, modern interface. Built with React 18, TypeScript, Tailwind CSS, and React Query.
 
-## Steps to get started:
+## Tech Stack
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+- **React 18** with TypeScript
+- **Tailwind CSS** for styling
+- **React Router** for navigation
+- **React Query** for data management
+- **Vitest** for testing
+- **Vite** for build tooling
 
-#### Let's install the project locally
-`npm install`
+## Features
 
-#### Let's start the project locally
-`npm start`
+- User CRUD operations
+- Search and filtering
+- Dark/light theme toggle
+- Responsive design
+- Form validation with Zod
+- Toast notifications
+- Comprehensive testing
 
-### Goals
-1. Fetch Data from the backend Crud API you created or from a public API
-2. Display data from API onto your page (Table, List, etc.)
-3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
-4. Have fun
+## Quick Start
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+```
+
+## Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run test` - Run tests
+- `npm run lint` - Check code quality

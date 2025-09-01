@@ -1,25 +1,25 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ToastType } from './Toast';
+import { ToastProps, ToastType } from './Toast';
 import ToastContainer, { ToastContainerProps } from './ToastContainer';
 
 // Mock the Toast component to simplify testing
 vi.mock('./Toast', () => ({
-  Toast: ({ id, title, type, onClose }: any) => (
-    <div
-      data-testid={`toast-${id}`}
-      role="alert"
-      onClick={() => onClose(id)}
-    >
-      <div data-testid="toast-title">{title}</div>
-      <div data-testid="toast-type">{type}</div>
+  Toast: ({ id, title, type, onClose }: ToastProps) => (
+    <div data-testid={`toast-${id}`} role='alert' onClick={() => onClose(id)}>
+      <div data-testid='toast-title'>{title}</div>
+      <div data-testid='toast-type'>{type}</div>
     </div>
   ),
 }));
 
 describe('ToastContainer', () => {
-  const createMockToast = (id: string, type: ToastType = 'success', title: string = 'Test Toast') => ({
+  const createMockToast = (
+    id: string,
+    type: ToastType = 'success',
+    title: string = 'Test Toast'
+  ) => ({
     id,
     type,
     title,
@@ -170,10 +170,7 @@ describe('ToastContainer', () => {
 
     expect(screen.getByTestId('toast-toast-1')).toBeInTheDocument();
 
-    const newToasts = [
-      createMockToast('toast-1'),
-      createMockToast('toast-2'),
-    ];
+    const newToasts = [createMockToast('toast-1'), createMockToast('toast-2')];
     rerender(<ToastContainer {...defaultProps} toasts={newToasts} />);
 
     expect(screen.getByTestId('toast-toast-1')).toBeInTheDocument();
@@ -181,10 +178,7 @@ describe('ToastContainer', () => {
   });
 
   it('removes toasts when they are no longer in the array', () => {
-    const initialToasts = [
-      createMockToast('toast-1'),
-      createMockToast('toast-2'),
-    ];
+    const initialToasts = [createMockToast('toast-1'), createMockToast('toast-2')];
     const { rerender } = render(<ToastContainer {...defaultProps} toasts={initialToasts} />);
 
     expect(screen.getByTestId('toast-toast-1')).toBeInTheDocument();

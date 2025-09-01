@@ -64,7 +64,7 @@ describe('NotFoundPage', () => {
     );
 
     expect(screen.getByText('Try these pages instead:')).toBeInTheDocument();
-    
+
     // Use getAllByRole to handle multiple links with similar names
     const homeLinks = screen.getAllByRole('link', { name: /home/i });
     const usersLinks = screen.getAllByRole('link', { name: /users/i });
@@ -134,7 +134,7 @@ describe('NotFoundPage', () => {
 
     expect(screen.getByText('Quick Navigation')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /go back/i })).toBeInTheDocument();
-    
+
     // Use specific aria-label to target the correct home button
     const homeButton = screen.getByRole('link', { name: 'Go to home page' });
     expect(homeButton).toBeInTheDocument();

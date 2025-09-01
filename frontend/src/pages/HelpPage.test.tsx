@@ -23,7 +23,7 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual,
     useLocation: () => ({ pathname: '/help' }),
-    Outlet: () => <div data-testid="outlet" />,
+    Outlet: () => <div data-testid='outlet' />,
   };
 });
 
@@ -77,9 +77,7 @@ describe('HelpPage', () => {
       </TestWrapper>
     );
 
-    expect(
-      screen.getByText(/welcome to the user management dashboard!/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/welcome to the user management dashboard!/i)).toBeInTheDocument();
     expect(
       screen.getByText(/this application demonstrates modern react development/i)
     ).toBeInTheDocument();
@@ -99,9 +97,7 @@ describe('HelpPage', () => {
 
     expect(screen.getByText('Learn the basics in a few simple steps.')).toBeInTheDocument();
     expect(screen.getByText('How to add, edit, and delete users.')).toBeInTheDocument();
-    expect(
-      screen.getByText('Explore the technology and architecture.')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Explore the technology and architecture.')).toBeInTheDocument();
   });
 
   it('renders navigation links to help sections', () => {

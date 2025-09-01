@@ -1,6 +1,6 @@
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { ThemeProvider } from '../../contexts/ThemeContext';
@@ -32,7 +32,9 @@ describe('GettingStartedPage', () => {
     );
 
     expect(
-      screen.getByText('Welcome to the User Management Dashboard! Follow these simple steps to get started.')
+      screen.getByText(
+        'Welcome to the User Management Dashboard! Follow these simple steps to get started.'
+      )
     ).toBeInTheDocument();
   });
 
@@ -57,7 +59,9 @@ describe('GettingStartedPage', () => {
     expect(screen.getByText(/Home:/)).toBeInTheDocument();
     expect(screen.getByText('Overview and quick access to features')).toBeInTheDocument();
     expect(screen.getByText(/Users:/)).toBeInTheDocument();
-    expect(screen.getByText('Manage users with search, add, edit, and delete functionality')).toBeInTheDocument();
+    expect(
+      screen.getByText('Manage users with search, add, edit, and delete functionality')
+    ).toBeInTheDocument();
     expect(screen.getByText(/Help:/)).toBeInTheDocument();
     expect(screen.getByText('Documentation and guides')).toBeInTheDocument();
   });
@@ -82,17 +86,23 @@ describe('GettingStartedPage', () => {
     // Step 1
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getByText('Visit the Users Page')).toBeInTheDocument();
-    expect(screen.getByText('Navigate to the Users section to see the user list and available actions.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Navigate to the Users section to see the user list and available actions.')
+    ).toBeInTheDocument();
 
     // Step 2
     expect(screen.getByText('2')).toBeInTheDocument();
     expect(screen.getByText('Try the Search')).toBeInTheDocument();
-    expect(screen.getByText('Use the search bar to find users by name, email, or company.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Use the search bar to find users by name, email, or company.')
+    ).toBeInTheDocument();
 
     // Step 3
     expect(screen.getByText('3')).toBeInTheDocument();
     expect(screen.getByText('View User Details')).toBeInTheDocument();
-    expect(screen.getByText('Click on any user name to see their detailed information.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Click on any user name to see their detailed information.')
+    ).toBeInTheDocument();
   });
 
   it('displays navigation tips section', () => {
@@ -103,9 +113,15 @@ describe('GettingStartedPage', () => {
     );
 
     expect(screen.getByText('Navigation Tips')).toBeInTheDocument();
-    expect(screen.getByText('Use the navigation bar to switch between sections')).toBeInTheDocument();
-    expect(screen.getByText('Toggle between light and dark themes using the theme button')).toBeInTheDocument();
-    expect(screen.getByText('Pagination controls help navigate through large user lists')).toBeInTheDocument();
+    expect(
+      screen.getByText('Use the navigation bar to switch between sections')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Toggle between light and dark themes using the theme button')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Pagination controls help navigate through large user lists')
+    ).toBeInTheDocument();
     expect(screen.getByText('Sort columns by clicking on table headers')).toBeInTheDocument();
   });
 
@@ -117,7 +133,9 @@ describe('GettingStartedPage', () => {
     );
 
     expect(screen.getByText(/Ready to explore\?/)).toBeInTheDocument();
-    expect(screen.getByText('Head to the Users section to start managing users!')).toBeInTheDocument();
+    expect(
+      screen.getByText('Head to the Users section to start managing users!')
+    ).toBeInTheDocument();
   });
 
   it('has proper heading hierarchy', () => {

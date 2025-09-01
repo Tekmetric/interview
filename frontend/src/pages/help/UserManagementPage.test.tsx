@@ -69,7 +69,9 @@ describe('UserManagementPage', () => {
 
     expect(screen.getByText('Viewing Users')).toBeInTheDocument();
     expect(
-      screen.getByText('The Users page displays all users in a table format with the following information:')
+      screen.getByText(
+        'The Users page displays all users in a table format with the following information:'
+      )
     ).toBeInTheDocument();
   });
 
@@ -104,7 +106,9 @@ describe('UserManagementPage', () => {
 
     expect(screen.getByText('User Details')).toBeInTheDocument();
     expect(
-      screen.getByText(/click on the view button in any user's row to view their detailed profile page/i)
+      screen.getByText(
+        /click on the view button in any user's row to view their detailed profile page/i
+      )
     ).toBeInTheDocument();
   });
 
@@ -143,9 +147,13 @@ describe('UserManagementPage', () => {
     );
 
     expect(screen.getByText('Sorting and Pagination')).toBeInTheDocument();
-    expect(screen.getByText('Click on any column header to sort by that field')).toBeInTheDocument();
+    expect(
+      screen.getByText('Click on any column header to sort by that field')
+    ).toBeInTheDocument();
     expect(screen.getByText('Click again to reverse the sort order')).toBeInTheDocument();
-    expect(screen.getByText('Use pagination controls at the bottom to navigate through pages')).toBeInTheDocument();
+    expect(
+      screen.getByText('Use pagination controls at the bottom to navigate through pages')
+    ).toBeInTheDocument();
     expect(screen.getByText(/adjust page size using the dropdown/i)).toBeInTheDocument();
   });
 
@@ -179,8 +187,12 @@ describe('UserManagementPage', () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText(/combine search with status filters for more precise results/i)).toBeInTheDocument();
-    expect(screen.getByText(/sort by "created" to see the newest or oldest users first/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/combine search with status filters for more precise results/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/sort by "created" to see the newest or oldest users first/i)
+    ).toBeInTheDocument();
     expect(screen.getByText(/bookmark search results by copying the url/i)).toBeInTheDocument();
   });
 });

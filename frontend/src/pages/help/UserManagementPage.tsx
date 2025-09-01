@@ -47,8 +47,8 @@ export const UserManagementPage: React.FC = () => {
           User Details
         </h3>
         <p className='mb-4 text-gray-600 dark:text-gray-300'>
-          Click on the view button in any user&apos;s row to view their detailed profile page with complete
-          information and contact details.
+          Click on the view button in any user&apos;s row to view their detailed profile page with
+          complete information and contact details.
         </p>
 
         <h3 className='mb-4 mt-8 text-xl font-semibold text-gray-900 dark:text-white'>

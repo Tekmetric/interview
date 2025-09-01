@@ -34,4 +34,48 @@
       transform: translate(0, 0);
     }
 }
+
+.rocket.takeoff .flame, .rocket.landing .flame {
+    transform: scale(1);
+    height: 40px;
+}
+
+.booster {
+    position: relative;
+    width: 100%;
+    top: 104%;
+    transform: rotateZ(180deg) translatex(0px);
+}
+
+.flame {
+    width: 18px;
+    transform: scale(0);
+    height: 40px;
+    margin: 0px auto;
+    position: relative;
+    transform-origin: 50% 90%;
+}
   
+.flame .fire {
+    width: 16px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: white;
+    border-top-left-radius: 500%;
+    border-bottom-left-radius: 100px;
+    border-top-right-radius: 500%;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 0px 0px 3px white, 0 -20px 1px 4px white, 0 -25px 2px 3px #ffd9b3, 0 -30px 5px 4px #ffd9b3, 0 0px 150px 15px #ffd9b3, 0 -10px 2px 4px white, 0 -5px 3px 3px white;
+}
+  
+.flame .shadows {
+    position: absolute;
+    left: 45%;
+    top: -5%;
+    width: 0px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 5px 20px 15px white, 0 0px 150px 30px #ffd9b3;
+}

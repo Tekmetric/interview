@@ -27,6 +27,13 @@ export default function RocketModel({ rocketState, height, width }) {
         height: `${displayHeight}px`,
         width: `${displayWidth}px`,
       }}
-    ></div>
+    >
+      <div className={styles.booster}>
+        <div className={styles.flame}>
+          <div className={styles.fire}></div>
+          <div className={styles.shadows}></div>
+        </div>
+      </div>
+    </div>
   );
 }

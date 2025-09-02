@@ -1,11 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { SortConfig, TableData } from '../types';
+import { SortConfig, TableData } from '../../types';
 import { UserTable } from './UserTable';
 
 // Mock the useMediaQuery hook
-vi.mock('../hooks/useMediaQuery', () => ({
+vi.mock('../../hooks/useMediaQuery', () => ({
   useIsDesktop: vi.fn(() => true), // Default to desktop view for tests
 }));
 

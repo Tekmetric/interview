@@ -1,14 +1,14 @@
 // Export all components from a central location
-export { ConfirmationModal } from './ConfirmationModal';
-export { Footer } from './Footer';
-export { FormField } from './FormField';
-export { Header } from './Header';
-export { Layout } from './Layout';
-export { LoadingSpinner } from './LoadingSpinner';
-export { Navigation } from './Navigation';
-export { Pagination } from './Pagination';
-export { SearchAndFilter } from './SearchAndFilter';
-export { ThemeToggle } from './ThemeToggle';
-export { Toast, type ToastProps, type ToastType } from './Toast';
-export { ToastContainer } from './ToastContainer';
-export { UserTable } from './UserTable';
+export { Footer } from './shared/Footer';
+export { Header } from './shared/Header';
+export { Layout } from './shared/Layout';
+export { LoadingSpinner } from './shared/LoadingSpinner';
+export { Navigation } from './shared/Navigation';
+export { ThemeToggle } from './shared/ThemeToggle';
+export { Toast, type ToastProps, type ToastType } from './shared/Toast';
+export { ToastContainer } from './shared/ToastContainer';
+export { FormField } from './userDetailPage/FormField';
+export { ConfirmationModal } from './usersPage/ConfirmationModal';
+export { Pagination } from './usersPage/Pagination';
+export { SearchAndFilter } from './usersPage/SearchAndFilter';
+export { UserTable } from './usersPage/UserTable';

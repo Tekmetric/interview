@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
-import { PaginationInfo } from '../types';
+import { PaginationInfo } from '../../types';
 
 interface PaginationProps {
   pagination: PaginationInfo;

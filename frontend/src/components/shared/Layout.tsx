@@ -7,7 +7,7 @@ import { Navigation } from './Navigation';
 
 export const Layout: React.FC = () => {
   return (
-    <div className='flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900'>
+    <div className='flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900' data-testid='layout'>
       {/* Skip Navigation Link */}
       <a
         href='#main-content'

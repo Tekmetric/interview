@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
-import { ThemeProvider } from '../contexts/ThemeContext';
+import { ThemeProvider } from '../../contexts/ThemeContext';
 import { Layout } from './Layout';
 
 // Helper to render with all required providers

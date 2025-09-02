@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PaginationInfo } from '../types';
+import { PaginationInfo } from '../../types';
 import { Pagination } from './Pagination';
 
 describe('Pagination', () => {

@@ -5,7 +5,7 @@ import {
 } from '@heroicons/react/24/outline';
 import React, { useCallback } from 'react';
 
-import { FilterConfig } from '../types';
+import { FilterConfig } from '../../types';
 
 interface SearchAndFilterProps {
   filterConfig: FilterConfig;

@@ -1,8 +1,8 @@
 import { ComputerDesktopIcon as MonitorIcon, MoonIcon, SunIcon } from '@heroicons/react/24/outline';
 import React from 'react';
 
-import { useTheme } from '../contexts/ThemeContext';
-import { Theme } from '../types';
+import { useTheme } from '../../contexts/ThemeContext';
+import { Theme } from '../../types';
 
 /**
  * Modern theme toggle component with three adjacent buttons for system, light, and dark modes

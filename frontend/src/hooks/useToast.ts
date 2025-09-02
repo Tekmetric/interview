@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { ToastProps, ToastType } from '../components/Toast';
+import { ToastProps, ToastType } from '../components';
 
 interface UseToastOptions {
   duration?: number;

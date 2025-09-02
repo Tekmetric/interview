@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ThemeToggle } from './index';
+import { ThemeToggle } from '../index';
 
 export const Header: React.FC = React.memo(() => {
   return (

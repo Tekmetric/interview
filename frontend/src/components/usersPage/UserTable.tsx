@@ -6,8 +6,8 @@ import {
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { useIsDesktop } from '../hooks/useMediaQuery';
-import { SortConfig, TableData } from '../types';
+import { useIsDesktop } from '../../hooks/useMediaQuery';
+import { SortConfig, TableData } from '../../types';
 
 interface UserTableProps {
   data: TableData[];

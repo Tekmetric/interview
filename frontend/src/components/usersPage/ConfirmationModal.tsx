@@ -1,7 +1,7 @@
 import { ExclamationTriangleIcon as WarningIcon } from '@heroicons/react/24/outline';
 import React, { useCallback, useEffect, useRef } from 'react';
 
-import { TableData } from '../types';
+import { TableData } from '../../types';
 
 interface ConfirmationModalProps {
   isOpen: boolean;

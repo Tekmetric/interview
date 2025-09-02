@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { FilterConfig } from '../types';
+import { FilterConfig } from '../../types';
 import { SearchAndFilter } from './SearchAndFilter';
 
 describe('SearchAndFilter', () => {

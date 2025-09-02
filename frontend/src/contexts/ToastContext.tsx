@@ -4,8 +4,8 @@ import { ToastContainer } from '../components/ToastContainer';
 import { useToast } from '../hooks/useToast';
 
 interface ToastContextType {
-  success: (title: string, message?: string, duration?: number) => string;
-  error: (title: string, message?: string, duration?: number) => string;
+  addSuccessToast: (title: string, message?: string, duration?: number) => string;
+  addErrorToast: (title: string, message?: string, duration?: number) => string;
   removeToast: (id: string) => void;
 }
 
@@ -24,11 +24,11 @@ interface ToastProviderProps {
 }
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
-  const { toasts, removeToast, success, error } = useToast();
+  const { toasts, removeToast, addSuccessToast, addErrorToast } = useToast();
 
   const contextValue: ToastContextType = {
-    success,
-    error,
+    addSuccessToast,
+    addErrorToast,
     removeToast,
   };
 

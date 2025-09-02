@@ -12,14 +12,17 @@ import { useToast } from '../hooks/useToast';
 
 // Test component to access toast context
 const TestComponent: React.FC = () => {
-  const { success, error, removeToast } = useToastContext();
+  const { addSuccessToast, addErrorToast, removeToast } = useToastContext();
 
   return (
     <div>
-      <button data-testid='success-btn' onClick={() => success('Success!', 'Success message')}>
+      <button
+        data-testid='success-btn'
+        onClick={() => addSuccessToast('Success!', 'Success message')}
+      >
         Success Toast
       </button>
-      <button data-testid='error-btn' onClick={() => error('Error!', 'Error message')}>
+      <button data-testid='error-btn' onClick={() => addErrorToast('Error!', 'Error message')}>
         Error Toast
       </button>
       <button data-testid='remove-btn' onClick={() => removeToast('test-id')}>
@@ -33,8 +36,8 @@ describe('ToastContext', () => {
   const mockUseToast = {
     toasts: [],
     removeToast: vi.fn(),
-    success: vi.fn(),
-    error: vi.fn(),
+    addSuccessToast: vi.fn(),
+    addErrorToast: vi.fn(),
   };
 
   beforeEach(() => {
@@ -115,7 +118,7 @@ describe('ToastContext', () => {
         screen.getByTestId('success-btn').click();
       });
 
-      expect(mockUseToast.success).toHaveBeenCalledWith('Success!', 'Success message');
+      expect(mockUseToast.addSuccessToast).toHaveBeenCalledWith('Success!', 'Success message');
     });
 
     it('provides error toast function', () => {
@@ -129,7 +132,7 @@ describe('ToastContext', () => {
         screen.getByTestId('error-btn').click();
       });
 
-      expect(mockUseToast.error).toHaveBeenCalledWith('Error!', 'Error message');
+      expect(mockUseToast.addErrorToast).toHaveBeenCalledWith('Error!', 'Error message');
     });
 
     it('provides removeToast function', () => {
@@ -152,18 +155,18 @@ describe('ToastContext', () => {
       const customMockUseToast = {
         toasts: [],
         removeToast: vi.fn(),
-        success: vi.fn().mockReturnValue('success-id'),
-        error: vi.fn().mockReturnValue('error-id'),
+        addSuccessToast: vi.fn().mockReturnValue('success-id'),
+        addErrorToast: vi.fn().mockReturnValue('error-id'),
       };
 
       (useToast as ReturnType<typeof vi.fn>).mockReturnValue(customMockUseToast);
 
       const TestReturnValues: React.FC = () => {
-        const { success, error } = useToastContext();
+        const { addSuccessToast, addErrorToast } = useToastContext();
 
         const handleTest = () => {
-          const successId = success('Test');
-          const errorId = error('Test');
+          const successId = addSuccessToast('Test');
+          const errorId = addErrorToast('Test');
 
           // Store return values in DOM for testing
           document.body.setAttribute('data-success-id', successId);

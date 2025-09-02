@@ -30,8 +30,8 @@ vi.mock('../hooks/useUserQueries', () => ({
 vi.mock('../contexts/ToastContext', () => ({
   useToastContext: vi.fn(() => ({
     toasts: [],
-    success: vi.fn(),
-    error: vi.fn(),
+    addSuccessToast: vi.fn(),
+    addErrorToast: vi.fn(),
     removeToast: vi.fn(),
   })),
   ToastProvider: ({ children }: { children: React.ReactNode }) => children,

@@ -27,8 +27,8 @@ describe('useToast', () => {
     it('provides all expected methods', () => {
       const { result } = renderHook(() => useToast());
 
-      expect(typeof result.current.success).toBe('function');
-      expect(typeof result.current.error).toBe('function');
+      expect(typeof result.current.addSuccessToast).toBe('function');
+      expect(typeof result.current.addErrorToast).toBe('function');
       expect(typeof result.current.removeToast).toBe('function');
     });
   });
@@ -38,7 +38,7 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
-        result.current.success('Success Title', 'Success message');
+        result.current.addSuccessToast('Success Title', 'Success message');
       });
 
       expect(result.current.toasts).toHaveLength(1);
@@ -55,7 +55,7 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
-        result.current.error('Error Title', 'Error message', 10000);
+        result.current.addErrorToast('Error Title', 'Error message', 10000);
       });
 
       expect(result.current.toasts).toHaveLength(1);
@@ -71,8 +71,8 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
-        result.current.success('First');
-        result.current.error('Second');
+        result.current.addSuccessToast('First');
+        result.current.addErrorToast('Second');
       });
 
       expect(result.current.toasts).toHaveLength(2);
@@ -84,8 +84,8 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
-        result.current.success('First');
-        result.current.success('Second');
+        result.current.addSuccessToast('First');
+        result.current.addSuccessToast('Second');
       });
 
       expect(result.current.toasts).toHaveLength(2);
@@ -97,7 +97,7 @@ describe('useToast', () => {
 
       let toastId: string | undefined;
       act(() => {
-        toastId = result.current.success('Test');
+        toastId = result.current.addSuccessToast('Test');
       });
 
       expect(toastId).toBeDefined();
@@ -111,7 +111,7 @@ describe('useToast', () => {
 
       let toastId: string;
       act(() => {
-        toastId = result.current.success('Test Toast');
+        toastId = result.current.addSuccessToast('Test Toast');
       });
 
       expect(result.current.toasts).toHaveLength(1);
@@ -130,8 +130,8 @@ describe('useToast', () => {
       let secondId: string | undefined;
 
       act(() => {
-        firstId = result.current.success('First');
-        secondId = result.current.error('Second');
+        firstId = result.current.addSuccessToast('First');
+        secondId = result.current.addErrorToast('Second');
       });
 
       expect(result.current.toasts).toHaveLength(2);
@@ -150,7 +150,7 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
-        result.current.success('Test');
+        result.current.addSuccessToast('Test');
       });
 
       expect(result.current.toasts).toHaveLength(1);
@@ -168,7 +168,7 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast({ duration: 3000 }));
 
       act(() => {
-        result.current.success('Test');
+        result.current.addSuccessToast('Test');
       });
 
       expect(result.current.toasts[0].duration).toBe(3000);
@@ -178,7 +178,7 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast({ duration: 3000 }));
 
       act(() => {
-        result.current.success('Test', 'Message', 7000);
+        result.current.addSuccessToast('Test', 'Message', 7000);
       });
 
       expect(result.current.toasts[0].duration).toBe(7000);
@@ -188,7 +188,7 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
-        result.current.success('Test');
+        result.current.addSuccessToast('Test');
       });
 
       expect(result.current.toasts[0].duration).toBe(5000);
@@ -200,7 +200,7 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
-        result.current.success('Test');
+        result.current.addSuccessToast('Test');
       });
 
       const toast = result.current.toasts[0];
@@ -218,7 +218,7 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
-        result.current.success('Title', 'Message', 8000);
+        result.current.addSuccessToast('Title', 'Message', 8000);
       });
 
       const toast = result.current.toasts[0];
@@ -236,7 +236,7 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
-        result.current.success('Title');
+        result.current.addSuccessToast('Title');
       });
 
       const toast = result.current.toasts[0];
@@ -249,7 +249,7 @@ describe('useToast', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
-        result.current.success('Test');
+        result.current.addSuccessToast('Test');
       });
 
       const id = result.current.toasts[0].id;
@@ -262,9 +262,9 @@ describe('useToast', () => {
       const ids: string[] = [];
 
       act(() => {
-        ids.push(result.current.success('Test 1'));
-        ids.push(result.current.success('Test 2'));
-        ids.push(result.current.success('Test 3'));
+        ids.push(result.current.addSuccessToast('Test 1'));
+        ids.push(result.current.addSuccessToast('Test 2'));
+        ids.push(result.current.addSuccessToast('Test 3'));
       });
 
       expect(new Set(ids).size).toBe(3); // All IDs should be unique
@@ -285,13 +285,13 @@ describe('useToast', () => {
     it('maintains reference equality for toast type functions', () => {
       const { result, rerender } = renderHook(() => useToast());
 
-      const firstSuccess = result.current.success;
-      const firstError = result.current.error;
+      const firstAddSuccessToast = result.current.addSuccessToast;
+      const firstAddErrorToast = result.current.addErrorToast;
 
       rerender();
 
-      expect(result.current.success).toBe(firstSuccess);
-      expect(result.current.error).toBe(firstError);
+      expect(result.current.addSuccessToast).toBe(firstAddSuccessToast);
+      expect(result.current.addErrorToast).toBe(firstAddErrorToast);
     });
   });
 });

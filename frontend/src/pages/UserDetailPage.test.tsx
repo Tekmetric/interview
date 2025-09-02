@@ -15,8 +15,8 @@ vi.mock('../hooks/useUserQueries', () => ({
 vi.mock('../hooks/useToast', () => ({
   useToast: vi.fn(() => ({
     toasts: [],
-    success: vi.fn(),
-    error: vi.fn(),
+    addSuccessToast: vi.fn(),
+    addErrorToast: vi.fn(),
     removeToast: vi.fn(),
   })),
 }));

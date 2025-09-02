@@ -15,7 +15,7 @@ import { TableData } from '../types';
 export const UsersPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { success, error: showError } = useToastContext();
+  const { addSuccessToast, addErrorToast } = useToastContext();
 
   // Confirmation modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -49,7 +49,7 @@ export const UsersPage: React.FC = () => {
     refetch,
   } = useUsers();
 
-  const deleteUserMutation = useDeleteUser(success, showError);
+  const deleteUserMutation = useDeleteUser(addSuccessToast, addErrorToast);
 
   // Initialize from URL params only once on mount
   useEffect(() => {

@@ -41,14 +41,14 @@ export const useToast = (options: UseToastOptions = {}) => {
   );
 
   // Convenience methods for different toast types
-  const success = useCallback(
+  const addSuccessToast = useCallback(
     (title: string, message?: string, duration?: number) => {
       return addToast({ type: 'success', title, message, duration });
     },
     [addToast]
   );
 
-  const error = useCallback(
+  const addErrorToast = useCallback(
     (title: string, message?: string, duration?: number) => {
       return addToast({ type: 'error', title, message, duration });
     },
@@ -59,7 +59,7 @@ export const useToast = (options: UseToastOptions = {}) => {
     toasts,
     addToast,
     removeToast,
-    success,
-    error,
+    addSuccessToast,
+    addErrorToast,
   };
 };

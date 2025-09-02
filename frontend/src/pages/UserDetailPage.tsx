@@ -18,7 +18,7 @@ export const UserDetailPage: React.FC<UserDetailPageProps> = ({
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { success, error: showError } = useToastContext();
+  const { addSuccessToast, addErrorToast } = useToastContext();
   const [editing, setEditing] = useState(editMode || newUser);
 
   // Form state
@@ -35,7 +35,12 @@ export const UserDetailPage: React.FC<UserDetailPageProps> = ({
   // React Query hooks
   const { data: user, isLoading, error: fetchError } = useUser(newUser ? undefined : id);
 
-  const { submitForm, isLoading: isSubmitting } = useUserForm(id, newUser, success, showError);
+  const { submitForm, isLoading: isSubmitting } = useUserForm(
+    id,
+    newUser,
+    addSuccessToast,
+    addErrorToast
+  );
 
   // Get route state if available
   const routeState = location.state as {

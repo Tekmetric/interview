@@ -69,17 +69,6 @@
       opacity: 1;
     }
   }
-
-  @keyframes slideOutRight {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
 }
 
 /* Custom component styles - Simple, focused design system */
@@ -119,10 +108,6 @@
   }
 
   /* Status styles */
-  .status-success {
-    @apply text-green-600 dark:text-green-400;
-  }
-
   .status-error {
     @apply text-red-600 dark:text-red-400;
   }
@@ -130,14 +115,6 @@
   /* Table components */
   .table-container {
     @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden;
-  }
-
-  .table-header {
-    @apply bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600;
-  }
-
-  .table-title {
-    @apply text-lg font-semibold text-gray-900 dark:text-white;
   }
 
   .table-desktop {
@@ -200,19 +177,6 @@
 
 /* Utility animations and performance */
 @layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-
-  .animate-slide-up {
-    animation: slideUp 0.3s ease-out;
-  }
-
-  /* GPU acceleration for smooth animations */
-  .gpu-accelerated {
-    transform: translateZ(0);
-    will-change: transform;
-}
 
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
@@ -223,28 +187,6 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
     }
   }
 }

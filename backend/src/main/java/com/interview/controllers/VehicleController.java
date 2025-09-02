@@ -6,67 +6,107 @@ import com.interview.dtos.VehicleResponseDTO;
 import com.interview.services.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/vehicles")
+@Tag(name = "Vehicle Management", description = "API for managing vehicles")
 public class VehicleController {
     private final VehicleService service;
 
+    @Operation(summary = "Get a vehicle by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vehicle found"),
+            @ApiResponse(responseCode = "404", description = "Vehicle not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @GetMapping("/{id}")
-    @Operation(summary = "Get vehicle by ID")
     public ResponseEntity<VehicleResponseDTO> getById(
-            @Parameter(description = "Vehicle ID") @PathVariable @NotNull Long id) {
+            @Parameter(description = "ID of the vehicle to retrieve") @PathVariable @NotNull Long id) {
         VehicleResponseDTO vehicle = service.findById(id);
         return ResponseEntity.ok(vehicle);
     }
 
+    @Operation(summary = "Get a paged list of all vehicles", description = "Returns a paginated list of all vehicles. Use the page and size parameters to control the response.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Page of vehicles retrieved successfully")
+    })
     @GetMapping
-    @Operation(summary = "Get all vehicles")
-    public Page<VehicleResponseDTO> getAll(Pageable pageable) {
+    public Page<VehicleResponseDTO> getAll(@ParameterObject Pageable pageable) {
         return service.findAll(pageable);
     }
 
+    @Operation(summary = "Create a new vehicle", description = "Creates a new vehicle record with the provided data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vehicle created successfully"),
+    })
     @PostMapping
-    @Operation(summary = "Create new vehicle", description = "Creates a new vehicle record")
     public ResponseEntity<VehicleResponseDTO> create(@Valid @RequestBody VehicleRequestDTO dto) {
         VehicleResponseDTO created = service.create(dto);
         return ResponseEntity.ok(created);
     }
 
+    @Operation(summary = "Update an existing vehicle", description = "Updates all fields of an existing vehicle record")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vehicle updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Vehicle not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PutMapping("/{id}")
-    @Operation(summary = "Update vehicle")
-    public VehicleResponseDTO update(@PathVariable @NotNull Long id, @Valid @RequestBody VehicleRequestDTO dto) {
+    public VehicleResponseDTO update(
+            @Parameter(description = "ID of the vehicle to update") @PathVariable @NotNull Long id,
+            @Valid @RequestBody VehicleRequestDTO dto) {
         return service.update(id, dto);
     }
 
+    @Operation(summary = "Partially update a vehicle", description = "Updates a specific field or fields of an existing vehicle")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vehicle updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Vehicle not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PatchMapping("/{id}")
-    @Operation(summary = "Partially update vehicle")
-    public VehicleResponseDTO patch(@PathVariable @NotNull Long id, @RequestBody VehiclePatchDTO dto) {
+    public VehicleResponseDTO patch(
+            @Parameter(description = "ID of the vehicle to patch") @PathVariable @NotNull Long id,
+            @Valid @RequestBody VehiclePatchDTO dto) {
         return service.patch(id, dto);
     }
 
+    @Operation(summary = "Delete a vehicle by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Vehicle deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Vehicle not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete vehicle")
-    public ResponseEntity<Void> delete(@PathVariable @NotNull Long id) {
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "ID of the vehicle to delete") @PathVariable @NotNull Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Get a vehicle by its VIN")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vehicle found"),
+            @ApiResponse(responseCode = "404", description = "Vehicle not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @GetMapping("/vin/{vin}")
-    @Operation(summary = "Get vehicle by VIN")
-    public ResponseEntity<Optional<VehicleResponseDTO>> findByVin(@PathVariable @NotBlank String vin) {
-        Optional<VehicleResponseDTO> vehicle = service.findByVin(vin);
+    public ResponseEntity<VehicleResponseDTO> findByVin(
+            @Parameter(description = "VIN of the vehicle to retrieve", example = "1HGCM82633A123456") @PathVariable @NotBlank String vin) {
+        VehicleResponseDTO vehicle = service.findByVin(vin);
         return ResponseEntity.ok(vehicle);
     }
 }

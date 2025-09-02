@@ -16,5 +16,5 @@ public record VehicleResponseDTO(
         String createdBy,
         Instant createdDate,
         String lastModifiedBy,
-        Instant lastModifiedDate) implements VehicleDTOBase {
+        Instant lastModifiedDate) implements VehicleDTOBase, BaseEntityDTO {
 }

@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 @Validated
@@ -78,8 +76,8 @@ public class VehicleService {
     }
 
     @Cacheable(cacheNames = "vehicles", key = "#vin")
-    public Optional<VehicleResponseDTO> findByVin(@NotNull String vin) {
-        return repository.findByVin(vin).map(vehicleMapper::toDto);
+    public VehicleResponseDTO findByVin(@NotNull String vin) {
+        return repository.findByVin(vin).map(vehicleMapper::toDto).orElseThrow(() -> new ResourceNotFoundException("Vehicle", vin, "vin"));
     }
 
     private Vehicle findByIdOrThrow(Long id) {

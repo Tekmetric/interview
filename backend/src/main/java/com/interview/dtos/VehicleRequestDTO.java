@@ -1,11 +1,13 @@
 package com.interview.dtos;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
+@Schema(description = "Vehicle")
 public record VehicleRequestDTO(
         @NotBlank
         @Size(max = 17)

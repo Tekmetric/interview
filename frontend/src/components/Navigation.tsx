@@ -10,7 +10,6 @@ interface NavItem {
   path: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  badge?: string;
   description?: string;
 }
 
@@ -42,42 +41,29 @@ export const Navigation: React.FC = () => {
       role='navigation'
       aria-label='Main navigation'
     >
-      <div className='container mx-auto px-4'>
-        <div className='flex h-16 items-center justify-between'>
-          {/* Navigation Links */}
-          <div className='flex items-center space-x-1' role='menubar'>
-            {navItems.map(item => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 group relative
-                  ${
-                    isActive
-                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`
-                }
-                title={item.description}
-                role='menuitem'
-                aria-label={`${item.label} - ${item.description}`}
-              >
-                <span className='flex items-center space-x-2'>
-                  <item.icon className='size-4' aria-hidden='true' />
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <span
-                      className='rounded-full bg-blue-500 px-2 py-0.5 text-xs font-semibold text-white'
-                      aria-label={`${item.badge} notifications`}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                </span>
-              </NavLink>
-            ))}
-          </div>
-        </div>
+      <div className='container mx-auto px-4 flex h-16 items-center space-x-1' role='menubar'>
+        {navItems.map(item => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 group relative
+              ${
+                isActive
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`
+            }
+            title={item.description}
+            role='menuitem'
+            aria-label={`${item.label} - ${item.description}`}
+          >
+            <span className='flex items-center space-x-2'>
+              <item.icon className='size-4' aria-hidden='true' />
+              <span>{item.label}</span>
+            </span>
+          </NavLink>
+        ))}
       </div>
     </nav>
   );

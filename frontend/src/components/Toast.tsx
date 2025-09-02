@@ -1,12 +1,7 @@
-import {
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  XCircleIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import React, { useEffect, useRef } from 'react';
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
+export type ToastType = 'success' | 'error';
 
 export interface ToastProps {
   id: string;
@@ -67,30 +62,6 @@ export const Toast: React.FC<ToastProps> = React.memo(
             buttonColor:
               'text-red-600 hover:text-red-700 dark:text-red-300 dark:hover:text-red-200',
           };
-        case 'warning':
-          return {
-            icon: ExclamationTriangleIcon,
-            bgColor:
-              'bg-yellow-50 border border-yellow-200 dark:bg-yellow-900 dark:border-yellow-700',
-            borderColor: '', // Combined with bgColor for better control
-            iconColor: 'text-yellow-600 dark:text-yellow-400',
-            titleColor: 'text-yellow-900 dark:text-yellow-100',
-            messageColor: 'text-yellow-800 dark:text-yellow-200',
-            buttonColor:
-              'text-yellow-700 hover:text-yellow-800 dark:text-yellow-300 dark:hover:text-yellow-200',
-          };
-        case 'info':
-        default:
-          return {
-            icon: CheckCircleIcon,
-            bgColor: 'bg-blue-50 border border-blue-200 dark:bg-blue-900 dark:border-blue-700',
-            borderColor: '', // Combined with bgColor for better control
-            iconColor: 'text-blue-500 dark:text-blue-400',
-            titleColor: 'text-blue-900 dark:text-blue-100',
-            messageColor: 'text-blue-800 dark:text-blue-200',
-            buttonColor:
-              'text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200',
-          };
       }
     };
 
@@ -116,13 +87,7 @@ export const Toast: React.FC<ToastProps> = React.memo(
             <button
               type='button'
               className={`inline-flex rounded-md p-1 ${config.buttonColor} transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 ${
-                type === 'success'
-                  ? 'focus:ring-green-500'
-                  : type === 'error'
-                    ? 'focus:ring-red-500'
-                    : type === 'warning'
-                      ? 'focus:ring-yellow-500'
-                      : 'focus:ring-blue-500'
+                type === 'success' ? 'focus:ring-green-500' : 'focus:ring-red-500'
               }`}
               onClick={handleClose}
               aria-label='Close notification'

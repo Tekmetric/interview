@@ -40,10 +40,6 @@ export const useToast = (options: UseToastOptions = {}) => {
     [options.duration, removeToast]
   );
 
-  const clearAllToasts = useCallback(() => {
-    setToasts([]);
-  }, []);
-
   // Convenience methods for different toast types
   const success = useCallback(
     (title: string, message?: string, duration?: number) => {
@@ -59,28 +55,11 @@ export const useToast = (options: UseToastOptions = {}) => {
     [addToast]
   );
 
-  const warning = useCallback(
-    (title: string, message?: string, duration?: number) => {
-      return addToast({ type: 'warning', title, message, duration });
-    },
-    [addToast]
-  );
-
-  const info = useCallback(
-    (title: string, message?: string, duration?: number) => {
-      return addToast({ type: 'info', title, message, duration });
-    },
-    [addToast]
-  );
-
   return {
     toasts,
     addToast,
     removeToast,
-    clearAllToasts,
     success,
     error,
-    warning,
-    info,
   };
 };

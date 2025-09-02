@@ -18,7 +18,6 @@ vi.mock('../hooks/useToast', () => ({
     success: vi.fn(),
     error: vi.fn(),
     removeToast: vi.fn(),
-    clearAllToasts: vi.fn(),
   })),
 }));
 

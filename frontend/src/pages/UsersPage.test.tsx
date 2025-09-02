@@ -33,7 +33,6 @@ vi.mock('../contexts/ToastContext', () => ({
     success: vi.fn(),
     error: vi.fn(),
     removeToast: vi.fn(),
-    clearAllToasts: vi.fn(),
   })),
   ToastProvider: ({ children }: { children: React.ReactNode }) => children,
 }));

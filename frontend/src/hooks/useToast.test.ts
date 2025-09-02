@@ -29,10 +29,7 @@ describe('useToast', () => {
 
       expect(typeof result.current.success).toBe('function');
       expect(typeof result.current.error).toBe('function');
-      expect(typeof result.current.warning).toBe('function');
-      expect(typeof result.current.info).toBe('function');
       expect(typeof result.current.removeToast).toBe('function');
-      expect(typeof result.current.clearAllToasts).toBe('function');
     });
   });
 
@@ -70,49 +67,17 @@ describe('useToast', () => {
       });
     });
 
-    it('adds warning toast without message', () => {
-      const { result } = renderHook(() => useToast());
-
-      act(() => {
-        result.current.warning('Warning Title');
-      });
-
-      expect(result.current.toasts).toHaveLength(1);
-      expect(result.current.toasts[0]).toMatchObject({
-        type: 'warning',
-        title: 'Warning Title',
-        message: undefined,
-      });
-    });
-
-    it('adds info toast', () => {
-      const { result } = renderHook(() => useToast());
-
-      act(() => {
-        result.current.info('Info Title', 'Info message');
-      });
-
-      expect(result.current.toasts).toHaveLength(1);
-      expect(result.current.toasts[0]).toMatchObject({
-        type: 'info',
-        title: 'Info Title',
-        message: 'Info message',
-      });
-    });
-
     it('adds multiple toasts', () => {
       const { result } = renderHook(() => useToast());
 
       act(() => {
         result.current.success('First');
         result.current.error('Second');
-        result.current.warning('Third');
       });
 
-      expect(result.current.toasts).toHaveLength(3);
+      expect(result.current.toasts).toHaveLength(2);
       expect(result.current.toasts[0].title).toBe('First');
       expect(result.current.toasts[1].title).toBe('Second');
-      expect(result.current.toasts[2].title).toBe('Third');
     });
 
     it('generates unique IDs for each toast', () => {
@@ -195,24 +160,6 @@ describe('useToast', () => {
       });
 
       expect(result.current.toasts).toHaveLength(1);
-    });
-
-    it('clears all toasts', () => {
-      const { result } = renderHook(() => useToast());
-
-      act(() => {
-        result.current.success('First');
-        result.current.error('Second');
-        result.current.warning('Third');
-      });
-
-      expect(result.current.toasts).toHaveLength(3);
-
-      act(() => {
-        result.current.clearAllToasts();
-      });
-
-      expect(result.current.toasts).toHaveLength(0);
     });
   });
 
@@ -329,12 +276,10 @@ describe('useToast', () => {
       const { result, rerender } = renderHook(() => useToast());
 
       const firstRemoveToast = result.current.removeToast;
-      const firstClearAll = result.current.clearAllToasts;
 
       rerender();
 
       expect(result.current.removeToast).toBe(firstRemoveToast);
-      expect(result.current.clearAllToasts).toBe(firstClearAll);
     });
 
     it('maintains reference equality for toast type functions', () => {

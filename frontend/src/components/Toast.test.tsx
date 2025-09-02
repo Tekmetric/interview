@@ -29,20 +29,6 @@ describe('Toast', () => {
     expect(toast).toHaveClass('bg-red-50', 'border', 'border-red-200');
   });
 
-  it('renders warning toast with correct styling', () => {
-    render(<Toast {...defaultProps} type='warning' />);
-
-    const toast = screen.getByRole('alert');
-    expect(toast).toHaveClass('bg-yellow-50', 'border', 'border-yellow-200');
-  });
-
-  it('renders info toast with correct styling', () => {
-    render(<Toast {...defaultProps} type='info' />);
-
-    const toast = screen.getByRole('alert');
-    expect(toast).toHaveClass('bg-blue-50', 'border', 'border-blue-200');
-  });
-
   it('calls onClose when close button is clicked', () => {
     const onClose = vi.fn();
     render(<Toast {...defaultProps} onClose={onClose} />);
@@ -79,13 +65,5 @@ describe('Toast', () => {
     rerender(<Toast {...defaultProps} type='error' />);
     closeButton = screen.getByLabelText('Close notification');
     expect(closeButton).toHaveClass('focus:ring-red-500');
-
-    rerender(<Toast {...defaultProps} type='warning' />);
-    closeButton = screen.getByLabelText('Close notification');
-    expect(closeButton).toHaveClass('focus:ring-yellow-500');
-
-    rerender(<Toast {...defaultProps} type='info' />);
-    closeButton = screen.getByLabelText('Close notification');
-    expect(closeButton).toHaveClass('focus:ring-blue-500');
   });
 });

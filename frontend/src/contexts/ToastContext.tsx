@@ -7,7 +7,6 @@ interface ToastContextType {
   success: (title: string, message?: string, duration?: number) => string;
   error: (title: string, message?: string, duration?: number) => string;
   removeToast: (id: string) => void;
-  clearAllToasts: () => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -25,13 +24,12 @@ interface ToastProviderProps {
 }
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
-  const { toasts, removeToast, clearAllToasts, success, error } = useToast();
+  const { toasts, removeToast, success, error } = useToast();
 
   const contextValue: ToastContextType = {
     success,
     error,
     removeToast,
-    clearAllToasts,
   };
 
   return (

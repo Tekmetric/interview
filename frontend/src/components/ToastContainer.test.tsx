@@ -61,7 +61,6 @@ describe('ToastContainer', () => {
     const toasts = [
       createMockToast('toast-1', 'success', 'Success Toast'),
       createMockToast('toast-2', 'error', 'Error Toast'),
-      createMockToast('toast-3', 'warning', 'Warning Toast'),
     ];
     const props = { ...defaultProps, toasts };
 
@@ -69,7 +68,6 @@ describe('ToastContainer', () => {
 
     expect(screen.getByTestId('toast-toast-1')).toBeInTheDocument();
     expect(screen.getByTestId('toast-toast-2')).toBeInTheDocument();
-    expect(screen.getByTestId('toast-toast-3')).toBeInTheDocument();
   });
 
   it('renders toasts in correct order', () => {

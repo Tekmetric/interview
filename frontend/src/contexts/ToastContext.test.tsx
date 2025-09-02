@@ -12,7 +12,7 @@ import { useToast } from '../hooks/useToast';
 
 // Test component to access toast context
 const TestComponent: React.FC = () => {
-  const { success, error, removeToast, clearAllToasts } = useToastContext();
+  const { success, error, removeToast } = useToastContext();
 
   return (
     <div>
@@ -25,9 +25,6 @@ const TestComponent: React.FC = () => {
       <button data-testid='remove-btn' onClick={() => removeToast('test-id')}>
         Remove Toast
       </button>
-      <button data-testid='clear-btn' onClick={() => clearAllToasts()}>
-        Clear All
-      </button>
     </div>
   );
 };
@@ -36,7 +33,6 @@ describe('ToastContext', () => {
   const mockUseToast = {
     toasts: [],
     removeToast: vi.fn(),
-    clearAllToasts: vi.fn(),
     success: vi.fn(),
     error: vi.fn(),
   };
@@ -149,20 +145,6 @@ describe('ToastContext', () => {
 
       expect(mockUseToast.removeToast).toHaveBeenCalledWith('test-id');
     });
-
-    it('provides clearAllToasts function', () => {
-      render(
-        <ToastProvider>
-          <TestComponent />
-        </ToastProvider>
-      );
-
-      act(() => {
-        screen.getByTestId('clear-btn').click();
-      });
-
-      expect(mockUseToast.clearAllToasts).toHaveBeenCalled();
-    });
   });
 
   describe('Context Value', () => {
@@ -170,7 +152,6 @@ describe('ToastContext', () => {
       const customMockUseToast = {
         toasts: [],
         removeToast: vi.fn(),
-        clearAllToasts: vi.fn(),
         success: vi.fn().mockReturnValue('success-id'),
         error: vi.fn().mockReturnValue('error-id'),
       };

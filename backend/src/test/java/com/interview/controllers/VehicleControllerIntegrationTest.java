@@ -65,7 +65,7 @@ class VehicleControllerIntegrationTest {
     @Test
     void createVehicle_validationError_returns400() throws Exception {
         VehicleRequestDTO invalidRequest = VehicleRequestDTO.builder()
-                .vin("")
+                .vin("FOO")
                 .make("")
                 .model("Civic")
                 .manufactureYear(1800)
@@ -78,7 +78,7 @@ class VehicleControllerIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Validation Failed"))
                 .andExpect(jsonPath("$.detail").value("One or more fields in the request body failed validation."))
-                .andExpect(jsonPath("$.errors.vin").value("must not be blank"))
+                .andExpect(jsonPath("$.errors.vin").value("VIN must be 17 characters long and contain valid characters"))
                 .andExpect(jsonPath("$.errors.make").value("must not be blank"))
                 .andExpect(jsonPath("$.errors.ownerName").value("must not be blank"));
     }

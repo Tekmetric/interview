@@ -14,3 +14,5 @@ CREATE TABLE VEHICLES
 );
 
 CREATE INDEX idx_vin ON VEHICLES (vin);
+CREATE INDEX idx_manufacture_year ON VEHICLES (manufacture_year);
+CREATE INDEX idx_make_model ON VEHICLES (make, model);

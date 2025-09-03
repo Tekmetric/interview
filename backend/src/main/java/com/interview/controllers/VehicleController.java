@@ -15,6 +15,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.ErrorResponse;
@@ -51,12 +52,12 @@ public class VehicleController {
 
     @Operation(summary = "Create a new vehicle", description = "Creates a new vehicle record with the provided data")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Vehicle created successfully"),
+            @ApiResponse(responseCode = "201", description = "Vehicle created successfully"),
     })
     @PostMapping
     public ResponseEntity<VehicleResponseDTO> create(@Valid @RequestBody VehicleRequestDTO dto) {
         VehicleResponseDTO created = service.create(dto);
-        return ResponseEntity.ok(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @Operation(summary = "Update an existing vehicle", description = "Updates all fields of an existing vehicle record")

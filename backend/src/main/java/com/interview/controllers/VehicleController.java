@@ -1,8 +1,6 @@
 package com.interview.controllers;
 
-import com.interview.dtos.VehiclePatchDTO;
-import com.interview.dtos.VehicleRequestDTO;
-import com.interview.dtos.VehicleResponseDTO;
+import com.interview.dtos.*;
 import com.interview.services.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,7 +14,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -48,8 +45,8 @@ public class VehicleController {
             @ApiResponse(responseCode = "200", description = "Page of vehicles retrieved successfully")
     })
     @GetMapping
-    public Page<VehicleResponseDTO> getAll(@ParameterObject Pageable pageable) {
-        return service.findAll(pageable);
+    public PageResponse<VehicleResponseDTO> getAll(@ParameterObject Pageable pageable) {
+        return PageResponse.from(service.findAll(pageable));
     }
 
     @Operation(summary = "Create a new vehicle", description = "Creates a new vehicle record with the provided data")
@@ -108,5 +105,17 @@ public class VehicleController {
             @Parameter(description = "VIN of the vehicle to retrieve", example = "1HGCM82633A123456") @PathVariable @NotBlank String vin) {
         VehicleResponseDTO vehicle = service.findByVin(vin);
         return ResponseEntity.ok(vehicle);
+    }
+
+    @Operation(summary = "Search vehicles with criteria")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vehicles found matching criteria"),
+    })
+    @PostMapping("/search")
+    public PageResponse<VehicleResponseDTO> searchVehicles(
+            @ParameterObject Pageable pageable,
+            @Valid @RequestBody VehicleSearchCriteriaDTO criteria) {
+
+        return PageResponse.from(service.search(pageable, criteria));
     }
 }

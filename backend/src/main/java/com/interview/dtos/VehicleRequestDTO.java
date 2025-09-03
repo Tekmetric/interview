@@ -1,5 +1,6 @@
 package com.interview.dtos;
 
+import com.interview.validation.ValidVin;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +11,7 @@ import lombok.Builder;
 @Schema(description = "Vehicle")
 public record VehicleRequestDTO(
         @NotBlank
-        @Size(max = 17)
+        @ValidVin
         String vin,
 
         @NotBlank

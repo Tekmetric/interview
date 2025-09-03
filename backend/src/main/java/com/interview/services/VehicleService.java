@@ -4,18 +4,22 @@ import com.interview.domain.Vehicle;
 import com.interview.dtos.VehiclePatchDTO;
 import com.interview.dtos.VehicleRequestDTO;
 import com.interview.dtos.VehicleResponseDTO;
+import com.interview.dtos.VehicleSearchCriteriaDTO;
 import com.interview.exceptions.ResourceAlreadyExistsException;
 import com.interview.exceptions.ResourceNotFoundException;
 import com.interview.mappers.VehicleMapper;
 import com.interview.repositories.VehicleRepository;
+import com.interview.repositories.specs.VehicleSpecs;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -40,6 +44,7 @@ public class VehicleService {
     }
 
     @Transactional
+    @CachePut(cacheNames = "vehicles", key = "#result.id")
     public VehicleResponseDTO create(@Valid VehicleRequestDTO vehicleDTO) {
         checkVinUnique(vehicleDTO.vin(), null);
         Vehicle vehicle = vehicleMapper.toEntity(vehicleDTO);
@@ -75,9 +80,13 @@ public class VehicleService {
         repository.deleteById(id);
     }
 
-    @Cacheable(cacheNames = "vehicles", key = "#vin")
     public VehicleResponseDTO findByVin(@NotNull String vin) {
         return repository.findByVin(vin).map(vehicleMapper::toDto).orElseThrow(() -> new ResourceNotFoundException("Vehicle", vin, "vin"));
+    }
+
+    public Page<VehicleResponseDTO> search(Pageable pageable, @Valid VehicleSearchCriteriaDTO search) {
+        Specification<Vehicle> spec = VehicleSpecs.from(search);
+        return repository.findAll(spec, pageable).map(vehicleMapper::toDto);
     }
 
     private Vehicle findByIdOrThrow(Long id) {

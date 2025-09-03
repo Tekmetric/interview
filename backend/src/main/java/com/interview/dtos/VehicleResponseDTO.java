@@ -1,10 +1,12 @@
 package com.interview.dtos;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.time.Instant;
 
 @Builder
+@Schema(description = "Vehicle")
 public record VehicleResponseDTO(
         Long id,
         String vin,

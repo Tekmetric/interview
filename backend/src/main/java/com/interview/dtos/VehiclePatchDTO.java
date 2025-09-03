@@ -1,12 +1,13 @@
 package com.interview.dtos;
 
+import com.interview.validation.ValidVin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
 public record VehiclePatchDTO(
-        @Size(max = 17)
+        @ValidVin
         String vin,
 
         @Size(max = 100)

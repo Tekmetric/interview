@@ -351,7 +351,7 @@ class VehicleServiceTest {
     }
 
     @Test
-    void findByVin_WhenVehicleExists_ShouldReturnOptionalWithVehicleResponseDTO() {
+    void findByVin_WhenVehicleExists_ShouldReturnVehicleResponseDTO() {
         String vin = "1HGBH41JXMN109186";
         Vehicle vehicle = buildVehicle();
         VehicleResponseDTO expectedResponse = buildVehicleResponseDTO();
@@ -359,22 +359,23 @@ class VehicleServiceTest {
         when(repository.findByVin(vin)).thenReturn(Optional.of(vehicle));
         when(vehicleMapper.toDto(vehicle)).thenReturn(expectedResponse);
 
-        Optional<VehicleResponseDTO> result = vehicleService.findByVin(vin);
+        VehicleResponseDTO result = vehicleService.findByVin(vin);
 
-        assertThat(result).isPresent();
-        assertThat(result.get()).isEqualTo(expectedResponse);
+        assertThat(result).isEqualTo(expectedResponse);
         verify(repository).findByVin(vin);
         verify(vehicleMapper).toDto(vehicle);
     }
 
     @Test
-    void findByVin_WhenVehicleNotFound_ShouldReturnEmptyOptional() {
+    void findByVin_WhenVehicleNotFound_ShouldThrowResourceNotFoundException() {
         String vin = "NONEXISTENT123456";
         when(repository.findByVin(vin)).thenReturn(Optional.empty());
 
-        Optional<VehicleResponseDTO> result = vehicleService.findByVin(vin);
+        assertThatThrownBy(() -> vehicleService.findByVin(vin))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Vehicle")
+                .hasMessageContaining(vin);
 
-        assertThat(result).isEmpty();
         verify(repository).findByVin(vin);
         verifyNoInteractions(vehicleMapper);
     }

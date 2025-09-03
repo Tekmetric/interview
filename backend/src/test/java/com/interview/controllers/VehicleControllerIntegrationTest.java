@@ -3,6 +3,7 @@ package com.interview.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.interview.dtos.VehiclePatchDTO;
 import com.interview.dtos.VehicleRequestDTO;
+import com.interview.dtos.VehicleSearchCriteriaDTO;
 import com.interview.mappers.VehicleMapper;
 import com.interview.repositories.VehicleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,6 +81,17 @@ class VehicleControllerIntegrationTest {
                 .andExpect(jsonPath("$.errors.vin").value("must not be blank"))
                 .andExpect(jsonPath("$.errors.make").value("must not be blank"))
                 .andExpect(jsonPath("$.errors.ownerName").value("must not be blank"));
+    }
+
+    @Test
+    void createVehicle_conflict_returns409() throws Exception {
+        repository.save(vehicleMapper.toEntity(sampleRequest));
+
+        mockMvc.perform(post("/api/v1/vehicles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(sampleRequest)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail").value("Vehicle with VIN already exists: VIN123"));
     }
 
     @Test
@@ -185,13 +197,123 @@ class VehicleControllerIntegrationTest {
     }
 
     @Test
-    void createVehicle_conflict_returns409() throws Exception {
-        repository.save(vehicleMapper.toEntity(sampleRequest));
+    void findByVin_notFound_returns404() throws Exception {
+        mockMvc.perform(get("/api/v1/vehicles/vin/{vin}", "FOOBAR"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Vehicle with vin: FOOBAR not found"));
+    }
 
-        mockMvc.perform(post("/api/v1/vehicles")
+    @Test
+    void searchVehicles_noCriteria_returnsPaginatedList() throws Exception {
+        repository.save(vehicleMapper.toEntity(sampleRequest));
+        repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
+                .vin("VIN456")
+                .make(sampleRequest.make())
+                .model(sampleRequest.model())
+                .manufactureYear(sampleRequest.manufactureYear())
+                .licensePlate(sampleRequest.licensePlate())
+                .ownerName(sampleRequest.ownerName())
+                .build()));
+
+        VehicleSearchCriteriaDTO emptyCriteria = VehicleSearchCriteriaDTO.builder().build();
+
+        mockMvc.perform(post("/api/v1/vehicles/search")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(sampleRequest)))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.detail").value("Vehicle with VIN already exists: VIN123"));
+                        .content(objectMapper.writeValueAsString(emptyCriteria)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(2))
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].vin").value("VIN123"))
+                .andExpect(jsonPath("$.content[1].vin").value("VIN456"));
+    }
+
+    @Test
+    void searchVehicles_withCriteria_returnsFilteredList() throws Exception {
+        repository.save(vehicleMapper.toEntity(sampleRequest));
+        repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
+                .make("Ford")
+                .model("Mustang")
+                .vin("VIN456")
+                .manufactureYear(sampleRequest.manufactureYear())
+                .licensePlate(sampleRequest.licensePlate())
+                .ownerName(sampleRequest.ownerName())
+                .build()));
+        repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
+                .make("Honda")
+                .model("Accord")
+                .vin("VIN789")
+                .manufactureYear(sampleRequest.manufactureYear())
+                .licensePlate(sampleRequest.licensePlate())
+                .ownerName(sampleRequest.ownerName())
+                .build()));
+
+        VehicleSearchCriteriaDTO searchCriteria = VehicleSearchCriteriaDTO.builder()
+                .make("Honda")
+                .build();
+
+        mockMvc.perform(post("/api/v1/vehicles/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(searchCriteria)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(2))
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].vin").value("VIN123"))
+                .andExpect(jsonPath("$.content[1].vin").value("VIN789"));
+    }
+
+    @Test
+    void searchVehicles_withYearRange_returnsFilteredList() throws Exception {
+        repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
+                .manufactureYear(2010)
+                .vin("VIN123")
+                .make(sampleRequest.make())
+                .model(sampleRequest.model())
+                .licensePlate(sampleRequest.licensePlate())
+                .ownerName(sampleRequest.ownerName())
+                .build()));
+        repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
+                .manufactureYear(2015)
+                .vin("VIN456")
+                .make(sampleRequest.make())
+                .model(sampleRequest.model())
+                .licensePlate(sampleRequest.licensePlate())
+                .ownerName(sampleRequest.ownerName())
+                .build()));
+        repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
+                .manufactureYear(2020)
+                .vin("VIN789")
+                .make(sampleRequest.make())
+                .model(sampleRequest.model())
+                .licensePlate(sampleRequest.licensePlate())
+                .ownerName(sampleRequest.ownerName())
+                .build()));
+
+        VehicleSearchCriteriaDTO searchCriteria = VehicleSearchCriteriaDTO.builder()
+                .yearFrom(2014)
+                .yearTo(2016)
+                .build();
+
+        mockMvc.perform(post("/api/v1/vehicles/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(searchCriteria)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].vin").value("VIN456"));
+    }
+
+    @Test
+    void searchVehicles_invalidYearRange_returns400() throws Exception {
+        VehicleSearchCriteriaDTO invalidCriteria = VehicleSearchCriteriaDTO.builder()
+                .yearFrom(2024)
+                .yearTo(2020)
+                .build();
+
+        mockMvc.perform(post("/api/v1/vehicles/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidCriteria)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Validation Failed"))
+                .andExpect(jsonPath("$.errors.validYearRange").value("Year from cannot be greater than year to"));
     }
 }

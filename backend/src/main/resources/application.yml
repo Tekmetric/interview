@@ -24,3 +24,9 @@ springdoc:
       title: "Vehicles API Documentation"
       version: "1.0.0"
       description: "Vehicles API documentation for managing vehicle data."
+
+
+logging:
+  level:
+    org.springframework.cache.interceptor.CacheInterceptor: INFO
+    org.springframework.data.jpa: INFO

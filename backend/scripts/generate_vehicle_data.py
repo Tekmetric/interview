@@ -8,7 +8,11 @@ makes_models = {
     "Toyota": ["Corolla", "Camry", "RAV4", "Prius"],
     "Ford": ["Focus", "Fusion", "F-150", "Escape"],
     "Chevrolet": ["Malibu", "Cruze", "Tahoe", "Equinox"],
-    "Nissan": ["Altima", "Sentra", "Rogue", "Leaf"]
+    "Nissan": ["Altima", "Sentra", "Rogue", "Leaf"],
+    "BMW": ["3 Series", "5 Series", "X3", "X5"],
+    "Audi": ["A3", "A4", "Q5", "Q7"],
+    "Porsche": ["911", "Cayenne", "Macan", "Panamera"],
+    "Tesla": ["Model S", "Model 3", "Model X", "Model Y"],
 }
 
 owners = ["Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hank"]
@@ -41,7 +45,7 @@ def generate_data_sql(num_vehicles=100, filename='data.sql'):
                 f"INSERT INTO VEHICLES (vin, make, model, manufacture_year, license_plate, owner_name, created_by) "
                 f"VALUES ('{vin}', '{make}', '{model}', {year}, '{license_plate}', '{owner}', 'system');\n"
             )
-    print(f"{num_vehicles} vehicles written to {filename}.")
+    print(f"{num_vehicles} vehicles written to {file_path.absolute()}.")
 
 
 if __name__ == "__main__":

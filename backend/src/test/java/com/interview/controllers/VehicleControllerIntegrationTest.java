@@ -41,7 +41,7 @@ class VehicleControllerIntegrationTest {
     @BeforeEach
     void setup() {
         sampleRequest = VehicleRequestDTO.builder()
-                .vin("VIN123")
+                .vin("1HGCM82633A123456")
                 .make("Honda")
                 .model("Civic")
                 .manufactureYear(2020)
@@ -55,9 +55,9 @@ class VehicleControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/vehicles")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sampleRequest)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.vin").value("VIN123"))
+                .andExpect(jsonPath("$.vin").value("1HGCM82633A123456"))
                 .andExpect(jsonPath("$.make").value("Honda"))
                 .andExpect(jsonPath("$.ownerName").value("John Doe"));
     }
@@ -91,7 +91,7 @@ class VehicleControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sampleRequest)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.detail").value("Vehicle with VIN already exists: VIN123"));
+                .andExpect(jsonPath("$.detail").value("Vehicle with VIN already exists: 1HGCM82633A123456"));
     }
 
     @Test
@@ -102,7 +102,7 @@ class VehicleControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.id").value(created.getId()))
-                .andExpect(jsonPath("$.vin").value("VIN123"));
+                .andExpect(jsonPath("$.vin").value("1HGCM82633A123456"));
     }
 
     @Test
@@ -117,7 +117,7 @@ class VehicleControllerIntegrationTest {
         var created = repository.save(vehicleMapper.toEntity(sampleRequest));
 
         VehicleRequestDTO updateRequest = VehicleRequestDTO.builder()
-                .vin("VIN123")
+                .vin("1HGCM82633A123456")
                 .make("Tesla")
                 .model("Model 3")
                 .manufactureYear(2023)
@@ -139,7 +139,7 @@ class VehicleControllerIntegrationTest {
     @Test
     void updateVehicle_notFound_returns404() throws Exception {
         VehicleRequestDTO updateRequest = VehicleRequestDTO.builder()
-                .vin("VIN999")
+                .vin("3HGFC66F1L5000000")
                 .make("Tesla")
                 .model("Model S")
                 .manufactureYear(2023)
@@ -190,10 +190,10 @@ class VehicleControllerIntegrationTest {
     void findByVin_returnsVehicle() throws Exception {
         var created = repository.save(vehicleMapper.toEntity(sampleRequest));
 
-        mockMvc.perform(get("/api/v1/vehicles/vin/{vin}", "VIN123"))
+        mockMvc.perform(get("/api/v1/vehicles/vin/{vin}", "1HGCM82633A123456"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(created.getId()))
-                .andExpect(jsonPath("$.vin").value("VIN123"));
+                .andExpect(jsonPath("$.vin").value("1HGCM82633A123456"));
     }
 
     @Test
@@ -207,7 +207,7 @@ class VehicleControllerIntegrationTest {
     void searchVehicles_noCriteria_returnsPaginatedList() throws Exception {
         repository.save(vehicleMapper.toEntity(sampleRequest));
         repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
-                .vin("VIN456")
+                .vin("1GBCP44R1V5000000")
                 .make(sampleRequest.make())
                 .model(sampleRequest.model())
                 .manufactureYear(sampleRequest.manufactureYear())
@@ -223,8 +223,8 @@ class VehicleControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements").value(2))
                 .andExpect(jsonPath("$.content.length()").value(2))
-                .andExpect(jsonPath("$.content[0].vin").value("VIN123"))
-                .andExpect(jsonPath("$.content[1].vin").value("VIN456"));
+                .andExpect(jsonPath("$.content[0].vin").value("1HGCM82633A123456"))
+                .andExpect(jsonPath("$.content[1].vin").value("1GBCP44R1V5000000"));
     }
 
     @Test
@@ -233,7 +233,7 @@ class VehicleControllerIntegrationTest {
         repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
                 .make("Ford")
                 .model("Mustang")
-                .vin("VIN456")
+                .vin("1GBCP44R1V5000000")
                 .manufactureYear(sampleRequest.manufactureYear())
                 .licensePlate(sampleRequest.licensePlate())
                 .ownerName(sampleRequest.ownerName())
@@ -241,7 +241,7 @@ class VehicleControllerIntegrationTest {
         repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
                 .make("Honda")
                 .model("Accord")
-                .vin("VIN789")
+                .vin("5YJXCBEV1N1234567")
                 .manufactureYear(sampleRequest.manufactureYear())
                 .licensePlate(sampleRequest.licensePlate())
                 .ownerName(sampleRequest.ownerName())
@@ -257,15 +257,15 @@ class VehicleControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements").value(2))
                 .andExpect(jsonPath("$.content.length()").value(2))
-                .andExpect(jsonPath("$.content[0].vin").value("VIN123"))
-                .andExpect(jsonPath("$.content[1].vin").value("VIN789"));
+                .andExpect(jsonPath("$.content[0].vin").value("1HGCM82633A123456"))
+                .andExpect(jsonPath("$.content[1].vin").value("5YJXCBEV1N1234567"));
     }
 
     @Test
     void searchVehicles_withYearRange_returnsFilteredList() throws Exception {
         repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
                 .manufactureYear(2010)
-                .vin("VIN123")
+                .vin("1HGCM82633A123456")
                 .make(sampleRequest.make())
                 .model(sampleRequest.model())
                 .licensePlate(sampleRequest.licensePlate())
@@ -273,7 +273,7 @@ class VehicleControllerIntegrationTest {
                 .build()));
         repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
                 .manufactureYear(2015)
-                .vin("VIN456")
+                .vin("1GBCP44R1V5000000")
                 .make(sampleRequest.make())
                 .model(sampleRequest.model())
                 .licensePlate(sampleRequest.licensePlate())
@@ -281,7 +281,7 @@ class VehicleControllerIntegrationTest {
                 .build()));
         repository.save(vehicleMapper.toEntity(VehicleRequestDTO.builder()
                 .manufactureYear(2020)
-                .vin("VIN789")
+                .vin("5YJXCBEV1N1234567")
                 .make(sampleRequest.make())
                 .model(sampleRequest.model())
                 .licensePlate(sampleRequest.licensePlate())
@@ -299,7 +299,7 @@ class VehicleControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements").value(1))
                 .andExpect(jsonPath("$.content.length()").value(1))
-                .andExpect(jsonPath("$.content[0].vin").value("VIN456"));
+                .andExpect(jsonPath("$.content[0].vin").value("1GBCP44R1V5000000"));
     }
 
     @Test

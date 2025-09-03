@@ -107,7 +107,7 @@ class VehicleSearchCriteriaDTOTest {
     @Test
     void testValidator_InvalidYearRange_ReturnsConstraintViolation() {
         VehicleSearchCriteriaDTO dto = VehicleSearchCriteriaDTO.builder()
-                .vin("TESTVIN123456789")
+                .vin("1HGCM82633A123456")
                 .make("Ford")
                 .model("Focus")
                 .yearFrom(2024)

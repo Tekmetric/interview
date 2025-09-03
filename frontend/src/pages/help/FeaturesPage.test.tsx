@@ -106,7 +106,7 @@ describe('FeaturesPage', () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText(/crud operations with optimistic updates/i)).toBeInTheDocument();
+    expect(screen.getByText(/crud operations with server state caching/i)).toBeInTheDocument();
     expect(screen.getByText(/advanced search across multiple fields/i)).toBeInTheDocument();
     expect(screen.getByText(/pagination with configurable page sizes/i)).toBeInTheDocument();
   });
@@ -122,7 +122,6 @@ describe('FeaturesPage', () => {
       screen.getByText(/zod schema-based validation with typescript inference/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/react query for server state management/i)).toBeInTheDocument();
-    expect(screen.getByText(/optimistic updates for better ux/i)).toBeInTheDocument();
   });
 
   it('displays theme system features', () => {

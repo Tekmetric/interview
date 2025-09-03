@@ -82,7 +82,7 @@ export const FeaturesPage: React.FC = () => {
           <div className='border-l-4 border-blue-500 pl-4'>
             <h4 className='mb-2 font-semibold text-gray-900 dark:text-white'>User Management</h4>
             <ul className='list-inside list-disc space-y-1 text-gray-600 dark:text-gray-300'>
-              <li>CRUD operations with optimistic updates</li>
+              <li>CRUD operations with server state caching</li>
               <li>Advanced search across multiple fields</li>
               <li>Status filtering (Active/Inactive)</li>
               <li>Table sorting with visual indicators</li>
@@ -101,7 +101,6 @@ export const FeaturesPage: React.FC = () => {
               <li>Real-time field validation on blur</li>
               <li>Form error handling with user-friendly messages</li>
               <li>Caching and background data synchronization</li>
-              <li>Optimistic updates for better UX</li>
             </ul>
           </div>
 

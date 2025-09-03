@@ -17,6 +17,7 @@ Spring Boot application that provides a RESTful API for managing vehicle data.
 #### Considerations for Production
 
 - Use a persistent database (e.g. PostgreSQL, MySQL) instead of H2
+- Use a data migration tool (e.g. Liquibase, Flyway)
 - Implement authentication and authorization (e.g. OAuth2, JWT)
 - Use a distributed caching solution (e.g. Redis, Memcached)
 - Use a CI/CD pipeline for automated testing and deployment
@@ -48,6 +49,10 @@ Use Swagger UI to explore and test the API endpoints:
 
 #### Generate Vehicle Data
 
+Prerequisites:
+
+- Python 3.x
+
 To generate vehicle data you can run the following script in your terminal:
 
 ```bash
@@ -65,7 +70,7 @@ data into the H2 in-memory database when the application starts.
 - Console: http://localhost:8080/h2-console
 - JDBC URL: jdbc:h2:mem:testdb
 - Username: sa
-- Password: password
+- Password: sa
 
 ### Submitting your coding exercise
 

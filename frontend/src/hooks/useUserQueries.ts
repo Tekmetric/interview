@@ -10,11 +10,8 @@ type ToastFunction = (title: string, message?: string) => void;
 
 // Query keys for React Query
 export const userKeys = {
-  all: ['users'] as const,
-  lists: () => [...userKeys.all, 'list'] as const,
-  list: (filters: string) => [...userKeys.lists(), { filters }] as const,
-  details: () => [...userKeys.all, 'detail'] as const,
-  detail: (id: string) => [...userKeys.details(), id] as const,
+  lists: () => ['users', 'list'] as const,
+  detail: (id: string) => ['users', 'detail', id] as const,
 };
 
 // Hook for fetching all users with filtering, sorting, and pagination
@@ -168,17 +165,7 @@ export const useUsers = () => {
 export const useUser = (id: string | undefined) => {
   return useQuery<TableData, ApiError>({
     queryKey: userKeys.detail(id || ''),
-    queryFn: () => {
-      if (!id) {
-        // Create an ApiError for consistency
-        const apiError: ApiError = {
-          message: 'User ID is required. A valid user ID must be provided to fetch user details.',
-          timestamp: new Date(),
-        };
-        throw apiError;
-      }
-      return ApiService.getUser(id);
-    },
+    queryFn: () => ApiService.getUser(id || ''),
     enabled: !!id && id !== 'new',
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -192,10 +179,8 @@ export const useCreateUser = (onSuccess?: ToastFunction, onError?: ToastFunction
   return useMutation<TableData, ApiError, Omit<TableData, 'id' | 'createdAt'>>({
     mutationFn: (userData: Omit<TableData, 'id' | 'createdAt'>) => ApiService.createUser(userData),
     onSuccess: newUser => {
-      // OPTIMIZED: Update the users list cache directly instead of invalidating
-      queryClient.setQueryData(userKeys.lists(), (oldData: TableData[] = []) => {
-        return [...oldData, newUser];
-      });
+      // Invalidate and refetch the users list
+      queryClient.invalidateQueries({ queryKey: userKeys.lists() });
 
       // Cache the individual user
       queryClient.setQueryData(userKeys.detail(newUser.id), newUser);
@@ -230,10 +215,8 @@ export const useUpdateUser = (
   return useMutation<TableData, ApiError, Partial<UserFormData>>({
     mutationFn: (userData: Partial<UserFormData>) => ApiService.updateUser(userId, userData),
     onSuccess: updatedUser => {
-      // OPTIMIZED: Update the users list cache directly
-      queryClient.setQueryData(userKeys.lists(), (oldData: TableData[] = []) => {
-        return oldData.map(user => (user.id === userId ? updatedUser : user));
-      });
+      // Invalidate and refetch the users list
+      queryClient.invalidateQueries({ queryKey: userKeys.lists() });
 
       // Update the individual user cache
       queryClient.setQueryData(userKeys.detail(userId), updatedUser);
@@ -264,10 +247,8 @@ export const useDeleteUser = (onSuccess?: ToastFunction, onError?: ToastFunction
   return useMutation<boolean, ApiError, string>({
     mutationFn: (userId: string) => ApiService.deleteUser(userId),
     onSuccess: (_, deletedUserId) => {
-      // OPTIMIZED: Remove from users list cache directly
-      queryClient.setQueryData(userKeys.lists(), (oldData: TableData[] = []) => {
-        return oldData.filter(user => user.id !== deletedUserId);
-      });
+      // Invalidate and refetch the users list
+      queryClient.invalidateQueries({ queryKey: userKeys.lists() });
 
       // Remove the individual user from cache
       queryClient.removeQueries({ queryKey: userKeys.detail(deletedUserId) });

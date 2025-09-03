@@ -34,10 +34,7 @@ describe('useUserQueries', () => {
 
   describe('userKeys', () => {
     it('generates correct query keys', () => {
-      expect(userKeys.all).toEqual(['users']);
       expect(userKeys.lists()).toEqual(['users', 'list']);
-      expect(userKeys.list('search=john')).toEqual(['users', 'list', { filters: 'search=john' }]);
-      expect(userKeys.details()).toEqual(['users', 'detail']);
       expect(userKeys.detail('123')).toEqual(['users', 'detail', '123']);
     });
   });

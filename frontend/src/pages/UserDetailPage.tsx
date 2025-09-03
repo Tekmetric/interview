@@ -117,20 +117,15 @@ export const UserDetailPage: React.FC<UserDetailPageProps> = ({
       return;
     }
 
-    try {
-      const result = await submitForm(formData);
+    const result = await submitForm(formData);
 
-      // Navigate on success (this will only run if submitForm succeeds)
-      if (routeState?.returnTo) {
-        navigate(routeState.returnTo);
-      } else if (newUser && result) {
-        navigate(`/users/${result.id}`);
-      } else {
-        setEditing(false);
-      }
-    } catch (_error) {
-      // Errors are now handled by the toast system in the hooks
-      // No need to show additional error UI here
+    // Navigate on success (this will only run if submitForm succeeds)
+    if (routeState?.returnTo) {
+      navigate(routeState.returnTo);
+    } else if (newUser && result) {
+      navigate(`/users/${result.id}`);
+    } else {
+      setEditing(false);
     }
   };
 

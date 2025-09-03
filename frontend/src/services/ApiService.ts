@@ -9,12 +9,6 @@ const API_CONFIG = {
   },
 } as const;
 
-// Debug: Log the API URL being used (only in development)
-if (import.meta.env.DEV) {
-  console.log('API Base URL:', API_CONFIG.BASE_URL);
-  console.log('Environment:', import.meta.env.MODE);
-}
-
 const HTTP_STATUS = {
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
@@ -269,11 +263,6 @@ export class ApiService {
     } catch (error) {
       throw ApiService.createApiError(error);
     }
-  }
-
-  // Simulate API delay for realistic experience
-  static async delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 

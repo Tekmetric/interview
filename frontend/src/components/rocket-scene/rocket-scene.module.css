@@ -1,0 +1,13 @@
+.rocketScene {
+    list-style: none;
+    height: 100vh;
+    width: 100vw;
+    padding: 40px;
+    position: relative;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 50px 1fr;
+    grid-template-rows: 1fr;
+    grid-column-gap: 0px;
+    grid-row-gap: 20px;
+}

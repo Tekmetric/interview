@@ -1,27 +1,33 @@
-import React, { Component } from 'react';
-//import logo from './logo.svg';
- 
+import React, { useEffect } from "react";
+import Sky from "./components/sky";
+import Loader from "./components/loader";
+import Rockets from "./components/rockets-list";
+import { RocketsProvider, useRocketsContext } from "./contexts/RocketsContext";
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <h2>Welcome to the interview app!</h2>
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
+function AppContent() {
+  const { rockets, maxRocketDimensions, loading, error, fetchRockets } =
+    useRocketsContext();
 
-        <or>
-          <li>Fetch Data from a public API <a href="https://github.com/toddmotto/public-apis">Samples</a></li>
-          <li>Display data from API onto your page (Table, List, etc.)</li>
-          <li>Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)</li> 
-        </or>   
-       
-        </header>
-      </div>
-    );
-  }
+  useEffect(() => {
+    fetchRockets();
+  }, []);
+
+  return (
+    <div className="App">
+      <Sky />
+      {loading && <Loader text="Fetching Rockets..." />}
+      {error && <div>{error}</div>}
+      {maxRocketDimensions !== undefined && <Rockets rockets={rockets} />}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <RocketsProvider>
+      <AppContent />
+    </RocketsProvider>
+  );
 }
 
 export default App;

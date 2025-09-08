@@ -1,0 +1,13 @@
+.rocketSpecs {
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 0.9em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; 
+}
+
+.rocketSpecs p {
+    margin: 5px 0;
+}

@@ -1,5 +1,5 @@
 import styles from "./rocket-model.module.css";
-import { useRockets } from "../../hooks/useRockets";
+import { useRocketsContext } from "../../contexts/RocketsContext";
 import LandingLegs from "../landing-legs";
 
 export default function RocketModel({
@@ -9,7 +9,8 @@ export default function RocketModel({
   landing_legs,
   payload,
 }) {
-  const { maxRocketDimensions } = useRockets();
+  const { maxRocketDimensions } = useRocketsContext();
+
   if (!maxRocketDimensions) return null;
 
   const browserHeight = window.innerHeight;

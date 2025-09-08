@@ -28,6 +28,31 @@ NASA API → Data Extraction → Processing → Storage → Analytics
   Raw JSON → Clean Data → Aggregations → Parquet → Reports
 ```
 
+### Project Structure Design
+
+**Template vs. Implementation**:
+The exercise provided a placeholder file (`recall_data.py`) with the comment "You may use this file to write your script, or you may create files named in the manner and structure you see fit." 
+
+**Design Decision**: We chose to create a modular architecture instead of using the single-file approach:
+
+```
+Original Template:          Our Implementation:
+recall_data.py             nasa_neo_scraper.py (main orchestrator)
+                           utils/
+                           ├── api_client.py
+                           ├── data_processor.py
+                           └── file_manager.py
+                           tests/ (comprehensive test suite)
+                           documentation/ (README, USAGE, etc.)
+```
+
+**Rationale for Modular Design**:
+- **Scalability**: Modular components can be scaled independently
+- **Maintainability**: Clear separation of concerns makes code easier to understand and modify
+- **Testability**: Individual modules can be unit tested in isolation
+- **Production Readiness**: Follows enterprise software engineering best practices
+- **Future Growth**: Easy to add new features or modify existing ones
+
 ### Component Breakdown
 
 #### 1. API Client (`utils/api_client.py`)

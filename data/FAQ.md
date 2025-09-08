@@ -2,6 +2,34 @@
 
 ## Architecture & Design Decisions
 
+### Q: Why didn't you use the provided `recall_data.py` template file?
+
+**A:** The exercise provided a placeholder file (`recall_data.py`) with the comment "You may use this file to write your script, or you may create files named in the manner and structure you see fit." I chose to create a modular architecture instead of using the single-file approach for several reasons:
+
+**Template Limitations**:
+- **Single File Approach**: The template suggested a single script, which doesn't scale well for production workloads
+- **No Separation of Concerns**: All functionality would be mixed together in one file
+- **Testing Challenges**: Difficult to unit test individual components
+- **Maintenance Issues**: Hard to modify or extend specific functionality
+
+**Modular Benefits**:
+- **Scalability**: Each module can be optimized and scaled independently
+- **Maintainability**: Clear boundaries make code easier to understand and modify
+- **Testability**: Individual components can be thoroughly tested in isolation
+- **Production Readiness**: Follows enterprise software engineering best practices
+- **Future Growth**: Easy to add new features or modify existing functionality
+
+**Implementation Choice**:
+Instead of `recall_data.py`, I created:
+- `nasa_neo_scraper.py` - Main orchestrator script
+- `utils/api_client.py` - NASA API interaction
+- `utils/data_processor.py` - Data transformation logic
+- `utils/file_manager.py` - File operations and storage
+- `tests/` - Comprehensive test suite
+- Documentation files for different audiences
+
+This modular approach directly supports the requirement to "easily scale up to tens of GBs of data" while remaining "easily run locally at development scale."
+
 ### Q: Why did you choose a modular architecture with separate utility modules instead of a single monolithic script?
 
 **A:** I chose a modular approach for several key reasons:

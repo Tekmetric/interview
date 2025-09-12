@@ -15,6 +15,10 @@ import java.util.UUID;
 @Entity(name = "vehicle")
 public class Vehicle {
 
+    public static final int BRAND_MAX_LENGTH = 255;
+    public static final int MODEL_MAX_LENGTH = 255;
+    public static final int COLOR_MAX_LENGTH = 32;
+
     @Id
     @UuidGenerator
     @JdbcTypeCode(SqlTypes.VARCHAR)

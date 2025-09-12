@@ -3,6 +3,7 @@ package com.interview.resource;
 import com.interview.dto.VehicleRequest;
 import com.interview.dto.VehicleResponse;
 import com.interview.service.VehicleService;
+import com.interview.validation.VehicleValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ public class VehicleResource {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public VehicleResponse add(@RequestBody VehicleRequest vehicleRequest) {
+        VehicleValidator.validate(vehicleRequest);
         return vehicleService.add(vehicleRequest);
     }
 
@@ -40,6 +42,7 @@ public class VehicleResource {
     public VehicleResponse update(
             @PathVariable UUID id,
             @RequestBody VehicleRequest vehicleRequest) {
+        VehicleValidator.validate(vehicleRequest);
         return vehicleService.update(id, vehicleRequest);
     }
 

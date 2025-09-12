@@ -1,0 +1,29 @@
+server:
+    port: 8080
+    error:
+        include-message: always
+
+management:
+    server:
+        port: 8081
+
+spring:
+    application:
+        name: tekmetric-interview
+    datasource:
+        url: jdbc:h2:mem:testdb
+        driver-class-name: org.h2.Driver
+        username: sa
+        password: password
+    jpa:.database-platform: org.hibernate.dialect.H2Dialect
+    h2.console.enabled: true
+
+logging:
+    level:
+        ROOT: INFO
+        com.interview.config.RequestLoggingFilter: DEBUG
+
+---
+
+spring:
+    config.activate.on-profile: development

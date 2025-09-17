@@ -5,10 +5,10 @@ import com.interview.dto.VehicleRequest;
 
 public class VehicleTestData {
 
-    private static final String BRAND = "Ford";
-    private static final String MODEL = "F-150";
-    private static final int YEAR = 2020;
-    private static final String COLOR = "red";
+    public static final String BRAND = "Ford";
+    public static final String MODEL = "F-150";
+    public static final int YEAR = 2020;
+    public static final String COLOR = "red";
 
     public static VehicleRequest vehicleRequest() {
         VehicleRequest vehicleRequest = new VehicleRequest();

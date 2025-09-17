@@ -6,7 +6,7 @@ import com.interview.test.data.TestData;
 import com.interview.test.data.VehicleTestData;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 class VehicleValidatorTest {
 
@@ -26,7 +26,7 @@ class VehicleValidatorTest {
         vehicleRequest.setBrand(TestData.LONG_STRING);
 
         // then
-        assertThrows(
+        assertThrowsExactly(
                 ValidationException.class,
                 () -> VehicleValidator.validate(vehicleRequest));
     }

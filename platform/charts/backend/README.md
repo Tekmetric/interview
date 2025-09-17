@@ -2,6 +2,11 @@
 
 These steps run the backend container locally on macOS inside a kind Kubernetes cluster using Helm.
 
+## Prerequisites
+- Docker Desktop (or Docker CLI) running
+- kind, kubectl, helm, make (installed automatically via `devbox shell` at repo root)
+- macOS (Intel/Apple Silicon) with enough resources for a single-node kind cluster
+
 ## TL;DR (Make)
 
 ```bash

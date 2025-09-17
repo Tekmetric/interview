@@ -1,0 +1,11 @@
+{{- if eq .Values.service.type "NodePort" }}
+1. Get the NodePort:
+  kubectl get svc {{ include "backend.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.spec.ports[0].nodePort}'
+2. Access the service:
+  echo "http://localhost:$(kubectl get svc {{ include "backend.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.spec.ports[0].nodePort}')/api/welcome"
+{{- else }}
+To access the service, use port-forwarding:
+  kubectl port-forward svc/{{ include "backend.fullname" . }} 8080:{{ .Values.service.port }} -n {{ .Release.Namespace }}
+Then:
+  curl http://localhost:8080/api/welcome
+{{- end }}

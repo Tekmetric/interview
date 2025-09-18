@@ -6,6 +6,7 @@ import com.interview.service.VehicleService;
 import com.interview.validation.VehicleValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +23,9 @@ public class VehicleResource {
     }
 
     @GetMapping
-    public Page<VehicleResponse> search(Pageable pageable) {
-        return vehicleService.search(pageable);
+    public PagedModel<VehicleResponse> search(Pageable pageable) {
+        Page<VehicleResponse> page = vehicleService.search(pageable);
+        return new PagedModel<>(page);
     }
 
     @GetMapping("/{id}")

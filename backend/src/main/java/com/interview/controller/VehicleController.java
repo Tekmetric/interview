@@ -1,4 +1,4 @@
-package com.interview.resource;
+package com.interview.controller;
 
 import com.interview.dto.VehicleRequest;
 import com.interview.dto.VehicleResponse;
@@ -14,11 +14,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/vehicles")
-public class VehicleResource {
+public class VehicleController {
 
     private final VehicleService vehicleService;
 
-    public VehicleResource(VehicleService vehicleService) {
+    public VehicleController(VehicleService vehicleService) {
         this.vehicleService = vehicleService;
     }
 

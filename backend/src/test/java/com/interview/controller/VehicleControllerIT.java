@@ -1,4 +1,4 @@
-package com.interview.resource;
+package com.interview.controller;
 
 import com.interview.dto.VehicleRequest;
 import com.interview.dto.VehicleResponse;
@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Import(VehicleResourceIT.ClientConfiguration.class)
-class VehicleResourceIT {
+@Import(VehicleControllerIT.ClientConfiguration.class)
+class VehicleControllerIT {
 
     @TestConfiguration
     public static class ClientConfiguration {

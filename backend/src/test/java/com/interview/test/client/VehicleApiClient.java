@@ -18,16 +18,13 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class VehicleApiClient {
+public record VehicleApiClient(TestRestTemplate restClient) {
 
     private static final String API = "/api/vehicles";
 
-    private final TestRestTemplate restClient;
-
-    public VehicleApiClient(TestRestTemplate restClient) {
+    public VehicleApiClient {
         BearerTokenInterceptor interceptor = new BearerTokenInterceptor(TestData.FAKE_TOKEN);
         restClient.getRestTemplate().getInterceptors().add(interceptor);
-        this.restClient = restClient;
     }
 
     public List<VehicleResponse> search() {

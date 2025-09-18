@@ -8,13 +8,7 @@ import org.springframework.lang.NonNull;
 
 import java.io.IOException;
 
-public class BearerTokenInterceptor implements ClientHttpRequestInterceptor {
-
-    private final String token;
-
-    public BearerTokenInterceptor(String token) {
-        this.token = token;
-    }
+public record BearerTokenInterceptor(String token) implements ClientHttpRequestInterceptor {
 
     @Override
     @NonNull

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -20,9 +21,11 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository;
     }
 
-    public Page<VehicleResponse> search(Pageable pageable) {
-        Page<Vehicle> vehiclePage = vehicleRepository.findAll(pageable);
-        return vehiclePage.map(VehicleConverter::toVehicleResponse);
+    public Page<VehicleResponse> search(Pageable pageable, Map<String, String> requestParams) {
+        return VehicleConverter.toPredicate(requestParams)
+                .map(predicate -> vehicleRepository.findAll(predicate, pageable))
+                .orElse(vehicleRepository.findAll(pageable))
+                .map(VehicleConverter::toVehicleResponse);
     }
 
     public VehicleResponse get(UUID id) {

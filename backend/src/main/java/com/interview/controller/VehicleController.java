@@ -10,6 +10,7 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -23,8 +24,10 @@ public class VehicleController {
     }
 
     @GetMapping
-    public PagedModel<VehicleResponse> search(Pageable pageable) {
-        Page<VehicleResponse> page = vehicleService.search(pageable);
+    public PagedModel<VehicleResponse> search(
+            Pageable pageable,
+            @RequestParam Map<String, String> requestParams) {
+        Page<VehicleResponse> page = vehicleService.search(pageable, requestParams);
         return new PagedModel<>(page);
     }
 

@@ -16,6 +16,11 @@ import java.util.UUID;
 @Entity(name = "vehicle")
 public class Vehicle {
 
+    public static final String BRAND_FIELD = "brand";
+    public static final String MODEL_FIELD = "model";
+    public static final String MADE_YEAR_FIELD = "madeYear";
+    public static final String COLOR_FIELD = "color";
+
     public static final int BRAND_MAX_LENGTH = 255;
     public static final int MODEL_MAX_LENGTH = 255;
     public static final int COLOR_MAX_LENGTH = 32;

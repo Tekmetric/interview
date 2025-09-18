@@ -4,6 +4,7 @@ import com.interview.dto.VehicleRequest;
 import com.interview.dto.VehicleResponse;
 import com.interview.exception.NotFoundException;
 import com.interview.exception.ValidationException;
+import com.interview.test.data.TestData;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -24,6 +25,8 @@ public class VehicleApiClient {
     private final TestRestTemplate restClient;
 
     public VehicleApiClient(TestRestTemplate restClient) {
+        BearerTokenInterceptor interceptor = new BearerTokenInterceptor(TestData.FAKE_TOKEN);
+        restClient.getRestTemplate().getInterceptors().add(interceptor);
         this.restClient = restClient;
     }
 

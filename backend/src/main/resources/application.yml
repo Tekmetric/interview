@@ -7,6 +7,10 @@ management:
     server:
         port: 8081
 
+springdoc:
+    api-docs:
+        path: /docs/api
+
 spring:
     application:
         name: tekmetric-interview

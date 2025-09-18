@@ -4,6 +4,7 @@ import com.interview.dto.VehicleRequest;
 import com.interview.dto.VehicleResponse;
 import com.interview.service.VehicleService;
 import com.interview.validation.VehicleValidator;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/vehicles")
+@SecurityRequirement(name = "Authorization")
 public class VehicleController {
 
     private final VehicleService vehicleService;

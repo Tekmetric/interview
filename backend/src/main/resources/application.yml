@@ -31,6 +31,9 @@ logging:
     level:
         ROOT: INFO
         com.interview.config.RequestLoggingFilter: DEBUG
+    request-filter:
+        excluded-paths:
+            - /h2-console
 
 ---
 

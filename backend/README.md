@@ -1,10 +1,12 @@
 # Java Spring Boot API Coding Exercise
 
+## [Please check: ASSIGNMENT.md](ASSIGNMENT.md)
+
 ## Steps to get started:
 
 #### Prerequisites
 - Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
+- Java 21
 
 #### Fork the repository and clone it locally
 - https://github.com/Tekmetric/interview.git
@@ -18,6 +20,10 @@
 #### Test that your app is running
 - `curl -X GET   http://localhost:8080/api/welcome`
 
+#### Check the API documentation at:
+- `http://localhost:8080/docs/api`
+- `http://localhost:8080/swagger-ui/index.html`
+
 #### After finishing the goals listed below create a PR
 
 ### Goals
@@ -27,7 +33,7 @@
 4. Demo API functionality using API client tool
 
 ### Considerations
-This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
+This is an open-ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
 
 #### H2 Configuration
 - Console: http://localhost:8080/h2-console 

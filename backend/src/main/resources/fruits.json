@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Mango",
+    "color": "yellow",
+    "originCountry": "Ecuador",
+    "category": "Tropical",
+    "organic": true,
+    "batchNumber": "BN85721",
+    "supplier": "EcuadorTropical",
+    "quantity": 20
+  },
+  {
+    "name": "Maracuya",
+    "color": "purple",
+    "originCountry": "Colombia",
+    "category": "Tropical",
+    "organic": true,
+    "batchNumber": "BN85721",
+    "supplier": "EcuadorTropical",
+    "quantity": 200
+  },
+  {
+    "name": "Maracuya",
+    "color": "purple",
+    "originCountry": "Colombia",
+    "category": "Tropical",
+    "organic": false,
+    "batchNumber": "C997562",
+    "supplier": "EcuadorTropical",
+    "quantity": 200
+  },
+  {
+    "name": "Dragon Fruit",
+    "color": "yellow",
+    "originCountry": "Peru",
+    "category": "Tropical",
+    "organic": false,
+    "batchNumber": "C997562",
+    "supplier": "EcuadorTropical",
+    "quantity": 125
+  },
+  {
+    "name": "Dragon Fruit",
+    "color": "pink",
+    "originCountry": "Vietnam",
+    "category": "Exotic",
+    "organic": false,
+    "batchNumber": "VN45678",
+    "supplier": "VietExotics",
+    "quantity": 150
+  },
+  {
+    "name": "Rambutan",
+    "color": "red",
+    "originCountry": "Thailand",
+    "category": "Tropical",
+    "organic": true,
+    "batchNumber": "THI98234",
+    "supplier": "ThaiFruitsCo",
+    "quantity": 300
+  }
+]

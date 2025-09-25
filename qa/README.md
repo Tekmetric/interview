@@ -1,30 +1,29 @@
-# Playwright Automation Framework Excercise
+# Playwright Automation Framework
 
-## Steps to get started:
+## Assignment Goals Completed
 
-### Testing Website
-- For the website under test utilize https://www.automationexercise.com/
+### UI Automation
+- Login UI: TC3 - Login with invalid credentials
+- Account Creation UI: TC1 - Register User
+- Checkout UI: TC16 - Checkout navigation flow
 
-#### Prerequisites
-- Node.js
+### API Automation
+- User Account CRUD: API endpoints testing
+- API + UI Integration: Combined verification
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+## Project Structure
+tests/
+├── ui/
+│   ├── tc1-register-user.spec.js
+│   ├── tc3-login-incorrect.spec.js
+│   └── tc16-checkout-login.spec.js
+├── api/
+│   └── user-crud-api.spec.js
+└── integration/
+    └── api-ui-integration.spec.js
 
-#### Import project into IDE
-- Project root is located in `qa` folder
-
-#### After finishing the goals listed below create a PR
-
-### Goals
-1. Automate Login, Account Creation, Checkout UI
-2. Automate Login & User Account CRUD API
-3. Utilize API to support UI tests
-4. Have Fun
-
-### Considerations
-This is an open-ended exercise designed to showcase your skills and expertise with Playwright! We encourage you to apply best practices in structuring your tests, locators and addressing various scenarios. Feel free to incorporate any additional enhancements or optimizations you think are valuable. This is your opportunity to demonstrate your approach to writing clean, scalable, and maintainable test scripts.
-
-
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+## Quick Start
+npm install
+npx playwright install
+npx playwright test
+npx playwright show-report

@@ -7,11 +7,13 @@
 A drag-and-drop Kanban board for managing automotive repair orders through workflow stages, built to showcase modern frontend development skills while addressing Tekmetric's core product domain.
 
 **Key Features**:
-- ✅ Drag-and-drop repair orders between workflow stages (Check-In → Inspecting → In Progress → QC → Ready)
+- ✅ Drag-and-drop repair orders between workflow stages (NEW → AWAITING_APPROVAL → IN_PROGRESS → WAITING_PARTS → COMPLETED)
+- ✅ Dashboard with KPIs (Total WIP, Overdue, Waiting Parts, Awaiting Approval)
 - ✅ Full CRUD backend API with Express + SQLite + TypeScript
 - ✅ Real-time search & filtering (customer, vehicle, technician, priority)
-- ✅ Stage transition validation (client + server)
+- ✅ Stage transition validation (client + server, enforced per PRODUCT_SPEC)
 - ✅ Optimistic UI updates with automatic rollback
+- ✅ Overdue highlighting based on promisedAt timestamp
 - ✅ Mobile-responsive design for shop floor tablets
 - ✅ Accessibility features (keyboard navigation, ARIA labels, screen reader support)
 
@@ -54,10 +56,11 @@ npm run dev
 ## 📚 Documentation
 
 Detailed documentation in [`docs/`](./docs) folder:
-- [**API.md**](./docs/API.md) - REST API specification, endpoints, request/response schemas
-- [**ARCHITECTURE.md**](./docs/ARCHITECTURE.md) - Component structure, state management, data flow
-- [**TRANSITIONS.md**](./docs/TRANSITIONS.md) - Stage transition rules, validation logic, business rules
-- [**DESIGN.md**](./docs/DESIGN.md) - Design system, color palette, typography
+- [**PRODUCT_SPEC.md**](./docs/specs.md) - **Source of truth** for features, data model, workflow
+- [**API.md**](./docs/API.md) - REST API specification (endpoints, request/response schemas)
+- [**TRANSITIONS.md**](./docs/transitions.md) - Stage transition rules and validation logic
+
+Additional details in [**IMPLEMENTATION_PLAN.md**](./IMPLEMENTATION_PLAN.md) (gitignored, for development reference)
 
 ---
 

@@ -1,0 +1,73 @@
+---
+alwaysApply: true
+---
+
+# Control flow
+
+- Early returns over if/else nesting
+- No goto, recursion, complex flow
+
+# Loops
+
+- Fixed upper bounds required
+
+# Functions
+
+- Small (~60 lines max)
+- Single purpose
+- Pure functions, no side effects!
+
+# Defensive Coding
+
+- Use assertions
+- Check returns
+- Validate inputs
+
+# Scope
+
+- Smallest possible variable scope
+- No globals or variable reuse
+
+# Quality
+
+- Zero warnings
+- Fix analyzer issues
+- Fewer lines better
+
+# Style
+
+- NO Classes! Use a functional approach as much as possible!
+- No semicolons
+- Single quotes for JSX/HTML
+- Blank line at file end
+- TypeScript with types
+- Destructure props >2 keys.
+- Prefer one prop object over 2+ individual params for functions.
+- Keep existing comments.
+- Add ONLY WHY comments - if something is not obvious
+- Do NOT add WHAT comments - simple descriptions
+- Keep function calls clean - build and define props upfront
+- Path aliases: `@server/`, `@shared/`, `@/*`... (for all within src) -> follow tsconfig
+
+# Problem Solving
+
+- Analyze first
+- Consider alternatives
+- Focus on relevant
+- No overengineering
+
+# Architecture: Reusable Business Logic
+
+- Business logic = pure functions with NO framework knowledge
+- All dependencies (DB, services) injected as function parameters
+- Same function callable from HTTP routes, background jobs, and tests
+- Unit of Work pattern: each operation is self-contained and testable
+- Test ONLY the business commands, not infrastructure
+- Example: `enrichProfile({ id, data, persistenceProvider, serviceProvider })`
+
+# CSS and Styling
+
+- Use Tailwind classes, Flex and Grid
+- Use ShadCN components from the components/ui folder
+- Use flex + gap. DO NOT Use space-x-[value] or space-y-[]
+- Prefer layout position and spacing from the parent to the children, over margin

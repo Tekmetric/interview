@@ -95,7 +95,13 @@ export function seedTestTechnicians(db: Database.Database): Technician[] {
   `)
 
   for (const tech of technicians) {
-    stmt.run(tech.id, tech.name, tech.initials, JSON.stringify(tech.specialties), tech.active ? 1 : 0)
+    stmt.run(
+      tech.id,
+      tech.name,
+      tech.initials,
+      JSON.stringify(tech.specialties),
+      tech.active ? 1 : 0,
+    )
   }
 
   return technicians

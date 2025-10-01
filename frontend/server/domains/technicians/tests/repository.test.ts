@@ -7,18 +7,23 @@ import type { Technician } from '@shared/types'
 const mockDb = { current: null as Database.Database | null }
 
 vi.mock('@server/data/db', () => ({
-  default: new Proxy({}, {
-    get(_target, prop) {
-      if (mockDb.current) {
-        return mockDb.current[prop as keyof Database.Database]
-      }
-      throw new Error('Database not initialized in test')
+  default: new Proxy(
+    {},
+    {
+      get(_target, prop) {
+        if (mockDb.current) {
+          return mockDb.current[prop as keyof Database.Database]
+        }
+        throw new Error('Database not initialized in test')
+      },
     },
-  }),
+  ),
 }))
 
 // Import after mock is set up
-const { getAllTechnicians, getTechnicianById, insertTechnician } = await import('../repository')
+const { getAllTechnicians, getTechnicianById, insertTechnician } = await import(
+  '../repository'
+)
 
 describe('Technicians Repository', () => {
   beforeEach(() => {

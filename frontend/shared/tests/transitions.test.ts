@@ -45,7 +45,13 @@ describe('Status Transitions', () => {
 
     it('should allow NEW -> IN_PROGRESS with assigned tech', () => {
       const order: Partial<RepairOrder> = {
-        assignedTech: { id: 'tech-1', name: 'John', initials: 'JD', specialties: [], active: true },
+        assignedTech: {
+          id: 'tech-1',
+          name: 'John',
+          initials: 'JD',
+          specialties: [],
+          active: true,
+        },
       }
       const result = canTransition('NEW', 'IN_PROGRESS', order)
       expect(result.allowed).toBe(true)
@@ -53,7 +59,13 @@ describe('Status Transitions', () => {
 
     it('should allow AWAITING_APPROVAL -> IN_PROGRESS with assigned tech', () => {
       const order: Partial<RepairOrder> = {
-        assignedTech: { id: 'tech-1', name: 'John', initials: 'JD', specialties: [], active: true },
+        assignedTech: {
+          id: 'tech-1',
+          name: 'John',
+          initials: 'JD',
+          specialties: [],
+          active: true,
+        },
       }
       const result = canTransition('AWAITING_APPROVAL', 'IN_PROGRESS', order)
       expect(result.allowed).toBe(true)
@@ -84,7 +96,13 @@ describe('Status Transitions', () => {
 
     it('should allow WAITING_PARTS -> IN_PROGRESS with assigned tech', () => {
       const order: Partial<RepairOrder> = {
-        assignedTech: { id: 'tech-1', name: 'John', initials: 'JD', specialties: [], active: true },
+        assignedTech: {
+          id: 'tech-1',
+          name: 'John',
+          initials: 'JD',
+          specialties: [],
+          active: true,
+        },
       }
       const result = canTransition('WAITING_PARTS', 'IN_PROGRESS', order)
       expect(result.allowed).toBe(true)
@@ -107,7 +125,9 @@ describe('Status Transitions', () => {
     it('should block AWAITING_APPROVAL -> WAITING_PARTS', () => {
       const result = canTransition('AWAITING_APPROVAL', 'WAITING_PARTS')
       expect(result.allowed).toBe(false)
-      expect(result.reason).toContain('Cannot move from AWAITING_APPROVAL to WAITING_PARTS')
+      expect(result.reason).toContain(
+        'Cannot move from AWAITING_APPROVAL to WAITING_PARTS',
+      )
     })
 
     it('should block AWAITING_APPROVAL -> COMPLETED', () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import Database from 'better-sqlite3'
 import { createTestDb, cleanupDb, seedTestTechnicians } from '@server/tests/test-utils'
-import { rowToRepairOrder } from '../mappers'
+import { rowToRepairOrder } from '../transforms'
 
 // Mock the db imports
 const mockDb = { current: null as Database.Database | null }
@@ -20,7 +20,7 @@ vi.mock('@server/data/db', () => ({
   ),
 }))
 
-describe('Repair Orders Mappers', () => {
+describe('Repair Orders transforms', () => {
   beforeEach(() => {
     mockDb.current = createTestDb()
     seedTestTechnicians(mockDb.current)
@@ -300,4 +300,3 @@ describe('Repair Orders Mappers', () => {
     })
   })
 })
-

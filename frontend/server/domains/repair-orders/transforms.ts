@@ -34,4 +34,3 @@ export function rowToRepairOrder(row: any): RepairOrder {
     updatedAt: row.updated_at,
   }
 }
-

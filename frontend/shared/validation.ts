@@ -9,7 +9,11 @@ export const customerSchema = z.object({
 
 // Vehicle validation schema
 export const vehicleSchema = z.object({
-  year: z.number().int().min(1900).max(new Date().getFullYear() + 1),
+  year: z
+    .number()
+    .int()
+    .min(1900)
+    .max(new Date().getFullYear() + 1),
   make: z.string().min(1, 'Vehicle make is required'),
   model: z.string().min(1, 'Vehicle model is required'),
   trim: z.string().optional(),

@@ -12,14 +12,17 @@ import type { RepairOrder } from '@shared/types'
 const mockDb = { current: null as Database.Database | null }
 
 vi.mock('@server/data/db', () => ({
-  default: new Proxy({}, {
-    get(_target, prop) {
-      if (mockDb.current) {
-        return mockDb.current[prop as keyof Database.Database]
-      }
-      throw new Error('Database not initialized in test')
+  default: new Proxy(
+    {},
+    {
+      get(_target, prop) {
+        if (mockDb.current) {
+          return mockDb.current[prop as keyof Database.Database]
+        }
+        throw new Error('Database not initialized in test')
+      },
     },
-  }),
+  ),
 }))
 
 const {
@@ -184,7 +187,13 @@ describe('Repair Orders Repository', () => {
 
     it('should update assigned technician', () => {
       const updated = updateRepairOrder('RO-1', {
-        assignedTech: { id: 'tech-2', name: 'Jane Smith', initials: 'JS', specialties: [], active: true },
+        assignedTech: {
+          id: 'tech-2',
+          name: 'Jane Smith',
+          initials: 'JS',
+          specialties: [],
+          active: true,
+        },
       })
 
       expect(updated).toBeDefined()
@@ -209,7 +218,13 @@ describe('Repair Orders Repository', () => {
     it('should handle multiple field updates', () => {
       const updated = updateRepairOrder('RO-1', {
         status: 'IN_PROGRESS',
-        assignedTech: { id: 'tech-1', name: 'John Doe', initials: 'JD', specialties: [], active: true },
+        assignedTech: {
+          id: 'tech-1',
+          name: 'John Doe',
+          initials: 'JD',
+          specialties: [],
+          active: true,
+        },
         notes: 'Work started',
       })
 

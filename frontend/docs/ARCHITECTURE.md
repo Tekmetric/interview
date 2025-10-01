@@ -211,7 +211,7 @@ tekmetric/frontend/
 │   ├── data/                 # Database layer (db, schema, seed)
 │   ├── domains/              # Business domains
 │   │   ├── technicians/      # types, repository, routes
-│   │   └── repair-orders/    # types, repository, mappers, routes
+│   │   └── repair-orders/    # types, repository, transforms, routes
 │   └── index.ts              # Express app entry
 ├── shared/                   # Cross-stack code
 │   ├── types.ts              # Shared interfaces

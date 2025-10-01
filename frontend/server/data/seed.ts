@@ -1,6 +1,9 @@
 import { faker } from '@faker-js/faker'
 import type { Technician, RepairOrderStatus } from '@shared/types'
-import { insertTechnician, getAllTechnicians } from '@server/domains/technicians/repository'
+import {
+  insertTechnician,
+  getAllTechnicians,
+} from '@server/domains/technicians/repository'
 import {
   insertRepairOrderDirect,
   getAllRepairOrders,

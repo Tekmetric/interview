@@ -1,0 +1,86 @@
+import { AppLayout } from '@/components/layout/app-layout'
+import { KanbanBoard } from '@/components/kanban/kanban-board'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useRepairOrders } from '@/hooks/useRepairOrders'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import type { RepairOrderStatus } from '@shared/types'
+
+async function updateOrderStatus(orderId: string, status: RepairOrderStatus) {
+  const res = await fetch(`/api/repairOrders/${orderId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || 'Failed to update order status')
+  }
+
+  return res.json()
+}
+
+export function Kanban() {
+  const { data: orders, isLoading, error } = useRepairOrders()
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: ({ orderId, status }: { orderId: string; status: RepairOrderStatus }) =>
+      updateOrderStatus(orderId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
+      toast.success('Order status updated')
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || 'Failed to update status')
+    },
+  })
+
+  const handleStatusChange = (orderId: string, newStatus: RepairOrderStatus) => {
+    mutation.mutate({ orderId, status: newStatus })
+  }
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className='flex flex-col gap-6 p-8'>
+          <header className='flex flex-col gap-2'>
+            <h1 className='text-3xl font-bold text-gray-900'>Kanban Board</h1>
+            <p className='text-gray-600'>Drag and drop to update repair order status</p>
+          </header>
+          <div className='flex gap-4'>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className='h-96 min-w-[300px]' />
+            ))}
+          </div>
+        </div>
+      </AppLayout>
+    )
+  }
+
+  if (error) {
+    return (
+      <AppLayout>
+        <div className='p-8'>
+          <div className='rounded-lg bg-red-50 p-4 text-red-800'>
+            Error loading repair orders. Please try again.
+          </div>
+        </div>
+      </AppLayout>
+    )
+  }
+
+  return (
+    <AppLayout>
+      <div className='flex flex-col gap-6 p-8'>
+        <header className='flex flex-col gap-2'>
+          <h1 className='text-3xl font-bold text-gray-900'>Kanban Board</h1>
+          <p className='text-gray-600'>Drag and drop to update repair order status</p>
+        </header>
+
+        <KanbanBoard orders={orders || []} onStatusChange={handleStatusChange} />
+      </div>
+    </AppLayout>
+  )
+}

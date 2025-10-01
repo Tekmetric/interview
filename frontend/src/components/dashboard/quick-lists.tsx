@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useOverdueOrders, useRecentOrders } from './hooks/useQuickLists'
 import { RepairOrderItem } from './repair-order-item'
+import { DASHBOARD_LABELS } from '@shared/constants'
 
 export function QuickLists() {
   const { data: overdueOrders, isLoading: overdueLoading } = useOverdueOrders(5)
@@ -25,7 +26,7 @@ export function QuickLists() {
               <circle cx='12' cy='12' r='10' />
               <polyline points='12 6 12 12 16 14' />
             </svg>
-            Top 5 Overdue
+            {DASHBOARD_LABELS.TOP_5_OVERDUE}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -42,7 +43,7 @@ export function QuickLists() {
               ))}
             </div>
           ) : (
-            <p className='text-center text-sm text-gray-500'>No overdue orders</p>
+            <p className='text-center text-sm text-gray-500'>{DASHBOARD_LABELS.NO_OVERDUE_ORDERS}</p>
           )}
         </CardContent>
       </Card>
@@ -65,7 +66,7 @@ export function QuickLists() {
               <line x1='8' y1='2' x2='8' y2='6' />
               <line x1='3' y1='10' x2='21' y2='10' />
             </svg>
-            Top 5 Recent
+            {DASHBOARD_LABELS.TOP_5_RECENT}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -82,7 +83,7 @@ export function QuickLists() {
               ))}
             </div>
           ) : (
-            <p className='text-center text-sm text-gray-500'>No recent orders</p>
+            <p className='text-center text-sm text-gray-500'>{DASHBOARD_LABELS.NO_RECENT_ORDERS}</p>
           )}
         </CardContent>
       </Card>

@@ -9,6 +9,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useRepairOrders } from '@/components/repair-order/hooks/useRepairOrders'
 import { calculateKPIs } from '@/components/dashboard/utils/kpi-utils'
 import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
+import { DASHBOARD_LABELS, REPAIR_ORDER_LABELS } from '@shared/constants'
 
 import { Plus } from 'lucide-react'
 
@@ -17,8 +18,8 @@ function DashboardLoading() {
     <AppLayout>
       <div className='space-y-6 p-8'>
         <header className='space-y-2'>
-          <h1 className='text-3xl font-bold text-gray-900'>Dashboard</h1>
-          <p className='text-gray-600'>Quick overview of repair orders</p>
+          <h1 className='text-3xl font-bold text-gray-900'>{DASHBOARD_LABELS.TITLE}</h1>
+          <p className='text-gray-600'>{DASHBOARD_LABELS.SUBTITLE}</p>
         </header>
 
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
@@ -36,7 +37,7 @@ function DashboardError() {
     <AppLayout>
       <div className='p-8'>
         <div className='rounded-lg bg-red-50 p-4 text-red-800'>
-          Error loading repair orders. Please try again.
+          {REPAIR_ORDER_LABELS.ERROR_LOADING_LIST}
         </div>
       </div>
     </AppLayout>
@@ -53,18 +54,18 @@ function DashboardContent() {
       <div className='space-y-6 p-8'>
         <header className='flex items-center justify-between'>
           <div className='space-y-1'>
-            <h1 className='text-3xl font-bold text-gray-900'>Dashboard</h1>
-            <p className='text-gray-600'>Quick overview of repair orders</p>
+            <h1 className='text-3xl font-bold text-gray-900'>{DASHBOARD_LABELS.TITLE}</h1>
+            <p className='text-gray-600'>{DASHBOARD_LABELS.SUBTITLE}</p>
           </div>
           <Button size='lg' onClick={() => setLocation('/repair-order/new')}>
             <Plus />
-            Repair Order
+            {REPAIR_ORDER_LABELS.TITLE}
           </Button>
         </header>
 
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
           <KPICard
-            title='Total WIP'
+            title={DASHBOARD_LABELS.TOTAL_WIP}
             value={kpis.totalWIP}
             variant='primary'
             onClick={() => setLocation('/kanban')}
@@ -87,7 +88,7 @@ function DashboardContent() {
           />
 
           <KPICard
-            title='Overdue'
+            title={DASHBOARD_LABELS.OVERDUE}
             value={kpis.overdueCount}
             variant='warning'
             icon={
@@ -108,7 +109,7 @@ function DashboardContent() {
           />
 
           <KPICard
-            title='Waiting Parts'
+            title={DASHBOARD_LABELS.WAITING_PARTS}
             value={kpis.waitingPartsCount}
             variant='info'
             icon={
@@ -130,7 +131,7 @@ function DashboardContent() {
           />
 
           <KPICard
-            title='Awaiting Approval'
+            title={DASHBOARD_LABELS.AWAITING_APPROVAL}
             value={kpis.awaitingApprovalCount}
             variant='success'
             icon={

@@ -1,24 +1,25 @@
 import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { RepairOrder } from '@shared/types'
 import type { UpdateRepairOrderInput, CreateRepairOrderInput } from '@shared/validation'
+import { REPAIR_ORDER_LABELS, API_ENDPOINTS } from '@shared/constants'
 
 async function fetchRepairOrder(id: string): Promise<RepairOrder> {
-  const response = await fetch(`/api/repairOrders/${id}`)
+  const response = await fetch(API_ENDPOINTS.REPAIR_ORDERS.BY_ID(id))
   if (!response.ok) {
-    throw new Error('Failed to fetch repair order')
+    throw new Error(REPAIR_ORDER_LABELS.FAILED_TO_FETCH)
   }
   return response.json()
 }
 
 async function createRepairOrder(data: CreateRepairOrderInput): Promise<RepairOrder> {
-  const response = await fetch('/api/repairOrders', {
+  const response = await fetch(API_ENDPOINTS.REPAIR_ORDERS.BASE, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   })
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.message || 'Failed to create repair order')
+    throw new Error(error.message || REPAIR_ORDER_LABELS.FAILED_TO_CREATE)
   }
   return response.json()
 }
@@ -27,24 +28,24 @@ async function updateRepairOrder(
   id: string,
   data: UpdateRepairOrderInput,
 ): Promise<RepairOrder> {
-  const response = await fetch(`/api/repairOrders/${id}`, {
+  const response = await fetch(API_ENDPOINTS.REPAIR_ORDERS.BY_ID(id), {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   })
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.message || 'Failed to update repair order')
+    throw new Error(error.message || REPAIR_ORDER_LABELS.FAILED_TO_UPDATE)
   }
   return response.json()
 }
 
 async function deleteRepairOrder(id: string): Promise<void> {
-  const response = await fetch(`/api/repairOrders/${id}`, {
+  const response = await fetch(API_ENDPOINTS.REPAIR_ORDERS.BY_ID(id), {
     method: 'DELETE',
   })
   if (!response.ok) {
-    throw new Error('Failed to delete repair order')
+    throw new Error(REPAIR_ORDER_LABELS.FAILED_TO_DELETE)
   }
 }
 

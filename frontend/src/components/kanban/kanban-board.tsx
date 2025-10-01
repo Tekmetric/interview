@@ -11,13 +11,14 @@ import {
   useSensors,
   closestCorners,
 } from '@dnd-kit/core'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
 import { canTransition } from '@shared/transitions'
 import { KanbanColumn } from './kanban-column'
 import { KanbanCard } from './kanban-card'
 import type { RepairOrder, RepairOrderStatus } from '@shared/types'
+import { KANBAN_LABELS } from '@shared/constants'
 
 type KanbanBoardProps = {
   orders: RepairOrder[]
@@ -29,15 +30,27 @@ const COLUMNS: Array<{
   title: string
   color: string
 }> = [
-  { status: 'NEW', title: 'New', color: 'bg-blue-100 text-blue-700' },
+  { status: 'NEW', title: KANBAN_LABELS.STATUS.NEW, color: 'bg-blue-100 text-blue-700' },
   {
     status: 'AWAITING_APPROVAL',
-    title: 'Awaiting Approval',
+    title: KANBAN_LABELS.STATUS.AWAITING_APPROVAL,
     color: 'bg-amber-100 text-amber-700',
   },
-  { status: 'IN_PROGRESS', title: 'In Progress', color: 'bg-indigo-100 text-indigo-700' },
-  { status: 'WAITING_PARTS', title: 'Waiting Parts', color: 'bg-orange-100 text-orange-700' },
-  { status: 'COMPLETED', title: 'Completed', color: 'bg-green-100 text-green-700' },
+  {
+    status: 'IN_PROGRESS',
+    title: KANBAN_LABELS.STATUS.IN_PROGRESS,
+    color: 'bg-indigo-100 text-indigo-700',
+  },
+  {
+    status: 'WAITING_PARTS',
+    title: KANBAN_LABELS.STATUS.WAITING_PARTS,
+    color: 'bg-orange-100 text-orange-700',
+  },
+  {
+    status: 'COMPLETED',
+    title: KANBAN_LABELS.STATUS.COMPLETED,
+    color: 'bg-green-100 text-green-700',
+  },
 ]
 
 export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
@@ -45,6 +58,10 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
   const [dragOverStatus, setDragOverStatus] = useState<RepairOrderStatus | null>(null)
   const [isValidDrop, setIsValidDrop] = useState<boolean>(true)
   const [validationMessage, setValidationMessage] = useState<string>('')
+  const [localOrders, setLocalOrders] = useState<RepairOrder[]>(orders)
+  const [dropIndicatorById, setDropIndicatorById] = useState<
+    Record<string, 'top' | 'bottom'>
+  >({})
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -61,7 +78,11 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
     useSensor(KeyboardSensor),
   )
 
-  const activeOrder = activeId ? orders.find((o) => o.id === activeId) : null
+  useEffect(() => {
+    setLocalOrders(orders)
+  }, [orders])
+
+  const activeOrder = activeId ? localOrders.find((o) => o.id === activeId) : null
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string)
@@ -74,6 +95,7 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
       setDragOverStatus(null)
       setIsValidDrop(true)
       setValidationMessage('')
+      setDropIndicatorById({})
       return
     }
 
@@ -81,12 +103,12 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
     const overId = over.id as string
 
     // Get the order being dragged
-    const order = orders.find((o) => o.id === activeId)
+    const order = localOrders.find((o) => o.id === activeId)
     if (!order) return
 
     // Check if we're over a column (status ID) or a card
     const overStatus = COLUMNS.find((col) => col.status === overId)?.status
-    const overCard = orders.find((o) => o.id === overId)
+    const overCard = localOrders.find((o) => o.id === overId)
 
     let targetStatus: RepairOrderStatus | null = null
 
@@ -104,6 +126,21 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
       setIsValidDrop(validation.allowed)
       setValidationMessage(validation.reason || '')
     }
+
+    // Compute drop indicator position (top/bottom) when hovering over a card
+    if (overCard && over.rect) {
+      const overCenterY = over.rect.top + over.rect.height / 2
+      const activeInitial = active.rect.current?.initial
+      if (!activeInitial) {
+        setDropIndicatorById({ [overId]: 'bottom' })
+      } else {
+        const activeCenterY = activeInitial.top + activeInitial.height / 2 + event.delta.y
+        const position: 'top' | 'bottom' = activeCenterY < overCenterY ? 'top' : 'bottom'
+        setDropIndicatorById({ [overId]: position })
+      }
+    } else {
+      setDropIndicatorById({})
+    }
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -114,6 +151,7 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
     setDragOverStatus(null)
     setIsValidDrop(true)
     setValidationMessage('')
+    setDropIndicatorById({})
 
     if (!over) {
       return
@@ -123,12 +161,12 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
     const overId = over.id as string
 
     // Get the order being dropped
-    const order = orders.find((o) => o.id === orderId)
+    const order = localOrders.find((o) => o.id === orderId)
     if (!order) return
 
     // Check if we're dropping on a column or a card
     const overStatus = COLUMNS.find((col) => col.status === overId)?.status
-    const overCard = orders.find((o) => o.id === overId)
+    const overCard = localOrders.find((o) => o.id === overId)
 
     let targetStatus: RepairOrderStatus | null = null
 
@@ -138,34 +176,63 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
       targetStatus = overCard.status
     }
 
-    // No status change needed
-    if (!targetStatus || order.status === targetStatus) {
-      return
+    const originalStatus = order.status
+
+    // If moving across statuses, validate before applying
+    if (targetStatus && targetStatus !== originalStatus) {
+      const validation = canTransition(originalStatus, targetStatus, order)
+      if (!validation.allowed) {
+        toast.error(KANBAN_LABELS.CANNOT_MOVE, {
+          description: validation.reason || KANBAN_LABELS.TRANSITION_NOT_ALLOWED,
+          duration: 3000,
+        })
+        return
+      }
     }
 
-    // Validate the transition before updating
-    const validation = canTransition(order.status, targetStatus, order)
+    // Local reorder so the card stays where it's dropped
+    const next = [...localOrders]
+    const fromIndex = next.findIndex((o) => o.id === orderId)
+    if (fromIndex === -1) return
+    const [moved] = next.splice(fromIndex, 1)
 
-    if (!validation.allowed) {
-      // Show error toast with reason
-      toast.error('Cannot move order', {
-        description: validation.reason || 'This transition is not allowed',
-        duration: 3000,
-      })
-      return
+    if (targetStatus) {
+      moved.status = targetStatus
     }
 
-    // Valid transition - update status
-    onStatusChange(orderId, targetStatus)
+    let insertIndex = fromIndex
+    if (overCard) {
+      const overIndex = next.findIndex((o) => o.id === overCard.id)
+      const pos = dropIndicatorById[overCard.id] || 'bottom'
+      insertIndex =
+        overIndex === -1 ? next.length : overIndex + (pos === 'bottom' ? 1 : 0)
+    } else if (overStatus && targetStatus) {
+      // Insert at end of the target status group
+      let lastIndex = -1
+      for (let i = 0; i < next.length; i += 1) {
+        if (next[i].status === targetStatus) lastIndex = i
+      }
+      insertIndex = lastIndex === -1 ? next.length : lastIndex + 1
+    }
+
+    next.splice(insertIndex, 0, moved)
+    setLocalOrders(next)
+
+    // Persist status change if applicable
+    if (targetStatus && targetStatus !== originalStatus) {
+      onStatusChange(orderId, targetStatus)
+    }
   }
 
-  const groupedOrders = COLUMNS.reduce(
-    (acc, col) => {
-      acc[col.status] = orders.filter((o) => o.status === col.status)
-      return acc
-    },
-    {} as Record<RepairOrderStatus, RepairOrder[]>,
-  )
+  const groupedOrders = useMemo(() => {
+    return COLUMNS.reduce(
+      (acc, col) => {
+        acc[col.status] = localOrders.filter((o) => o.status === col.status)
+        return acc
+      },
+      {} as Record<RepairOrderStatus, RepairOrder[]>,
+    )
+  }, [localOrders])
 
   return (
     <DndContext
@@ -176,7 +243,7 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
       onDragEnd={handleDragEnd}
     >
       <ScrollArea className='w-full'>
-        <div className='flex gap-3 p-3 bg-gray-50/50'>
+        <div className='flex gap-3 bg-gray-50/50 p-3'>
           {COLUMNS.map((col) => (
             <KanbanColumn
               key={col.status}
@@ -187,6 +254,7 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
               isBeingDraggedOver={dragOverStatus === col.status}
               isValidDropZone={isValidDrop}
               validationMessage={validationMessage}
+              dropIndicatorById={dropIndicatorById}
             />
           ))}
         </div>
@@ -195,7 +263,7 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
 
       <DragOverlay>
         {activeOrder && (
-          <div className='rotate-3 scale-105 opacity-80'>
+          <div className='scale-105 rotate-3 opacity-80'>
             <KanbanCard order={activeOrder} />
           </div>
         )}

@@ -25,10 +25,10 @@ export const vehicleSchema = z.object({
 })
 
 // Repair order status enum
-export const repairOrderStatusSchema = z.enum(REPAIR_ORDER_STATUSES)
+export const repairOrderStatusSchema = z.enum(REPAIR_ORDER_STATUSES as [string, ...string[]])
 
 // Priority enum
-export const prioritySchema = z.enum(PRIORITIES)
+export const prioritySchema = z.enum(PRIORITIES as [string, ...string[]])
 
 // Create repair order schema
 export const createRepairOrderSchema = z.object({

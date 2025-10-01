@@ -43,6 +43,49 @@ describe('Repair Order Routes', () => {
     }
   })
 
+    describe('GET /api/repairOrders/overdue', () => {
+      beforeEach(() => {
+        vi.useFakeTimers();
+      });
+
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
+      it('should return overdue orders', async () => {
+        const now = new Date('2024-01-03T12:00:00Z');
+        vi.setSystemTime(now);
+
+        const response = await request(app).get('/api/repairOrders/overdue');
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveLength(1);
+        expect(response.body[0].id).toBe('RO-2');
+      });
+    });
+
+  describe('GET /api/repairOrders/recent', () => {
+    it('should return recent orders in descending order of creation', async () => {
+      mockDb.current!.exec('DELETE FROM repair_orders')
+      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-OLD', 'NEW', '2023-01-01 10:00:00', 'a','a',2020,'a','a','[]')").run();
+      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-NEW', 'NEW', '2023-01-02 10:00:00', 'a','a',2020,'a','a','[]')").run();
+
+      const response = await request(app).get('/api/repairOrders/recent?limit=2')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(2)
+      expect(response.body[0].id).toBe('RO-NEW')
+      expect(response.body[1].id).toBe('RO-OLD')
+    })
+
+    it('should respect the limit query parameter', async () => {
+      const response = await request(app).get('/api/repairOrders/recent?limit=1')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(1)
+    })
+  })
+
   describe('GET /api/repairOrders', () => {
     it('should return all repair orders', async () => {
       const response = await request(app).get('/api/repairOrders')

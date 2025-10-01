@@ -22,10 +22,11 @@ import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import type { UpdateRepairOrderInput } from '@shared/validation'
+import { REPAIR_ORDER_LABELS, COMMON_LABELS } from '@shared/constants'
 
 function RODetailsLoading() {
   return (
-    <div className='space-y-4 p-6'>
+    <div className='space-y-4 p-6' data-testid='ro-details-loading'>
       <Skeleton className='h-8 w-48' />
       <Skeleton className='h-32 w-full' />
       <Skeleton className='h-32 w-full' />
@@ -38,7 +39,7 @@ function RODetailsError() {
   return (
     <div className='p-6'>
       <div className='rounded-lg bg-red-50 p-4 text-red-800'>
-        Failed to load repair order. Please try again.
+        {REPAIR_ORDER_LABELS.FAILED_TO_LOAD}
       </div>
     </div>
   )
@@ -55,11 +56,11 @@ function RODetailsContent({ orderId, onClose }: { orderId: string; onClose: () =
       { id: orderId, data },
       {
         onSuccess: () => {
-          toast.success('Repair order updated successfully')
+          toast.success(REPAIR_ORDER_LABELS.UPDATED_SUCCESS)
           onClose()
         },
         onError: (error: Error) => {
-          toast.error(error.message || 'Failed to update repair order')
+          toast.error(error.message || REPAIR_ORDER_LABELS.FAILED_TO_UPDATE)
         },
       },
     )
@@ -68,12 +69,12 @@ function RODetailsContent({ orderId, onClose }: { orderId: string; onClose: () =
   const handleDelete = () => {
     deleteMutation.mutate(orderId, {
       onSuccess: () => {
-        toast.success('Repair order deleted')
+        toast.success(REPAIR_ORDER_LABELS.DELETED_SUCCESS)
         setShowDeleteDialog(false)
         onClose()
       },
       onError: (error: Error) => {
-        toast.error(error.message || 'Failed to delete repair order')
+        toast.error(error.message || REPAIR_ORDER_LABELS.FAILED_TO_DELETE)
       },
     })
   }
@@ -81,7 +82,7 @@ function RODetailsContent({ orderId, onClose }: { orderId: string; onClose: () =
   return (
     <>
       <SheetHeader className='border-b bg-white px-6 py-4'>
-        <SheetTitle className='text-lg'>Repair Order Details</SheetTitle>
+        <SheetTitle className='text-lg'>{REPAIR_ORDER_LABELS.DETAILS}</SheetTitle>
         <SheetDescription className='mt-1 font-mono text-sm'>{order.id}</SheetDescription>
       </SheetHeader>
 
@@ -98,22 +99,21 @@ function RODetailsContent({ orderId, onClose }: { orderId: string; onClose: () =
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Repair Order</DialogTitle>
+            <DialogTitle>{REPAIR_ORDER_LABELS.DELETE_TITLE}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete repair order {order.id}? This action cannot be
-              undone.
+              {REPAIR_ORDER_LABELS.DELETE_CONFIRMATION.replace('{order.id}', order.id)}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant='outline' onClick={() => setShowDeleteDialog(false)}>
-              Cancel
+              {COMMON_LABELS.CANCEL}
             </Button>
             <Button
               variant='destructive'
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+              {deleteMutation.isPending ? COMMON_LABELS.DELETING : COMMON_LABELS.DELETE}
             </Button>
           </DialogFooter>
         </DialogContent>

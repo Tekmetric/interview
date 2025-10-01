@@ -280,37 +280,38 @@ describe('Repair Orders Repository', () => {
   })
 
   describe('getOverdueOrders', () => {
-    it('should return only orders that are past their due_time and not completed', () => {
-      const now = new Date()
-      const past = new Date(now.getTime() - 1000 * 60 * 60).toISOString()
-      const future = new Date(now.getTime() + 1000 * 60 * 60).toISOString()
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
 
-      mockDb.current!.exec('DELETE FROM repair_orders')
-      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-OVERDUE', 'IN_PROGRESS', past, 'a','a',2020,'a','a','[]');
-      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-FUTURE', 'IN_PROGRESS', future, 'a','a',2020,'a','a','[]');
-      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-OVERDUE-COMPLETED', 'COMPLETED', past, 'a','a',2020,'a','a','[]');
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should return only orders that are past their due_time and not completed', () => {
+      const now = new Date('2024-01-03T12:00:00Z');
+      vi.setSystemTime(now);
 
       const overdue = getOverdueOrders()
       expect(overdue).toHaveLength(1)
-      expect(overdue[0].id).toBe('RO-OVERDUE')
+      expect(overdue[0].id).toBe('RO-2')
     })
 
     it('should respect the limit parameter', () => {
-      const past = new Date(Date.now() - 1000 * 60 * 60).toISOString()
-      mockDb.current!.exec('DELETE FROM repair_orders')
-      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-OVERDUE-1', 'IN_PROGRESS', past, 'a','a',2020,'a','a','[]');
-      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-OVERDUE-2', 'IN_PROGRESS', past, 'a','a',2020,'a','a','[]');
+      const now = new Date('2024-01-03T12:00:00Z');
+      vi.setSystemTime(now);
 
       const overdue = getOverdueOrders(1)
       expect(overdue).toHaveLength(1)
     })
 
     it('should return orders sorted by due_time ASC', () => {
-      const earlier = new Date(Date.now() - 1000 * 60 * 120).toISOString()
-      const later = new Date(Date.now() - 1000 * 60 * 60).toISOString()
-      mockDb.current!.exec('DELETE FROM repair_orders')
-      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-LATER', 'IN_PROGRESS', later, 'a','a',2020,'a','a','[]');
-      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-EARLIER', 'IN_PROGRESS', earlier, 'a','a',2020,'a','a','[]');
+      const now = new Date('2024-01-03T12:00:00Z');
+      vi.setSystemTime(now);
+
+      mockDb.current!.exec('DELETE FROM repair_orders');
+      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-LATER', 'IN_PROGRESS', '2024-01-03T11:00:00Z', 'a','a',2020,'a','a','[]');
+      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-EARLIER', 'IN_PROGRESS', '2024-01-03T10:00:00Z', 'a','a',2020,'a','a','[]');
 
       const overdue = getOverdueOrders()
       expect(overdue).toHaveLength(2)

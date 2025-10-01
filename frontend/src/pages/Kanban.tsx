@@ -10,9 +10,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
 import type { RepairOrderStatus } from '@shared/types'
+import { KANBAN_LABELS, REPAIR_ORDER_LABELS, API_ENDPOINTS } from '@shared/constants'
 
 async function updateOrderStatus(orderId: string, status: RepairOrderStatus) {
-  const res = await fetch(`/api/repairOrders/${orderId}`, {
+  const res = await fetch(API_ENDPOINTS.REPAIR_ORDERS.BY_ID(orderId), {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status }),
@@ -20,7 +21,7 @@ async function updateOrderStatus(orderId: string, status: RepairOrderStatus) {
 
   if (!res.ok) {
     const error = await res.json()
-    throw new Error(error.message || 'Failed to update order status')
+    throw new Error(error.message || REPAIR_ORDER_LABELS.FAILED_TO_UPDATE_STATUS)
   }
 
   return res.json()
@@ -31,8 +32,8 @@ function KanbanLoading() {
     <AppLayout>
       <div className='flex flex-col gap-6 p-8'>
         <header className='flex flex-col gap-2'>
-          <h1 className='text-3xl font-bold text-gray-900'>Kanban Board</h1>
-          <p className='text-gray-600'>Drag and drop to update repair order status</p>
+          <h1 className='text-3xl font-bold text-gray-900'>{KANBAN_LABELS.TITLE}</h1>
+          <p className='text-gray-600'>{KANBAN_LABELS.SUBTITLE}</p>
         </header>
         <div className='flex gap-4'>
           {[1, 2, 3, 4, 5].map((i) => (
@@ -49,7 +50,7 @@ function KanbanError() {
     <AppLayout>
       <div className='p-8'>
         <div className='rounded-lg bg-red-50 p-4 text-red-800'>
-          Error loading repair orders. Please try again.
+          {REPAIR_ORDER_LABELS.ERROR_LOADING_LIST}
         </div>
       </div>
     </AppLayout>
@@ -96,10 +97,10 @@ function KanbanContent() {
       updateOrderStatus(orderId, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
-      toast.success('Order status updated')
+      toast.success(REPAIR_ORDER_LABELS.STATUS_UPDATED)
     },
     onError: (err: Error) => {
-      toast.error(err.message || 'Failed to update status')
+      toast.error(err.message || REPAIR_ORDER_LABELS.FAILED_TO_UPDATE_STATUS)
     },
   })
 
@@ -111,7 +112,7 @@ function KanbanContent() {
     <AppLayout>
       <div className='flex flex-col gap-4 p-6'>
         <header className='flex flex-col gap-2'>
-          <h1 className='text-2xl font-bold text-gray-900'>Kanban Board</h1>
+          <h1 className='text-2xl font-bold text-gray-900'>{KANBAN_LABELS.TITLE}</h1>
         </header>
 
         <KanbanFilters

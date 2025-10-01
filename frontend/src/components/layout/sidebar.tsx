@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'wouter'
+import { WELCOME_LABELS, DASHBOARD_LABELS, KANBAN_LABELS, NAV_LABELS } from '@shared/constants'
 
 export function Sidebar() {
   const [location] = useLocation()
@@ -21,7 +22,7 @@ export function Sidebar() {
             <path d='M8 8h8M8 12h8M8 16h8' />
           </svg>
         </div>
-        <span className='text-lg font-bold text-gray-900'>TekBoard</span>
+        <span className='text-lg font-bold text-gray-900'>{WELCOME_LABELS.TITLE}</span>
       </div>
 
       <nav className='flex flex-1 flex-col gap-1 p-4'>
@@ -48,7 +49,7 @@ export function Sidebar() {
             <rect x='14' y='14' width='7' height='7' />
             <rect x='3' y='14' width='7' height='7' />
           </svg>
-          Dashboard
+          {DASHBOARD_LABELS.TITLE}
         </Link>
 
         <Link
@@ -76,7 +77,7 @@ export function Sidebar() {
             <line x1='3' y1='12' x2='3.01' y2='12' />
             <line x1='3' y1='18' x2='3.01' y2='18' />
           </svg>
-          Kanban Board
+          {KANBAN_LABELS.TITLE}
         </Link>
 
         <a
@@ -97,7 +98,7 @@ export function Sidebar() {
             <line x1='12' y1='20' x2='12' y2='4' />
             <line x1='6' y1='20' x2='6' y2='14' />
           </svg>
-          Reports
+          {NAV_LABELS.REPORTS}
         </a>
 
         <a
@@ -117,7 +118,7 @@ export function Sidebar() {
             <circle cx='12' cy='12' r='3' />
             <path d='M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24' />
           </svg>
-          Settings
+          {NAV_LABELS.SETTINGS}
         </a>
       </nav>
 
@@ -127,8 +128,8 @@ export function Sidebar() {
             DU
           </div>
           <div className='flex-1'>
-            <p className='text-sm font-medium text-gray-900'>Demo User</p>
-            <p className='text-xs text-gray-500'>demo@tekboard.com</p>
+            <p className='text-sm font-medium text-gray-900'>{WELCOME_LABELS.DEMO_USER_NAME}</p>
+            <p className='text-xs text-gray-500'>{WELCOME_LABELS.DEMO_USER_EMAIL}</p>
           </div>
         </div>
       </div>

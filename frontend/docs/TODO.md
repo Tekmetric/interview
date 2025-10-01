@@ -19,10 +19,10 @@
 - [x] Drag-and-drop Kanban board (@dnd-kit)
 - [x] TanStack Query v5 integration (caching, auto-refetch)
 - [x] Status transition validation (enforced workflow rules)
-- [ ] RO Details Drawer (side panel: view/edit fields, save, delete, cancel)
-- [ ] Click on Quick List cards → opens RO Details Drawer
-- [ ] Click on Kanban cards → opens RO Details Drawer
-- [ ] Click on KPI cards → navigates to Kanban with filter applied (e.g., "5 Overdue")
+- [x] RO Details Drawer (side panel: view/edit fields, save, delete, cancel)
+- [x] Click on Quick List cards → opens RO Details Drawer
+- [x] Click on Kanban cards → opens RO Details Drawer
+- [x] Click on KPI cards → navigates to Kanban with filter applied (e.g., "5 Overdue")
 - [ ] Search and filtering on Kanban board (customer, vehicle, tech, priority, status)
 - [ ] Two-layer validation (client + server, shared logic)
 - [ ] Optimistic updates with rollback

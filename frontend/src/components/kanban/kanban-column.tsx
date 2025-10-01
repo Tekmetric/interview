@@ -13,6 +13,7 @@ type KanbanColumnProps = {
   isBeingDraggedOver: boolean
   isValidDropZone: boolean
   validationMessage?: string
+  dropIndicatorById?: Record<string, 'top' | 'bottom'>
 }
 
 export function KanbanColumn({
@@ -23,6 +24,7 @@ export function KanbanColumn({
   isBeingDraggedOver,
   isValidDropZone,
   validationMessage,
+  dropIndicatorById = {},
 }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({ id: status })
 
@@ -68,7 +70,12 @@ export function KanbanColumn({
               </div>
             ) : (
               orders.map((order) => (
-                <KanbanCard key={order.id} order={order} showStatus={false} />
+                <KanbanCard
+                  key={order.id}
+                  order={order}
+                  showStatus={false}
+                  dropPosition={dropIndicatorById[order.id]}
+                />
               ))
             )}
           </div>

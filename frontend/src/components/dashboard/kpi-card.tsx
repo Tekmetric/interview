@@ -9,7 +9,13 @@ interface KPICardProps {
   variant?: 'default' | 'primary' | 'warning' | 'info' | 'success'
 }
 
-export function KPICard({ title, value, icon, onClick, variant = 'default' }: KPICardProps) {
+export function KPICard({
+  title,
+  value,
+  icon,
+  onClick,
+  variant = 'default',
+}: KPICardProps) {
   const variantStyles = {
     default: 'bg-white border-gray-200',
     primary: 'bg-blue-50 border-blue-200',
@@ -39,12 +45,12 @@ export function KPICard({ title, value, icon, onClick, variant = 'default' }: KP
       className={`${variantStyles[variant]} ${onClick ? 'cursor-pointer transition-shadow hover:shadow-md' : ''}`}
       onClick={onClick}
     >
-      <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-        <CardTitle className='text-sm font-medium'>{title}</CardTitle>
+      <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-1'>
+        <CardTitle className='text-xs font-medium'>{title}</CardTitle>
         <div className={iconStyles[variant]}>{icon}</div>
       </CardHeader>
-      <CardContent>
-        <div className={`text-2xl font-bold ${valueStyles[variant]}`}>{value}</div>
+      <CardContent className='pt-1'>
+        <div className={`text-xl font-bold ${valueStyles[variant]}`}>{value}</div>
       </CardContent>
     </Card>
   )

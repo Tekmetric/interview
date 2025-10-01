@@ -22,15 +22,16 @@ export function RepairOrderItem({ order }: RepairOrderItemProps) {
   }
 
   const statusConfig = {
-    NEW: { bg: 'bg-blue-500', text: 'text-white', label: 'NEW' },
+    NEW: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', label: 'NEW' },
     AWAITING_APPROVAL: {
-      bg: 'bg-amber-500',
-      text: 'text-white',
+      bg: 'bg-amber-50',
+      text: 'text-amber-700',
+      border: 'border-amber-200',
       label: 'AWAITING_APPROVAL',
     },
-    IN_PROGRESS: { bg: 'bg-indigo-500', text: 'text-white', label: 'IN_PROGRESS' },
-    WAITING_PARTS: { bg: 'bg-orange-500', text: 'text-white', label: 'WAITING_PARTS' },
-    COMPLETED: { bg: 'bg-green-500', text: 'text-white', label: 'COMPLETED' },
+    IN_PROGRESS: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', label: 'IN_PROGRESS' },
+    WAITING_PARTS: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', label: 'WAITING_PARTS' },
+    COMPLETED: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200', label: 'COMPLETED' },
   }
 
   const status = statusConfig[order.status]
@@ -43,7 +44,7 @@ export function RepairOrderItem({ order }: RepairOrderItemProps) {
       <div className='flex flex-1 flex-col gap-2'>
         <div className='flex items-center gap-2'>
           <span className='text-base font-bold text-gray-900'>{order.id}</span>
-          <Badge className={`${status.bg} ${status.text} text-xs font-medium`}>
+          <Badge variant='outline' className={`${status.bg} ${status.text} ${status.border} text-xs font-medium`}>
             {status.label}
           </Badge>
         </div>

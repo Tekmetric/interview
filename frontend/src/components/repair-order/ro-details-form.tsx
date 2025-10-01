@@ -22,10 +22,19 @@ type RODetailsFormProps = {
   order: RepairOrder
   onSubmit: (data: z.infer<typeof updateRepairOrderSchema>) => void
   onCancel: () => void
+  onDelete: () => void
   isPending?: boolean
+  isDeleting?: boolean
 }
 
-export function RODetailsForm({ order, onSubmit, onCancel, isPending }: RODetailsFormProps) {
+export function RODetailsForm({
+  order,
+  onSubmit,
+  onCancel,
+  onDelete,
+  isPending,
+  isDeleting,
+}: RODetailsFormProps) {
   const { data: technicians } = useTechnicians()
 
   const {
@@ -87,92 +96,92 @@ export function RODetailsForm({ order, onSubmit, onCancel, isPending }: RODetail
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className='flex h-full flex-col'>
-      <div className='flex-1 space-y-6 overflow-y-auto px-6 py-4'>
+    <form onSubmit={handleSubmit(onSubmit)} className='flex h-full flex-col overflow-hidden'>
+      <div className='flex-1 space-y-4 overflow-y-auto p-6 pb-4'>
         {/* Order Info - Read Only */}
-        <div className='space-y-3 rounded-lg border bg-gray-50 p-4'>
-          <h3 className='font-semibold text-gray-900'>Order Information</h3>
-          <div className='grid grid-cols-2 gap-3 text-sm'>
+        <div className='space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-3'>
+          <h3 className='text-sm font-semibold text-gray-900'>Order Information</h3>
+          <div className='grid grid-cols-2 gap-x-4 gap-y-2 text-xs'>
             <div>
-              <span className='text-gray-500'>Order ID:</span>
-              <p className='font-mono font-semibold'>{order.id}</p>
+              <p className='text-gray-500'>Order ID:</p>
+              <p className='font-mono font-semibold text-gray-900'>{order.id}</p>
             </div>
             <div>
-              <span className='text-gray-500'>Created:</span>
-              <p>{new Date(order.createdAt).toLocaleDateString()}</p>
+              <p className='text-gray-500'>Created:</p>
+              <p className='text-gray-900'>{new Date(order.createdAt).toLocaleDateString()}</p>
             </div>
-            <div>
-              <span className='text-gray-500'>Last Updated:</span>
-              <p>{new Date(order.updatedAt).toLocaleDateString()}</p>
+            <div className='col-span-2'>
+              <p className='text-gray-500'>Last Updated:</p>
+              <p className='text-gray-900'>{new Date(order.updatedAt).toLocaleDateString()}</p>
             </div>
           </div>
         </div>
 
         {/* Customer Info - Read Only */}
-        <div className='space-y-3 rounded-lg border bg-gray-50 p-4'>
-          <h3 className='font-semibold text-gray-900'>Customer</h3>
-          <div className='space-y-2 text-sm'>
+        <div className='space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-3'>
+          <h3 className='text-sm font-semibold text-gray-900'>Customer</h3>
+          <div className='space-y-1.5 text-xs'>
             <div>
-              <span className='text-gray-500'>Name:</span>
-              <p className='font-medium'>{order.customer.name}</p>
+              <p className='text-gray-500'>Name:</p>
+              <p className='font-medium text-gray-900'>{order.customer.name}</p>
             </div>
             <div>
-              <span className='text-gray-500'>Phone:</span>
-              <p>{order.customer.phone}</p>
+              <p className='text-gray-500'>Phone:</p>
+              <p className='text-gray-900'>{order.customer.phone}</p>
             </div>
             {order.customer.email && (
               <div>
-                <span className='text-gray-500'>Email:</span>
-                <p>{order.customer.email}</p>
+                <p className='text-gray-500'>Email:</p>
+                <p className='text-gray-900'>{order.customer.email}</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Vehicle Info - Read Only */}
-        <div className='space-y-3 rounded-lg border bg-gray-50 p-4'>
-          <h3 className='font-semibold text-gray-900'>Vehicle</h3>
-          <div className='space-y-2 text-sm'>
+        <div className='space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-3'>
+          <h3 className='text-sm font-semibold text-gray-900'>Vehicle</h3>
+          <div className='space-y-1.5 text-xs'>
             <div>
-              <span className='text-gray-500'>Vehicle:</span>
-              <p className='font-medium'>
+              <p className='text-gray-500'>Vehicle:</p>
+              <p className='font-medium text-gray-900'>
                 {order.vehicle.year} {order.vehicle.make} {order.vehicle.model}{' '}
                 {order.vehicle.trim}
               </p>
             </div>
             {order.vehicle.vin && (
               <div>
-                <span className='text-gray-500'>VIN:</span>
-                <p className='font-mono text-xs'>{order.vehicle.vin}</p>
+                <p className='text-gray-500'>VIN:</p>
+                <p className='font-mono text-xs text-gray-900'>{order.vehicle.vin}</p>
               </div>
             )}
             {order.vehicle.plate && (
               <div>
-                <span className='text-gray-500'>Plate:</span>
-                <p>{order.vehicle.plate}</p>
+                <p className='text-gray-500'>Plate:</p>
+                <p className='text-gray-900'>{order.vehicle.plate}</p>
               </div>
             )}
             {order.vehicle.mileage && (
               <div>
-                <span className='text-gray-500'>Mileage:</span>
-                <p>{order.vehicle.mileage.toLocaleString()} mi</p>
+                <p className='text-gray-500'>Mileage:</p>
+                <p className='text-gray-900'>{order.vehicle.mileage.toLocaleString()} mi</p>
               </div>
             )}
             {order.vehicle.color && (
               <div>
-                <span className='text-gray-500'>Color:</span>
-                <p>{order.vehicle.color}</p>
+                <p className='text-gray-500'>Color:</p>
+                <p className='capitalize text-gray-900'>{order.vehicle.color}</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Services - Read Only */}
-        <div className='space-y-3'>
-          <Label>Services</Label>
-          <div className='flex flex-wrap gap-2'>
+        <div className='space-y-2'>
+          <Label className='text-sm font-semibold'>Services</Label>
+          <div className='flex flex-wrap gap-1.5'>
             {order.services.map((service, idx) => (
-              <Badge key={idx} variant='outline'>
+              <Badge key={idx} variant='outline' className='text-xs'>
                 {service}
               </Badge>
             ))}
@@ -181,7 +190,7 @@ export function RODetailsForm({ order, onSubmit, onCancel, isPending }: RODetail
 
         {/* Editable Fields */}
         <div className='space-y-4 border-t pt-4'>
-          <h3 className='font-semibold text-gray-900'>Update Order</h3>
+          <h3 className='text-sm font-semibold text-gray-900'>Update Order</h3>
 
           {/* Status */}
           <div className='space-y-2'>
@@ -306,26 +315,25 @@ export function RODetailsForm({ order, onSubmit, onCancel, isPending }: RODetail
 
           {/* Additional Info - Read Only */}
           {(order.estimatedDuration || order.estimatedCost || order.dueTime) && (
-            <div className='space-y-2 rounded-lg border bg-gray-50 p-3'>
-              <h4 className='text-sm font-semibold text-gray-700'>Estimates</h4>
-              <div className='space-y-1 text-sm'>
+            <div className='space-y-1.5 rounded-lg border border-gray-200 bg-gray-50 p-3'>
+              <h4 className='text-xs font-semibold text-gray-700'>Estimates</h4>
+              <div className='space-y-1 text-xs'>
                 {order.estimatedDuration && (
-                  <div>
-                    <span className='text-gray-500'>Duration:</span> {order.estimatedDuration}{' '}
-                    hours
-                  </div>
+                  <p className='text-gray-900'>
+                    <span className='text-gray-500'>Duration:</span> {order.estimatedDuration} hours
+                  </p>
                 )}
                 {order.estimatedCost && (
-                  <div>
+                  <p className='text-gray-900'>
                     <span className='text-gray-500'>Cost:</span> $
                     {order.estimatedCost.toLocaleString()}
-                  </div>
+                  </p>
                 )}
                 {order.dueTime && (
-                  <div>
+                  <p className='text-gray-900'>
                     <span className='text-gray-500'>Due:</span>{' '}
                     {new Date(order.dueTime).toLocaleString()}
-                  </div>
+                  </p>
                 )}
               </div>
             </div>
@@ -334,11 +342,26 @@ export function RODetailsForm({ order, onSubmit, onCancel, isPending }: RODetail
       </div>
 
       {/* Form Actions */}
-      <div className='flex gap-3 border-t bg-gray-50 px-6 py-4'>
-        <Button type='button' variant='outline' onClick={onCancel} disabled={isPending}>
+      <div className='flex shrink-0 gap-2 border-t bg-white px-6 py-3 shadow-[0_-2px_8px_rgba(0,0,0,0.08)]'>
+        <Button
+          type='button'
+          variant='outline'
+          onClick={onDelete}
+          disabled={isPending || isDeleting}
+          className='border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700'
+        >
+          {isDeleting ? 'Deleting...' : 'Delete'}
+        </Button>
+        <Button
+          type='button'
+          variant='outline'
+          onClick={onCancel}
+          disabled={isPending || isDeleting}
+          className='flex-1'
+        >
           Cancel
         </Button>
-        <Button type='submit' disabled={isPending} className='flex-1'>
+        <Button type='submit' disabled={isPending || isDeleting} className='flex-1'>
           {isPending ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>

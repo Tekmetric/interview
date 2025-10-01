@@ -80,28 +80,18 @@ function RODetailsContent({ orderId, onClose }: { orderId: string; onClose: () =
 
   return (
     <>
-      <SheetHeader className='border-b pb-4'>
-        <div className='flex items-start justify-between'>
-          <div>
-            <SheetTitle>Repair Order Details</SheetTitle>
-            <SheetDescription className='font-mono text-sm'>{order.id}</SheetDescription>
-          </div>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => setShowDeleteDialog(true)}
-            className='text-red-600 hover:bg-red-50'
-          >
-            Delete
-          </Button>
-        </div>
+      <SheetHeader className='border-b bg-white px-6 py-4'>
+        <SheetTitle className='text-lg'>Repair Order Details</SheetTitle>
+        <SheetDescription className='mt-1 font-mono text-sm'>{order.id}</SheetDescription>
       </SheetHeader>
 
       <RODetailsForm
         order={order}
         onSubmit={handleSubmit}
         onCancel={onClose}
+        onDelete={() => setShowDeleteDialog(true)}
         isPending={updateMutation.isPending}
+        isDeleting={deleteMutation.isPending}
       />
 
       {/* Delete Confirmation Dialog */}

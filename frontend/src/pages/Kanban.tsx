@@ -4,8 +4,8 @@ import { KanbanBoard } from '@/components/kanban/kanban-board'
 import { KanbanFilters } from '@/components/kanban/kanban-filters'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
-import { useRepairOrders } from '@/hooks/useRepairOrders'
-import { useTechnicians } from '@/hooks/useTechnicians'
+import { useRepairOrders } from '@/components/repair-order/hooks/useRepairOrders'
+import { useTechnicians } from '@/components/technician/hooks/useTechnicians'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
@@ -78,7 +78,8 @@ function KanbanContent() {
           .includes(searchLower)
 
       // Priority filter
-      const matchesPriority = priorityFilter === 'ALL' || order.priority === priorityFilter
+      const matchesPriority =
+        priorityFilter === 'ALL' || order.priority === priorityFilter
 
       // Tech filter
       const matchesTech =
@@ -111,7 +112,6 @@ function KanbanContent() {
       <div className='flex flex-col gap-4 p-6'>
         <header className='flex flex-col gap-2'>
           <h1 className='text-2xl font-bold text-gray-900'>Kanban Board</h1>
-          <p className='text-sm text-gray-600'>Drag and drop to update repair order status</p>
         </header>
 
         <KanbanFilters

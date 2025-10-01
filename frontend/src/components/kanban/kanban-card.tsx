@@ -12,9 +12,10 @@ import type { RepairOrder } from '@shared/types'
 
 type KanbanCardProps = {
   order: RepairOrder
+  showStatus?: boolean
 }
 
-export function KanbanCard({ order }: KanbanCardProps) {
+export function KanbanCard({ order, showStatus = true }: KanbanCardProps) {
   const [, setLocation] = useLocation()
   const searchParams = new URLSearchParams(useSearch())
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -69,37 +70,15 @@ export function KanbanCard({ order }: KanbanCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className='group cursor-move rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-gray-300 hover:shadow-sm active:cursor-grabbing'
+      className='group relative cursor-move rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-gray-300 hover:shadow-sm active:cursor-grabbing'
       onClick={handleClick}
     >
-      <div className='flex flex-1 flex-col gap-2'>
-        <div className='flex items-center gap-2'>
-          <span className='text-base font-bold text-gray-900'>{order.id}</span>
-          <Badge
-            variant='outline'
-            className={`${status.bg} ${status.text} ${status.border} text-xs font-medium`}
-          >
-            {status.label}
-          </Badge>
-        </div>
-        <p className='text-sm font-semibold text-gray-800'>
-          {order.vehicle.year} {order.vehicle.make} {order.vehicle.model}
-        </p>
-        <div className='flex items-center gap-3 text-xs text-gray-500'>
-          <span>{order.customer.name}</span>
-          {order.dueTime && (
-            <>
-              <span>•</span>
-              <span>Due: {new Date(order.dueTime).toLocaleString()}</span>
-            </>
-          )}
-        </div>
-      </div>
+      {/* High Priority Fire Icon - Absolute positioned top-right */}
       {order.priority === 'HIGH' && (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className='flex items-center justify-center'>
+              <div className='absolute right-3 top-3'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   viewBox='0 0 24 24'
@@ -120,6 +99,32 @@ export function KanbanCard({ order }: KanbanCardProps) {
           </Tooltip>
         </TooltipProvider>
       )}
+
+      <div className='flex flex-col gap-2'>
+        <div className='flex items-center gap-2'>
+          <span className='text-base font-bold text-gray-900'>{order.id}</span>
+          {showStatus && (
+            <Badge
+              variant='outline'
+              className={`${status.bg} ${status.text} ${status.border} text-xs font-medium`}
+            >
+              {status.label}
+            </Badge>
+          )}
+        </div>
+        <p className='text-sm font-semibold text-gray-800'>
+          {order.vehicle.year} {order.vehicle.make} {order.vehicle.model}
+        </p>
+        <div className='flex items-center gap-3 text-xs text-gray-500'>
+          <span>{order.customer.name}</span>
+          {order.dueTime && (
+            <>
+              <span>•</span>
+              <span>Due: {new Date(order.dueTime).toLocaleString()}</span>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

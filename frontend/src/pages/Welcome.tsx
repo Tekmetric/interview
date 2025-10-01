@@ -1,5 +1,5 @@
 import { useLocation } from 'wouter'
-import { WelcomeScreen } from '@/components/WelcomeScreen'
+import { WelcomeScreen } from './welcome/WelcomeScreen'
 
 export const Welcome = () => {
   const [, setLocation] = useLocation()

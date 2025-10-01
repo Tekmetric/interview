@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useOverdueOrders, useRecentOrders } from '@/hooks/useQuickLists'
+import { useOverdueOrders, useRecentOrders } from './hooks/useQuickLists'
 import { RepairOrderItem } from './repair-order-item'
 
 export function QuickLists() {

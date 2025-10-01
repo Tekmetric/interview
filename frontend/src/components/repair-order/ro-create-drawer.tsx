@@ -7,7 +7,7 @@ import {
   SheetDescription,
 } from '@/components/ui/sheet'
 import { ROCreateForm } from './ro-create-form'
-import { useCreateRepairOrder } from '@/hooks/useRepairOrderDetails'
+import { useCreateRepairOrder } from './hooks/useRepairOrderDetails'
 import { toast } from 'sonner'
 import type { CreateRepairOrderInput } from '@shared/validation'
 

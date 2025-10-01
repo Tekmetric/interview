@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { RODetailsForm } from './ro-details-form'
-import { useRepairOrder, useUpdateRepairOrder, useDeleteRepairOrder } from '@/hooks/useRepairOrderDetails'
+import { useRepairOrder, useUpdateRepairOrder, useDeleteRepairOrder } from './hooks/useRepairOrderDetails'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorBoundary } from '@/components/ErrorBoundary'

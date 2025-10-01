@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { useTechnicians } from '@/hooks/useTechnicians'
+import { useTechnicians } from '@/components/technician/hooks/useTechnicians'
 import { canTransition, ALLOWED_TRANSITIONS } from '@shared/transitions'
 import type { RepairOrder, RepairOrderStatus, Priority } from '@shared/types'
 import { updateRepairOrderSchema } from '@shared/validation'

@@ -12,6 +12,7 @@ import {
   closestCenter,
 } from '@dnd-kit/core'
 import { useState } from 'react'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { KanbanColumn } from './kanban-column'
 import { KanbanCard } from './kanban-card'
 import type { RepairOrder, RepairOrderStatus } from '@shared/types'
@@ -26,15 +27,15 @@ const COLUMNS: Array<{
   title: string
   color: string
 }> = [
-  { status: 'NEW', title: 'New', color: 'bg-blue-500 text-white' },
+  { status: 'NEW', title: 'New', color: 'bg-blue-100 text-blue-700' },
   {
     status: 'AWAITING_APPROVAL',
     title: 'Awaiting Approval',
-    color: 'bg-amber-500 text-white',
+    color: 'bg-amber-100 text-amber-700',
   },
-  { status: 'IN_PROGRESS', title: 'In Progress', color: 'bg-indigo-500 text-white' },
-  { status: 'WAITING_PARTS', title: 'Waiting Parts', color: 'bg-orange-500 text-white' },
-  { status: 'COMPLETED', title: 'Completed', color: 'bg-green-500 text-white' },
+  { status: 'IN_PROGRESS', title: 'In Progress', color: 'bg-indigo-100 text-indigo-700' },
+  { status: 'WAITING_PARTS', title: 'Waiting Parts', color: 'bg-orange-100 text-orange-700' },
+  { status: 'COMPLETED', title: 'Completed', color: 'bg-green-100 text-green-700' },
 ]
 
 export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
@@ -134,17 +135,20 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className='flex gap-4 overflow-x-auto rounded-lg bg-gray-50 p-4'>
-        {COLUMNS.map((col) => (
-          <KanbanColumn
-            key={col.status}
-            status={col.status}
-            orders={groupedOrders[col.status]}
-            title={col.title}
-            color={col.color}
-          />
-        ))}
-      </div>
+      <ScrollArea className='w-full'>
+        <div className='flex gap-4 p-4'>
+          {COLUMNS.map((col) => (
+            <KanbanColumn
+              key={col.status}
+              status={col.status}
+              orders={groupedOrders[col.status]}
+              title={col.title}
+              color={col.color}
+            />
+          ))}
+        </div>
+        <ScrollBar orientation='horizontal' />
+      </ScrollArea>
 
       <DragOverlay>
         {activeOrder && (

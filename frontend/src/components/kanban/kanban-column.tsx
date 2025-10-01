@@ -1,5 +1,6 @@
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { KanbanCard } from './kanban-card'
 import type { RepairOrder, RepairOrderStatus } from '@shared/types'
 
@@ -15,17 +16,14 @@ export function KanbanColumn({ status, orders, title, color }: KanbanColumnProps
 
   return (
     <div
-      className={`flex min-w-[340px] flex-col gap-3 rounded-xl bg-white p-4 shadow-sm transition-all ${
-        isOver ? 'ring-2 ring-green-400 shadow-lg' : ''
+      className={`flex min-w-[340px] flex-col gap-1 overflow-hidden rounded-lg transition-all ${
+        isOver ? 'shadow-sm ring-2 ring-green-400' : ''
       }`}
     >
-      <div className='flex items-center justify-between'>
-        <h3 className='text-sm font-semibold text-gray-700'>{title}</h3>
-        <div
-          className={`flex h-7 min-w-[28px] items-center justify-center rounded-full px-2 text-xs font-bold ${color}`}
-        >
-          {orders.length}
-        </div>
+      {/* Discrete Colored Header */}
+      <div className={`flex items-center gap-2 rounded-lg px-4 py-2 ${color} shadow-sm`}>
+        <h3 className='text-sm font-bold uppercase'>{title}</h3>
+        <span className='text-sm font-bold'>{orders.length}</span>
       </div>
 
       <SortableContext
@@ -33,18 +31,19 @@ export function KanbanColumn({ status, orders, title, color }: KanbanColumnProps
         items={orders.map((o) => o.id)}
         strategy={verticalListSortingStrategy}
       >
-        <div
-          ref={setNodeRef}
-          className='flex max-h-[calc(100vh-280px)] min-h-[200px] flex-col gap-2 overflow-y-auto rounded-lg bg-gray-50/50 p-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300'
-        >
-          {orders.length === 0 ? (
-            <div className='flex flex-1 items-center justify-center text-center'>
-              <p className='text-sm text-gray-400'>No orders</p>
-            </div>
-          ) : (
-            orders.map((order) => <KanbanCard key={order.id} order={order} />)
-          )}
-        </div>
+        <ScrollArea className='h-[calc(100vh-280px)]'>
+          <div ref={setNodeRef} className='flex min-h-[200px] flex-col gap-2 p-2 pt-3'>
+            {orders.length === 0 ? (
+              <div className='flex flex-1 items-center justify-center text-center'>
+                <p className='text-sm text-gray-400'>No orders</p>
+              </div>
+            ) : (
+              orders.map((order) => (
+                <KanbanCard key={order.id} order={order} showStatus={false} />
+              ))
+            )}
+          </div>
+        </ScrollArea>
       </SortableContext>
     </div>
   )

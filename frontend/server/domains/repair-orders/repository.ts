@@ -1,6 +1,6 @@
 import db from '@server/data/db'
 import type { RepairOrder } from '@shared/types'
-import { rowToRepairOrder } from './transforms'
+import { rowToRepairOrder } from './mappers'
 
 export function getAllRepairOrders(): RepairOrder[] {
   const stmt = db.prepare('SELECT * FROM repair_orders ORDER BY created_at DESC')
@@ -79,7 +79,7 @@ export function updateRepairOrder(
 
   if (updates.length === 0) return getRepairOrderById(id)
 
-  updates.push('updated_at = datetime("now")')
+  updates.push(`updated_at = datetime('now')`)
   values.push(id)
 
   const stmt = db.prepare(`

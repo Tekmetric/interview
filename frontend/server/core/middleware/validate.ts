@@ -21,7 +21,7 @@ export function validate(
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
-          error: 'VALIDATION_ERROR',
+          error: 'VALIDATION_ERRORq',
           message: 'Invalid request data',
           details: error.issues.map((err) => ({
             path: err.path.join('.'),

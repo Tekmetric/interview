@@ -81,6 +81,7 @@ Opens when clicking a card.
 **Actions:**
 
 - Save (PATCH with optimistic update)
+- Delete (with confirmation dialog)
 - Cancel (discard changes)
 
 ---
@@ -128,50 +129,111 @@ Board filters to matching ROs
 Board shows only ROs for that tech
 ```
 
+### Flow 5: Delete RO
+
+```
+Kanban Board
+  ↓ [Click card]
+Details Drawer opens
+  ↓ [Click Delete button]
+Confirmation dialog appears
+  ↓ [Confirm deletion]
+Optimistic removal from board
+  ↓ Backend confirms
+Toast notification + drawer closes
+```
+
 ---
 
 ## Data Model
 
-### RepairOrder
+### Repair Order
 
-```json
-{
-  "id": "ro-1001",
-  "roNumber": "1001",
-  "status": "NEW",
-  "customerName": "Alex Perez",
-  "vehicleYMM": "2018 Honda Accord",
-  "plate": "ABC123",
-  "promisedAt": "2025-10-01T20:00:00Z",
-  "technicianId": "t-1",
-  "priority": "NORMAL",
-  "tags": ["walk-in"],
-  "notes": ""
-}
-```
+Represents a customer's vehicle repair job tracked through the shop workflow.
+
+**Identity:**
+
+- Unique identifier (system-generated)
+- Human-readable RO number (e.g. "1001")
+
+**Customer & Vehicle:**
+
+- Customer name (required, text)
+- Vehicle year/make/model (required, text format: "2018 Honda Accord")
+- License plate (required, text, searchable)
+
+**Workflow:**
+
+- Status (required, one of: NEW, AWAITING_APPROVAL, IN_PROGRESS, WAITING_PARTS, COMPLETED)
+- Promised completion datetime (required, ISO 8601 format)
+- Priority level (NORMAL or HIGH, defaults to NORMAL)
+- Tags (optional list of keywords: "walk-in", "warranty", etc.)
+
+**Assignment:**
+
+- Assigned technician (optional reference to Technician entity)
+
+**Notes:**
+
+- Free-text notes field (optional, multi-line)
+
+**Business Rules:**
+
+- RO number must be unique across all orders
+- Promised time used to calculate overdue status (current time > promised time)
+- Status transitions are restricted (see Status Workflow below)
+- Deleting an RO is permanent (no soft delete or recovery in MVP)
+
+---
 
 ### Technician
 
-```json
-{
-  "id": "t-1",
-  "name": "Sam Chen",
-  "avatar": "",
-  "skills": ["engine"]
-}
-```
+Represents a shop technician who can be assigned to repair orders.
 
-### Status Transitions (Enforced)
+**Identity:**
 
-```json
-{
-  "NEW": ["AWAITING_APPROVAL", "IN_PROGRESS"],
-  "AWAITING_APPROVAL": ["IN_PROGRESS", "NEW"],
-  "IN_PROGRESS": ["WAITING_PARTS", "COMPLETED", "AWAITING_APPROVAL"],
-  "WAITING_PARTS": ["IN_PROGRESS"],
-  "COMPLETED": []
-}
-```
+- Unique identifier (system-generated)
+- Full name (required, text)
+
+**Profile:**
+
+- Avatar image URL (optional)
+- Skill tags (list of specialties: "engine", "transmission", "electrical", etc.)
+
+**Business Rules:**
+
+- A technician can be assigned to multiple ROs simultaneously
+- Deleting/deactivating technicians not supported in MVP
+
+---
+
+### Status Workflow
+
+Defines valid state transitions for Repair Orders. Invalid transitions are rejected by the API.
+
+**Status Definitions:**
+
+- **NEW** – Order created, not yet started
+- **AWAITING_APPROVAL** – Waiting for customer approval (estimate sent)
+- **IN_PROGRESS** – Technician actively working
+- **WAITING_PARTS** – Work paused, waiting for parts delivery
+- **COMPLETED** – Work finished, ready for customer pickup
+
+**Allowed Transitions:**
+
+| From Status       | Can Move To                                 |
+| ----------------- | ------------------------------------------- |
+| NEW               | AWAITING_APPROVAL, IN_PROGRESS              |
+| AWAITING_APPROVAL | IN_PROGRESS, NEW                            |
+| IN_PROGRESS       | WAITING_PARTS, COMPLETED, AWAITING_APPROVAL |
+| WAITING_PARTS     | IN_PROGRESS                                 |
+| COMPLETED         | _(terminal state, no transitions)_          |
+
+**Business Rules:**
+
+- Cannot skip states (e.g., NEW → COMPLETED requires going through IN_PROGRESS)
+- COMPLETED is a terminal state (no way to reopen orders in MVP)
+- Invalid transitions return error with allowed states for current status
 
 ---
 
@@ -182,6 +244,7 @@ Board shows only ROs for that tech
 - `GET /repairOrders` – list with filters (`q`, `status`, `technicianId`, `sort`)
 - `POST /repairOrders` – create new RO
 - `PATCH /repairOrders/:id` – update status, tech, notes, priority, etc.
+- `DELETE /repairOrders/:id` – permanently delete RO (requires confirmation)
 - `GET /technicians` – list for assignment
 
 **Error Example:**
@@ -204,10 +267,12 @@ Board shows only ROs for that tech
    - Show optimistic update + success toast
 4. **Edit RO** → Click card, assign technician, add note, save
 5. **Search** → Type license plate, show filtering
-6. **Highlight Features:**
+6. **Delete RO** → Click card, delete with confirmation (full CRUD demo)
+7. **Highlight Features:**
    - Overdue highlighting
    - Column counts
    - Smooth animations
+   - Optimistic updates throughout
 
 ---
 
@@ -230,9 +295,60 @@ Board shows only ROs for that tech
 
 - React + TypeScript
 - TanStack Query (data fetching)
-- Drag-and-drop library (dnd-kit recommended)
+- Drag-and-drop library (dnd-kit)
 - Tailwind CSS + ShadCN components
 - Vite for dev/build
+- Vitest + jsdom for testing
+
+**Testing Strategy:**
+
+- **Unit Tests:** Core business logic functions (status transition validation, date calculations, filtering logic)
+- **Component Tests:** Interactive UI components (RO card, drawer, filters) with Vitest + Testing Library
+- **Integration Tests:** API endpoints with mocked database responses
+- **Test Location:** Co-locate tests with source (`__tests__/` folders or `*.test.ts(x)`)
+- **Coverage Focus:** Business-critical paths (status transitions, overdue calculations, drag-and-drop state management)
+- **Commands:**
+  - `pnpm test` – run tests in watch mode
+  - `pnpm test:coverage` – generate coverage report
+  - `pnpm test:watch` – continuous test runner
+
+**Test Examples:**
+
+```typescript
+// Business logic test
+describe('validateStatusTransition', () => {
+  it('allows NEW → IN_PROGRESS', () => {
+    expect(canTransition('NEW', 'IN_PROGRESS')).toBe(true)
+  })
+
+  it('rejects WAITING_PARTS → COMPLETED', () => {
+    expect(canTransition('WAITING_PARTS', 'COMPLETED')).toBe(false)
+  })
+})
+
+// Component test
+describe('ROCard', () => {
+  it('highlights overdue orders', () => {
+    const overdueRO = { promisedAt: '2025-01-01T10:00:00Z', ... }
+    render(<ROCard ro={overdueRO} />)
+    expect(screen.getByText(/overdue/i)).toBeVisible()
+  })
+})
+
+// Delete flow test
+describe('RODetailsDrawer', () => {
+  it('shows confirmation before deleting', async () => {
+    const onDelete = vi.fn()
+    render(<RODetailsDrawer ro={mockRO} onDelete={onDelete} />)
+
+    await userEvent.click(screen.getByRole('button', { name: /delete/i }))
+    expect(screen.getByText(/confirm/i)).toBeVisible()
+
+    await userEvent.click(screen.getByRole('button', { name: /confirm/i }))
+    expect(onDelete).toHaveBeenCalledWith(mockRO.id)
+  })
+})
+```
 
 ---
 
@@ -243,4 +359,4 @@ Board shows only ROs for that tech
 - Full table/list view
 - Complex scheduling
 - WIP limits on columns (stretch goal)
-- RO deletion (trivial to add later)
+- Soft delete or recovery mechanism (hard delete only)

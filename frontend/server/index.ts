@@ -30,29 +30,32 @@ app.get('/api/technicians', (_req, res) => {
 // Get all repair orders with optional filters
 app.get('/api/repairOrders', (req, res) => {
   const { status, tech, priority, search } = req.query
-  
+
   let orders = getAllRepairOrders()
-  
+
   // Apply filters
   if (status) {
-    orders = orders.filter(o => o.status === status)
+    orders = orders.filter((o) => o.status === status)
   }
   if (tech) {
-    orders = orders.filter(o => o.assignedTech?.id === tech)
+    orders = orders.filter((o) => o.assignedTech?.id === tech)
   }
   if (priority) {
-    orders = orders.filter(o => o.priority === priority)
+    orders = orders.filter((o) => o.priority === priority)
   }
   if (search) {
     const query = (search as string).toLowerCase()
-    orders = orders.filter(o =>
-      o.id.toLowerCase().includes(query) ||
-      o.customer.name.toLowerCase().includes(query) ||
-      `${o.vehicle.year} ${o.vehicle.make} ${o.vehicle.model}`.toLowerCase().includes(query) ||
-      o.vehicle.plate?.toLowerCase().includes(query)
+    orders = orders.filter(
+      (o) =>
+        o.id.toLowerCase().includes(query) ||
+        o.customer.name.toLowerCase().includes(query) ||
+        `${o.vehicle.year} ${o.vehicle.make} ${o.vehicle.model}`
+          .toLowerCase()
+          .includes(query) ||
+        o.vehicle.plate?.toLowerCase().includes(query),
     )
   }
-  
+
   res.json(orders)
 })
 
@@ -104,7 +107,7 @@ app.patch('/api/repairOrders/:id', (req, res) => {
   if (!updated) {
     return res.status(500).json({ error: 'Failed to update repair order' })
   }
-  
+
   res.json(updated)
 })
 

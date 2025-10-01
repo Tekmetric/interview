@@ -1,6 +1,6 @@
 # Stage Transition Rules
 
-**Source of Truth**: Aligned with [PRODUCT_SPEC.md](./PRODUCT_SPEC.md) lines 120-129
+**Source of Truth**: Aligned with [specs.md](./specs.md) lines 120-129
 
 ---
 
@@ -28,10 +28,11 @@ export const ALLOWED_TRANSITIONS: Record<RepairOrderStatus, RepairOrderStatus[]>
   IN_PROGRESS: ['WAITING_PARTS', 'COMPLETED', 'AWAITING_APPROVAL'],
   WAITING_PARTS: ['IN_PROGRESS'],
   COMPLETED: [],
-};
+}
 ```
 
 ### Valid Transitions
+
 - ✅ NEW → AWAITING_APPROVAL (standard workflow)
 - ✅ NEW → IN_PROGRESS (skip approval for urgent work)
 - ✅ AWAITING_APPROVAL → IN_PROGRESS (approval granted)
@@ -42,6 +43,7 @@ export const ALLOWED_TRANSITIONS: Record<RepairOrderStatus, RepairOrderStatus[]>
 - ✅ WAITING_PARTS → IN_PROGRESS (parts arrived)
 
 ### Invalid Transitions
+
 - ❌ NEW → COMPLETED (cannot skip all workflow stages)
 - ❌ AWAITING_APPROVAL → WAITING_PARTS (must start work first)
 - ❌ WAITING_PARTS → COMPLETED (must resume work before completion)
@@ -52,48 +54,50 @@ export const ALLOWED_TRANSITIONS: Record<RepairOrderStatus, RepairOrderStatus[]>
 ## Validation
 
 ### Frontend Validation
+
 Client-side validation prevents invalid drag-and-drop operations:
 
 ```typescript
-import { canTransition } from '@/lib/transitions';
+import { canTransition } from '@/lib/transitions'
 
 const handleDragEnd = (event: DragEndEvent) => {
-  const { active, over } = event;
-  const orderId = active.id as string;
-  const newStatus = over.id as RepairOrderStatus;
-  const order = orders?.find(o => o.id === orderId);
+  const { active, over } = event
+  const orderId = active.id as string
+  const newStatus = over.id as RepairOrderStatus
+  const order = orders?.find((o) => o.id === orderId)
 
-  if (!order) return;
+  if (!order) return
 
   // Client-side validation
-  const validation = canTransition(order.status, newStatus);
+  const validation = canTransition(order.status, newStatus)
   if (!validation.allowed) {
-    toast.error(validation.reason);
-    return;
+    toast.error(validation.reason)
+    return
   }
 
   // Optimistic update via TanStack Query
-  moveOrder({ id: orderId, newStatus });
-};
+  moveOrder({ id: orderId, newStatus })
+}
 ```
 
 ### Backend Validation
+
 Server-side validation enforces business rules with 409 response:
 
 ```typescript
 // server/routes/repairOrders.ts
 router.patch('/repairOrders/:id', async (req, res) => {
-  const { id } = req.params;
-  const updates = updateSchema.parse(req.body);
+  const { id } = req.params
+  const updates = updateSchema.parse(req.body)
 
-  const order = db.getRepairOrder(id);
+  const order = db.getRepairOrder(id)
   if (!order) {
-    return res.status(404).json({ error: 'Repair order not found' });
+    return res.status(404).json({ error: 'Repair order not found' })
   }
 
   // Validate status transition
   if (updates.status && updates.status !== order.status) {
-    const validation = canTransition(order.status, updates.status);
+    const validation = canTransition(order.status, updates.status)
 
     if (!validation.allowed) {
       return res.status(409).json({
@@ -102,13 +106,13 @@ router.patch('/repairOrders/:id', async (req, res) => {
         from: order.status,
         to: updates.status,
         allowed: ALLOWED_TRANSITIONS[order.status] || [],
-      });
+      })
     }
   }
 
-  const updated = db.updateRepairOrder(id, updates);
-  res.json(updated);
-});
+  const updated = db.updateRepairOrder(id, updates)
+  res.json(updated)
+})
 ```
 
 ---
@@ -132,6 +136,7 @@ When an invalid transition is attempted, the API returns:
 ### Frontend Error Display
 
 The UI shows a toast notification with:
+
 - Error message explaining why the transition is not allowed
 - List of valid transitions from the current status
 - Optional "Retry" action for network failures
@@ -148,6 +153,7 @@ The UI shows a toast notification with:
 - **Safety Net**: Both client and server validation prevent data corruption
 
 **Real-World Scenarios**:
+
 - **Urgent Job**: NEW → IN_PROGRESS (skip approval for walk-in customer)
 - **Customer Declined**: AWAITING_APPROVAL → NEW (quote rejected, start over)
 - **Found More Work**: IN_PROGRESS → AWAITING_APPROVAL (discovered additional issues)
@@ -161,20 +167,20 @@ The UI shows a toast notification with:
 
 ```typescript
 // Shared transition validation (frontend & backend)
-import { canTransition } from '@/lib/transitions';
+import { canTransition } from '@/lib/transitions'
 
 // Valid transitions
-expect(canTransition('NEW', 'AWAITING_APPROVAL').allowed).toBe(true);
-expect(canTransition('NEW', 'IN_PROGRESS').allowed).toBe(true);
-expect(canTransition('WAITING_PARTS', 'IN_PROGRESS').allowed).toBe(true);
+expect(canTransition('NEW', 'AWAITING_APPROVAL').allowed).toBe(true)
+expect(canTransition('NEW', 'IN_PROGRESS').allowed).toBe(true)
+expect(canTransition('WAITING_PARTS', 'IN_PROGRESS').allowed).toBe(true)
 
 // Invalid transitions
-expect(canTransition('NEW', 'COMPLETED').allowed).toBe(false);
-expect(canTransition('WAITING_PARTS', 'NEW').allowed).toBe(false);
-expect(canTransition('COMPLETED', 'IN_PROGRESS').allowed).toBe(false);
+expect(canTransition('NEW', 'COMPLETED').allowed).toBe(false)
+expect(canTransition('WAITING_PARTS', 'NEW').allowed).toBe(false)
+expect(canTransition('COMPLETED', 'IN_PROGRESS').allowed).toBe(false)
 
 // No-op (same status)
-expect(canTransition('IN_PROGRESS', 'IN_PROGRESS').allowed).toBe(true);
+expect(canTransition('IN_PROGRESS', 'IN_PROGRESS').allowed).toBe(true)
 ```
 
 ### Integration Testing
@@ -192,4 +198,4 @@ expect(canTransition('IN_PROGRESS', 'IN_PROGRESS').allowed).toBe(true);
 - TypeScript ensures enum consistency across the application
 - The validation function is stateless and easily testable
 - See [API.md](./API.md) for complete endpoint documentation
-- See [PRODUCT_SPEC.md](./PRODUCT_SPEC.md) for complete feature specification
+- See [specs.md](./specs.md) for complete feature specification

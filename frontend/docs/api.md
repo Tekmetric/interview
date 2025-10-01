@@ -2,16 +2,18 @@
 
 **Base URL**: `/api`
 
-**Source of Truth**: Aligned with [PRODUCT_SPEC.md](./PRODUCT_SPEC.md) lines 131-148
+**Source of Truth**: Aligned with [specs.md](./specs.md) lines 131-148
 
 ---
 
 ## Endpoints
 
 ### GET `/repairOrders`
+
 Retrieve all repair orders with optional filtering.
 
 **Query Parameters**:
+
 - `q` (string, optional) - Search by customer name, plate, or RO number
 - `status` (string, optional) - Filter by status: `NEW`, `AWAITING_APPROVAL`, `IN_PROGRESS`, `WAITING_PARTS`, `COMPLETED`
 - `technicianId` (string, optional) - Filter by assigned technician ID (e.g., `t-1`)
@@ -19,6 +21,7 @@ Retrieve all repair orders with optional filtering.
 - `order` (string, optional) - Sort order: `asc` or `desc` (default: `asc`)
 
 **Response**: `200 OK`
+
 ```json
 [
   {
@@ -40,9 +43,11 @@ Retrieve all repair orders with optional filtering.
 ---
 
 ### POST `/repairOrders`
+
 Create a new repair order.
 
 **Request Body**:
+
 ```json
 {
   "customerName": "Jane Doe",
@@ -57,6 +62,7 @@ Create a new repair order.
 ```
 
 **Response**: `201 Created`
+
 ```json
 {
   "id": "ro-1052",
@@ -78,9 +84,11 @@ Create a new repair order.
 ---
 
 ### PATCH `/repairOrders/:id`
+
 Update an existing repair order (partial update).
 
 **Request Body** (all fields optional):
+
 ```json
 {
   "status": "IN_PROGRESS",
@@ -95,6 +103,7 @@ Update an existing repair order (partial update).
 **Response**: `200 OK` (updated repair order)
 
 **Error Response** (Invalid Transition): `409 Conflict`
+
 ```json
 {
   "error": "INVALID_TRANSITION",
@@ -108,9 +117,11 @@ Update an existing repair order (partial update).
 ---
 
 ### GET `/technicians`
+
 Retrieve all technicians.
 
 **Response**: `200 OK`
+
 ```json
 [
   {
@@ -133,21 +144,22 @@ Retrieve all technicians.
 ## Data Model
 
 ### RepairOrder
+
 ```typescript
 interface RepairOrder {
-  id: string;              // "ro-1001"
-  roNumber: string;        // "1001"
-  status: RepairOrderStatus;
-  customerName: string;    // "Alex Perez"
-  vehicleYMM: string;      // "2018 Honda Accord"
-  plate: string | null;    // "ABC123"
-  promisedAt: string | null; // ISO 8601 timestamp
-  technicianId: string | null; // "t-1"
-  priority: 'HIGH' | 'NORMAL';
-  tags: string[];          // ["walk-in"]
-  notes: string;
-  createdAt: string;       // ISO 8601
-  updatedAt: string;       // ISO 8601
+  id: string // "ro-1001"
+  roNumber: string // "1001"
+  status: RepairOrderStatus
+  customerName: string // "Alex Perez"
+  vehicleYMM: string // "2018 Honda Accord"
+  plate: string | null // "ABC123"
+  promisedAt: string | null // ISO 8601 timestamp
+  technicianId: string | null // "t-1"
+  priority: 'HIGH' | 'NORMAL'
+  tags: string[] // ["walk-in"]
+  notes: string
+  createdAt: string // ISO 8601
+  updatedAt: string // ISO 8601
 }
 
 type RepairOrderStatus =
@@ -155,16 +167,17 @@ type RepairOrderStatus =
   | 'AWAITING_APPROVAL'
   | 'IN_PROGRESS'
   | 'WAITING_PARTS'
-  | 'COMPLETED';
+  | 'COMPLETED'
 ```
 
 ### Technician
+
 ```typescript
 interface Technician {
-  id: string;       // "t-1"
-  name: string;     // "Sam Chen"
-  avatar: string;   // URL or empty string
-  skills: string[]; // ["engine"]
+  id: string // "t-1"
+  name: string // "Sam Chen"
+  avatar: string // URL or empty string
+  skills: string[] // ["engine"]
 }
 ```
 
@@ -173,7 +186,9 @@ interface Technician {
 ## Error Responses
 
 ### 400 Bad Request
+
 Invalid request body or query parameters.
+
 ```json
 {
   "error": "Validation error",
@@ -187,7 +202,9 @@ Invalid request body or query parameters.
 ```
 
 ### 404 Not Found
+
 Repair order or technician not found.
+
 ```json
 {
   "error": "Repair order not found"
@@ -195,7 +212,9 @@ Repair order or technician not found.
 ```
 
 ### 409 Conflict
+
 Invalid status transition (see [TRANSITIONS.md](./TRANSITIONS.md) for rules).
+
 ```json
 {
   "error": "INVALID_TRANSITION",
@@ -213,4 +232,4 @@ Invalid status transition (see [TRANSITIONS.md](./TRANSITIONS.md) for rules).
 - All timestamps are in ISO 8601 format (e.g., `2025-10-01T20:00:00Z`)
 - The `roNumber` field is auto-generated if not provided during creation
 - Status transitions are validated on both frontend and backend (see [TRANSITIONS.md](./TRANSITIONS.md))
-- The API enforces the transition rules defined in [PRODUCT_SPEC.md](./PRODUCT_SPEC.md) lines 120-129
+- The API enforces the transition rules defined in [specs.md](./specs.md) lines 120-129

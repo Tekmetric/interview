@@ -7,6 +7,7 @@
 A drag-and-drop Kanban board for managing automotive repair orders through workflow stages, built to showcase modern frontend development skills while addressing Tekmetric's core product domain.
 
 **Key Features**:
+
 - ✅ Drag-and-drop repair orders between workflow stages (NEW → AWAITING_APPROVAL → IN_PROGRESS → WAITING_PARTS → COMPLETED)
 - ✅ Dashboard with KPIs (Total WIP, Overdue, Waiting Parts, Awaiting Approval)
 - ✅ Full CRUD backend API with Express + SQLite + TypeScript
@@ -18,6 +19,7 @@ A drag-and-drop Kanban board for managing automotive repair orders through workf
 - ✅ Accessibility features (keyboard navigation, ARIA labels, screen reader support)
 
 **Tech Stack**:
+
 - **Frontend**: React 19, TypeScript, TanStack Query v5, @dnd-kit, Tailwind CSS, shadcn/ui
 - **Backend**: Express, SQLite3, Zod validation, TypeScript
 - **State**: TanStack Query (server state), URL params (filter state)
@@ -28,10 +30,12 @@ A drag-and-drop Kanban board for managing automotive repair orders through workf
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ (for native fetch)
 - npm or yarn
 
 ### Installation
+
 ```bash
 # Install dependencies
 npm install
@@ -44,6 +48,7 @@ npm run dev
 ```
 
 ### Usage
+
 1. Backend API starts with 50 seeded repair orders
 2. Navigate to http://localhost:5173
 3. Drag cards between columns to update repair status
@@ -56,48 +61,54 @@ npm run dev
 ## 📚 Documentation
 
 Detailed documentation in [`docs/`](./docs) folder:
-- [**PRODUCT_SPEC.md**](./docs/specs.md) - **Source of truth** for features, data model, workflow
-- [**API.md**](./docs/API.md) - REST API specification (endpoints, request/response schemas)
-- [**TRANSITIONS.md**](./docs/transitions.md) - Stage transition rules and validation logic
 
-Additional details in [**IMPLEMENTATION_PLAN.md**](./IMPLEMENTATION_PLAN.md) (gitignored, for development reference)
+- [**specs.md**](./docs/specs.md) - **Source of truth** for features, data model, workflow
+- [**api.md**](./docs/api.md) - REST api specification (endpoints, request/response schemas)
+- [**transitions.md**](./docs/transitions.md) - Stage transition rules and validation logic
 
 ---
 
 ## 💡 Why This Approach?
 
 ### Business Alignment
+
 Tekmetric's product is auto repair shop management software. This Kanban board directly mirrors their workflow management features, demonstrating both technical skill and product understanding.
 
 ### Technical Decisions
 
 **Modern Stack (React 19 + TypeScript)**:
+
 - Type safety across frontend and backend
 - Shared validation logic prevents drift
 - Current industry best practices
 
 **TanStack Query v5**:
+
 - Automatic caching and request deduplication
 - Built-in optimistic updates with rollback
 - No manual `localStorage` or Context API state management needed
 
 **@dnd-kit over react-beautiful-dnd**:
+
 - Actively maintained (rbd is in maintenance mode)
 - First-class TypeScript support
 - Smaller bundle size (15KB vs 40KB)
 - Modular, tree-shakeable architecture
 
 **Tailwind + shadcn/ui**:
+
 - Production-ready components we own (no package bloat)
 - Fast iteration without CSS file switching
 - Accessible by default (Radix UI primitives)
 
 **Shared Transition Logic**:
+
 - Same validation function used in frontend and backend
 - TypeScript ensures enum consistency
 - Backend returns 409 with allowed transitions on invalid moves
 
 **URL State for Filters**:
+
 - Shareable links with filters applied (`/?q=honda&tech=TECH-001`)
 - Browser back/forward works correctly
 - Demonstrates thoughtful UX design
@@ -107,6 +118,7 @@ Tekmetric's product is auto repair shop management software. This Kanban board d
 ## 🏗️ Architecture Highlights
 
 ### Backend (Express + TypeScript)
+
 - RESTful API with proper HTTP status codes
 - Zod schema validation on all endpoints
 - Stage transition enforcement (returns 409 for invalid moves)
@@ -114,6 +126,7 @@ Tekmetric's product is auto repair shop management software. This Kanban board d
 - 50 seeded repair orders with realistic data
 
 ### Frontend (React 19 + TypeScript)
+
 - TanStack Query for server state (caching, optimistic updates)
 - @dnd-kit for drag-and-drop (keyboard accessible)
 - URL query params for filter state (shareable links)
@@ -121,6 +134,7 @@ Tekmetric's product is auto repair shop management software. This Kanban board d
 - Debounced search, loading skeletons, error boundaries
 
 ### Validation Strategy
+
 ```typescript
 // Shared between frontend and backend
 export function canTransition(from: Status, to: Status, order?: Order): ValidationResult {
@@ -168,6 +182,7 @@ npm run test:coverage
 ```
 
 **Test Coverage**:
+
 - Unit tests for transition validation logic
 - Integration tests for API endpoint validation
 - Manual testing across Chrome, Firefox, Safari
@@ -178,6 +193,7 @@ npm run test:coverage
 ## 🔮 Future Enhancements
 
 If this were a production feature:
+
 - **Real-time Collaboration**: WebSocket updates (multi-user)
 - **Time Tracking**: Automatic stage duration analytics
 - **Customer Notifications**: SMS alerts on status changes
@@ -192,6 +208,7 @@ If this were a production feature:
 ## 📸 Screenshots
 
 [TODO: Add screenshots before PR submission]
+
 - Full board view with 5 columns
 - Card detail modal
 - Mobile responsive layout
@@ -204,6 +221,7 @@ If this were a production feature:
 Built for Tekmetric interview by [Your Name]
 
 **Technologies**:
+
 - [React](https://react.dev/) - UI library
 - [TanStack Query](https://tanstack.com/query) - Server state management
 - [@dnd-kit](https://dndkit.com/) - Drag and drop
@@ -218,19 +236,24 @@ Built for Tekmetric interview by [Your Name]
 ### Steps to get started:
 
 #### Fork the repository and clone it locally
+
 - https://github.com/Tekmetric/interview.git
 
 #### Let's install the project locally
+
 `npm install`
 
 #### Let's start the project locally
+
 `npm start` (or `npm run dev` for full-stack)
 
 ### Goals
+
 1. ✅ Fetch Data from the backend CRUD API you created
 2. ✅ Display data from API onto your page (Kanban board)
 3. ✅ Apply a styling solution (Tailwind + shadcn/ui)
 4. ✅ Have fun (drag-and-drop, validation, polish!)
 
 ### Submitting your coding exercise
+
 Once you have finished the coding exercise please create a PR into Tekmetric/interview

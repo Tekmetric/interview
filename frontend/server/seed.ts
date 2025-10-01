@@ -9,13 +9,48 @@ import {
 } from './db.js'
 
 const TECHNICIANS: Technician[] = [
-  { id: 'TECH-001', name: 'Mike Johnson', initials: 'MJ', specialties: ['Engine', 'Transmission'], active: true },
-  { id: 'TECH-002', name: 'Sarah Williams', initials: 'SW', specialties: ['Brakes', 'Suspension'], active: true },
-  { id: 'TECH-003', name: 'John Davis', initials: 'JD', specialties: ['Electrical', 'A/C'], active: true },
-  { id: 'TECH-004', name: 'Emily Chen', initials: 'EC', specialties: ['Engine', 'Diagnostics'], active: true },
+  {
+    id: 'TECH-001',
+    name: 'Mike Johnson',
+    initials: 'MJ',
+    specialties: ['Engine', 'Transmission'],
+    active: true,
+  },
+  {
+    id: 'TECH-002',
+    name: 'Sarah Williams',
+    initials: 'SW',
+    specialties: ['Brakes', 'Suspension'],
+    active: true,
+  },
+  {
+    id: 'TECH-003',
+    name: 'John Davis',
+    initials: 'JD',
+    specialties: ['Electrical', 'A/C'],
+    active: true,
+  },
+  {
+    id: 'TECH-004',
+    name: 'Emily Chen',
+    initials: 'EC',
+    specialties: ['Engine', 'Diagnostics'],
+    active: true,
+  },
 ]
 
-const MAKES = ['Honda', 'Toyota', 'Ford', 'Chevrolet', 'BMW', 'Tesla', 'Mazda', 'Nissan', 'Hyundai', 'Volkswagen']
+const MAKES = [
+  'Honda',
+  'Toyota',
+  'Ford',
+  'Chevrolet',
+  'BMW',
+  'Tesla',
+  'Mazda',
+  'Nissan',
+  'Hyundai',
+  'Volkswagen',
+]
 const MODELS: Record<string, string[]> = {
   Honda: ['Accord', 'Civic', 'CR-V', 'Pilot'],
   Toyota: ['Camry', 'Corolla', 'RAV4', 'Tacoma'],
@@ -48,7 +83,10 @@ const SERVICES = [
 
 function generateVIN(): string {
   const chars = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789'
-  return Array.from({ length: 17 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+  return Array.from(
+    { length: 17 },
+    () => chars[Math.floor(Math.random() * chars.length)],
+  ).join('')
 }
 
 function generatePlate(): string {
@@ -115,11 +153,11 @@ function generateRepairOrder(index: number) {
 
 function seedDatabase() {
   console.log('🌱 Seeding database...')
-  
+
   // Check if already seeded
   const existingOrders = getAllRepairOrders()
   const existingTechs = getAllTechnicians()
-  
+
   if (existingOrders.length > 0 || existingTechs.length > 0) {
     console.log('⚠️  Database already has data. Skipping seed.')
     console.log(`   - ${existingTechs.length} technicians`)
@@ -129,7 +167,7 @@ function seedDatabase() {
 
   // Insert technicians
   console.log('👷 Inserting technicians...')
-  TECHNICIANS.forEach(tech => insertTechnician(tech))
+  TECHNICIANS.forEach((tech) => insertTechnician(tech))
 
   // Insert repair orders
   console.log('🔧 Inserting 50 repair orders...')
@@ -141,14 +179,14 @@ function seedDatabase() {
   console.log('✅ Database seeded successfully!')
   console.log(`   - ${TECHNICIANS.length} technicians`)
   console.log(`   - 50 repair orders`)
-  
+
   // Show distribution
   const orders = getAllRepairOrders()
   const statusCounts: Record<string, number> = {}
-  orders.forEach(order => {
+  orders.forEach((order) => {
     statusCounts[order.status] = (statusCounts[order.status] || 0) + 1
   })
-  
+
   console.log('\n📊 Status distribution:')
   Object.entries(statusCounts).forEach(([status, count]) => {
     console.log(`   ${status}: ${count}`)

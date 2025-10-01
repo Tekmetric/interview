@@ -1,24 +1,38 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* Custom colors for repair order stages */
-  --color-stage-new: #eff6ff;
-  --color-stage-new-border: #bfdbfe;
+  /* Tekmetric Brand Colors */
+  --color-tekmetric-orange: #f0572a;
+  --color-tekmetric-orange-dark: #d14520;
+  --color-tekmetric-orange-light: #ff6b3d;
+  --color-tekmetric-blue: #0a2540;
+  --color-tekmetric-blue-light: #1a3a5f;
+  --color-tekmetric-gray: #6b7280;
+  --color-tekmetric-gray-light: #f3f4f6;
+
+  /* Custom colors for repair order stages (Tekmetric-inspired) */
+  --color-stage-new: #e0f2fe;
+  --color-stage-new-border: #7dd3fc;
+  --color-stage-new-text: #0369a1;
 
   --color-stage-awaiting: #fef3c7;
-  --color-stage-awaiting-border: #fcd34d;
+  --color-stage-awaiting-border: #fde047;
+  --color-stage-awaiting-text: #a16207;
 
-  --color-stage-progress: #e0e7ff;
-  --color-stage-progress-border: #c7d2fe;
+  --color-stage-progress: #f0572a;
+  --color-stage-progress-border: #d14520;
+  --color-stage-progress-text: #ffffff;
 
   --color-stage-parts: #fed7aa;
-  --color-stage-parts-border: #fdba74;
+  --color-stage-parts-border: #fb923c;
+  --color-stage-parts-text: #c2410c;
 
   --color-stage-completed: #d1fae5;
-  --color-stage-completed-border: #6ee7b7;
+  --color-stage-completed-border: #34d399;
+  --color-stage-completed-text: #065f46;
 }
 
 @theme inline {
@@ -67,8 +81,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.575 0.195 35.5); /* Tekmetric Orange #F0572A */
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);

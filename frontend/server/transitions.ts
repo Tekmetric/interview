@@ -8,7 +8,7 @@ export const STAGE_ORDER: RepairOrderStatus[] = [
   'COMPLETED',
 ]
 
-// Allowed transitions from docs/PRODUCT_SPEC.md
+// Allowed transitions from docs/specs.md
 export const ALLOWED_TRANSITIONS: Record<RepairOrderStatus, RepairOrderStatus[]> = {
   NEW: ['AWAITING_APPROVAL', 'IN_PROGRESS'],
   AWAITING_APPROVAL: ['IN_PROGRESS', 'NEW'],
@@ -25,7 +25,7 @@ export interface ValidationResult {
 export function canTransition(
   from: RepairOrderStatus,
   to: RepairOrderStatus,
-  order?: Partial<RepairOrder>
+  order?: Partial<RepairOrder>,
 ): ValidationResult {
   // No change
   if (from === to) {
@@ -38,7 +38,9 @@ export function canTransition(
   if (!allowedTransitions || !allowedTransitions.includes(to)) {
     return {
       allowed: false,
-      reason: `Cannot move from ${from} to ${to}. Allowed transitions: ${allowedTransitions?.join(', ') || 'none'}`,
+      reason: `Cannot move from ${from} to ${to}. Allowed transitions: ${
+        allowedTransitions?.join(', ') || 'none'
+      }`,
     }
   }
 

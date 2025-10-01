@@ -17,6 +17,7 @@ import { useTechnicians } from '@/hooks/useTechnicians'
 import { canTransition, ALLOWED_TRANSITIONS } from '@shared/transitions'
 import type { RepairOrder, RepairOrderStatus, Priority } from '@shared/types'
 import { updateRepairOrderSchema } from '@shared/validation'
+import { STATUS_COLORS, PRIORITY_COLORS } from './ro-constants'
 
 type RODetailsFormProps = {
   order: RepairOrder
@@ -82,21 +83,11 @@ export function RODetailsForm({
 
   const statusOptions = getStatusOptions()
 
-  const statusColors: Record<RepairOrderStatus, string> = {
-    NEW: 'bg-blue-500',
-    AWAITING_APPROVAL: 'bg-amber-500',
-    IN_PROGRESS: 'bg-indigo-500',
-    WAITING_PARTS: 'bg-orange-500',
-    COMPLETED: 'bg-green-500',
-  }
-
-  const priorityColors: Record<Priority, string> = {
-    HIGH: 'border-red-500 text-red-700',
-    NORMAL: 'border-gray-300 text-gray-600',
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className='flex h-full flex-col overflow-hidden'>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className='flex h-[calc(100vh-100px)] flex-col overflow-hidden'
+    >
       <div className='flex-1 space-y-4 overflow-y-auto p-6 pb-4'>
         {/* Order Info - Read Only */}
         <div className='space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-3'>
@@ -108,11 +99,15 @@ export function RODetailsForm({
             </div>
             <div>
               <p className='text-gray-500'>Created:</p>
-              <p className='text-gray-900'>{new Date(order.createdAt).toLocaleDateString()}</p>
+              <p className='text-gray-900'>
+                {new Date(order.createdAt).toLocaleDateString()}
+              </p>
             </div>
             <div className='col-span-2'>
               <p className='text-gray-500'>Last Updated:</p>
-              <p className='text-gray-900'>{new Date(order.updatedAt).toLocaleDateString()}</p>
+              <p className='text-gray-900'>
+                {new Date(order.updatedAt).toLocaleDateString()}
+              </p>
             </div>
           </div>
         </div>
@@ -164,13 +159,15 @@ export function RODetailsForm({
             {order.vehicle.mileage && (
               <div>
                 <p className='text-gray-500'>Mileage:</p>
-                <p className='text-gray-900'>{order.vehicle.mileage.toLocaleString()} mi</p>
+                <p className='text-gray-900'>
+                  {order.vehicle.mileage.toLocaleString()} mi
+                </p>
               </div>
             )}
             {order.vehicle.color && (
               <div>
                 <p className='text-gray-500'>Color:</p>
-                <p className='capitalize text-gray-900'>{order.vehicle.color}</p>
+                <p className='text-gray-900 capitalize'>{order.vehicle.color}</p>
               </div>
             )}
           </div>
@@ -201,7 +198,7 @@ export function RODetailsForm({
             >
               <SelectTrigger>
                 <SelectValue>
-                  <Badge className={statusColors[currentStatus || order.status]}>
+                  <Badge className={STATUS_COLORS[currentStatus || order.status]}>
                     {currentStatus || order.status}
                   </Badge>
                 </SelectValue>
@@ -209,7 +206,7 @@ export function RODetailsForm({
               <SelectContent>
                 {statusOptions.map((status) => (
                   <SelectItem key={status} value={status}>
-                    <Badge className={statusColors[status]}>{status}</Badge>
+                    <Badge className={STATUS_COLORS[status]}>{status}</Badge>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -263,7 +260,7 @@ export function RODetailsForm({
                 <SelectValue>
                   <Badge
                     variant='outline'
-                    className={priorityColors[watch('priority') || 'NORMAL']}
+                    className={PRIORITY_COLORS[watch('priority') || 'NORMAL']}
                   >
                     {watch('priority') || 'NORMAL'}
                   </Badge>
@@ -271,12 +268,12 @@ export function RODetailsForm({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value='NORMAL'>
-                  <Badge variant='outline' className={priorityColors.NORMAL}>
+                  <Badge variant='outline' className={PRIORITY_COLORS.NORMAL}>
                     NORMAL
                   </Badge>
                 </SelectItem>
                 <SelectItem value='HIGH'>
-                  <Badge variant='outline' className={priorityColors.HIGH}>
+                  <Badge variant='outline' className={PRIORITY_COLORS.HIGH}>
                     HIGH
                   </Badge>
                 </SelectItem>
@@ -310,7 +307,9 @@ export function RODetailsForm({
               rows={4}
               {...register('notes')}
             />
-            {errors.notes && <p className='text-xs text-red-600'>{errors.notes.message}</p>}
+            {errors.notes && (
+              <p className='text-xs text-red-600'>{errors.notes.message}</p>
+            )}
           </div>
 
           {/* Additional Info - Read Only */}
@@ -320,7 +319,8 @@ export function RODetailsForm({
               <div className='space-y-1 text-xs'>
                 {order.estimatedDuration && (
                   <p className='text-gray-900'>
-                    <span className='text-gray-500'>Duration:</span> {order.estimatedDuration} hours
+                    <span className='text-gray-500'>Duration:</span>{' '}
+                    {order.estimatedDuration} hours
                   </p>
                 )}
                 {order.estimatedCost && (

@@ -3,6 +3,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Badge } from '@/components/ui/badge'
 import { useLocation, useSearch } from 'wouter'
 import type { RepairOrder } from '@shared/types'
+import type { MouseEvent } from 'react'
 
 type KanbanCardProps = {
   order: RepairOrder
@@ -27,7 +28,7 @@ export function KanbanCard({ order }: KanbanCardProps) {
     NORMAL: 'border-gray-300 text-gray-600',
   }
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: MouseEvent) => {
     // Don't open drawer if dragging
     if (isDragging) return
     
@@ -41,9 +42,10 @@ export function KanbanCard({ order }: KanbanCardProps) {
       ref={setNodeRef}
       style={style}
       {...attributes}
+      {...listeners}
       className='cursor-move rounded-lg border bg-white p-3 shadow-sm hover:shadow-md'
+      onClick={handleClick}
     >
-      <div {...listeners} className='flex flex-col gap-2' onClick={handleClick}>
       <div className='flex flex-col gap-2'>
         <div className='flex items-center justify-between'>
           <p className='font-mono text-sm font-semibold'>{order.id}</p>
@@ -97,7 +99,6 @@ export function KanbanCard({ order }: KanbanCardProps) {
             )}
           </div>
         )}
-      </div>
       </div>
     </div>
   )

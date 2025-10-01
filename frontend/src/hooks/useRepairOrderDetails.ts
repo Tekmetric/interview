@@ -1,11 +1,24 @@
 import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { RepairOrder } from '@shared/types'
-import type { UpdateRepairOrderInput } from '@shared/validation'
+import type { UpdateRepairOrderInput, CreateRepairOrderInput } from '@shared/validation'
 
 async function fetchRepairOrder(id: string): Promise<RepairOrder> {
   const response = await fetch(`/api/repairOrders/${id}`)
   if (!response.ok) {
     throw new Error('Failed to fetch repair order')
+  }
+  return response.json()
+}
+
+async function createRepairOrder(data: CreateRepairOrderInput): Promise<RepairOrder> {
+  const response = await fetch('/api/repairOrders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.message || 'Failed to create repair order')
   }
   return response.json()
 }
@@ -62,6 +75,18 @@ export function useDeleteRepairOrder() {
   return useMutation({
     mutationFn: (id: string) => deleteRepairOrder(id),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
+    },
+  })
+}
+
+export function useCreateRepairOrder() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: CreateRepairOrderInput) => createRepairOrder(data),
+    onSuccess: (newOrder) => {
+      queryClient.setQueryData(['repairOrder', newOrder.id], newOrder)
       queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
     },
   })

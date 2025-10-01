@@ -1,8 +1,8 @@
 import express from 'express'
 import cors from 'cors'
-import './data/schema.js' // Initialize database schema
-import techniciansRouter from './domains/technicians/routes.js'
-import repairOrdersRouter from './domains/repair-orders/routes.js'
+import '@server/data/schema' // Initialize database schema
+import techniciansRouter from '@server/domains/technicians/routes'
+import repairOrdersRouter from '@server/domains/repair-orders/routes'
 
 const app = express()
 const PORT = 3001

@@ -34,7 +34,7 @@
     "dev": "concurrently \"pnpm run server:dev\" \"vite\" --names \"API,APP\" --prefix-colors \"blue,green\"",
     "server:dev": "nodemon --watch server --exec tsx server/index.ts",
     "server": "tsx server/index.ts",
-    "seed": "tsx server/seed.ts",
+    "seed": "tsx server/data/seed.ts",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "check": "tsc",

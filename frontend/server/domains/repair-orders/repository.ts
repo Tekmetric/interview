@@ -1,6 +1,6 @@
-import db from '../../data/db.js'
-import type { RepairOrder } from '../../../shared/types.js'
-import { rowToRepairOrder } from './transforms.js'
+import db from '@server/data/db'
+import type { RepairOrder } from '@shared/types'
+import { rowToRepairOrder } from './transforms'
 
 export function getAllRepairOrders(): RepairOrder[] {
   const stmt = db.prepare('SELECT * FROM repair_orders ORDER BY created_at DESC')

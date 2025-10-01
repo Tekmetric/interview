@@ -1,5 +1,5 @@
-import type { RepairOrder } from '../../../shared/types.js'
-import { getTechnicianById } from '../technicians/repository.js'
+import type { RepairOrder } from '@shared/types'
+import { getTechnicianById } from '@server/domains/technicians/repository'
 
 // Helper function to convert DB row to RepairOrder
 export function rowToRepairOrder(row: any): RepairOrder {

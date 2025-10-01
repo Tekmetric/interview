@@ -1,5 +1,5 @@
-import db from '../../data/db.js'
-import type { Technician } from '../../../shared/types.js'
+import db from '@server/data/db'
+import type { Technician } from '@shared/types'
 
 export function getAllTechnicians(): Technician[] {
   const stmt = db.prepare('SELECT * FROM technicians WHERE active = 1')

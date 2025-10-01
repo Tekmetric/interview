@@ -15,13 +15,23 @@ export function validate(
       const validated = schema.parse(data)
 
       // Replace request data with validated data
-      req[source] = validated
+      // Use Object.defineProperty for query/params since they might be read-only
+      try {
+        req[source] = validated
+      } catch {
+        Object.defineProperty(req, source, {
+          value: validated,
+          writable: true,
+          enumerable: true,
+          configurable: true,
+        })
+      }
 
       next()
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
-          error: 'VALIDATION_ERRORq',
+          error: 'VALIDATION_ERROR',
           message: 'Invalid request data',
           details: error.issues.map((err) => ({
             path: err.path.join('.'),

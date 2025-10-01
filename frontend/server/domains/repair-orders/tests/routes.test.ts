@@ -1,0 +1,238 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import express, { type Express } from 'express'
+import request from 'supertest'
+import Database from 'better-sqlite3'
+import { createTestDb, cleanupDb, seedTestTechnicians, seedTestRepairOrders } from '@server/tests/test-utils'
+
+// Mock the db import - shared across both imports
+const mockDb = { current: null as Database.Database | null }
+
+vi.mock('@server/data/db', () => ({
+  default: new Proxy(
+    {},
+    {
+      get(_target, prop) {
+        if (mockDb.current) {
+          return mockDb.current[prop as keyof Database.Database]
+        }
+        throw new Error('Database not initialized in test')
+      },
+    },
+  ),
+}))
+
+// Import router after mock is set up (this also imports transforms which imports technician repository)
+const repairOrderRoutes = await import('../routes')
+
+describe('Repair Order Routes', () => {
+  let app: Express
+
+  beforeEach(() => {
+    mockDb.current = createTestDb()
+    app = express()
+    app.use(express.json())
+    app.use('/api', repairOrderRoutes.default)
+    seedTestTechnicians(mockDb.current!)
+    seedTestRepairOrders(mockDb.current!)
+  })
+
+  afterEach(() => {
+    if (mockDb.current) {
+      cleanupDb(mockDb.current)
+      mockDb.current = null
+    }
+  })
+
+  describe('GET /api/repairOrders', () => {
+    it('should return all repair orders', async () => {
+      const response = await request(app).get('/api/repairOrders')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(2)
+    })
+
+    it('should filter by status', async () => {
+      const response = await request(app).get('/api/repairOrders?status=NEW')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(1)
+      expect(response.body[0].status).toBe('NEW')
+    })
+
+    it('should filter by tech', async () => {
+      const response = await request(app).get('/api/repairOrders?tech=tech-1')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(1)
+      expect(response.body[0].assignedTech.id).toBe('tech-1')
+    })
+
+    it('should filter by priority', async () => {
+      const response = await request(app).get('/api/repairOrders?priority=HIGH')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(1)
+      expect(response.body[0].priority).toBe('HIGH')
+    })
+
+    it('should filter by search on customer name', async () => {
+      const response = await request(app).get('/api/repairOrders?search=alice')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(1)
+      expect(response.body[0].customer.name).toBe('Alice Customer')
+    })
+
+    it('should filter by search on vehicle', async () => {
+      const response = await request(app).get('/api/repairOrders?search=camry')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(1)
+      expect(response.body[0].vehicle.model).toBe('Camry')
+    })
+
+    it('should filter by search on plate', async () => {
+      const response = await request(app).get('/api/repairOrders?search=xyz')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(1)
+      expect(response.body[0].vehicle.plate).toBe('XYZ789')
+    })
+
+    it('should return empty array when no matches', async () => {
+      const response = await request(app).get('/api/repairOrders?status=COMPLETED')
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual([])
+    })
+
+    it('should return 400 for invalid status filter', async () => {
+      const response = await request(app).get('/api/repairOrders?status=INVALID')
+
+      expect(response.status).toBe(400)
+    })
+  })
+
+  describe('GET /api/repairOrders/:id', () => {
+    it('should return repair order by id', async () => {
+      const response = await request(app).get('/api/repairOrders/RO-1')
+
+      expect(response.status).toBe(200)
+      expect(response.body.id).toBe('RO-1')
+      expect(response.body.customer.name).toBe('Alice Customer')
+    })
+
+    it('should return 404 when order not found', async () => {
+      const response = await request(app).get('/api/repairOrders/RO-999')
+
+      expect(response.status).toBe(404)
+      expect(response.body).toHaveProperty('error')
+    })
+  })
+
+  describe('POST /api/repairOrders', () => {
+    it('should create new repair order', async () => {
+      const newOrder = {
+        customer: {
+          name: 'Charlie Customer',
+          phone: '555-9999',
+        },
+        vehicle: {
+          year: 2021,
+          make: 'Ford',
+          model: 'F-150',
+          mileage: 30000,
+        },
+        services: ['Oil Change'],
+      }
+
+      const response = await request(app).post('/api/repairOrders').send(newOrder)
+
+      expect(response.status).toBe(201)
+      expect(response.body).toHaveProperty('id')
+      expect(response.body.customer.name).toBe('Charlie Customer')
+      expect(response.body.status).toBe('NEW')
+    })
+
+    it('should return 400 for invalid data', async () => {
+      const invalidOrder = {
+        customer: {
+          name: 'Charlie Customer',
+        },
+        // Missing required fields
+      }
+
+      const response = await request(app).post('/api/repairOrders').send(invalidOrder)
+
+      expect(response.status).toBe(400)
+    })
+  })
+
+  describe('PATCH /api/repairOrders/:id', () => {
+    it('should update repair order', async () => {
+      const updates = {
+        priority: 'HIGH',
+        notes: 'Updated notes',
+      }
+
+      const response = await request(app).patch('/api/repairOrders/RO-1').send(updates)
+
+      expect(response.status).toBe(200)
+      expect(response.body.priority).toBe('HIGH')
+      expect(response.body.notes).toBe('Updated notes')
+    })
+
+    it('should allow valid status transition', async () => {
+      const response = await request(app).patch('/api/repairOrders/RO-1').send({
+        status: 'AWAITING_APPROVAL',
+      })
+
+      expect(response.status).toBe(200)
+      expect(response.body.status).toBe('AWAITING_APPROVAL')
+    })
+
+    it('should reject invalid status transition', async () => {
+      const response = await request(app).patch('/api/repairOrders/RO-1').send({
+        status: 'COMPLETED',
+      })
+
+      expect(response.status).toBe(409)
+      expect(response.body.error).toBe('INVALID_TRANSITION')
+      expect(response.body).toHaveProperty('allowed')
+    })
+
+    it('should return 404 when order not found', async () => {
+      const response = await request(app).patch('/api/repairOrders/RO-999').send({
+        priority: 'HIGH',
+      })
+
+      expect(response.status).toBe(404)
+    })
+
+    it('should return 400 for invalid update data', async () => {
+      const response = await request(app).patch('/api/repairOrders/RO-1').send({
+        status: 'INVALID_STATUS',
+      })
+
+      expect(response.status).toBe(400)
+    })
+  })
+
+  describe('DELETE /api/repairOrders/:id', () => {
+    it('should delete repair order', async () => {
+      const response = await request(app).delete('/api/repairOrders/RO-1')
+
+      expect(response.status).toBe(204)
+
+      // Verify deletion
+      const getResponse = await request(app).get('/api/repairOrders/RO-1')
+      expect(getResponse.status).toBe(404)
+    })
+
+    it('should return 404 when order not found', async () => {
+      const response = await request(app).delete('/api/repairOrders/RO-999')
+
+      expect(response.status).toBe(404)
+    })
+  })
+})

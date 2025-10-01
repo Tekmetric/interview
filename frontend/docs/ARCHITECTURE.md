@@ -283,7 +283,7 @@ function App() {
 Same validation function runs on both frontend and backend:
 
 ```typescript
-// server/transitions.ts (shared with frontend)
+// shared/transitions.ts (used by both frontend and backend)
 export const ALLOWED_TRANSITIONS: Record<RepairOrderStatus, RepairOrderStatus[]> = {
   NEW: ['AWAITING_APPROVAL', 'IN_PROGRESS'],
   AWAITING_APPROVAL: ['IN_PROGRESS', 'NEW'],
@@ -877,7 +877,74 @@ function rowToRepairOrder(row: any): RepairOrder {
 
 ## Code Organization
 
-### Current Structure (Demo)
+### Frontend Code Organization
+
+**Domain-Driven Structure** for React application:
+
+```
+src/
+├── components/
+│   └── ui/                  # shadcn/ui primitives (Button, Card, Dialog)
+├── hooks/
+│   └── useDebounce.ts       # Custom React hooks
+├── lib/
+│   └── utils.ts             # Utility functions (cn helper)
+├── App.tsx                  # Main Kanban board
+├── main.tsx                 # React entry point
+└── index.css                # Global styles
+```
+
+**Key Principles**:
+- **UI Components**: Reusable, accessible components from shadcn/ui
+- **Custom Hooks**: Shared React logic (debouncing, queries)
+- **Single Entry Point**: App.tsx orchestrates the application
+
+### Backend Code Organization
+
+**Domain-Driven Design** with clear separation of concerns:
+
+```
+server/
+├── data/                         # Database layer
+│   ├── db.ts                     # Database connection & initialization
+│   ├── schema.ts                 # SQL table definitions
+│   └── seed.ts                   # Seed data generation
+├── domains/                      # Business domains
+│   ├── technicians/
+│   │   ├── types.ts              # Domain types (re-exports shared types)
+│   │   ├── repository.ts         # Data access layer (CRUD operations)
+│   │   └── routes.ts             # Express router (HTTP endpoints)
+│   └── repair-orders/
+│       ├── types.ts              # Domain types (re-exports shared types)
+│       ├── repository.ts         # Data access layer (CRUD operations)
+│       ├── transforms.ts         # Data transformers (DB row → domain object)
+│       └── routes.ts             # Express router (HTTP endpoints + validation)
+├── index.ts                      # Express app entry point
+└── tekboard.db                   # SQLite database file
+```
+
+**Key Principles**:
+- **Repository Pattern**: Data access layer separated from business logic
+- **Domain Colocation**: All domain-related code lives together
+- **Type Safety**: TypeScript types ensure consistency across layers
+- **Pure Transformers**: Convert database rows to domain objects
+
+### Shared Code Organization
+
+**Cross-Stack Business Logic** used by both frontend and backend:
+
+```
+shared/
+├── types.ts                 # Shared TypeScript interfaces (RepairOrder, Technician)
+└── transitions.ts           # Status transition validation logic
+```
+
+**Key Principles**:
+- **Single Source of Truth**: Types defined once, used everywhere
+- **Shared Validation**: Same business rules enforced on client and server
+- **Import from Both Sides**: Frontend uses `@shared/`, backend uses `../../shared/`
+
+### Complete Project Structure
 
 ```
 tekmetric/frontend/
@@ -892,11 +959,25 @@ tekmetric/frontend/
 │   ├── main.tsx             # React entry point
 │   └── index.css            # Global styles
 ├── server/                   # Express backend
-│   ├── db.ts                # Data access layer
-│   ├── transitions.ts       # Business logic (shared with frontend)
-│   ├── seed.ts              # Database seeding
-│   ├── index.ts             # Express app + routes
+│   ├── data/                # Database layer
+│   │   ├── db.ts            # Connection & init
+│   │   ├── schema.ts        # SQL definitions
+│   │   └── seed.ts          # Seed generation
+│   ├── domains/             # Business domains
+│   │   ├── technicians/
+│   │   │   ├── types.ts
+│   │   │   ├── repository.ts
+│   │   │   └── routes.ts
+│   │   └── repair-orders/
+│   │       ├── types.ts
+│   │       ├── repository.ts
+│   │       ├── transforms.ts
+│   │       └── routes.ts
+│   ├── index.ts             # Express app
 │   └── tekboard.db          # SQLite database
+├── shared/                   # Cross-stack code
+│   ├── types.ts             # Shared interfaces
+│   └── transitions.ts       # Shared validation
 ├── docs/                     # Documentation
 │   ├── ARCHITECTURE.md      # This file
 │   └── PRODUCT_SPEC.md      # Product requirements
@@ -909,7 +990,7 @@ tekmetric/frontend/
 **1. Pure Business Logic** (No Framework Dependencies):
 
 ```typescript
-// transitions.ts - Can be tested in isolation
+// shared/transitions.ts - Can be tested in isolation
 export function canTransition(
   from: RepairOrderStatus,
   to: RepairOrderStatus,
@@ -921,18 +1002,18 @@ export function canTransition(
 
 **2. Separation of Concerns**:
 
-- **Business Logic**: Pure functions (transitions.ts)
-- **Data Layer**: Database operations (db.ts)
-- **API Layer**: HTTP routing (index.ts)
+- **Business Logic**: Pure functions (shared/transitions.ts)
+- **Data Layer**: Repository pattern (domains/*/repository.ts)
+- **API Layer**: HTTP routing (domains/*/routes.ts)
 - **UI Layer**: React components (src/)
 
-**3. Type-Safe Data Access**:
+**3. Repository Pattern**:
 
 ```typescript
-// Data layer always returns TypeScript types
+// domains/repair-orders/repository.ts
 export function getAllRepairOrders(): RepairOrder[] {
   const rows = db.prepare('SELECT * FROM repair_orders').all()
-  return rows.map(rowToRepairOrder) // Transform to TypeScript
+  return rows.map(rowToRepairOrder) // Transform to domain object
 }
 ```
 

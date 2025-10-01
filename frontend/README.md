@@ -70,6 +70,14 @@ npm run dev
 
 ## 🏗️ Architecture
 
+### Backend Structure
+
+**Domain-Driven Design** for maintainability and scalability:
+
+- **`data/`** - Database connection, schema, and seed logic
+- **`domains/<domain>/`** - Routes, repository (data access), types per domain
+- **`shared/`** - Business logic and types shared between frontend and backend
+
 ### State Management Strategy
 
 **TanStack Query v5** for server state (caching, optimistic updates, background refetch)

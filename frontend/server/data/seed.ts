@@ -1,12 +1,11 @@
 import { faker } from '@faker-js/faker'
+import type { Technician, RepairOrderStatus } from '../../shared/types.js'
+import { insertTechnician } from '../domains/technicians/repository.js'
 import {
-  insertTechnician,
   insertRepairOrderDirect,
   getAllRepairOrders,
-  getAllTechnicians,
-  type Technician,
-  type RepairOrderStatus,
-} from './db.js'
+} from '../domains/repair-orders/repository.js'
+import { getAllTechnicians } from '../domains/technicians/repository.js'
 
 const TECHNICIANS: Technician[] = [
   {

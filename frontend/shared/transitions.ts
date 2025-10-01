@@ -1,4 +1,4 @@
-import type { RepairOrderStatus, RepairOrder } from './db.js'
+import type { RepairOrderStatus, RepairOrder } from './types.js'
 
 export const STAGE_ORDER: RepairOrderStatus[] = [
   'NEW',

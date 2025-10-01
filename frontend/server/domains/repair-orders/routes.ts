@@ -15,6 +15,7 @@ import {
   repairOrderFiltersSchema,
 } from '@shared/validation'
 import { validate } from '@server/core/middleware/validate'
+import { HTTP_STATUS, ERROR_CODES } from '@server/constants'
 
 const router = Router()
 
@@ -68,7 +69,7 @@ router.get('/repairOrders', validate(repairOrderFiltersSchema, 'query'), (req, r
 router.get('/repairOrders/:id', (req, res) => {
   const order = getRepairOrderById(req.params.id)
   if (!order) {
-    return res.status(404).json({ error: 'Repair order not found' })
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Repair order not found' })
   }
   res.json(order)
 })
@@ -77,9 +78,9 @@ router.get('/repairOrders/:id', (req, res) => {
 router.post('/repairOrders', validate(createRepairOrderSchema), (req, res) => {
   try {
     const order = createRepairOrder(req.body)
-    res.status(201).json(order)
+    res.status(HTTP_STATUS.CREATED).json(order)
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create repair order' })
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Failed to create repair order' })
   }
 })
 
@@ -87,7 +88,7 @@ router.post('/repairOrders', validate(createRepairOrderSchema), (req, res) => {
 router.patch('/repairOrders/:id', validate(updateRepairOrderSchema), (req, res) => {
   const order = getRepairOrderById(req.params.id)
   if (!order) {
-    return res.status(404).json({ error: 'Repair order not found' })
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Repair order not found' })
   }
 
   // Validate status transition if status is being changed
@@ -98,8 +99,8 @@ router.patch('/repairOrders/:id', validate(updateRepairOrderSchema), (req, res) 
     })
 
     if (!validation.allowed) {
-      return res.status(409).json({
-        error: 'INVALID_TRANSITION',
+      return res.status(HTTP_STATUS.CONFLICT).json({
+        error: ERROR_CODES.INVALID_TRANSITION,
         message: validation.reason,
         from: order.status,
         to: req.body.status,
@@ -110,7 +111,9 @@ router.patch('/repairOrders/:id', validate(updateRepairOrderSchema), (req, res) 
 
   const updated = updateRepairOrder(req.params.id, req.body)
   if (!updated) {
-    return res.status(500).json({ error: 'Failed to update repair order' })
+    return res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ error: 'Failed to update repair order' })
   }
 
   res.json(updated)
@@ -120,9 +123,9 @@ router.patch('/repairOrders/:id', validate(updateRepairOrderSchema), (req, res) 
 router.delete('/repairOrders/:id', (req, res) => {
   const success = deleteRepairOrder(req.params.id)
   if (!success) {
-    return res.status(404).json({ error: 'Repair order not found' })
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Repair order not found' })
   }
-  res.status(204).send()
+  res.status(HTTP_STATUS.NO_CONTENT).send()
 })
 
 export default router

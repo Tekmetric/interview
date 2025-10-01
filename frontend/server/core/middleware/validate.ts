@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express'
 import { z } from 'zod'
+import { HTTP_STATUS, ERROR_CODES } from '@server/constants'
 
 /**
  * Validation middleware factory
@@ -30,8 +31,8 @@ export function validate(
       next()
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({
-          error: 'VALIDATION_ERROR',
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
+          error: ERROR_CODES.VALIDATION_ERROR,
           message: 'Invalid request data',
           details: error.issues.map((err) => ({
             path: err.path.join('.'),
@@ -40,8 +41,8 @@ export function validate(
         })
       }
 
-      return res.status(500).json({
-        error: 'INTERNAL_ERROR',
+      return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        error: ERROR_CODES.INTERNAL_ERROR,
         message: 'An unexpected error occurred during validation',
       })
     }

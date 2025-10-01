@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { REPAIR_ORDER_STATUSES, PRIORITIES } from './constants'
 
 // Customer validation schema
 export const customerSchema = z.object({
@@ -24,16 +25,10 @@ export const vehicleSchema = z.object({
 })
 
 // Repair order status enum
-export const repairOrderStatusSchema = z.enum([
-  'NEW',
-  'AWAITING_APPROVAL',
-  'IN_PROGRESS',
-  'WAITING_PARTS',
-  'COMPLETED',
-])
+export const repairOrderStatusSchema = z.enum(REPAIR_ORDER_STATUSES)
 
 // Priority enum
-export const prioritySchema = z.enum(['HIGH', 'NORMAL'])
+export const prioritySchema = z.enum(PRIORITIES)
 
 // Create repair order schema
 export const createRepairOrderSchema = z.object({

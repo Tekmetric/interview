@@ -1,7 +1,10 @@
 import db from '@server/data/db'
+import { buildUpdateFields } from '@server/data/utils'
+
+import { RO_STATUS, PRIORITY } from '@shared/constants'
+import { RO_ID_PREFIX } from '@server/constants'
 import type { RepairOrder } from '@shared/types'
 import { rowToRepairOrder } from './transforms'
-import { buildUpdateFields } from '@server/data/utils'
 
 export function getAllRepairOrders(): RepairOrder[] {
   const stmt = db.prepare('SELECT * FROM repair_orders ORDER BY created_at DESC')
@@ -17,7 +20,7 @@ export function getRepairOrderById(id: string): RepairOrder | null {
 }
 
 export function createRepairOrder(data: Partial<RepairOrder>): RepairOrder {
-  const id = `RO-${Date.now()}`
+  const id = `${RO_ID_PREFIX}${Date.now()}`
   const stmt = db.prepare(`
     INSERT INTO repair_orders (
       id, status, customer_name, customer_phone, customer_email,
@@ -30,7 +33,7 @@ export function createRepairOrder(data: Partial<RepairOrder>): RepairOrder {
 
   stmt.run(
     id,
-    data.status || 'NEW',
+    data.status || RO_STATUS.NEW,
     data.customer?.name || '',
     data.customer?.phone || '',
     data.customer?.email || null,
@@ -44,7 +47,7 @@ export function createRepairOrder(data: Partial<RepairOrder>): RepairOrder {
     data.vehicle?.color || null,
     JSON.stringify(data.services || []),
     data.assignedTech?.id || null,
-    data.priority || 'NORMAL',
+    data.priority || PRIORITY.NORMAL,
     data.estimatedDuration || null,
     data.estimatedCost || null,
     data.dueTime || null,
@@ -133,11 +136,12 @@ export function getOverdueOrders(limit: number = 5): RepairOrder[] {
     SELECT * FROM repair_orders
     WHERE due_time IS NOT NULL
       AND due_time < datetime('now')
-      AND status NOT IN ('COMPLETED')
+      AND status NOT IN (?)
     ORDER BY due_time ASC
     LIMIT ?
   `)
-  const rows = stmt.all(limit) as any[]
+
+  const rows = stmt.all(RO_STATUS.COMPLETED, limit) as any[]
   return rows.map(rowToRepairOrder)
 }
 
@@ -147,6 +151,7 @@ export function getRecentOrders(limit: number = 5): RepairOrder[] {
     ORDER BY created_at DESC
     LIMIT ?
   `)
+
   const rows = stmt.all(limit) as any[]
   return rows.map(rowToRepairOrder)
 }

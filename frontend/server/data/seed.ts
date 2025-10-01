@@ -8,6 +8,8 @@ import {
   insertRepairOrderDirect,
   getAllRepairOrders,
 } from '@server/domains/repair-orders/repository'
+import { RO_STATUS, PRIORITY } from '@shared/constants'
+import { RO_ID_PREFIX } from '@server/constants'
 
 const TECHNICIANS: Technician[] = [
   {
@@ -103,11 +105,11 @@ function generateRepairOrder(index: number) {
 
   // Status distribution: more in early stages
   const statusWeights = [
-    { value: 'NEW', weight: 3 },
-    { value: 'AWAITING_APPROVAL', weight: 4 },
-    { value: 'IN_PROGRESS', weight: 5 },
-    { value: 'WAITING_PARTS', weight: 2 },
-    { value: 'COMPLETED', weight: 1 },
+    { value: RO_STATUS.NEW, weight: 3 },
+    { value: RO_STATUS.AWAITING_APPROVAL, weight: 4 },
+    { value: RO_STATUS.IN_PROGRESS, weight: 5 },
+    { value: RO_STATUS.WAITING_PARTS, weight: 2 },
+    { value: RO_STATUS.COMPLETED, weight: 1 },
   ]
   const status = faker.helpers.weightedArrayElement(statusWeights) as RepairOrderStatus
 
@@ -118,16 +120,17 @@ function generateRepairOrder(index: number) {
     : faker.date.soon({ refDate: new Date() }).toISOString()
 
   // Assign tech if not NEW
-  const techId = status !== 'NEW' ? faker.helpers.arrayElement(TECHNICIANS).id : null
+  const techId =
+    status !== RO_STATUS.NEW ? faker.helpers.arrayElement(TECHNICIANS).id : null
 
   // Approved by customer if COMPLETED
-  const approvedByCustomer = status === 'COMPLETED' ? 1 : 0
+  const approvedByCustomer = status === RO_STATUS.COMPLETED ? 1 : 0
 
   const services = faker.helpers.arrayElements(SERVICES, { min: 1, max: 4 })
-  const priority = Math.random() < 0.3 ? 'HIGH' : 'NORMAL'
+  const priority = Math.random() < 0.3 ? PRIORITY.HIGH : PRIORITY.NORMAL
 
   return {
-    id: `RO-${String(index + 1).padStart(4, '0')}`,
+    id: `${RO_ID_PREFIX}${String(index + 1).padStart(4, '0')}`,
     status,
     customer_name: faker.person.fullName(),
     customer_phone: faker.phone.number(),

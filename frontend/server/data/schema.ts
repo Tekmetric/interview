@@ -1,4 +1,8 @@
 import db from './db.js'
+import { REPAIR_ORDER_STATUSES, PRIORITIES } from '@shared/constants'
+
+const statusCheck = REPAIR_ORDER_STATUSES.map((s) => `'${s}'`).join(', ')
+const priorityCheck = PRIORITIES.map((p) => `'${p}'`).join(', ')
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS technicians (
@@ -11,7 +15,7 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS repair_orders (
     id TEXT PRIMARY KEY,
-    status TEXT NOT NULL CHECK(status IN ('NEW', 'AWAITING_APPROVAL', 'IN_PROGRESS', 'WAITING_PARTS', 'COMPLETED')),
+    status TEXT NOT NULL CHECK(status IN (${statusCheck})),
 
     customer_name TEXT NOT NULL,
     customer_phone TEXT NOT NULL,
@@ -28,7 +32,7 @@ db.exec(`
 
     services TEXT NOT NULL DEFAULT '[]',
     technician_id TEXT,
-    priority TEXT NOT NULL CHECK(priority IN ('HIGH', 'NORMAL')) DEFAULT 'NORMAL',
+    priority TEXT NOT NULL CHECK(priority IN (${priorityCheck})) DEFAULT 'NORMAL',
     estimated_duration INTEGER,
     estimated_cost INTEGER,
     due_time TEXT,

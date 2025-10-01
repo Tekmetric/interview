@@ -1,11 +1,8 @@
-export type RepairOrderStatus =
-  | 'NEW'
-  | 'AWAITING_APPROVAL'
-  | 'IN_PROGRESS'
-  | 'WAITING_PARTS'
-  | 'COMPLETED'
+import type { REPAIR_ORDER_STATUSES, PRIORITIES } from './constants'
 
-export type Priority = 'HIGH' | 'NORMAL'
+export type RepairOrderStatus = (typeof REPAIR_ORDER_STATUSES)[number]
+
+export type Priority = (typeof PRIORITIES)[number]
 
 export interface Technician {
   id: string

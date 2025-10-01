@@ -14,14 +14,18 @@
 - [x] RESTful API with validation (CRUD endpoints with Zod validation)
 - [x] Absolute path imports (@shared, @server path aliases)
 - [x] Welcome screeen -> placeholder for login. Click "Continue as Demo User"
-- [ ] Dashboard (KPI cards: Total WIP, Overdue, Waiting Parts, Awaiting Approval)
-- [ ] Dashboard Quick Lists (Top 5 Overdue ROs, Top 5 Recent/Today ROs)
-- [ ] Drag-and-drop Kanban board (@dnd-kit)
-- [ ] RO Details Drawer (edit fields, save, delete, cancel)
-- [ ] TanStack Query v5 integration (caching, optimistic updates)
+- [x] Dashboard (KPI cards: Total WIP, Overdue, Waiting Parts, Awaiting Approval)
+- [x] Dashboard Quick Lists (Top 5 Overdue ROs, Top 5 Recent ROs)
+- [x] Drag-and-drop Kanban board (@dnd-kit)
+- [x] TanStack Query v5 integration (caching, auto-refetch)
+- [x] Status transition validation (enforced workflow rules)
+- [ ] RO Details Drawer (side panel: view/edit fields, save, delete, cancel)
+- [ ] Click on Quick List cards → opens RO Details Drawer
+- [ ] Click on Kanban cards → opens RO Details Drawer
+- [ ] Click on KPI cards → navigates to Kanban with filter applied (e.g., "5 Overdue")
+- [ ] Search and filtering on Kanban board (customer, vehicle, tech, priority, status)
 - [ ] Two-layer validation (client + server, shared logic)
-- [ ] Search and filtering (customer, vehicle, tech, priority)
-- [ ] Status transition validation (enforced workflow rules)
+- [ ] Optimistic updates with rollback
 
 ## UI/UX Polish
 

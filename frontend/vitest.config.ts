@@ -4,8 +4,9 @@ import path from 'path'
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node',
-    include: ['**/*.test.ts', '**/*.spec.ts'],
+    environment: 'jsdom',
+    include: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+    setupFiles: ['./src/test/setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -15,6 +16,8 @@ export default defineConfig({
         '**/*.config.*',
         '**/types.ts',
         '**/*.d.ts',
+        '**/test/**',
+        '**/__tests__/**',
       ],
     },
   },

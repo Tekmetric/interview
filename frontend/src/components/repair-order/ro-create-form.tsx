@@ -13,19 +13,20 @@ type ROCreateFormProps = {
 }
 
 export function ROCreateForm({ onSubmit, onCancel, isPending }: ROCreateFormProps) {
+  const form = useRepairOrderForm()
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
     setValue,
-  } = useRepairOrderForm()
+  } = form
 
   const services = watch('services')
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit as (data: CreateRepairOrderInput) => void)}
       className='flex h-[calc(100vh-100px)] flex-col overflow-hidden'
     >
       <div className='flex-1 space-y-6 overflow-y-auto p-6 pb-4'>

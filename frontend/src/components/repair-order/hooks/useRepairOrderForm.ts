@@ -7,7 +7,7 @@ export function useRepairOrderForm(defaultValues?: Partial<CreateRepairOrderInpu
   const currentYear = new Date().getFullYear()
 
   return useForm<CreateRepairOrderInput>({
-    resolver: zodResolver(createRepairOrderSchema),
+    resolver: zodResolver(createRepairOrderSchema) as any,
     defaultValues: {
       customer: {
         name: '',
@@ -25,7 +25,6 @@ export function useRepairOrderForm(defaultValues?: Partial<CreateRepairOrderInpu
         color: '',
       },
       services: [],
-      priority: 'NORMAL',
       estimatedDuration: undefined,
       estimatedCost: undefined,
       dueTime: undefined,

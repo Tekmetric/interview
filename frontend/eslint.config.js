@@ -52,6 +52,10 @@ export default [
         document: 'readonly',
         window: 'readonly',
         navigator: 'readonly',
+        URLSearchParams: 'readonly',
+        HTMLLabelElement: 'readonly',
+        HTMLTextAreaElement: 'readonly',
+        global: 'readonly',
       },
     },
     plugins: {
@@ -67,6 +71,7 @@ export default [
       'react/prop-types': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'with-single-extends' }],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
     settings: {

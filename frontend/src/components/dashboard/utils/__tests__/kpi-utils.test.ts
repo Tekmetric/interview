@@ -20,9 +20,9 @@ describe('calculateKPIs', () => {
     services: ['Oil Change'],
     assignedTech: null,
     priority: 'NORMAL',
-    estimatedDuration: null,
-    estimatedCost: null,
-    dueTime: null,
+    estimatedDuration: undefined,
+    estimatedCost: undefined,
+    dueTime: undefined,
     notes: '',
     approvedByCustomer: false,
     createdAt: '2024-01-01T00:00:00Z',
@@ -47,7 +47,7 @@ describe('calculateKPIs', () => {
       createMockOrder({ dueTime: '2024-01-14T12:00:00Z', status: 'IN_PROGRESS' }),
       createMockOrder({ dueTime: '2024-01-16T12:00:00Z', status: 'IN_PROGRESS' }),
       createMockOrder({ dueTime: '2024-01-14T12:00:00Z', status: 'COMPLETED' }),
-      createMockOrder({ dueTime: null, status: 'IN_PROGRESS' }),
+      createMockOrder({ dueTime: undefined, status: 'IN_PROGRESS' }),
     ]
 
     // Mock current time
@@ -124,8 +124,8 @@ describe('calculateKPIs', () => {
 
   it('should handle orders with no due time', () => {
     const orders: RepairOrder[] = [
-      createMockOrder({ dueTime: null, status: 'IN_PROGRESS' }),
-      createMockOrder({ dueTime: null, status: 'NEW' }),
+      createMockOrder({ dueTime: undefined, status: 'IN_PROGRESS' }),
+      createMockOrder({ dueTime: undefined, status: 'NEW' }),
     ]
 
     const kpis = calculateKPIs(orders)

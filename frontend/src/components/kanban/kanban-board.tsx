@@ -13,6 +13,8 @@ import {
 } from '@dnd-kit/core'
 import { useState } from 'react'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { toast } from 'sonner'
+import { canTransition } from '@shared/transitions'
 import { KanbanColumn } from './kanban-column'
 import { KanbanCard } from './kanban-card'
 import type { RepairOrder, RepairOrderStatus } from '@shared/types'
@@ -40,6 +42,9 @@ const COLUMNS: Array<{
 
 export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
+  const [dragOverStatus, setDragOverStatus] = useState<RepairOrderStatus | null>(null)
+  const [isValidDrop, setIsValidDrop] = useState<boolean>(true)
+  const [validationMessage, setValidationMessage] = useState<string>('')
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -65,58 +70,93 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event
 
-    if (!over) return
+    if (!over) {
+      setDragOverStatus(null)
+      setIsValidDrop(true)
+      setValidationMessage('')
+      return
+    }
 
     const activeId = active.id as string
     const overId = over.id as string
+
+    // Get the order being dragged
+    const order = orders.find((o) => o.id === activeId)
+    if (!order) return
 
     // Check if we're over a column (status ID) or a card
     const overStatus = COLUMNS.find((col) => col.status === overId)?.status
     const overCard = orders.find((o) => o.id === overId)
 
+    let targetStatus: RepairOrderStatus | null = null
+
     if (overStatus) {
-      // Dragging over a column
-      const order = orders.find((o) => o.id === activeId)
-      if (order && order.status !== overStatus) {
-        onStatusChange(activeId, overStatus)
-      }
+      targetStatus = overStatus
     } else if (overCard) {
-      // Dragging over another card - adopt its status
-      const order = orders.find((o) => o.id === activeId)
-      if (order && order.status !== overCard.status) {
-        onStatusChange(activeId, overCard.status)
-      }
+      targetStatus = overCard.status
+    }
+
+    if (targetStatus) {
+      setDragOverStatus(targetStatus)
+
+      // Validate the transition (visual feedback only, no status change)
+      const validation = canTransition(order.status, targetStatus, order)
+      setIsValidDrop(validation.allowed)
+      setValidationMessage(validation.reason || '')
     }
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
+    // Reset drag state
+    setActiveId(null)
+    setDragOverStatus(null)
+    setIsValidDrop(true)
+    setValidationMessage('')
+
     if (!over) {
-      setActiveId(null)
       return
     }
 
     const orderId = active.id as string
     const overId = over.id as string
 
-    // Check if we're dropping on a column
+    // Get the order being dropped
+    const order = orders.find((o) => o.id === orderId)
+    if (!order) return
+
+    // Check if we're dropping on a column or a card
     const overStatus = COLUMNS.find((col) => col.status === overId)?.status
     const overCard = orders.find((o) => o.id === overId)
 
+    let targetStatus: RepairOrderStatus | null = null
+
     if (overStatus) {
-      const order = orders.find((o) => o.id === orderId)
-      if (order && order.status !== overStatus) {
-        onStatusChange(orderId, overStatus)
-      }
+      targetStatus = overStatus
     } else if (overCard) {
-      const order = orders.find((o) => o.id === orderId)
-      if (order && order.status !== overCard.status) {
-        onStatusChange(orderId, overCard.status)
-      }
+      targetStatus = overCard.status
     }
 
-    setActiveId(null)
+    // No status change needed
+    if (!targetStatus || order.status === targetStatus) {
+      return
+    }
+
+    // Validate the transition before updating
+    const validation = canTransition(order.status, targetStatus, order)
+
+    if (!validation.allowed) {
+      // Show error toast with reason
+      toast.error('Cannot move order', {
+        description: validation.reason || 'This transition is not allowed',
+        duration: 3000,
+      })
+      return
+    }
+
+    // Valid transition - update status
+    onStatusChange(orderId, targetStatus)
   }
 
   const groupedOrders = COLUMNS.reduce(
@@ -136,7 +176,7 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
       onDragEnd={handleDragEnd}
     >
       <ScrollArea className='w-full'>
-        <div className='flex gap-4 p-4'>
+        <div className='flex gap-3 p-3 bg-gray-50/50'>
           {COLUMNS.map((col) => (
             <KanbanColumn
               key={col.status}
@@ -144,6 +184,9 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
               orders={groupedOrders[col.status]}
               title={col.title}
               color={col.color}
+              isBeingDraggedOver={dragOverStatus === col.status}
+              isValidDropZone={isValidDrop}
+              validationMessage={validationMessage}
             />
           ))}
         </div>

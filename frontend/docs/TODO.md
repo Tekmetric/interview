@@ -13,7 +13,11 @@
 - [x] Domain-driven design refactoring (shared/, data/, domains/)
 - [x] RESTful API with validation (CRUD endpoints with Zod validation)
 - [x] Absolute path imports (@shared, @server path aliases)
+- [x] Welcome screeen -> placeholder for login. Click "Continue as Demo User"
+- [ ] Dashboard (KPI cards: Total WIP, Overdue, Waiting Parts, Awaiting Approval)
+- [ ] Dashboard Quick Lists (Top 5 Overdue ROs, Top 5 Recent/Today ROs)
 - [ ] Drag-and-drop Kanban board (@dnd-kit)
+- [ ] RO Details Drawer (edit fields, save, delete, cancel)
 - [ ] TanStack Query v5 integration (caching, optimistic updates)
 - [ ] Two-layer validation (client + server, shared logic)
 - [ ] Search and filtering (customer, vehicle, tech, priority)

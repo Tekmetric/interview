@@ -211,7 +211,7 @@ tekmetric/frontend/
 │   ├── data/                 # Database layer (db, schema, seed)
 │   ├── domains/              # Business domains
 │   │   ├── technicians/      # types, repository, routes
-│   │   └── repair-orders/    # types, repository, transforms, routes
+│   │   └── repair-orders/    # types, repository, mappers, routes
 │   └── index.ts              # Express app entry
 ├── shared/                   # Cross-stack code
 │   ├── types.ts              # Shared interfaces
@@ -232,7 +232,7 @@ tekmetric/frontend/
 - Business Logic: Pure functions (`shared/transitions.ts`)
 - Data Layer: Repository pattern (`domains/*/repository.ts`)
 - API Layer: HTTP routing (`domains/*/routes.ts`)
-- UI Layer: React components (`src/`)
+- UI Layer: Container components (`pages/`) manage data/state/effects; Presentational components (`components/`) receive props and render pure UI
 
 **5. Fail Fast**: Clear errors with recovery actions
 

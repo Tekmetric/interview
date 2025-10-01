@@ -11,14 +11,18 @@ type KanbanColumnProps = {
 }
 
 export function KanbanColumn({ status, orders, title, color }: KanbanColumnProps) {
-  const { setNodeRef } = useDroppable({ id: status })
+  const { setNodeRef, isOver } = useDroppable({ id: status })
 
   return (
-    <div className='flex min-w-[300px] flex-col gap-3 rounded-lg bg-gray-50 p-4'>
+    <div
+      className={`flex min-w-[340px] flex-col gap-3 rounded-xl bg-white p-4 shadow-sm transition-all ${
+        isOver ? 'ring-2 ring-green-400 shadow-lg' : ''
+      }`}
+    >
       <div className='flex items-center justify-between'>
-        <h3 className='font-semibold text-gray-900'>{title}</h3>
+        <h3 className='text-sm font-semibold text-gray-700'>{title}</h3>
         <div
-          className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${color}`}
+          className={`flex h-7 min-w-[28px] items-center justify-center rounded-full px-2 text-xs font-bold ${color}`}
         >
           {orders.length}
         </div>
@@ -29,10 +33,17 @@ export function KanbanColumn({ status, orders, title, color }: KanbanColumnProps
         items={orders.map((o) => o.id)}
         strategy={verticalListSortingStrategy}
       >
-        <div ref={setNodeRef} className='flex min-h-[200px] flex-col gap-2'>
-          {orders.map((order) => (
-            <KanbanCard key={order.id} order={order} />
-          ))}
+        <div
+          ref={setNodeRef}
+          className='flex max-h-[calc(100vh-280px)] min-h-[200px] flex-col gap-2 overflow-y-auto rounded-lg bg-gray-50/50 p-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300'
+        >
+          {orders.length === 0 ? (
+            <div className='flex flex-1 items-center justify-center text-center'>
+              <p className='text-sm text-gray-400'>No orders</p>
+            </div>
+          ) : (
+            orders.map((order) => <KanbanCard key={order.id} order={order} />)
+          )}
         </div>
       </SortableContext>
     </div>

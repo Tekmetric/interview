@@ -1,9 +1,11 @@
-import { Suspense } from 'react'
+import { Suspense, useMemo, useState } from 'react'
 import { AppLayout } from '@/components/layout/app-layout'
 import { KanbanBoard } from '@/components/kanban/kanban-board'
+import { KanbanFilters } from '@/components/kanban/kanban-filters'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useRepairOrders } from '@/hooks/useRepairOrders'
+import { useTechnicians } from '@/hooks/useTechnicians'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
@@ -55,8 +57,38 @@ function KanbanError() {
 }
 
 function KanbanContent() {
-  const { data } = useRepairOrders()
+  const { data: orders } = useRepairOrders()
+  const { data: technicians } = useTechnicians()
   const queryClient = useQueryClient()
+
+  const [searchQuery, setSearchQuery] = useState('')
+  const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'HIGH' | 'NORMAL'>('ALL')
+  const [techFilter, setTechFilter] = useState('ALL')
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter((order) => {
+      // Search filter
+      const searchLower = searchQuery.toLowerCase()
+      const matchesSearch =
+        !searchQuery ||
+        order.id.toLowerCase().includes(searchLower) ||
+        order.customer.name.toLowerCase().includes(searchLower) ||
+        `${order.vehicle.year} ${order.vehicle.make} ${order.vehicle.model}`
+          .toLowerCase()
+          .includes(searchLower)
+
+      // Priority filter
+      const matchesPriority = priorityFilter === 'ALL' || order.priority === priorityFilter
+
+      // Tech filter
+      const matchesTech =
+        techFilter === 'ALL' ||
+        (techFilter === 'UNASSIGNED' && !order.assignedTech) ||
+        order.assignedTech?.id === techFilter
+
+      return matchesSearch && matchesPriority && matchesTech
+    })
+  }, [orders, searchQuery, priorityFilter, techFilter])
 
   const mutation = useMutation({
     mutationFn: ({ orderId, status }: { orderId: string; status: RepairOrderStatus }) =>
@@ -76,13 +108,23 @@ function KanbanContent() {
 
   return (
     <AppLayout>
-      <div className='flex flex-col gap-6 p-8'>
+      <div className='flex flex-col gap-4 p-6'>
         <header className='flex flex-col gap-2'>
-          <h1 className='text-3xl font-bold text-gray-900'>Kanban Board</h1>
-          <p className='text-gray-600'>Drag and drop to update repair order status</p>
+          <h1 className='text-2xl font-bold text-gray-900'>Kanban Board</h1>
+          <p className='text-sm text-gray-600'>Drag and drop to update repair order status</p>
         </header>
 
-        <KanbanBoard orders={data} onStatusChange={handleStatusChange} />
+        <KanbanFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          priorityFilter={priorityFilter}
+          onPriorityChange={setPriorityFilter}
+          techFilter={techFilter}
+          onTechChange={setTechFilter}
+          technicians={technicians}
+        />
+
+        <KanbanBoard orders={filteredOrders} onStatusChange={handleStatusChange} />
       </div>
     </AppLayout>
   )

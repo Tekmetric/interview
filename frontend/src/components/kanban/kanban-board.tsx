@@ -134,7 +134,7 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className='flex gap-4 overflow-x-auto pb-4'>
+      <div className='flex gap-4 overflow-x-auto rounded-lg bg-gray-50 p-4'>
         {COLUMNS.map((col) => (
           <KanbanColumn
             key={col.status}
@@ -146,7 +146,13 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
         ))}
       </div>
 
-      <DragOverlay>{activeOrder && <KanbanCard order={activeOrder} />}</DragOverlay>
+      <DragOverlay>
+        {activeOrder && (
+          <div className='rotate-3 scale-105 opacity-80'>
+            <KanbanCard order={activeOrder} />
+          </div>
+        )}
+      </DragOverlay>
     </DndContext>
   )
 }

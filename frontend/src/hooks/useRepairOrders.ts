@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import type { RepairOrder } from '@shared/types'
 
 async function fetchRepairOrders(): Promise<RepairOrder[]> {
@@ -10,7 +10,7 @@ async function fetchRepairOrders(): Promise<RepairOrder[]> {
 }
 
 export function useRepairOrders() {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ['repairOrders'],
     queryFn: fetchRepairOrders,
   })

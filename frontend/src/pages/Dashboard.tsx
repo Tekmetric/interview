@@ -1,48 +1,47 @@
+import { Suspense } from 'react'
 import { AppLayout } from '@/components/layout/app-layout'
 import { KPICard } from '@/components/dashboard/kpi-card'
 import { QuickLists } from '@/components/dashboard/quick-lists'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useRepairOrders } from '@/hooks/useRepairOrders'
 import { calculateKPIs } from '@/lib/kpi-utils'
-import { useLocation } from 'wouter'
 
-export function Dashboard() {
-  const { data: orders, isLoading, error } = useRepairOrders()
-  const [, setLocation] = useLocation()
+function DashboardLoading() {
+  return (
+    <AppLayout>
+      <div className='space-y-6 p-8'>
+        <header className='space-y-2'>
+          <h1 className='text-3xl font-bold text-gray-900'>Dashboard</h1>
+          <p className='text-gray-600'>Quick overview of repair orders</p>
+        </header>
 
-  if (isLoading) {
-    return (
-      <AppLayout>
-        <div className='space-y-6 p-8'>
-          <header className='space-y-2'>
-            <h1 className='text-3xl font-bold text-gray-900'>Dashboard</h1>
-            <p className='text-gray-600'>Quick overview of repair orders</p>
-          </header>
-
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
-            {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className='h-32' />
-            ))}
-          </div>
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className='h-32' />
+          ))}
         </div>
-      </AppLayout>
-    )
-  }
+      </div>
+    </AppLayout>
+  )
+}
 
-  if (error) {
-    return (
-      <AppLayout>
-        <div className='p-8'>
-          <div className='rounded-lg bg-red-50 p-4 text-red-800'>
-            Error loading repair orders. Please try again.
-          </div>
+function DashboardError() {
+  return (
+    <AppLayout>
+      <div className='p-8'>
+        <div className='rounded-lg bg-red-50 p-4 text-red-800'>
+          Error loading repair orders. Please try again.
         </div>
-      </AppLayout>
-    )
-  }
+      </div>
+    </AppLayout>
+  )
+}
 
-  const kpis = calculateKPIs(orders || [])
+function DashboardContent() {
+  const { data } = useRepairOrders()
+  const kpis = calculateKPIs(data)
 
   return (
     <AppLayout>
@@ -148,5 +147,15 @@ export function Dashboard() {
         <QuickLists />
       </div>
     </AppLayout>
+  )
+}
+
+export function Dashboard() {
+  return (
+    <ErrorBoundary fallback={() => <DashboardError />}>
+      <Suspense fallback={<DashboardLoading />}>
+        <DashboardContent />
+      </Suspense>
+    </ErrorBoundary>
   )
 }

@@ -1,6 +1,8 @@
+import { Suspense } from 'react'
 import { AppLayout } from '@/components/layout/app-layout'
 import { KanbanBoard } from '@/components/kanban/kanban-board'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useRepairOrders } from '@/hooks/useRepairOrders'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -21,8 +23,38 @@ async function updateOrderStatus(orderId: string, status: RepairOrderStatus) {
   return res.json()
 }
 
-export function Kanban() {
-  const { data: orders, isLoading, error } = useRepairOrders()
+function KanbanLoading() {
+  return (
+    <AppLayout>
+      <div className='flex flex-col gap-6 p-8'>
+        <header className='flex flex-col gap-2'>
+          <h1 className='text-3xl font-bold text-gray-900'>Kanban Board</h1>
+          <p className='text-gray-600'>Drag and drop to update repair order status</p>
+        </header>
+        <div className='flex gap-4'>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className='h-96 min-w-[300px]' />
+          ))}
+        </div>
+      </div>
+    </AppLayout>
+  )
+}
+
+function KanbanError() {
+  return (
+    <AppLayout>
+      <div className='p-8'>
+        <div className='rounded-lg bg-red-50 p-4 text-red-800'>
+          Error loading repair orders. Please try again.
+        </div>
+      </div>
+    </AppLayout>
+  )
+}
+
+function KanbanContent() {
+  const { data } = useRepairOrders()
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -41,36 +73,6 @@ export function Kanban() {
     mutation.mutate({ orderId, status: newStatus })
   }
 
-  if (isLoading) {
-    return (
-      <AppLayout>
-        <div className='flex flex-col gap-6 p-8'>
-          <header className='flex flex-col gap-2'>
-            <h1 className='text-3xl font-bold text-gray-900'>Kanban Board</h1>
-            <p className='text-gray-600'>Drag and drop to update repair order status</p>
-          </header>
-          <div className='flex gap-4'>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton key={i} className='h-96 min-w-[300px]' />
-            ))}
-          </div>
-        </div>
-      </AppLayout>
-    )
-  }
-
-  if (error) {
-    return (
-      <AppLayout>
-        <div className='p-8'>
-          <div className='rounded-lg bg-red-50 p-4 text-red-800'>
-            Error loading repair orders. Please try again.
-          </div>
-        </div>
-      </AppLayout>
-    )
-  }
-
   return (
     <AppLayout>
       <div className='flex flex-col gap-6 p-8'>
@@ -79,8 +81,18 @@ export function Kanban() {
           <p className='text-gray-600'>Drag and drop to update repair order status</p>
         </header>
 
-        <KanbanBoard orders={orders || []} onStatusChange={handleStatusChange} />
+        <KanbanBoard orders={data} onStatusChange={handleStatusChange} />
       </div>
     </AppLayout>
+  )
+}
+
+export function Kanban() {
+  return (
+    <ErrorBoundary fallback={() => <KanbanError />}>
+      <Suspense fallback={<KanbanLoading />}>
+        <KanbanContent />
+      </Suspense>
+    </ErrorBoundary>
   )
 }

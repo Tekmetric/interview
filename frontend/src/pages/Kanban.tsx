@@ -6,6 +6,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useRepairOrders } from '@/hooks/useRepairOrders'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
 import type { RepairOrderStatus } from '@shared/types'
 
 async function updateOrderStatus(orderId: string, status: RepairOrderStatus) {
@@ -93,6 +94,7 @@ export function Kanban() {
       <Suspense fallback={<KanbanLoading />}>
         <KanbanContent />
       </Suspense>
+      <RODetailsDrawer />
     </ErrorBoundary>
   )
 }

@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { useLocation } from 'wouter'
 import { AppLayout } from '@/components/layout/app-layout'
 import { KPICard } from '@/components/dashboard/kpi-card'
 import { QuickLists } from '@/components/dashboard/quick-lists'
@@ -7,6 +8,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useRepairOrders } from '@/hooks/useRepairOrders'
 import { calculateKPIs } from '@/lib/kpi-utils'
+import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
+
+import { Plus } from 'lucide-react'
 
 function DashboardLoading() {
   return (
@@ -40,6 +44,7 @@ function DashboardError() {
 }
 
 function DashboardContent() {
+  const [, setLocation] = useLocation()
   const { data } = useRepairOrders()
   const kpis = calculateKPIs(data)
 
@@ -51,9 +56,10 @@ function DashboardContent() {
             <h1 className='text-3xl font-bold text-gray-900'>Dashboard</h1>
             <p className='text-gray-600'>Quick overview of repair orders</p>
           </div>
-          <div className='flex gap-3'>
-            <Button size='lg'>New Repair Order</Button>
-          </div>
+          <Button size='lg' onClick={() => setLocation('/repair-order/new')}>
+            <Plus />
+            Repair Order
+          </Button>
         </header>
 
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
@@ -61,6 +67,7 @@ function DashboardContent() {
             title='Total WIP'
             value={kpis.totalWIP}
             variant='primary'
+            onClick={() => setLocation('/kanban')}
             icon={
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -156,6 +163,7 @@ export function Dashboard() {
       <Suspense fallback={<DashboardLoading />}>
         <DashboardContent />
       </Suspense>
+      <RODetailsDrawer />
     </ErrorBoundary>
   )
 }

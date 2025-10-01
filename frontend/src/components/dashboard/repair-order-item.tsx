@@ -1,4 +1,11 @@
 import { Badge } from '@/components/ui/badge'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { useLocation, useSearch } from 'wouter'
 import type { RepairOrder } from '@shared/types'
 
 type RepairOrderItemProps = {
@@ -6,41 +13,78 @@ type RepairOrderItemProps = {
 }
 
 export function RepairOrderItem({ order }: RepairOrderItemProps) {
-  const statusColors = {
-    NEW: 'bg-blue-500',
-    AWAITING_APPROVAL: 'bg-amber-500',
-    IN_PROGRESS: 'bg-indigo-500',
-    WAITING_PARTS: 'bg-orange-500',
-    COMPLETED: 'bg-green-500',
+  const [, setLocation] = useLocation()
+  const searchParams = new URLSearchParams(useSearch())
+
+  const handleClick = () => {
+    searchParams.set('roId', order.id)
+    setLocation(`?${searchParams.toString()}`)
   }
 
-  const priorityColors = {
-    HIGH: 'border-red-500 text-red-700',
-    NORMAL: 'border-gray-300 text-gray-600',
+  const statusConfig = {
+    NEW: { bg: 'bg-blue-500', text: 'text-white', label: 'NEW' },
+    AWAITING_APPROVAL: {
+      bg: 'bg-amber-500',
+      text: 'text-white',
+      label: 'AWAITING_APPROVAL',
+    },
+    IN_PROGRESS: { bg: 'bg-indigo-500', text: 'text-white', label: 'IN_PROGRESS' },
+    WAITING_PARTS: { bg: 'bg-orange-500', text: 'text-white', label: 'WAITING_PARTS' },
+    COMPLETED: { bg: 'bg-green-500', text: 'text-white', label: 'COMPLETED' },
   }
+
+  const status = statusConfig[order.status]
 
   return (
-    <div className='flex items-center justify-between rounded-lg border bg-white p-3 hover:bg-gray-50'>
-      <div className='flex flex-col gap-1'>
+    <div
+      className='group flex cursor-pointer items-start justify-between rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-gray-300 hover:shadow-sm'
+      onClick={handleClick}
+    >
+      <div className='flex flex-1 flex-col gap-2'>
         <div className='flex items-center gap-2'>
-          <p className='font-mono text-sm font-semibold'>{order.id}</p>
-          {order.priority === 'HIGH' && (
-            <Badge variant='outline' className={priorityColors.HIGH}>
-              HIGH
-            </Badge>
-          )}
+          <span className='text-base font-bold text-gray-900'>{order.id}</span>
+          <Badge className={`${status.bg} ${status.text} text-xs font-medium`}>
+            {status.label}
+          </Badge>
         </div>
-        <p className='text-sm text-gray-900'>
+        <p className='text-sm font-semibold text-gray-800'>
           {order.vehicle.year} {order.vehicle.make} {order.vehicle.model}
         </p>
-        <p className='text-xs text-gray-500'>{order.customer.name}</p>
-        {order.dueTime && (
-          <p className='text-xs text-gray-500'>
-            Due: {new Date(order.dueTime).toLocaleString()}
-          </p>
-        )}
+        <div className='flex items-center gap-3 text-xs text-gray-500'>
+          <span>{order.customer.name}</span>
+          {order.dueTime && (
+            <>
+              <span>•</span>
+              <span>Due: {new Date(order.dueTime).toLocaleString()}</span>
+            </>
+          )}
+        </div>
       </div>
-      <Badge className={statusColors[order.status]}>{order.status}</Badge>
+      {order.priority === 'HIGH' && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className='flex items-center justify-center'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  viewBox='0 0 24 24'
+                  fill='currentColor'
+                  className='h-5 w-5 text-red-500'
+                >
+                  <path
+                    fillRule='evenodd'
+                    d='M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z'
+                    clipRule='evenodd'
+                  />
+                </svg>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>High Priority</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
     </div>
   )
 }

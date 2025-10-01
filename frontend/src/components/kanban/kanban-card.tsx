@@ -18,7 +18,7 @@ type KanbanCardProps = {
 export function KanbanCard({ order, showStatus = true }: KanbanCardProps) {
   const [, setLocation] = useLocation()
   const searchParams = new URLSearchParams(useSearch())
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } = useSortable({
     id: order.id,
   })
 
@@ -65,14 +65,20 @@ export function KanbanCard({ order, showStatus = true }: KanbanCardProps) {
   const status = statusConfig[order.status]
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className='group relative cursor-move rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-gray-300 hover:shadow-sm active:cursor-grabbing'
-      onClick={handleClick}
-    >
+    <div className='relative'>
+      {/* Drop Indicator - Shows where card will be inserted */}
+      {isOver && (
+        <div className='absolute -top-1 left-0 right-0 h-0.5 bg-blue-500 rounded-full' />
+      )}
+
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
+        className='group relative cursor-move rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-gray-300 hover:shadow-sm active:cursor-grabbing'
+        onClick={handleClick}
+      >
       {/* High Priority Fire Icon - Absolute positioned top-right */}
       {order.priority === 'HIGH' && (
         <TooltipProvider>
@@ -84,6 +90,7 @@ export function KanbanCard({ order, showStatus = true }: KanbanCardProps) {
                   viewBox='0 0 24 24'
                   fill='currentColor'
                   className='h-5 w-5 text-red-500'
+                  aria-label='High Priority'
                 >
                   <path
                     fillRule='evenodd'
@@ -124,6 +131,29 @@ export function KanbanCard({ order, showStatus = true }: KanbanCardProps) {
             </>
           )}
         </div>
+      </div>
+
+      {/* Services & Technician */}
+      <div className='mt-2 flex flex-col gap-2'>
+        <div className='flex flex-wrap gap-1'>
+          {order.services.slice(0, 2).map((service) => (
+            <Badge key={service} variant='secondary' className='text-xs'>
+              {service}
+            </Badge>
+          ))}
+          {order.services.length > 2 && (
+            <Badge variant='secondary' className='text-xs'>
+              +{order.services.length - 2}
+            </Badge>
+          )}
+        </div>
+        {order.assignedTech && (
+          <div className='flex items-center gap-2 text-xs text-gray-500'>
+            <span className='font-semibold'>Technician:</span>
+            <span>{order.assignedTech.name}</span>
+          </div>
+        )}
+      </div>
       </div>
     </div>
   )

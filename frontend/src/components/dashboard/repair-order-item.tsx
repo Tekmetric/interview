@@ -71,6 +71,7 @@ export function RepairOrderItem({ order }: RepairOrderItemProps) {
                   viewBox='0 0 24 24'
                   fill='currentColor'
                   className='h-5 w-5 text-red-500'
+                  aria-label='High Priority'
                 >
                   <path
                     fillRule='evenodd'

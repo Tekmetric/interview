@@ -53,8 +53,8 @@ describe('RepairOrderItem', () => {
     const highPriorityOrder = { ...mockOrder, priority: 'HIGH' as const }
     render(<RepairOrderItem order={highPriorityOrder} />)
 
-    const badges = screen.getAllByText('HIGH')
-    expect(badges).toHaveLength(1)
+    const priorityIcon = screen.getByLabelText('High Priority');
+    expect(priorityIcon).toBeInTheDocument();
   })
 
   it('should not render priority badge when priority is NORMAL', () => {
@@ -99,13 +99,7 @@ describe('RepairOrderItem', () => {
     })
   })
 
-  it('should apply correct priority badge styling for HIGH priority', () => {
-    const highPriorityOrder = { ...mockOrder, priority: 'HIGH' as const }
-    render(<RepairOrderItem order={highPriorityOrder} />)
 
-    const badge = screen.getByText('HIGH')
-    expect(badge).toHaveClass('border-red-500', 'text-red-700')
-  })
 
   it('should render with hover effect class and cursor-pointer', () => {
     const { container } = render(<RepairOrderItem order={mockOrder} />)

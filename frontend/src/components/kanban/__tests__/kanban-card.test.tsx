@@ -69,7 +69,8 @@ describe('KanbanCard', () => {
     const highPriorityOrder = { ...mockOrder, priority: 'HIGH' as const }
     render(<KanbanCard order={highPriorityOrder} />)
 
-    expect(screen.getByText('HIGH')).toBeInTheDocument()
+    const priorityIcon = screen.getByLabelText('High Priority');
+    expect(priorityIcon).toBeInTheDocument();
   })
 
   it('should not render priority badge when priority is NORMAL', () => {
@@ -145,15 +146,9 @@ describe('KanbanCard', () => {
   it('should have cursor-move class for drag functionality', () => {
     const { container } = render(<KanbanCard order={mockOrder} />)
 
-    const card = container.firstChild as HTMLElement
-    expect(card).toHaveClass('cursor-move')
+    const card = container.querySelector('.cursor-move')
+    expect(card).toBeInTheDocument()
   })
 
-  it('should apply correct priority badge styling for HIGH priority', () => {
-    const highPriorityOrder = { ...mockOrder, priority: 'HIGH' as const }
-    render(<KanbanCard order={highPriorityOrder} />)
 
-    const badge = screen.getByText('HIGH')
-    expect(badge).toHaveClass('border-red-500', 'text-red-700')
-  })
 })

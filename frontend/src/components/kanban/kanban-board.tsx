@@ -9,7 +9,7 @@ import {
   KeyboardSensor,
   useSensor,
   useSensors,
-  closestCenter,
+  closestCorners,
 } from '@dnd-kit/core'
 import { useState } from 'react'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
@@ -170,7 +170,7 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={closestCorners}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}

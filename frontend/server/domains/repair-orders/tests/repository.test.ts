@@ -31,6 +31,8 @@ const {
   createRepairOrder,
   updateRepairOrder,
   deleteRepairOrder,
+  getOverdueOrders,
+  getRecentOrders,
 } = await import('../repository')
 
 describe('Repair Orders Repository', () => {
@@ -274,6 +276,71 @@ describe('Repair Orders Repository', () => {
 
       const afterCount = getAllRepairOrders().length
       expect(afterCount).toBe(beforeCount - 1)
+    })
+  })
+
+  describe('getOverdueOrders', () => {
+    it('should return only orders that are past their due_time and not completed', () => {
+      const now = new Date()
+      const past = new Date(now.getTime() - 1000 * 60 * 60).toISOString()
+      const future = new Date(now.getTime() + 1000 * 60 * 60).toISOString()
+
+      mockDb.current!.exec('DELETE FROM repair_orders')
+      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-OVERDUE', 'IN_PROGRESS', past, 'a','a',2020,'a','a','[]');
+      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-FUTURE', 'IN_PROGRESS', future, 'a','a',2020,'a','a','[]');
+      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-OVERDUE-COMPLETED', 'COMPLETED', past, 'a','a',2020,'a','a','[]');
+
+      const overdue = getOverdueOrders()
+      expect(overdue).toHaveLength(1)
+      expect(overdue[0].id).toBe('RO-OVERDUE')
+    })
+
+    it('should respect the limit parameter', () => {
+      const past = new Date(Date.now() - 1000 * 60 * 60).toISOString()
+      mockDb.current!.exec('DELETE FROM repair_orders')
+      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-OVERDUE-1', 'IN_PROGRESS', past, 'a','a',2020,'a','a','[]');
+      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-OVERDUE-2', 'IN_PROGRESS', past, 'a','a',2020,'a','a','[]');
+
+      const overdue = getOverdueOrders(1)
+      expect(overdue).toHaveLength(1)
+    })
+
+    it('should return orders sorted by due_time ASC', () => {
+      const earlier = new Date(Date.now() - 1000 * 60 * 120).toISOString()
+      const later = new Date(Date.now() - 1000 * 60 * 60).toISOString()
+      mockDb.current!.exec('DELETE FROM repair_orders')
+      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-LATER', 'IN_PROGRESS', later, 'a','a',2020,'a','a','[]');
+      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-EARLIER', 'IN_PROGRESS', earlier, 'a','a',2020,'a','a','[]');
+
+      const overdue = getOverdueOrders()
+      expect(overdue).toHaveLength(2)
+      expect(overdue[0].id).toBe('RO-EARLIER')
+      expect(overdue[1].id).toBe('RO-LATER')
+    })
+  })
+
+  describe('getRecentOrders', () => {
+    it('should return orders sorted by created_at DESC', () => {
+      mockDb.current!.exec('DELETE FROM repair_orders')
+      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-OLD', 'NEW', '2023-01-01 10:00:00', 'a','a',2020,'a','a','[]')").run();
+      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-NEW', 'NEW', '2023-01-02 10:00:00', 'a','a',2020,'a','a','[]')").run();
+      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-MID', 'NEW', '2023-01-01 12:00:00', 'a','a',2020,'a','a','[]')").run();
+
+      const recent = getRecentOrders(3)
+      expect(recent).toHaveLength(3)
+      expect(recent[0].id).toBe('RO-NEW')
+      expect(recent[1].id).toBe('RO-MID')
+      expect(recent[2].id).toBe('RO-OLD')
+    })
+
+    it('should respect the limit parameter', () => {
+      mockDb.current!.exec('DELETE FROM repair_orders')
+      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-1', 'NEW', '2023-01-01 10:00:00', 'a','a',2020,'a','a','[]')").run();
+      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-2', 'NEW', '2023-01-02 10:00:00', 'a','a',2020,'a','a','[]')").run();
+
+      const recent = getRecentOrders(1)
+      expect(recent).toHaveLength(1)
+      expect(recent[0].id).toBe('RO-2')
     })
   })
 })

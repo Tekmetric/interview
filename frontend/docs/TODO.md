@@ -24,8 +24,11 @@
 - [x] Click on Kanban cards → opens RO Details Drawer
 - [x] Click on KPI cards → navigates to Kanban with filter applied (e.g., "5 Overdue")
 - [ ] Search and filtering on Kanban board (customer, vehicle, tech, priority, status)
+- [ ] User preferance persistance to local storage - filters
 - [ ] Two-layer validation (client + server, shared logic)
 - [ ] Optimistic updates with rollback
+- [ ] Multi-Select + Batch Actions
+- [ ] Create new Repair Order
 
 ## UI/UX Polish
 
@@ -33,4 +36,3 @@
 - [ ] Accessibility features (keyboard nav, ARIA labels, screen reader)
 - [ ] Loading states (skeleton cards)
 - [ ] Error handling (toast notifications with retry)
-- [ ] Optimistic updates with rollback

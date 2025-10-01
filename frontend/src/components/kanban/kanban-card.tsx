@@ -9,6 +9,8 @@ import {
 } from '@/components/ui/tooltip'
 import { useLocation, useSearch } from 'wouter'
 import type { RepairOrder } from '@shared/types'
+import { STATUS_CONFIG } from '@/components/repair-order/ro-constants'
+import { REPAIR_ORDER_LABELS, FILTER_LABELS } from '@shared/constants'
 
 type KanbanCardProps = {
   order: RepairOrder
@@ -36,40 +38,7 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
     setLocation(`?${searchParams.toString()}`)
   }
 
-  const statusConfig = {
-    NEW: {
-      bg: 'bg-blue-50',
-      text: 'text-blue-700',
-      border: 'border-blue-200',
-      label: 'NEW',
-    },
-    AWAITING_APPROVAL: {
-      bg: 'bg-amber-50',
-      text: 'text-amber-700',
-      border: 'border-amber-200',
-      label: 'AWAITING_APPROVAL',
-    },
-    IN_PROGRESS: {
-      bg: 'bg-indigo-50',
-      text: 'text-indigo-700',
-      border: 'border-indigo-200',
-      label: 'IN_PROGRESS',
-    },
-    WAITING_PARTS: {
-      bg: 'bg-purple-50',
-      text: 'text-purple-700',
-      border: 'border-purple-200',
-      label: 'WAITING_PARTS',
-    },
-    COMPLETED: {
-      bg: 'bg-green-50',
-      text: 'text-green-700',
-      border: 'border-green-200',
-      label: 'COMPLETED',
-    },
-  }
-
-  const status = statusConfig[order.status]
+  const status = STATUS_CONFIG[order.status]
 
   return (
     <div className='relative'>
@@ -108,7 +77,7 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
                     viewBox='0 0 24 24'
                     fill='currentColor'
                     className='h-5 w-5 text-red-500'
-                    aria-label='High Priority'
+                    aria-label={FILTER_LABELS.HIGH_PRIORITY}
                   >
                     <path
                       fillRule='evenodd'
@@ -119,7 +88,7 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p>High Priority</p>
+                <p>{FILTER_LABELS.HIGH_PRIORITY}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -145,7 +114,9 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
             {order.dueTime && (
               <>
                 <span>•</span>
-                <span>Due: {new Date(order.dueTime).toLocaleString()}</span>
+                <span>
+                  {REPAIR_ORDER_LABELS.DUE} {new Date(order.dueTime).toLocaleString()}
+                </span>
               </>
             )}
           </div>
@@ -167,7 +138,9 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
           </div>
           {order.assignedTech && (
             <div className='flex items-center gap-2 text-xs text-gray-500'>
-              <span className='font-semibold'>Technician:</span>
+              <span className='font-semibold'>
+                {REPAIR_ORDER_LABELS.ASSIGNED_TECHNICIAN}
+              </span>
               <span>{order.assignedTech.name}</span>
             </div>
           )}

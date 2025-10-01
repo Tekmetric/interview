@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/tooltip'
 import { useLocation, useSearch } from 'wouter'
 import type { RepairOrder } from '@shared/types'
+import { STATUS_CONFIG } from '@/components/repair-order/ro-constants'
 
 type RepairOrderItemProps = {
   order: RepairOrder
@@ -21,20 +22,7 @@ export function RepairOrderItem({ order }: RepairOrderItemProps) {
     setLocation(`?${searchParams.toString()}`)
   }
 
-  const statusConfig = {
-    NEW: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', label: 'NEW' },
-    AWAITING_APPROVAL: {
-      bg: 'bg-amber-50',
-      text: 'text-amber-700',
-      border: 'border-amber-200',
-      label: 'AWAITING_APPROVAL',
-    },
-    IN_PROGRESS: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', label: 'IN_PROGRESS' },
-    WAITING_PARTS: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', label: 'WAITING_PARTS' },
-    COMPLETED: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200', label: 'COMPLETED' },
-  }
-
-  const status = statusConfig[order.status]
+  const status = STATUS_CONFIG[order.status]
 
   return (
     <div

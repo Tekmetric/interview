@@ -18,7 +18,7 @@ import { canTransition } from '@shared/transitions'
 import { KanbanColumn } from './kanban-column'
 import { KanbanCard } from './kanban-card'
 import type { RepairOrder, RepairOrderStatus } from '@shared/types'
-import { KANBAN_LABELS } from '@shared/constants'
+import { KANBAN_LABELS, RO_STATUS } from '@shared/constants'
 
 type KanbanBoardProps = {
   orders: RepairOrder[]
@@ -30,24 +30,24 @@ const COLUMNS: Array<{
   title: string
   color: string
 }> = [
-  { status: 'NEW', title: KANBAN_LABELS.STATUS.NEW, color: 'bg-blue-100 text-blue-700' },
+  { status: RO_STATUS.NEW, title: KANBAN_LABELS.STATUS.NEW, color: 'bg-blue-100 text-blue-700' },
   {
-    status: 'AWAITING_APPROVAL',
+    status: RO_STATUS.AWAITING_APPROVAL,
     title: KANBAN_LABELS.STATUS.AWAITING_APPROVAL,
     color: 'bg-amber-100 text-amber-700',
   },
   {
-    status: 'IN_PROGRESS',
+    status: RO_STATUS.IN_PROGRESS,
     title: KANBAN_LABELS.STATUS.IN_PROGRESS,
     color: 'bg-indigo-100 text-indigo-700',
   },
   {
-    status: 'WAITING_PARTS',
+    status: RO_STATUS.WAITING_PARTS,
     title: KANBAN_LABELS.STATUS.WAITING_PARTS,
     color: 'bg-orange-100 text-orange-700',
   },
   {
-    status: 'COMPLETED',
+    status: RO_STATUS.COMPLETED,
     title: KANBAN_LABELS.STATUS.COMPLETED,
     color: 'bg-green-100 text-green-700',
   },

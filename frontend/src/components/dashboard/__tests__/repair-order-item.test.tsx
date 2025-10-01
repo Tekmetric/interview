@@ -46,7 +46,7 @@ describe('RepairOrderItem', () => {
 
   it('should render status badge', () => {
     render(<RepairOrderItem order={mockOrder} />)
-    expect(screen.getByText('IN_PROGRESS')).toBeInTheDocument()
+    expect(screen.getByText('In Progress')).toBeInTheDocument()
   })
 
   it('should render HIGH priority badge when priority is HIGH', () => {
@@ -89,10 +89,19 @@ describe('RepairOrderItem', () => {
       'COMPLETED',
     ]
 
+    const statusLabels: Record<RepairOrder['status'], string> = {
+      NEW: 'New',
+      IN_PROGRESS: 'In Progress',
+      AWAITING_APPROVAL: 'Awaiting Approval',
+      WAITING_PARTS: 'Waiting Parts',
+      COMPLETED: 'Completed',
+      CANCELED: 'Canceled',
+    }
+
     statuses.forEach((status) => {
       const { unmount } = render(<RepairOrderItem order={{ ...mockOrder, status }} />)
 
-      const badge = screen.getByText(status)
+      const badge = screen.getByText(statusLabels[status])
       expect(badge).toBeInTheDocument()
 
       unmount()

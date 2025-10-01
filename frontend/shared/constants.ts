@@ -47,6 +47,8 @@ export const COMMON_LABELS = {
   UNASSIGNED: 'Unassigned',
   SAVING: 'Saving...',
   SAVE_CHANGES: 'Save Changes',
+  HIGH_PRIORITY: 'High Priority',
+  TECHNICIAN: 'Technician:',
 } as const
 
 // Repair Order Labels

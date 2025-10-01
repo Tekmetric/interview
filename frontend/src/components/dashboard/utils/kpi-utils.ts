@@ -1,4 +1,5 @@
 import type { RepairOrder } from '@shared/types'
+import { RO_STATUS } from '@shared/constants'
 
 export interface KPIMetrics {
   totalWIP: number
@@ -16,13 +17,13 @@ export function calculateKPIs(orders: RepairOrder[]): KPIMetrics {
   const now = new Date()
 
   return {
-    totalWIP: orders.filter((order) => order.status !== 'COMPLETED').length,
+    totalWIP: orders.filter((order) => order.status !== RO_STATUS.COMPLETED).length,
     overdueCount: orders.filter(
       (order) =>
-        order.dueTime && new Date(order.dueTime) < now && order.status !== 'COMPLETED',
+        order.dueTime && new Date(order.dueTime) < now && order.status !== RO_STATUS.COMPLETED,
     ).length,
-    waitingPartsCount: orders.filter((order) => order.status === 'WAITING_PARTS').length,
-    awaitingApprovalCount: orders.filter((order) => order.status === 'AWAITING_APPROVAL')
+    waitingPartsCount: orders.filter((order) => order.status === RO_STATUS.WAITING_PARTS).length,
+    awaitingApprovalCount: orders.filter((order) => order.status === RO_STATUS.AWAITING_APPROVAL)
       .length,
   }
 }

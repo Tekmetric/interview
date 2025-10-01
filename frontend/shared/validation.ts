@@ -56,6 +56,7 @@ export const updateRepairOrderSchema = z.object({
     })
     .nullable()
     .optional(),
+  priority: prioritySchema.optional(),
   notes: z.string().optional(),
   approvedByCustomer: z.boolean().optional(),
 })

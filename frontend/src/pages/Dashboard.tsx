@@ -1,16 +1,20 @@
+import { AppLayout } from '@/components/layout/app-layout'
 import { KPICard } from '@/components/dashboard/kpi-card'
+import { QuickLists } from '@/components/dashboard/quick-lists'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRepairOrders } from '@/hooks/useRepairOrders'
 import { calculateKPIs } from '@/lib/kpi-utils'
+import { useLocation } from 'wouter'
 
 export function Dashboard() {
   const { data: orders, isLoading, error } = useRepairOrders()
+  const [, setLocation] = useLocation()
 
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-gray-50 p-8'>
-        <div className='mx-auto max-w-6xl space-y-6'>
+      <AppLayout>
+        <div className='space-y-6 p-8'>
           <header className='space-y-2'>
             <h1 className='text-3xl font-bold text-gray-900'>Dashboard</h1>
             <p className='text-gray-600'>Quick overview of repair orders</p>
@@ -22,36 +26,42 @@ export function Dashboard() {
             ))}
           </div>
         </div>
-      </div>
+      </AppLayout>
     )
   }
 
   if (error) {
     return (
-      <div className='min-h-screen bg-gray-50 p-8'>
-        <div className='mx-auto max-w-6xl'>
+      <AppLayout>
+        <div className='p-8'>
           <div className='rounded-lg bg-red-50 p-4 text-red-800'>
             Error loading repair orders. Please try again.
           </div>
         </div>
-      </div>
+      </AppLayout>
     )
   }
 
   const kpis = calculateKPIs(orders || [])
 
   return (
-    <div className='min-h-screen bg-gray-50 p-8'>
-      <div className='mx-auto max-w-6xl space-y-6'>
-        <header className='space-y-2'>
-          <h1 className='text-3xl font-bold text-gray-900'>Dashboard</h1>
-          <p className='text-gray-600'>Quick overview of repair orders</p>
+    <AppLayout>
+      <div className='space-y-6 p-8'>
+        <header className='flex items-center justify-between'>
+          <div className='space-y-1'>
+            <h1 className='text-3xl font-bold text-gray-900'>Dashboard</h1>
+            <p className='text-gray-600'>Quick overview of repair orders</p>
+          </div>
+          <div className='flex gap-3'>
+            <Button size='lg'>New Repair Order</Button>
+          </div>
         </header>
 
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
           <KPICard
             title='Total WIP'
             value={kpis.totalWIP}
+            variant='primary'
             icon={
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -73,6 +83,7 @@ export function Dashboard() {
           <KPICard
             title='Overdue'
             value={kpis.overdueCount}
+            variant='warning'
             icon={
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -93,6 +104,7 @@ export function Dashboard() {
           <KPICard
             title='Waiting Parts'
             value={kpis.waitingPartsCount}
+            variant='info'
             icon={
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -114,6 +126,7 @@ export function Dashboard() {
           <KPICard
             title='Awaiting Approval'
             value={kpis.awaitingApprovalCount}
+            variant='success'
             icon={
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -132,13 +145,8 @@ export function Dashboard() {
           />
         </div>
 
-        <div className='flex gap-4'>
-          <Button size='lg'>Open Kanban Board</Button>
-          <Button variant='outline' size='lg'>
-            Create RO
-          </Button>
-        </div>
+        <QuickLists />
       </div>
-    </div>
+    </AppLayout>
   )
 }

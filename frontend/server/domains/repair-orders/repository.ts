@@ -1,6 +1,7 @@
 import db from '@server/data/db'
 import type { RepairOrder } from '@shared/types'
 import { rowToRepairOrder } from './transforms'
+import { buildUpdateFields } from '@server/data/utils'
 
 export function getAllRepairOrders(): RepairOrder[] {
   const stmt = db.prepare('SELECT * FROM repair_orders ORDER BY created_at DESC')
@@ -57,25 +58,17 @@ export function updateRepairOrder(
   id: string,
   data: Partial<RepairOrder>,
 ): RepairOrder | null {
-  const updates: string[] = []
-  const values: any[] = []
-
-  if (data.status !== undefined) {
-    updates.push('status = ?')
-    values.push(data.status)
-  }
-  if (data.assignedTech !== undefined) {
-    updates.push('technician_id = ?')
-    values.push(data.assignedTech?.id || null)
-  }
-  if (data.notes !== undefined) {
-    updates.push('notes = ?')
-    values.push(data.notes)
-  }
-  if (data.approvedByCustomer !== undefined) {
-    updates.push('approved_by_customer = ?')
-    values.push(data.approvedByCustomer ? 1 : 0)
-  }
+  const { updates, values } = buildUpdateFields(data, [
+    { field: 'status', column: 'status' },
+    { field: 'assignedTech', column: 'technician_id', transform: (v) => v?.id || null },
+    { field: 'priority', column: 'priority' },
+    { field: 'notes', column: 'notes' },
+    {
+      field: 'approvedByCustomer',
+      column: 'approved_by_customer',
+      transform: (v) => (v ? 1 : 0),
+    },
+  ])
 
   if (updates.length === 0) return getRepairOrderById(id)
 
@@ -133,4 +126,27 @@ export function insertRepairOrderDirect(order: any): void {
     order.approved_by_customer,
     order.created_at,
   )
+}
+
+export function getOverdueOrders(limit: number = 5): RepairOrder[] {
+  const stmt = db.prepare(`
+    SELECT * FROM repair_orders
+    WHERE due_time IS NOT NULL
+      AND due_time < datetime('now')
+      AND status NOT IN ('COMPLETED')
+    ORDER BY due_time ASC
+    LIMIT ?
+  `)
+  const rows = stmt.all(limit) as any[]
+  return rows.map(rowToRepairOrder)
+}
+
+export function getRecentOrders(limit: number = 5): RepairOrder[] {
+  const stmt = db.prepare(`
+    SELECT * FROM repair_orders
+    ORDER BY created_at DESC
+    LIMIT ?
+  `)
+  const rows = stmt.all(limit) as any[]
+  return rows.map(rowToRepairOrder)
 }

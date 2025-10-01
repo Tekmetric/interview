@@ -5,6 +5,8 @@ import {
   createRepairOrder,
   updateRepairOrder,
   deleteRepairOrder,
+  getOverdueOrders,
+  getRecentOrders,
 } from './repository'
 import { canTransition, ALLOWED_TRANSITIONS } from '@shared/transitions'
 import {
@@ -15,6 +17,20 @@ import {
 import { validate } from '@server/core/middleware/validate'
 
 const router = Router()
+
+// Get overdue repair orders
+router.get('/repairOrders/overdue', (req, res) => {
+  const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5
+  const orders = getOverdueOrders(limit)
+  res.json(orders)
+})
+
+// Get recent repair orders
+router.get('/repairOrders/recent', (req, res) => {
+  const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5
+  const orders = getRecentOrders(limit)
+  res.json(orders)
+})
 
 // Get all repair orders with optional filters
 router.get('/repairOrders', validate(repairOrderFiltersSchema, 'query'), (req, res) => {

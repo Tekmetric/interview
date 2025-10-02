@@ -34,7 +34,7 @@ async function assignTechToOrders(orderIds: string[], techId: string) {
       fetch(API_ENDPOINTS.REPAIR_ORDERS.BY_ID(orderId), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assignedTech: techId }),
+        body: JSON.stringify({ assignedTech: { id: techId } }),
       }).then((res) => {
         if (!res.ok) throw new Error(`Failed to update order ${orderId}`)
         return res.json()

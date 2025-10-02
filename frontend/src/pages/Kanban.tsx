@@ -2,11 +2,9 @@ import { Suspense, useMemo, useState, useEffect } from 'react'
 import { useLocation } from 'wouter'
 import { AppLayout } from '@/components/layout/app-layout'
 import { KanbanBoard } from '@/components/kanban/kanban-board'
-import { KanbanFilters } from '@/components/kanban/kanban-filters'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useRepairOrders } from '@/components/repair-order/hooks/useRepairOrders'
-import { useTechnicians } from '@/components/technician/hooks/useTechnicians'
 import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
 import { ROCreateDrawer } from '@/components/repair-order/ro-create-drawer'
 import { REPAIR_ORDER_LABELS, NAV_LABELS, KANBAN_LABELS } from '@shared/constants'
@@ -53,18 +51,11 @@ function KanbanError() {
 function KanbanContent() {
   const [, setLocation] = useLocation()
   const { data: orders } = useRepairOrders()
-  const { data: technicians } = useTechnicians()
+  // const { data: technicians } = useTechnicians()
   const [settingsOpen, setSettingsOpen] = useState(false)
 
-  const {
-    filters,
-    setFilters,
-    searchQuery,
-    setSearchQuery,
-    sortBy,
-    setSortBy,
-    sortedOrders,
-  } = useKanbanFilters(orders)
+  const { setFilters, searchQuery, setSearchQuery, sortedOrders } =
+    useKanbanFilters(orders)
 
   const { initializeFromUrl } = useKanbanUrlState()
   const { updateOrderStatus } = useOrderMutation()
@@ -108,16 +99,6 @@ function KanbanContent() {
             <span className='sm:inline'>{REPAIR_ORDER_LABELS.CREATE_NEW}</span>
           </Button>
         </header>
-
-        <KanbanFilters
-          filters={filters}
-          onFiltersChange={setFilters}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          technicians={technicians}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-        />
 
         <KanbanBoard orders={sortedOrders} onStatusChange={updateOrderStatus} />
         <BulkActionsBar orders={sortedOrders} />

@@ -33,7 +33,7 @@
 
 ## UI/UX Polish
 
-- [ ] Mobile-responsive design (tablet + mobile layouts)
-- [ ] Accessibility features (keyboard nav, ARIA labels, screen reader)
-- [ ] Loading states (skeleton cards)
-- [ ] Error handling (toast notifications with retry)
+- [x] Mobile-responsive design (tablet + mobile layouts)
+- [x] Accessibility features (keyboard nav, ARIA labels, screen reader)
+- [x] Loading states (skeleton cards)
+- [x] Error handling (toast notifications with retry)

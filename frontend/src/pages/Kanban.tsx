@@ -17,7 +17,7 @@ import { SelectionProvider } from '@/contexts/selection-context'
 import { useMultiSelectKeyboard } from '@/hooks/use-multi-select'
 import { BulkActionsBar } from '@/components/kanban/bulk-actions-bar'
 import { Filter, FilterType } from '@/components/ui/filters'
-import { SettingsDialog } from '@/components/settings/settings-dialog'
+import { SettingsPopover } from '@/components/settings/settings-popover'
 import { Button } from '@/components/ui/button'
 import { Plus, Settings } from 'lucide-react'
 import { useSearch } from 'wouter'
@@ -190,23 +190,28 @@ function KanbanContent() {
 
   return (
     <AppLayout>
-      <div className='flex flex-col gap-4 p-6'>
-        <header className='flex items-center justify-between gap-2'>
+      <div className='flex flex-col gap-3 p-3 sm:gap-4 sm:p-4 lg:p-6'>
+        <header className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
           <div className='flex items-center gap-2'>
-            <h1 className='text-2xl font-bold text-gray-900'>{KANBAN_LABELS.TITLE}</h1>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={() => setSettingsOpen(true)}
-              className='h-8 w-8'
-            >
-              <Settings className='h-4 w-4' />
-              <span className='sr-only'>{NAV_LABELS.SETTINGS}</span>
-            </Button>
+            <h1 className='text-xl font-bold text-gray-900 sm:text-2xl'>{KANBAN_LABELS.TITLE}</h1>
+            <SettingsPopover open={settingsOpen} onOpenChange={setSettingsOpen}>
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8 min-h-[44px] min-w-[44px] sm:h-8 sm:w-8 sm:min-h-0 sm:min-w-0'
+                aria-label={NAV_LABELS.SETTINGS}
+              >
+                <Settings className='h-4 w-4' />
+                <span className='sr-only'>{NAV_LABELS.SETTINGS}</span>
+              </Button>
+            </SettingsPopover>
           </div>
-          <Button onClick={() => setLocation('/kanban?createRO=true')}>
+          <Button
+            onClick={() => setLocation('/kanban?createRO=true')}
+            className='min-h-[44px] sm:min-h-0'
+          >
             <Plus className='h-4 w-4' />
-            {REPAIR_ORDER_LABELS.NEW_ORDER}
+            <span className='sm:inline'>{REPAIR_ORDER_LABELS.NEW_ORDER}</span>
           </Button>
         </header>
 
@@ -221,7 +226,6 @@ function KanbanContent() {
         <KanbanBoard orders={filteredOrders} onStatusChange={handleStatusChange} />
         <BulkActionsBar orders={filteredOrders} />
       </div>
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </AppLayout>
   )
 }

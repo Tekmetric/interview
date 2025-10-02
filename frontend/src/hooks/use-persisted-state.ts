@@ -5,10 +5,7 @@ export function usePersistedState<T>(
   key: string,
   defaultValue: T,
 ): [T, (value: T | ((prev: T) => T)) => void] {
-  const [state, setState] = useState<T>(() => {
-    const storedValue = getItem(key)
-    return storedValue !== null ? storedValue : defaultValue
-  })
+  const [state, setState] = useState<T>(() => getItem(key, defaultValue))
   const isMountedRef = useRef(false)
 
   // Sync state to localStorage (debounced)

@@ -33,15 +33,20 @@ export function KanbanColumn({
 
   return (
     <div
-      className={`relative flex min-w-[340px] flex-col gap-1.5 overflow-hidden rounded-lg transition-all ${
+      className={`relative flex min-w-[280px] flex-col gap-1.5 overflow-hidden rounded-lg transition-all sm:min-w-[320px] lg:min-w-[340px] ${
         isBeingDraggedOver && !isValidDropZone ? 'animate-pulse ring-2 ring-red-400' : ''
       }`}
+      role='region'
+      aria-label={`${title} column with ${orders.length} repair orders`}
     >
       <div
         className={`flex items-center justify-between px-3 py-2.5 ${color} rounded-lg border-b border-gray-200/50`}
       >
         <h3 className='text-xs font-semibold tracking-wide uppercase'>{title}</h3>
-        <span className='rounded-full bg-white/40 px-2 py-0.5 text-xs font-semibold'>
+        <span
+          className='rounded-full bg-white/40 px-2 py-0.5 text-xs font-semibold'
+          aria-label={`${orders.length} orders`}
+        >
           {orders.length}
         </span>
       </div>
@@ -55,7 +60,7 @@ export function KanbanColumn({
         items={orders.map((o) => o.id)}
         strategy={verticalListSortingStrategy}
       >
-        <ScrollArea className='h-[calc(100vh-220px)]'>
+        <ScrollArea className='h-[calc(100vh-320px)] sm:h-[calc(100vh-280px)] lg:h-[calc(100vh-220px)]'>
           <div
             ref={setNodeRef}
             className={`flex min-h-[200px] flex-col gap-2 p-2 transition-colors ${
@@ -63,7 +68,10 @@ export function KanbanColumn({
             }`}
           >
             {orders.length === 0 ? (
-              <div className='flex flex-1 items-center justify-center text-center'>
+              <div
+                className='flex flex-1 items-center justify-center text-center'
+                role='status'
+              >
                 <p className='text-xs text-gray-400'>No orders</p>
               </div>
             ) : (

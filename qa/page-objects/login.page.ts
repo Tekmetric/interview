@@ -8,7 +8,7 @@ export class LoginPage {
 	}
 
 	// Navigates to the login page
-	async goto() {
+	async navigateToLoginView() {
 		await this.page.goto('https://www.automationexercise.com/login');
 	}
 
@@ -84,7 +84,7 @@ export class LoginPage {
 
 	// Logs in using the provided email and password
 	async loginAs(email: string, password: string) {
-		await this.goto();
+		await this.navigateToLoginView();
 		await this.enterEmail(email);
 		await this.enterPassword(password);
 		await this.clickLoginButton();

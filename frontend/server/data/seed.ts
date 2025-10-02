@@ -158,7 +158,6 @@ function generateRepairOrder(index: number) {
 function seedDatabase() {
   console.log('🌱 Seeding database...')
 
-  // Check if already seeded
   const existingOrders = getAllRepairOrders()
   const existingTechs = getAllTechnicians()
 
@@ -169,11 +168,9 @@ function seedDatabase() {
     return
   }
 
-  // Insert technicians
   console.log('👷 Inserting technicians...')
   TECHNICIANS.forEach((tech) => insertTechnician(tech))
 
-  // Insert repair orders
   console.log('🔧 Inserting 50 repair orders...')
   for (let i = 0; i < 50; i++) {
     const order = generateRepairOrder(i)
@@ -184,7 +181,6 @@ function seedDatabase() {
   console.log(`   - ${TECHNICIANS.length} technicians`)
   console.log(`   - 50 repair orders`)
 
-  // Show distribution
   const orders = getAllRepairOrders()
   const statusCounts: Record<string, number> = {}
   orders.forEach((order) => {

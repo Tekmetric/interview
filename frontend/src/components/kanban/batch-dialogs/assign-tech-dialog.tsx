@@ -69,7 +69,6 @@ export function AssignTechDialog({
       // Snapshot previous value
       const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
 
-      // Find the tech object
       const assignedTech = technicians.find((t) => t.id === techId) || null
 
       // Optimistically update cache

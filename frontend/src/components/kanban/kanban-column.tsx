@@ -57,7 +57,7 @@ export function KanbanColumn({
         items={orders.map((o) => o.id)}
         strategy={verticalListSortingStrategy}
       >
-        <ScrollArea className='h-[calc(100vh-280px)]'>
+        <ScrollArea className='h-[calc(100vh-220px)]'>
           <div
             ref={setNodeRef}
             className={`flex min-h-[200px] flex-col gap-2 p-2 transition-colors ${

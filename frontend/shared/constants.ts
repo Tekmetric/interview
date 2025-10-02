@@ -74,16 +74,17 @@ export const REPAIR_ORDER_LABELS = {
   NOTES: 'Notes',
   ADD_NOTES_PLACEHOLDER: 'Add notes about this repair order...',
   ESTIMATES: 'Estimates',
-  DURATION: 'Duration:',
+  DURATION: 'Duration',
   HOURS: 'hours',
-  COST: 'Cost:',
-  DUE: 'Due:',
-  PLATE: 'Plate:',
+  COST: 'Cost',
+  DUE: 'Due',
+  PLATE: 'Plate',
   MI: 'mi',
 
   // Messages & Descriptions
   ENTER_DETAILS: 'Enter customer, vehicle, and service details',
-  DELETE_CONFIRMATION: 'Are you sure you want to delete repair order {order.id}? This action cannot be undone.',
+  DELETE_CONFIRMATION:
+    'Are you sure you want to delete repair order {order.id}? This action cannot be undone.',
 
   // Success Messages
   CREATED_SUCCESS: 'Repair order created successfully',

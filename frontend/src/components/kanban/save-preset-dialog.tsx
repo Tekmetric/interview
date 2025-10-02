@@ -33,13 +33,11 @@ export function SavePresetDialog({
   const [error, setError] = useState('')
 
   const handleSave = () => {
-    // Validation
     if (!name.trim()) {
       setError('Preset name is required')
       return
     }
 
-    // Check for duplicate name
     const nameExists = preferences.savedFilters.some(
       (p) => p.name.toLowerCase() === name.trim().toLowerCase(),
     )
@@ -48,7 +46,6 @@ export function SavePresetDialog({
       return
     }
 
-    // Save preset
     saveFilterPreset({
       name: name.trim(),
       ...currentFilters,
@@ -56,7 +53,6 @@ export function SavePresetDialog({
 
     toast.success('Filter preset saved successfully')
 
-    // Reset and close
     setName('')
     setError('')
     onOpenChange(false)

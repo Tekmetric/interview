@@ -102,7 +102,6 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
     const activeId = active.id as string
     const overId = over.id as string
 
-    // Get the order being dragged
     const order = localOrders.find((o) => o.id === activeId)
     if (!order) return
 
@@ -146,7 +145,6 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
-    // Reset drag state
     setActiveId(null)
     setDragOverStatus(null)
     setIsValidDrop(true)
@@ -160,7 +158,6 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
     const orderId = active.id as string
     const overId = over.id as string
 
-    // Get the order being dropped
     const order = localOrders.find((o) => o.id === orderId)
     if (!order) return
 

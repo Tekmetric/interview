@@ -26,10 +26,10 @@
 - [ ] Search and filtering on Kanban board (customer, vehicle, tech, priority, status)
 - [x] User preferance persistance to local storage - filters
 - [x] Filter Presets
-- [ ] Two-layer validation (client + server, shared logic)
-- [ ] Optimistic updates with rollback
 - [x] Multi-Select + Batch Actions
 - [ ] Create new Repair Order
+- [ ] Two-layer validation (client + server, shared logic)
+- [ ] Optimistic updates with rollback
 
 ## UI/UX Polish
 

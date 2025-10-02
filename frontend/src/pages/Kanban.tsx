@@ -10,13 +10,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
 import type { RepairOrder, RepairOrderStatus } from '@shared/types'
-import { KANBAN_LABELS, REPAIR_ORDER_LABELS, API_ENDPOINTS, RO_STATUS, NAV_LABELS } from '@shared/constants'
+import { REPAIR_ORDER_LABELS, API_ENDPOINTS, RO_STATUS, NAV_LABELS } from '@shared/constants'
 import { SelectionProvider } from '@/contexts/selection-context'
 import { useMultiSelectKeyboard } from '@/hooks/use-multi-select'
 import { BulkActionsBar } from '@/components/kanban/bulk-actions-bar'
 import { Filter, FilterType } from '@/components/ui/filters'
 import { SettingsDialog } from '@/components/settings/settings-dialog'
 import { Button } from '@/components/ui/button'
+import { Plus, Settings } from 'lucide-react'
 
 async function updateOrderStatus(orderId: string, status: RepairOrderStatus) {
   const res = await fetch(API_ENDPOINTS.REPAIR_ORDERS.BY_ID(orderId), {
@@ -38,8 +39,7 @@ function KanbanLoading() {
     <AppLayout>
       <div className='flex flex-col gap-6 p-8'>
         <header className='flex flex-col gap-2'>
-          <h1 className='text-3xl font-bold text-gray-900'>{KANBAN_LABELS.TITLE}</h1>
-          <p className='text-gray-600'>{KANBAN_LABELS.SUBTITLE}</p>
+          <h1 className='text-3xl font-bold text-gray-900'>Repair Orders</h1>
         </header>
         <div className='flex gap-4'>
           {[1, 2, 3, 4, 5].map((i) => (
@@ -70,6 +70,7 @@ function KanbanContent() {
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   const [filters, setFilters] = useState<Filter[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
 
   const filteredOrders = useMemo(() => {
     // Map filter display names to backend values
@@ -82,7 +83,17 @@ function KanbanContent() {
     }
 
     return orders.filter((order) => {
-      // Apply each filter
+      const searchLower = searchQuery.toLowerCase()
+      const matchesSearch =
+        !searchQuery ||
+        order.id.toLowerCase().includes(searchLower) ||
+        order.customer.name.toLowerCase().includes(searchLower) ||
+        `${order.vehicle.year} ${order.vehicle.make} ${order.vehicle.model}`
+          .toLowerCase()
+          .includes(searchLower)
+
+      if (!matchesSearch) return false
+
       return filters.every((filter) => {
         switch (filter.type) {
           case FilterType.STATUS: {
@@ -106,7 +117,7 @@ function KanbanContent() {
         }
       })
     })
-  }, [orders, filters])
+  }, [orders, filters, searchQuery])
 
   // Enable keyboard shortcuts for multi-select
   const filteredOrderIds = useMemo(
@@ -158,26 +169,31 @@ function KanbanContent() {
     <AppLayout>
       <div className='flex flex-col gap-4 p-6'>
         <header className='flex items-center justify-between gap-2'>
-          <h1 className='text-2xl font-bold text-gray-900'>{KANBAN_LABELS.TITLE}</h1>
-          <Button variant='outline' onClick={() => setSettingsOpen(true)}>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              className='mr-2 h-5 w-5'
+          <div className='flex items-center gap-2'>
+            <h1 className='text-2xl font-bold text-gray-900'>Repair Orders</h1>
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={() => setSettingsOpen(true)}
+              className='h-8 w-8'
             >
-              <circle cx='12' cy='12' r='3' />
-              <path d='M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24' />
-            </svg>
-            {NAV_LABELS.SETTINGS}
+              <Settings className='h-4 w-4' />
+              <span className='sr-only'>{NAV_LABELS.SETTINGS}</span>
+            </Button>
+          </div>
+          <Button onClick={() => toast.info('Create RO not yet implemented')}>
+            <Plus className='h-4 w-4' />
+            New Order
           </Button>
         </header>
 
-        <KanbanFilters filters={filters} onFiltersChange={setFilters} technicians={technicians} />
+        <KanbanFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          technicians={technicians}
+        />
 
         <KanbanBoard orders={filteredOrders} onStatusChange={handleStatusChange} />
         <BulkActionsBar orders={filteredOrders} />

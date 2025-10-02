@@ -3,7 +3,8 @@
 import * as React from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { X, ListFilter } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { X, ListFilter, Layers, Flag, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   Command,
@@ -50,23 +51,71 @@ export function AnimateChangeInHeight({ children }: { children: React.ReactNode 
   )
 }
 
+// Get filter icon based on type
+const getFilterIcon = (type: FilterType) => {
+  switch (type) {
+    case FilterType.STATUS:
+      return <Layers className='size-3.5 shrink-0' />
+    case FilterType.PRIORITY:
+      return <Flag className='size-3.5 shrink-0' />
+    case FilterType.TECHNICIAN:
+      return <Users className='size-3.5 shrink-0' />
+    default:
+      return null
+  }
+}
+
+// Get filter color classes based on type
+const getFilterColorClasses = (type: FilterType) => {
+  switch (type) {
+    case FilterType.STATUS:
+      return 'bg-blue-500/10 text-blue-700 dark:text-blue-400 hover:bg-blue-500/20 border-blue-200 dark:border-blue-800'
+    case FilterType.PRIORITY:
+      return 'bg-orange-500/10 text-orange-700 dark:text-orange-400 hover:bg-orange-500/20 border-orange-200 dark:border-orange-800'
+    case FilterType.TECHNICIAN:
+      return 'bg-purple-500/10 text-purple-700 dark:text-purple-400 hover:bg-purple-500/20 border-purple-200 dark:border-purple-800'
+    default:
+      return 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+  }
+}
+
 // Individual filter badge component
-function FilterBadge({ filter, onRemove }: { filter: Filter; onRemove: () => void }) {
+function FilterBadge({
+  filter,
+  onRemove,
+  onEdit,
+}: {
+  filter: Filter
+  onRemove: () => void
+  onEdit: () => void
+}) {
   const displayValue = filter.value.join(', ')
+  const icon = getFilterIcon(filter.type)
+  const colorClasses = getFilterColorClasses(filter.type)
 
   return (
     <Badge
       variant='secondary'
-      className='hover:bg-secondary/80 flex h-6 items-center gap-1 rounded-sm px-2 text-xs transition-all'
+      className={cn(
+        'flex h-7 items-center gap-1.5 rounded-md border px-2.5 text-sm font-medium transition-all',
+        colorClasses,
+      )}
     >
-      <span className='text-muted-foreground'>{filter.type}:</span>
-      <span className='font-medium'>{displayValue}</span>
+      {icon}
+      <span className='font-semibold'>{filter.type}:</span>
+      <button
+        onClick={onEdit}
+        className='rounded-sm transition-colors hover:underline'
+        aria-label='Edit filter'
+      >
+        {displayValue}
+      </button>
       <button
         onClick={onRemove}
-        className='hover:bg-muted ml-1 rounded-sm'
+        className='ml-1 rounded-sm p-0.5 transition-colors hover:bg-black/10 dark:hover:bg-white/10'
         aria-label='Remove filter'
       >
-        <X className='h-3 w-3' />
+        <X className='h-3.5 w-3.5' />
       </button>
     </Badge>
   )
@@ -76,9 +125,10 @@ function FilterBadge({ filter, onRemove }: { filter: Filter; onRemove: () => voi
 interface FiltersProps {
   filters: Filter[]
   setFilters: React.Dispatch<React.SetStateAction<Filter[]>>
+  onEditFilter?: (filterType: FilterType) => void
 }
 
-export function Filters({ filters, setFilters }: FiltersProps) {
+export function Filters({ filters, setFilters, onEditFilter }: FiltersProps) {
   const removeFilter = (id: string) => {
     setFilters((prev) => prev.filter((f) => f.id !== id))
   }
@@ -90,6 +140,7 @@ export function Filters({ filters, setFilters }: FiltersProps) {
           key={filter.id}
           filter={filter}
           onRemove={() => removeFilter(filter.id)}
+          onEdit={() => onEditFilter?.(filter.type)}
         />
       ))}
     </>
@@ -102,6 +153,8 @@ interface FilterPopoverProps {
   setFilters: React.Dispatch<React.SetStateAction<Filter[]>>
   filterViewOptions: FilterOption[][]
   filterViewToFilterOptions: Record<FilterType, FilterOption[]>
+  editFilterType?: FilterType | null
+  onEditComplete?: () => void
 }
 
 export function FilterPopover({
@@ -109,11 +162,54 @@ export function FilterPopover({
   setFilters,
   filterViewOptions,
   filterViewToFilterOptions,
+  editFilterType,
+  onEditComplete,
 }: FilterPopoverProps) {
   const [open, setOpen] = React.useState(false)
   const [selectedView, setSelectedView] = React.useState<FilterType | null>(null)
   const [commandInput, setCommandInput] = React.useState('')
   const commandInputRef = React.useRef<React.ElementRef<typeof CommandInput>>(null)
+
+  React.useEffect(() => {
+    if (editFilterType) {
+      setSelectedView(editFilterType)
+      setOpen(true)
+      onEditComplete?.()
+    }
+  }, [editFilterType, onEditComplete])
+
+  const toggleValue = (value: string) => {
+    if (!selectedView) return
+
+    const currentFilter = filters.find((f) => f.type === selectedView)
+    const currentValues = currentFilter?.value || []
+    const newValues = currentValues.includes(value)
+      ? currentValues.filter((v) => v !== value)
+      : [...currentValues, value]
+
+    if (newValues.length === 0) {
+      setFilters((prev) => prev.filter((f) => f.type !== selectedView))
+    } else if (currentFilter) {
+      setFilters((prev) =>
+        prev.map((f) => (f.type === selectedView ? { ...f, value: newValues } : f)),
+      )
+    } else {
+      setFilters((prev) => [
+        ...prev,
+        {
+          id: nanoid(),
+          type: selectedView,
+          operator: FilterOperator.IS,
+          value: newValues,
+        },
+      ])
+    }
+  }
+
+  const resetToCategories = () => {
+    setSelectedView(null)
+    setCommandInput('')
+  }
 
   return (
     <Popover
@@ -122,8 +218,7 @@ export function FilterPopover({
         setOpen(open)
         if (!open) {
           setTimeout(() => {
-            setSelectedView(null)
-            setCommandInput('')
+            resetToCategories()
           }, 200)
         }
       }}
@@ -135,11 +230,18 @@ export function FilterPopover({
           aria-expanded={open}
           size='sm'
           className={cn(
-            'group flex h-6 items-center gap-1.5 rounded-sm text-xs transition',
-            filters.length > 0 && 'w-6',
+            'group flex h-6 items-center gap-1.5 rounded-sm text-sm transition',
+            filters.length > 0 && 'bg-primary/10 hover:bg-primary/20 w-6',
           )}
         >
-          <ListFilter className='size-3 shrink-0 transition-all text-muted-foreground group-hover:text-primary' />
+          <ListFilter
+            className={cn(
+              'size-4 shrink-0 transition-all',
+              filters.length > 0
+                ? 'text-primary'
+                : 'text-muted-foreground group-hover:text-primary',
+            )}
+          />
           {!filters.length && 'Filter'}
         </Button>
       </PopoverTrigger>
@@ -159,37 +261,32 @@ export function FilterPopover({
               <CommandEmpty>No results found.</CommandEmpty>
               {selectedView ? (
                 <CommandGroup>
-                  {filterViewToFilterOptions[selectedView].map((filter: FilterOption) => (
-                    <CommandItem
-                      className='group text-muted-foreground flex items-center gap-2'
-                      key={filter.name}
-                      value={filter.name}
-                      onSelect={(currentValue) => {
-                        setFilters((prev) => [
-                          ...prev,
-                          {
-                            id: nanoid(),
-                            type: selectedView,
-                            operator: FilterOperator.IS,
-                            value: [currentValue],
-                          },
-                        ])
-                        setTimeout(() => {
-                          setSelectedView(null)
-                          setCommandInput('')
-                        }, 200)
-                        setOpen(false)
-                      }}
-                    >
-                      {filter.icon}
-                      <span className='text-accent-foreground'>{filter.name}</span>
-                      {filter.label && (
-                        <span className='text-muted-foreground ml-auto text-xs'>
-                          {filter.label}
+                  {filterViewToFilterOptions[selectedView].map((filter: FilterOption) => {
+                    const currentFilter = filters.find((f) => f.type === selectedView)
+                    const isSelected = currentFilter?.value.includes(filter.name) || false
+                    return (
+                      <CommandItem
+                        className='flex items-center gap-2.5 px-3 py-2'
+                        key={filter.name}
+                        value={filter.name}
+                        onSelect={() => toggleValue(filter.name)}
+                      >
+                        <Checkbox
+                          checked={isSelected}
+                          className='pointer-events-none size-4 shrink-0'
+                        />
+                        <span className='flex shrink-0'>{filter.icon}</span>
+                        <span className='text-foreground text-sm font-medium'>
+                          {filter.name}
                         </span>
-                      )}
-                    </CommandItem>
-                  ))}
+                        {filter.label && (
+                          <span className='text-muted-foreground ml-auto text-xs'>
+                            {filter.label}
+                          </span>
+                        )}
+                      </CommandItem>
+                    )
+                  })}
                 </CommandGroup>
               ) : (
                 filterViewOptions.map((group: FilterOption[], index: number) => (
@@ -197,7 +294,7 @@ export function FilterPopover({
                     <CommandGroup>
                       {group.map((filter: FilterOption) => (
                         <CommandItem
-                          className='group text-muted-foreground flex items-center gap-2'
+                          className='flex items-center gap-2.5 px-3 py-2'
                           key={filter.name}
                           value={filter.name}
                           onSelect={(currentValue) => {
@@ -206,8 +303,10 @@ export function FilterPopover({
                             commandInputRef.current?.focus()
                           }}
                         >
-                          {filter.icon}
-                          <span className='text-accent-foreground'>{filter.name}</span>
+                          <span className='flex shrink-0'>{filter.icon}</span>
+                          <span className='text-foreground text-sm font-medium'>
+                            {filter.name}
+                          </span>
                         </CommandItem>
                       ))}
                     </CommandGroup>

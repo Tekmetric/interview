@@ -1,12 +1,6 @@
 import { Suspense, useState } from 'react'
 import { useLocation, useSearch } from 'wouter'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,7 +12,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { RODetailsForm } from './ro-details-form'
-import { useRepairOrder, useUpdateRepairOrder, useDeleteRepairOrder } from './hooks/useRepairOrderDetails'
+import {
+  useRepairOrder,
+  useUpdateRepairOrder,
+  useDeleteRepairOrder,
+} from './hooks/useRepairOrderDetails'
 import { STATUS_CONFIG } from './ro-constants'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -47,7 +45,13 @@ function RODetailsError() {
   )
 }
 
-function RODetailsContent({ orderId, onClose }: { orderId: string; onClose: () => void }) {
+function RODetailsContent({
+  orderId,
+  onClose,
+}: {
+  orderId: string
+  onClose: () => void
+}) {
   const { data: order } = useRepairOrder(orderId)
   const updateMutation = useUpdateRepairOrder()
   const deleteMutation = useDeleteRepairOrder()
@@ -86,19 +90,11 @@ function RODetailsContent({ orderId, onClose }: { orderId: string; onClose: () =
   return (
     <>
       <SheetHeader className='border-b bg-white px-6 py-4'>
-        <div className='flex items-center justify-between'>
-          {/* Left: Smaller label + Large RO number */}
-          <div className='flex flex-col gap-1'>
-            <SheetDescription className='text-xs font-medium text-gray-500'>
-              {REPAIR_ORDER_LABELS.DETAILS}
-            </SheetDescription>
-            <SheetTitle className='text-2xl font-bold text-gray-900'>{order.id}</SheetTitle>
-          </div>
-
-          {/* Right: Status badge */}
+        <div className='flex items-center gap-3'>
+          <SheetTitle className='text-2xl font-bold text-gray-900'>{order.id}</SheetTitle>
           <Badge
             variant='outline'
-            className={`${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} border px-3 py-1 text-sm font-semibold`}
+            className={`${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} h-5 border px-2 text-xs font-semibold`}
           >
             {statusConfig.label}
           </Badge>
@@ -114,7 +110,6 @@ function RODetailsContent({ orderId, onClose }: { orderId: string; onClose: () =
         isDeleting={deleteMutation.isPending}
       />
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>

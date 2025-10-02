@@ -1,4 +1,5 @@
 import { Page } from '@playwright/test';
+import { LoginApi } from '../api/login.api';
 
 export class LoginPage {
 	readonly page: Page;
@@ -25,6 +26,11 @@ export class LoginPage {
 	// Returns the login button
 	getLoginButton() {
 		return this.page.locator('button[data-qa="login-button"]');
+	}
+
+	// Returns the logged in header
+	getLoggedInHeader() {
+		return this.page.locator('a:has-text("Logged in as")');
 	}
 
 	// Returns the logout button
@@ -105,5 +111,25 @@ export class LoginPage {
 		await this.enterEmail(email);
 		await this.enterPassword(password);
 		await this.clickLoginButton();
+	}
+
+	/**
+	 * Logs in using the API instead of the UI
+	 * @param email User's email
+	 * @param password User's password
+	 * @returns Promise<boolean> true if login was successful
+	 * @throws Error if login fails
+	 */
+	async loginViaApi(email: string, password: string): Promise<boolean> {
+		const api = new LoginApi();
+		const response = await api.verifyLogin(email, password);
+
+		if (response.responseCode !== 200) {
+			throw new Error(`API login failed: ${response.message}`);
+		}
+
+		// Navigate to the site after successful API login
+		await this.navigateToLoginView();
+		return true;
 	}
 }

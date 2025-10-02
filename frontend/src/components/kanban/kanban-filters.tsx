@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
-import { Users, Flag, Layers, Search, Clock } from 'lucide-react'
+import { Users, Flag, Layers, Search, Clock, ArrowUpDown } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 import {
   FilterType,
@@ -17,12 +24,23 @@ import {
   COMMON_LABELS,
 } from '@shared/constants'
 
+type SortOption =
+  | 'default'
+  | 'dueTime'
+  | 'dueTimeDesc'
+  | 'customer'
+  | 'customerDesc'
+  | 'vehicle'
+  | 'vehicleDesc'
+
 type KanbanFiltersProps = {
   filters: Filter[]
   onFiltersChange: (filters: Filter[]) => void
   searchQuery: string
   onSearchChange: (query: string) => void
   technicians: Technician[]
+  sortBy: SortOption
+  onSortChange: (sortBy: SortOption) => void
 }
 
 // Filter view options (main categories)
@@ -88,6 +106,8 @@ export function KanbanFilters({
   searchQuery,
   onSearchChange,
   technicians,
+  sortBy,
+  onSortChange,
 }: KanbanFiltersProps) {
   const [localFilters, setLocalFilters] = useState<Filter[]>(filters)
   const [editingFilterType, setEditingFilterType] = useState<FilterType | null>(null)
@@ -156,6 +176,22 @@ export function KanbanFilters({
         editFilterType={editingFilterType}
         onEditComplete={() => setEditingFilterType(null)}
       />
+
+      <Select value={sortBy} onValueChange={onSortChange}>
+        <SelectTrigger className='h-8 w-[200px]' aria-label={KANBAN_LABELS.SORT.BY}>
+          <ArrowUpDown className='mr-2 h-4 w-4' />
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value='default'>{KANBAN_LABELS.SORT.DEFAULT}</SelectItem>
+          <SelectItem value='dueTime'>{KANBAN_LABELS.SORT.DUE_TIME}</SelectItem>
+          <SelectItem value='dueTimeDesc'>{KANBAN_LABELS.SORT.DUE_TIME_DESC}</SelectItem>
+          <SelectItem value='customer'>{KANBAN_LABELS.SORT.CUSTOMER}</SelectItem>
+          <SelectItem value='customerDesc'>{KANBAN_LABELS.SORT.CUSTOMER_DESC}</SelectItem>
+          <SelectItem value='vehicle'>{KANBAN_LABELS.SORT.VEHICLE}</SelectItem>
+          <SelectItem value='vehicleDesc'>{KANBAN_LABELS.SORT.VEHICLE_DESC}</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   )
 }

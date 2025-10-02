@@ -4,7 +4,7 @@ import { buildUpdateFields } from '@server/data/utils'
 import { RO_STATUS, PRIORITY } from '@shared/constants'
 import { RO_ID_PREFIX } from '@server/constants'
 import type { RepairOrder } from '@shared/types'
-import { rowToRepairOrder } from './transforms'
+import { rowToRepairOrder, flattenRepairOrderUpdate } from './transforms'
 
 export function getAllRepairOrders(): RepairOrder[] {
   const stmt = db.prepare('SELECT * FROM repair_orders ORDER BY created_at DESC')
@@ -24,7 +24,7 @@ export function createRepairOrder(data: Partial<RepairOrder>): RepairOrder {
   const stmt = db.prepare(`
     INSERT INTO repair_orders (
       id, status, customer_name, customer_phone, customer_email,
-      vehicle_year, vehicle_make, vehicle_model, vehicle_trim,
+      vehicle_year, vehicle_make, vehicle_moqdel, vehicle_trim,
       vehicle_vin, vehicle_plate, vehicle_mileage, vehicle_color,
       services, technician_id, priority, estimated_duration,
       estimated_cost, due_time, notes
@@ -61,16 +61,33 @@ export function updateRepairOrder(
   id: string,
   data: Partial<RepairOrder>,
 ): RepairOrder | null {
-  const { updates, values } = buildUpdateFields(data, [
+  const flatData = flattenRepairOrderUpdate(data)
+
+  const { updates, values } = buildUpdateFields(flatData, [
     { field: 'status', column: 'status' },
     { field: 'assignedTech', column: 'technician_id', transform: (v) => v?.id || null },
     { field: 'priority', column: 'priority' },
+    { field: 'estimatedDuration', column: 'estimated_duration' },
+    { field: 'estimatedCost', column: 'estimated_cost' },
+    { field: 'dueTime', column: 'due_time' },
     { field: 'notes', column: 'notes' },
+    { field: 'services', column: 'services', transform: (v) => JSON.stringify(v) },
     {
       field: 'approvedByCustomer',
       column: 'approved_by_customer',
       transform: (v) => (v ? 1 : 0),
     },
+    { field: 'customerName', column: 'customer_name' },
+    { field: 'customerPhone', column: 'customer_phone' },
+    { field: 'customerEmail', column: 'customer_email', transform: (v) => v || null },
+    { field: 'vehicleYear', column: 'vehicle_year' },
+    { field: 'vehicleMake', column: 'vehicle_make' },
+    { field: 'vehicleModel', column: 'vehicle_model' },
+    { field: 'vehicleTrim', column: 'vehicle_trim', transform: (v) => v || null },
+    { field: 'vehicleVin', column: 'vehicle_vin', transform: (v) => v || null },
+    { field: 'vehiclePlate', column: 'vehicle_plate', transform: (v) => v || null },
+    { field: 'vehicleMileage', column: 'vehicle_mileage', transform: (v) => v || null },
+    { field: 'vehicleColor', column: 'vehicle_color', transform: (v) => v || null },
   ])
 
   if (updates.length === 0) return getRepairOrderById(id)

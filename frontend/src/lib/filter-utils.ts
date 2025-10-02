@@ -50,6 +50,29 @@ export function parseFilterFromUrl(searchParams: URLSearchParams): Filter | null
 }
 
 /**
+ * Parse search query from URL search params
+ */
+export function parseSearchFromUrl(searchParams: URLSearchParams): string {
+  return searchParams.get('search') || ''
+}
+
+/**
+ * Build URL with search query
+ */
+export function buildUrlWithSearch(
+  currentParams: URLSearchParams,
+  searchQuery: string,
+): string {
+  const params = new URLSearchParams(currentParams)
+  if (searchQuery) {
+    params.set('search', searchQuery)
+  } else {
+    params.delete('search')
+  }
+  return params.toString()
+}
+
+/**
  * Create a filter URL parameter
  */
 export function createFilterUrl(

@@ -57,13 +57,16 @@ function RODetailsContent({
   const deleteMutation = useDeleteRepairOrder()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
-  const handleSubmit = (data: UpdateRepairOrderInput) => {
+  const handleSubmit = (data: UpdateRepairOrderInput, wasInEditMode: boolean) => {
     updateMutation.mutate(
       { id: orderId, data },
       {
         onSuccess: () => {
           toast.success(REPAIR_ORDER_LABELS.UPDATED_SUCCESS)
-          onClose()
+          // Only close drawer if we were in quick actions mode (not edit mode)
+          if (!wasInEditMode) {
+            onClose()
+          }
         },
         onError: (error: Error) => {
           toast.error(error.message || REPAIR_ORDER_LABELS.FAILED_TO_UPDATE)

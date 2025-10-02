@@ -127,7 +127,17 @@ export const KANBAN_LABELS = {
   CANNOT_MOVE_HERE: 'Cannot move order here',
   TRANSITION_NOT_ALLOWED: 'This transition is not allowed',
 
-  // Status Display Names
+  SORT: {
+    BY: 'Sort by',
+    DEFAULT: 'Default',
+    DUE_TIME: 'Due time (Oldest)',
+    DUE_TIME_DESC: 'Due time (Newest)',
+    CUSTOMER: 'Customer (A-Z)',
+    CUSTOMER_DESC: 'Customer (Z-A)',
+    VEHICLE: 'Vehicle (A-Z)',
+    VEHICLE_DESC: 'Vehicle (Z-A)',
+  },
+
   STATUS: {
     NEW: 'New',
     IN_PROGRESS: 'In Progress',

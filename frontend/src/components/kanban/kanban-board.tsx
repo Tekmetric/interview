@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react'
 import {
   DndContext,
   DragEndEvent,
@@ -11,14 +12,14 @@ import {
   useSensors,
   closestCorners,
 } from '@dnd-kit/core'
-import { useEffect, useMemo, useState } from 'react'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
+
 import { canTransition } from '@shared/transitions'
+import { KANBAN_LABELS, RO_STATUS } from '@shared/constants'
+import type { RepairOrder, RepairOrderStatus } from '@shared/types'
 import { KanbanColumn } from './kanban-column'
 import { KanbanCard } from './kanban-card'
-import type { RepairOrder, RepairOrderStatus } from '@shared/types'
-import { KANBAN_LABELS, RO_STATUS } from '@shared/constants'
 
 type KanbanBoardProps = {
   orders: RepairOrder[]

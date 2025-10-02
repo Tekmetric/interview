@@ -1,7 +1,6 @@
 import type { RepairOrder } from '@shared/types'
 import { getTechnicianById } from '@server/domains/technicians/repository'
 
-// Helper function to convert DB row to RepairOrder
 export function rowToRepairOrder(row: any): RepairOrder {
   const tech = row.technician_id ? getTechnicianById(row.technician_id) : null
   return {
@@ -33,4 +32,31 @@ export function rowToRepairOrder(row: any): RepairOrder {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }
+}
+
+export function flattenRepairOrderUpdate(
+  data: Partial<RepairOrder>,
+): Record<string, any> {
+  const flatData: Record<string, any> = { ...data }
+
+  if (data.customer) {
+    flatData.customerName = data.customer.name
+    flatData.customerPhone = data.customer.phone
+    flatData.customerEmail = data.customer.email
+    delete flatData.customer
+  }
+
+  if (data.vehicle) {
+    flatData.vehicleYear = data.vehicle.year
+    flatData.vehicleMake = data.vehicle.make
+    flatData.vehicleModel = data.vehicle.model
+    flatData.vehicleTrim = data.vehicle.trim
+    flatData.vehicleVin = data.vehicle.vin
+    flatData.vehiclePlate = data.vehicle.plate
+    flatData.vehicleMileage = data.vehicle.mileage
+    flatData.vehicleColor = data.vehicle.color
+    delete flatData.vehicle
+  }
+
+  return flatData
 }

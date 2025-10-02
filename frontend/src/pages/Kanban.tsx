@@ -28,7 +28,11 @@ import { SettingsPopover } from '@/components/settings/settings-popover'
 import { Button } from '@/components/ui/button'
 import { Plus, Settings } from 'lucide-react'
 import { useSearch } from 'wouter'
-import { parseFilterFromUrl } from '@/lib/filter-utils'
+import {
+  parseFilterFromUrl,
+  parseSearchFromUrl,
+  buildUrlWithSearch,
+} from '@/lib/filter-utils'
 
 async function updateOrderStatus(orderId: string, status: RepairOrderStatus) {
   const res = await fetch(API_ENDPOINTS.REPAIR_ORDERS.BY_ID(orderId), {
@@ -84,15 +88,40 @@ function KanbanContent() {
 
   const [filters, setFilters] = useState<Filter[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<
+    | 'default'
+    | 'dueTime'
+    | 'dueTimeDesc'
+    | 'customer'
+    | 'customerDesc'
+    | 'vehicle'
+    | 'vehicleDesc'
+  >('default')
 
-  // Parse URL filter on mount
+  // Parse URL filter and search on mount
   useEffect(() => {
     const filterFromUrl = parseFilterFromUrl(searchParams)
     if (filterFromUrl) {
       setFilters([filterFromUrl])
     }
+
+    const searchFromUrl = parseSearchFromUrl(searchParams)
+    if (searchFromUrl) {
+      setSearchQuery(searchFromUrl)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Update URL when search changes (debounced)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const urlParams = buildUrlWithSearch(searchParams, searchQuery)
+      setLocation(`?${urlParams}`, { replace: true })
+    }, 500) // Debounce to avoid too many URL updates
+
+    return () => clearTimeout(timeoutId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery])
 
   const filteredOrders = useMemo(() => {
     // Map filter display names to backend values
@@ -149,11 +178,54 @@ function KanbanContent() {
     })
   }, [orders, filters, searchQuery])
 
+  // Sort orders by due time if requested
+  const sortedOrders = useMemo(() => {
+    if (sortBy === 'default') {
+      return filteredOrders
+    }
+
+    return [...filteredOrders].sort((a, b) => {
+      switch (sortBy) {
+        case 'dueTime':
+          // Earliest first, nulls last
+          if (!a.dueTime) return 1
+          if (!b.dueTime) return -1
+          return new Date(a.dueTime).getTime() - new Date(b.dueTime).getTime()
+
+        case 'dueTimeDesc':
+          // Latest first, nulls last
+          if (!a.dueTime) return 1
+          if (!b.dueTime) return -1
+          return new Date(b.dueTime).getTime() - new Date(a.dueTime).getTime()
+
+        case 'customer':
+          // A-Z
+          return a.customer.name.localeCompare(b.customer.name)
+
+        case 'customerDesc':
+          // Z-A
+          return b.customer.name.localeCompare(a.customer.name)
+
+        case 'vehicle':
+          // A-Z by make then model
+          return `${a.vehicle.make} ${a.vehicle.model}`.localeCompare(
+            `${b.vehicle.make} ${b.vehicle.model}`,
+          )
+
+        case 'vehicleDesc':
+          // Z-A by make then model
+          return `${b.vehicle.make} ${b.vehicle.model}`.localeCompare(
+            `${a.vehicle.make} ${a.vehicle.model}`,
+          )
+
+        default:
+          return 0
+      }
+    })
+  }, [filteredOrders, sortBy])
+
   // Enable keyboard shortcuts for multi-select
-  const filteredOrderIds = useMemo(
-    () => filteredOrders.map((o) => o.id),
-    [filteredOrders],
-  )
+  const filteredOrderIds = useMemo(() => sortedOrders.map((o) => o.id), [sortedOrders])
   useMultiSelectKeyboard(filteredOrderIds)
 
   const mutation = useMutation({
@@ -230,10 +302,12 @@ function KanbanContent() {
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           technicians={technicians}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
         />
 
-        <KanbanBoard orders={filteredOrders} onStatusChange={handleStatusChange} />
-        <BulkActionsBar orders={filteredOrders} />
+        <KanbanBoard orders={sortedOrders} onStatusChange={handleStatusChange} />
+        <BulkActionsBar orders={sortedOrders} />
       </div>
     </AppLayout>
   )

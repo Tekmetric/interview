@@ -41,6 +41,9 @@ export const createRepairOrderSchema = z.object({
 
 export const updateRepairOrderSchema = z.object({
   status: repairOrderStatusSchema.optional(),
+  customer: customerSchema.optional(),
+  vehicle: vehicleSchema.optional(),
+  services: z.array(z.string()).min(1, 'At least one service is required').optional(),
   assignedTech: z
     .object({
       id: z.string(),
@@ -48,6 +51,9 @@ export const updateRepairOrderSchema = z.object({
     .nullable()
     .optional(),
   priority: prioritySchema.optional(),
+  estimatedDuration: z.number().int().positive().optional(),
+  estimatedCost: z.number().int().positive().optional(),
+  dueTime: z.string().datetime().optional(),
   notes: z.string().optional(),
   approvedByCustomer: z.boolean().optional(),
 })

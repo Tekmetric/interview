@@ -23,13 +23,13 @@
 - [x] Click on Quick List cards -> opens RO Details Drawer
 - [x] Click on Kanban cards -> opens RO Details Drawer
 - [x] Click on KPI cards -> navigates to Kanban with filter applied (e.g., "5 Overdue")
-- [ ] Search and filtering on Kanban board (customer, vehicle, tech, priority, status)
+- [x] Search and filtering on Kanban board (customer, vehicle, tech, priority, status)
 - [x] User preferance persistance to local storage - filters
 - [x] Filter Presets
 - [x] Multi-Select + Batch Actions
-- [ ] Create new Repair Order
-- [ ] Two-layer validation (client + server, shared logic)
-- [ ] Optimistic updates with rollback
+- [x] Create new Repair Order
+- [x] Two-layer validation (client + server, shared Zod schemas)
+- [x] Optimistic updates with rollback (create, update, delete, batch operations)
 
 ## UI/UX Polish
 

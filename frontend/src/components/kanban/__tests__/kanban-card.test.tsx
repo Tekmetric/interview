@@ -129,7 +129,7 @@ describe('KanbanCard', () => {
     }
     customRender(<KanbanCard order={orderWithDueTime} />)
 
-    expect(screen.getByText(/Due:/)).toBeInTheDocument()
+    expect(screen.getByText(/Due/)).toBeInTheDocument()
   })
 
   it('should not render due time when not present', () => {

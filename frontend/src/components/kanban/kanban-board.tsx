@@ -142,7 +142,7 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
     }
   }
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  export const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
     setActiveId(null)

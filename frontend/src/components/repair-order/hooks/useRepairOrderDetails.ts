@@ -144,7 +144,51 @@ export function useCreateRepairOrder() {
 
   return useMutation({
     mutationFn: (data: CreateRepairOrderInput) => createRepairOrder(data),
-    onSuccess: (newOrder) => {
+    onMutate: async (data) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
+
+      // Snapshot previous value
+      const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
+
+      // Create optimistic order with temporary ID
+      const optimisticOrder: RepairOrder = {
+        id: `temp-${Date.now()}`,
+        ...data,
+        status: 'NEW',
+        assignedTech: null,
+        approvedByCustomer: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+
+      // Optimistically add to cache
+      if (previousOrders) {
+        queryClient.setQueryData<RepairOrder[]>(
+          ['repairOrders'],
+          [optimisticOrder, ...previousOrders],
+        )
+      }
+
+      return { previousOrders, optimisticOrder }
+    },
+    onError: (_err, _data, context) => {
+      // Rollback on error
+      if (context?.previousOrders) {
+        queryClient.setQueryData(['repairOrders'], context.previousOrders)
+      }
+    },
+    onSuccess: (newOrder, _data, context) => {
+      // Replace optimistic order with real order from server
+      const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
+      if (previousOrders && context?.optimisticOrder) {
+        queryClient.setQueryData<RepairOrder[]>(
+          ['repairOrders'],
+          previousOrders.map((order) =>
+            order.id === context.optimisticOrder.id ? newOrder : order,
+          ),
+        )
+      }
       queryClient.setQueryData(['repairOrder', newOrder.id], newOrder)
       queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
     },

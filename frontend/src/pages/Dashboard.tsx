@@ -9,6 +9,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useRepairOrders } from '@/components/repair-order/hooks/useRepairOrders'
 import { calculateKPIs } from '@/components/dashboard/utils/kpi-utils'
 import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
+import { ROCreateDrawer } from '@/components/repair-order/ro-create-drawer'
 import { DASHBOARD_LABELS, REPAIR_ORDER_LABELS } from '@shared/constants'
 
 import { Plus } from 'lucide-react'
@@ -57,7 +58,7 @@ function DashboardContent() {
             <h1 className='text-3xl font-bold text-gray-900'>{DASHBOARD_LABELS.TITLE}</h1>
             <p className='text-gray-600'>{DASHBOARD_LABELS.SUBTITLE}</p>
           </div>
-          <Button size='lg' onClick={() => setLocation('/repair-order/new')}>
+          <Button size='lg' onClick={() => setLocation('/?createRO=true')}>
             <Plus />
             {REPAIR_ORDER_LABELS.TITLE}
           </Button>
@@ -91,6 +92,7 @@ function DashboardContent() {
             title={DASHBOARD_LABELS.OVERDUE}
             value={kpis.overdueCount}
             variant='warning'
+            onClick={() => setLocation('/kanban?filter=overdue')}
             icon={
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -112,6 +114,7 @@ function DashboardContent() {
             title={DASHBOARD_LABELS.WAITING_PARTS}
             value={kpis.waitingPartsCount}
             variant='info'
+            onClick={() => setLocation('/kanban?filter=status:waiting-parts')}
             icon={
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -134,6 +137,7 @@ function DashboardContent() {
             title={DASHBOARD_LABELS.AWAITING_APPROVAL}
             value={kpis.awaitingApprovalCount}
             variant='success'
+            onClick={() => setLocation('/kanban?filter=status:awaiting-approval')}
             icon={
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -165,6 +169,7 @@ export function Dashboard() {
         <DashboardContent />
       </Suspense>
       <RODetailsDrawer />
+      <ROCreateDrawer />
     </ErrorBoundary>
   )
 }

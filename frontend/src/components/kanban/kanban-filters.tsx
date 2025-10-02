@@ -10,7 +10,7 @@ import {
   FilterPopover,
 } from '@/components/ui/filters'
 import type { Technician } from '@shared/types'
-import { FILTER_LABELS } from '@shared/constants'
+import { FILTER_LABELS, KANBAN_LABELS, DASHBOARD_LABELS, COMMON_LABELS } from '@shared/constants'
 
 type KanbanFiltersProps = {
   filters: Filter[]
@@ -43,26 +43,26 @@ export const filterViewOptions: FilterOption[][] = [
 ]
 
 const statusOptions: FilterOption[] = [
-  { name: 'New', icon: <div className='size-2.5 rounded-full bg-blue-500' /> },
+  { name: KANBAN_LABELS.STATUS.NEW, icon: <div className='size-2.5 rounded-full bg-blue-500' /> },
   {
-    name: 'Awaiting Approval',
+    name: KANBAN_LABELS.STATUS.AWAITING_APPROVAL,
     icon: <div className='size-2.5 rounded-full bg-amber-500' />,
   },
-  { name: 'In Progress', icon: <div className='size-2.5 rounded-full bg-indigo-500' /> },
+  { name: KANBAN_LABELS.STATUS.IN_PROGRESS, icon: <div className='size-2.5 rounded-full bg-indigo-500' /> },
   {
-    name: 'Waiting Parts',
+    name: KANBAN_LABELS.STATUS.WAITING_PARTS,
     icon: <div className='size-2.5 rounded-full bg-orange-500' />,
   },
-  { name: 'Completed', icon: <div className='size-2.5 rounded-full bg-green-500' /> },
+  { name: KANBAN_LABELS.STATUS.COMPLETED, icon: <div className='size-2.5 rounded-full bg-green-500' /> },
 ]
 
 const priorityOptions: FilterOption[] = [
-  { name: 'High', icon: <Flag className='size-3.5 text-red-500' /> },
-  { name: 'Normal', icon: <Flag className='size-3.5 text-gray-400' /> },
+  { name: FILTER_LABELS.HIGH_PRIORITY, icon: <Flag className='size-3.5 text-red-500' /> },
+  { name: FILTER_LABELS.NORMAL_PRIORITY, icon: <Flag className='size-3.5 text-gray-400' /> },
 ]
 
 const overdueOptions: FilterOption[] = [
-  { name: 'Overdue', icon: <Clock className='size-3.5 text-amber-600' /> },
+  { name: DASHBOARD_LABELS.OVERDUE, icon: <Clock className='size-3.5 text-amber-600' /> },
 ]
 
 export function KanbanFilters({
@@ -75,13 +75,18 @@ export function KanbanFilters({
   const [localFilters, setLocalFilters] = useState<Filter[]>(filters)
   const [editingFilterType, setEditingFilterType] = useState<FilterType | null>(null)
 
+  // Sync parent filters to local state
+  useEffect(() => {
+    setLocalFilters(filters)
+  }, [filters])
+
   // Sync local filters with parent
   useEffect(() => {
     onFiltersChange(localFilters)
   }, [localFilters, onFiltersChange])
 
   const technicianOptions: FilterOption[] = [
-    { name: 'Unassigned', icon: <Users className='size-3.5 text-gray-400' /> },
+    { name: COMMON_LABELS.UNASSIGNED, icon: <Users className='size-3.5 text-gray-400' /> },
     ...technicians
       .filter((t) => t.active)
       .map((tech) => ({

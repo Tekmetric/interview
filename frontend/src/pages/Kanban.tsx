@@ -1,4 +1,5 @@
-import { Suspense, useMemo, useState } from 'react'
+import { Suspense, useMemo, useState, useEffect } from 'react'
+import { useLocation } from 'wouter'
 import { AppLayout } from '@/components/layout/app-layout'
 import { KanbanBoard } from '@/components/kanban/kanban-board'
 import { KanbanFilters } from '@/components/kanban/kanban-filters'
@@ -9,8 +10,9 @@ import { useTechnicians } from '@/components/technician/hooks/useTechnicians'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
+import { ROCreateDrawer } from '@/components/repair-order/ro-create-drawer'
 import type { RepairOrder, RepairOrderStatus } from '@shared/types'
-import { REPAIR_ORDER_LABELS, API_ENDPOINTS, RO_STATUS, NAV_LABELS } from '@shared/constants'
+import { REPAIR_ORDER_LABELS, API_ENDPOINTS, RO_STATUS, NAV_LABELS, COMMON_LABELS, KANBAN_LABELS } from '@shared/constants'
 import { SelectionProvider } from '@/contexts/selection-context'
 import { useMultiSelectKeyboard } from '@/hooks/use-multi-select'
 import { BulkActionsBar } from '@/components/kanban/bulk-actions-bar'
@@ -18,6 +20,8 @@ import { Filter, FilterType } from '@/components/ui/filters'
 import { SettingsDialog } from '@/components/settings/settings-dialog'
 import { Button } from '@/components/ui/button'
 import { Plus, Settings } from 'lucide-react'
+import { useSearch } from 'wouter'
+import { parseFilterFromUrl } from '@/lib/filter-utils'
 
 async function updateOrderStatus(orderId: string, status: RepairOrderStatus) {
   const res = await fetch(API_ENDPOINTS.REPAIR_ORDERS.BY_ID(orderId), {
@@ -39,7 +43,7 @@ function KanbanLoading() {
     <AppLayout>
       <div className='flex flex-col gap-6 p-8'>
         <header className='flex flex-col gap-2'>
-          <h1 className='text-3xl font-bold text-gray-900'>Repair Orders</h1>
+          <h1 className='text-3xl font-bold text-gray-900'>{KANBAN_LABELS.TITLE}</h1>
         </header>
         <div className='flex gap-4'>
           {[1, 2, 3, 4, 5].map((i) => (
@@ -64,22 +68,33 @@ function KanbanError() {
 }
 
 function KanbanContent() {
+  const [, setLocation] = useLocation()
   const { data: orders } = useRepairOrders()
   const { data: technicians } = useTechnicians()
   const queryClient = useQueryClient()
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const searchParams = new URLSearchParams(useSearch())
 
   const [filters, setFilters] = useState<Filter[]>([])
   const [searchQuery, setSearchQuery] = useState('')
 
+  // Parse URL filter on mount
+  useEffect(() => {
+    const filterFromUrl = parseFilterFromUrl(searchParams)
+    if (filterFromUrl) {
+      setFilters([filterFromUrl])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const filteredOrders = useMemo(() => {
     // Map filter display names to backend values
     const localStatusMapping: Record<string, RepairOrderStatus> = {
-      New: RO_STATUS.NEW,
-      'Awaiting Approval': RO_STATUS.AWAITING_APPROVAL,
-      'In Progress': RO_STATUS.IN_PROGRESS,
-      'Waiting Parts': RO_STATUS.WAITING_PARTS,
-      Completed: RO_STATUS.COMPLETED,
+      [KANBAN_LABELS.STATUS.NEW]: RO_STATUS.NEW,
+      [KANBAN_LABELS.STATUS.AWAITING_APPROVAL]: RO_STATUS.AWAITING_APPROVAL,
+      [KANBAN_LABELS.STATUS.IN_PROGRESS]: RO_STATUS.IN_PROGRESS,
+      [KANBAN_LABELS.STATUS.WAITING_PARTS]: RO_STATUS.WAITING_PARTS,
+      [KANBAN_LABELS.STATUS.COMPLETED]: RO_STATUS.COMPLETED,
     }
 
     return orders.filter((order) => {
@@ -106,11 +121,19 @@ function KanbanContent() {
           }
           case FilterType.TECHNICIAN: {
             return filter.value.some((name) => {
-              if (name === 'Unassigned') {
+              if (name === COMMON_LABELS.UNASSIGNED) {
                 return !order.assignedTech
               }
               return order.assignedTech?.name === name
             })
+          }
+          case FilterType.OVERDUE: {
+            const now = new Date()
+            return (
+              order.dueTime &&
+              new Date(order.dueTime) < now &&
+              order.status !== RO_STATUS.COMPLETED
+            )
           }
           default:
             return true
@@ -170,7 +193,7 @@ function KanbanContent() {
       <div className='flex flex-col gap-4 p-6'>
         <header className='flex items-center justify-between gap-2'>
           <div className='flex items-center gap-2'>
-            <h1 className='text-2xl font-bold text-gray-900'>Repair Orders</h1>
+            <h1 className='text-2xl font-bold text-gray-900'>{KANBAN_LABELS.TITLE}</h1>
             <Button
               variant='ghost'
               size='icon'
@@ -181,9 +204,9 @@ function KanbanContent() {
               <span className='sr-only'>{NAV_LABELS.SETTINGS}</span>
             </Button>
           </div>
-          <Button onClick={() => toast.info('Create RO not yet implemented')}>
+          <Button onClick={() => setLocation('/kanban?createRO=true')}>
             <Plus className='h-4 w-4' />
-            New Order
+            {REPAIR_ORDER_LABELS.NEW_ORDER}
           </Button>
         </header>
 
@@ -212,6 +235,7 @@ export function Kanban() {
         </SelectionProvider>
       </Suspense>
       <RODetailsDrawer />
+      <ROCreateDrawer />
     </ErrorBoundary>
   )
 }

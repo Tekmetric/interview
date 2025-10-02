@@ -1,4 +1,3 @@
-import React from 'react'
 import { DndContext, DragEndEvent, DndContextProps } from '@dnd-kit/core'
 
 export const MockDndContext = ({ children, onDragEnd }: DndContextProps) => {

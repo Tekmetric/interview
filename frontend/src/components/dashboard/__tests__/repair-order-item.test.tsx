@@ -95,7 +95,6 @@ describe('RepairOrderItem', () => {
       AWAITING_APPROVAL: 'Awaiting Approval',
       WAITING_PARTS: 'Waiting Parts',
       COMPLETED: 'Completed',
-      CANCELED: 'Canceled',
     }
 
     statuses.forEach((status) => {

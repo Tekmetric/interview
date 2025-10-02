@@ -2,16 +2,25 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { UseFormRegister, FieldErrors } from 'react-hook-form'
 import type { CreateRepairOrderInput } from '@shared/validation'
+import type { ReactNode } from 'react'
 
 type CustomerInfoFieldsProps = {
   register: UseFormRegister<CreateRepairOrderInput>
   errors: FieldErrors<CreateRepairOrderInput>
+  headerAction?: ReactNode
 }
 
-export function CustomerInfoFields({ register, errors }: CustomerInfoFieldsProps) {
+export function CustomerInfoFields({
+  register,
+  errors,
+  headerAction,
+}: CustomerInfoFieldsProps) {
   return (
     <div className='space-y-4'>
-      <h3 className='text-sm font-semibold text-gray-900'>Customer Information</h3>
+      <div className='flex items-center justify-between'>
+        <h3 className='text-sm font-semibold text-gray-900'>Customer Information</h3>
+        {headerAction}
+      </div>
 
       <div className='space-y-2'>
         <Label htmlFor='customer.name'>

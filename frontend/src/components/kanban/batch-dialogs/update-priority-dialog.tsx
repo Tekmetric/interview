@@ -62,13 +62,10 @@ export function UpdatePriorityDialog({
     mutationFn: (priority: 'HIGH' | 'NORMAL') =>
       updatePriorityForOrders(selectedOrderIds, priority),
     onMutate: async (priority) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
 
-      // Snapshot previous value
       const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
 
-      // Optimistically update cache
       if (previousOrders) {
         queryClient.setQueryData<RepairOrder[]>(
           ['repairOrders'],
@@ -81,7 +78,6 @@ export function UpdatePriorityDialog({
       return { previousOrders }
     },
     onError: (err: Error, _variables, context) => {
-      // Rollback on error
       if (context?.previousOrders) {
         queryClient.setQueryData(['repairOrders'], context.previousOrders)
       }
@@ -117,7 +113,10 @@ export function UpdatePriorityDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Select value={selectedPriority} onValueChange={setSelectedPriority}>
+        <Select
+          value={selectedPriority}
+          onValueChange={(value) => setSelectedPriority(value as 'HIGH' | 'NORMAL' | '')}
+        >
           <SelectTrigger>
             <SelectValue placeholder='Select priority' />
           </SelectTrigger>

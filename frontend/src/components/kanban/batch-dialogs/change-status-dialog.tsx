@@ -63,13 +63,10 @@ export function ChangeStatusDialog({
     mutationFn: (status: RepairOrderStatus) =>
       changeStatusForOrders(selectedOrderIds, status),
     onMutate: async (status) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
 
-      // Snapshot previous value
       const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
 
-      // Optimistically update cache
       if (previousOrders) {
         queryClient.setQueryData<RepairOrder[]>(
           ['repairOrders'],
@@ -82,7 +79,6 @@ export function ChangeStatusDialog({
       return { previousOrders }
     },
     onError: (err: Error, _variables, context) => {
-      // Rollback on error
       if (context?.previousOrders) {
         queryClient.setQueryData(['repairOrders'], context.previousOrders)
       }
@@ -123,7 +119,10 @@ export function ChangeStatusDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+        <Select
+          value={selectedStatus}
+          onValueChange={(value) => setSelectedStatus(value as RepairOrderStatus | '')}
+        >
           <SelectTrigger>
             <SelectValue placeholder='Select status' />
           </SelectTrigger>

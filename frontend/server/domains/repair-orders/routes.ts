@@ -19,27 +19,23 @@ import { HTTP_STATUS, ERROR_CODES } from '@server/constants'
 
 const router = Router()
 
-// Get overdue repair orders
 router.get('/repairOrders/overdue', (req, res) => {
   const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5
   const orders = getOverdueOrders(limit)
   res.json(orders)
 })
 
-// Get recent repair orders
 router.get('/repairOrders/recent', (req, res) => {
   const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5
   const orders = getRecentOrders(limit)
   res.json(orders)
 })
 
-// Get all repair orders with optional filters
 router.get('/repairOrders', validate(repairOrderFiltersSchema, 'query'), (req, res) => {
   const { status, tech, priority, search } = req.query
 
   let orders = getAllRepairOrders()
 
-  // Apply filters
   if (status) {
     orders = orders.filter((o) => o.status === status)
   }
@@ -65,7 +61,6 @@ router.get('/repairOrders', validate(repairOrderFiltersSchema, 'query'), (req, r
   res.json(orders)
 })
 
-// Get single repair order
 router.get('/repairOrders/:id', (req, res) => {
   const order = getRepairOrderById(req.params.id)
   if (!order) {
@@ -74,19 +69,21 @@ router.get('/repairOrders/:id', (req, res) => {
   res.json(order)
 })
 
-// Create new repair order
 router.post('/repairOrders', validate(createRepairOrderSchema), (req, res) => {
   try {
     const order = createRepairOrder(req.body)
     res.status(HTTP_STATUS.CREATED).json(order)
   } catch (error) {
-    res
-      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
-      .json({ error: 'Failed to create repair order' })
+    console.error('Error creating repair order:', error)
+    const errorMessage =
+      error instanceof Error ? error.message : 'Failed to create repair order'
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      error: 'Failed to create repair order',
+      message: errorMessage,
+    })
   }
 })
 
-// Update repair order (including status transitions)
 router.patch('/repairOrders/:id', validate(updateRepairOrderSchema), (req, res) => {
   const order = getRepairOrderById(req.params.id)
   if (!order) {
@@ -121,7 +118,6 @@ router.patch('/repairOrders/:id', validate(updateRepairOrderSchema), (req, res) 
   res.json(updated)
 })
 
-// Delete repair order
 router.delete('/repairOrders/:id', (req, res) => {
   const success = deleteRepairOrder(req.params.id)
   if (!success) {

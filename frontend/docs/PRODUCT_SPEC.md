@@ -1,44 +1,45 @@
-# TekBoard – Product Specification
+# Product Spec
+
+[README](../README.md) | [Architecture](./ARCHITECTURE.md) | [TODO](./TODO.md)
 
 ## Overview
 
-A Kanban board for auto repair shops to visualize and manage Repair Orders (ROs) through drag-and-drop workflow management.
+Kanban board for managing auto repair orders.
 
-**Demo Focus**: Simple, polished app with mocked auth and ~50-150 ROs.
+Mocked auth, 50 seeded ROs for demo.
 
 ---
 
-## Core Features
+## Features
 
-### 1. Welcome Screen (Mocked Auth)
+### Welcome Screen
 
-- Clean welcome page with brand
 - "Continue as Demo User" button
-- Mock social buttons (Google/Apple)
-- Stores demo user in localStorage → routes to Dashboard
+- Mock social login buttons
+- Stores user in localStorage
 
-### 2. Dashboard (Quick Overview)
+### Dashboard
 
-**KPI Cards:**
+**KPI Cards**
 
-- Total WIP (work in progress count)
-- Overdue ROs (promisedAt < now)
-- Waiting Parts (count)
-- Awaiting Approval (count)
+- Total WIP count
+- Overdue orders (promisedAt < now)
+- Waiting Parts count
+- Awaiting Approval count
 
-**Quick Lists:**
+**Quick Lists**
 
-- Top 5 Overdue ROs (RO#, customer, promised time, status)
-- Top 5 Recent/Today ROs
+- Top 5 Overdue ROs
+- Top 5 Recent ROs
 
-**Actions:**
+**Actions**
 
-- "Open Kanban Board" (primary button)
-- "Create RO" (opens drawer)
+- Open Kanban Board
+- Create RO
 
-### 3. Kanban Board (Primary View)
+### Kanban Board
 
-**5 Columns:**
+**5 Columns**
 
 - NEW
 - AWAITING_APPROVAL
@@ -46,43 +47,43 @@ A Kanban board for auto repair shops to visualize and manage Repair Orders (ROs)
 - WAITING_PARTS
 - COMPLETED
 
-**Card Shows:**
+**Card Info**
 
-- RO number (#1001)
+- RO number
 - Customer name
-- Vehicle (2018 Honda Accord)
-- License plate (ABC123)
-- Promised time (highlight if overdue)
-- Technician avatar/initials
-- Priority/tag chips
+- Vehicle info
+- License plate
+- Promised time (highlighted if overdue)
+- Technician avatar
+- Priority chips
 
-**Features:**
+**Features**
 
-- Drag & drop to change status
+- Drag & drop status changes
 - Optimistic updates (instant UI, rollback on error)
 - Search by customer/plate/RO#
-- Filter by technician
+- Filter by technician, status
 - Sort by promised time
 - URL-based filters (shareable)
 
-### 4. RO Details Drawer
+### RO Details Drawer
 
 Opens when clicking a card.
 
-**Edit Fields:**
+**Edit Fields**
 
-- Status (dropdown)
-- Technician (dropdown)
+- Status dropdown
+- Technician dropdown
 - Priority (normal/high)
-- Notes (textarea)
-- Tags (chips)
-- Promised time (datetime)
+- Notes textarea
+- Tags
+- Promised time
 
-**Actions:**
+**Actions**
 
 - Save (PATCH with optimistic update)
-- Delete (with confirmation dialog)
-- Cancel (discard changes)
+- Delete (with confirmation)
+- Cancel
 
 ---
 
@@ -259,63 +260,30 @@ Defines valid state transitions for Repair Orders. Invalid transitions are rejec
 
 ---
 
-## Demo Script (5-Minute Interview)
+## Demo Walkthrough
 
-1. **Welcome** → Click "Continue as Demo User"
-2. **Dashboard** → Show KPIs, click "5 Overdue" to open filtered Board
-3. **Drag & Drop** → Move RO from "Awaiting Approval" → "In Progress"
-   - Show optimistic update + success toast
-4. **Edit RO** → Click card, assign technician, add note, save
-5. **Search** → Type license plate, show filtering
-6. **Delete RO** → Click card, delete with confirmation (full CRUD demo)
-7. **Highlight Features:**
-   - Overdue highlighting
-   - Column counts
-   - Smooth animations
-   - Optimistic updates throughout
+1. Welcome screen → Click "Continue as Demo User"
+2. Dashboard → View KPIs, click "5 Overdue" to open filtered board
+3. Drag card from "Awaiting Approval" → "In Progress" (optimistic update)
+4. Try dragging COMPLETED card (validation prevents it)
+5. Click card → Edit in drawer (assign tech, add note, save)
+6. Search by license plate
+7. Multi-select cards → Bulk update
+8. Create new RO
 
 ---
 
-## Technical Highlights
+## Testing
 
-**UX States:**
+**Strategy**
 
-- Loading: Column/card skeletons
-- Empty: Friendly illustrations + "Create RO" prompt
-- Errors: Toast notifications with retry
-- Accessibility: Focus trap, ARIA live regions, keyboard nav
+- Unit tests: Business logic (status transitions, validation)
+- Component tests: UI components (Vitest + Testing Library)
+- Integration tests: API endpoints
 
-**Performance:**
-
-- Handles 50-150 cards smoothly
-- Memoized cards to avoid re-renders
-- Optimistic updates for snappy UX
-
-**Tech Stack:**
-
-- React + TypeScript
-- TanStack Query (data fetching)
-- Drag-and-drop library (dnd-kit)
-- Tailwind CSS + ShadCN components
-- Vite for dev/build
-- Vitest + jsdom for testing
-
-**Testing Strategy:**
-
-- **Unit Tests:** Core business logic functions (status transition validation, date calculations, filtering logic)
-- **Component Tests:** Interactive UI components (RO card, drawer, filters) with Vitest + Testing Library
-- **Integration Tests:** API endpoints with mocked database responses
-- **Test Location:** Co-locate tests with source (`__tests__/` folders or `*.test.ts(x)`)
-- **Coverage Focus:** Business-critical paths (status transitions, overdue calculations, drag-and-drop state management)
-- **Commands:**
-  - `pnpm test` – run tests in watch mode
-  - `pnpm test:coverage` – generate coverage report
-  - `pnpm test:watch` – continuous test runner
-
-**Test Examples:**
+**Test Examples**
 
 ```typescript
-// Business logic test
 describe('validateStatusTransition', () => {
   it('allows NEW → IN_PROGRESS', () => {
     expect(canTransition('NEW', 'IN_PROGRESS')).toBe(true)
@@ -325,38 +293,32 @@ describe('validateStatusTransition', () => {
     expect(canTransition('WAITING_PARTS', 'COMPLETED')).toBe(false)
   })
 })
-
-// Component test
-describe('ROCard', () => {
-  it('highlights overdue orders', () => {
-    const overdueRO = { promisedAt: '2025-01-01T10:00:00Z', ... }
-    render(<ROCard ro={overdueRO} />)
-    expect(screen.getByText(/overdue/i)).toBeVisible()
-  })
-})
-
-// Delete flow test
-describe('RODetailsDrawer', () => {
-  it('shows confirmation before deleting', async () => {
-    const onDelete = vi.fn()
-    render(<RODetailsDrawer ro={mockRO} onDelete={onDelete} />)
-
-    await userEvent.click(screen.getByRole('button', { name: /delete/i }))
-    expect(screen.getByText(/confirm/i)).toBeVisible()
-
-    await userEvent.click(screen.getByRole('button', { name: /confirm/i }))
-    expect(onDelete).toHaveBeenCalledWith(mockRO.id)
-  })
-})
 ```
+
+**Commands**
+
+- `pnpm test` – watch mode
+- `pnpm test:coverage` – coverage report
 
 ---
 
-## Out of Scope (MVP)
+## Out of Scope
 
-- Real authentication/OAuth
-- Payments or parts integrations
-- Full table/list view
-- Complex scheduling
-- WIP limits on columns (stretch goal)
-- Soft delete or recovery mechanism (hard delete only)
+**Excluded for time/scope:**
+
+- Real authentication (mocked for demo)
+- Parts ordering integrations
+- Table/list view
+- Scheduling/calendar view
+- WIP limits
+- Soft delete
+- Real-time collaboration (WebSocket)
+
+**Would add next:**
+
+- Real auth (Clerk/Auth0)
+- Advanced filtering (date ranges)
+- Reporting dashboard
+- Print/export
+- Activity log
+- Notifications

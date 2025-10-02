@@ -35,7 +35,14 @@ export const createRepairOrderSchema = z.object({
   priority: prioritySchema.default('NORMAL'),
   estimatedDuration: z.number().int().positive().optional(),
   estimatedCost: z.number().int().positive().optional(),
-  dueTime: z.string().datetime().optional(),
+  dueTime: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined
+      // Convert datetime-local format to ISO string
+      return new Date(val).toISOString()
+    }),
   notes: z.string().default(''),
 })
 
@@ -53,7 +60,14 @@ export const updateRepairOrderSchema = z.object({
   priority: prioritySchema.optional(),
   estimatedDuration: z.number().int().positive().optional(),
   estimatedCost: z.number().int().positive().optional(),
-  dueTime: z.string().datetime().optional(),
+  dueTime: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined
+      // Convert datetime-local format to ISO string
+      return new Date(val).toISOString()
+    }),
   notes: z.string().optional(),
   approvedByCustomer: z.boolean().optional(),
 })

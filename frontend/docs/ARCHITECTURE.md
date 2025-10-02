@@ -1,6 +1,6 @@
-# TekBoard Architecture
+# Architecture
 
-Full-stack TypeScript application demonstrating modern architectural patterns, type safety, and production-quality code organization.
+[README](../README.md) | [Product Spec](./PRODUCT_SPEC.md) | [TODO](./TODO.md)
 
 ---
 
@@ -10,29 +10,27 @@ Full-stack TypeScript application demonstrating modern architectural patterns, t
 
 ```
 React Frontend (TanStack Query + URL State + Local UI State)
-          ↓ HTTP
+          ↓ HTTP (REST API)
 Express API (Routes + Business Logic + Data Layer)
-          ↓ SQL
+          ↓ SQL (better-sqlite3)
 SQLite Database (tekboard.db)
 ```
-
-### Technology Choices
 
 | Layer                | Technology                   | Why                                                         |
 | -------------------- | ---------------------------- | ----------------------------------------------------------- |
 | **Frontend**         | React 19 + TypeScript        | Type safety, modern hooks, strict mode                      |
 | **State Management** | TanStack Query v5            | Built-in caching, optimistic updates, request deduplication |
-| **UI Components**    | shadcn/ui (Radix + Tailwind) | Accessible by default, production-ready                     |
+| **UI Components**    | shadcn/ui (Radix + Tailwind) | Accessible components, own the code                         |
 | **Drag & Drop**      | @dnd-kit                     | Actively maintained, keyboard accessible, 15KB              |
-| **Backend**          | Express + TypeScript         | Minimal boilerplate, strong ecosystem                       |
-| **Database**         | SQLite + better-sqlite3      | Zero config, synchronous API, perfect for demo              |
+| **Backend**          | Express + TypeScript         | Minimal boilerplate, familiar                               |
+| **Database**         | SQLite + better-sqlite3      | Zero config, synchronous API                                |
 | **Validation**       | Zod                          | TypeScript-first, runtime type safety                       |
 
 ---
 
 ## State Management
 
-### Three-Layer Architecture
+Three-layer approach:
 
 **Layer 1: Server State (TanStack Query)**
 
@@ -41,38 +39,54 @@ SQLite Database (tekboard.db)
 - Optimistic updates with rollback
 - Request deduplication
 
+Optimistic update example:
+
+```typescript
+const { mutate } = useMutation({
+  mutationFn: updateRepairOrder,
+  onMutate: async (newData) => {
+    await queryClient.cancelQueries(['repairOrders'])
+    const previous = queryClient.getQueryData(['repairOrders'])
+    queryClient.setQueryData(['repairOrders'], (old) => updateData(old, newData))
+    return { previous }
+  },
+  onError: (err, newData, context) => {
+    queryClient.setQueryData(['repairOrders'], context.previous)
+  },
+})
+```
+
 **Layer 2: Filter State (URL Parameters)**
 
 - Shareable: `/?status=IN_PROGRESS&tech=TECH-001`
-- Browser navigation works (back/forward)
-- No extra state management needed
+- Browser back/forward works
+- No extra state management
 
 **Layer 3: Local UI State (React Hooks)**
 
 - Drawer open/close
-- Form field values
+- Form values
 - Drag-and-drop active state
-- Ephemeral state (resets on reload)
+- Ephemeral (resets on reload)
 
 ---
 
-## Validation Architecture
+## Validation
 
-### Two-Layer Strategy
+Two-layer validation using shared code:
 
-**Client-Side**: Fast feedback, prevent invalid actions before API call
+**Client-side**
 
-- Instant error messages
-- Reduces unnecessary API calls by ~60%
+- Fast feedback
+- Prevents ~60% of invalid API calls
 - Better UX
 
-**Server-Side**: Security enforcement, business rules
+**Server-side**
 
-- Prevents data corruption
-- Enforces rules even if client validation bypassed
-- Detailed error responses
+- Security enforcement
+- Prevents data corruption even if client bypassed
 
-**Shared Business Logic**: Same `canTransition()` function runs on both frontend and backend to eliminate drift.
+Same `canTransition()` function runs on both client and server (shared TypeScript code).
 
 ---
 
@@ -219,34 +233,4 @@ tekmetric/frontend/
 └── docs/                     # Documentation
 ```
 
-### Design Patterns
-
-**1. Repository Pattern**: Data access layer separated from business logic
-
-**2. Pure Business Logic**: No framework dependencies (Express/React), testable in isolation
-
-**3. Domain Colocation**: All related code lives together by feature
-
-**4. Separation of Concerns**:
-
-- Business Logic: Pure functions (`shared/transitions.ts`)
-- Data Layer: Repository pattern (`domains/*/repository.ts`)
-- API Layer: HTTP routing (`domains/*/routes.ts`)
-- UI Layer: Container components (`pages/`) manage data/state/effects; Presentational components (`components/`) receive props and render pure UI
-
-**5. Fail Fast**: Clear errors with recovery actions
-
 ---
-
-## Key Architectural Decisions
-
-✅ **Shared validation logic** eliminates client/server drift
-✅ **Optimistic updates** provide instant feedback (1-2ms vs 100ms+)
-✅ **URL state** makes filters shareable and browser-friendly
-✅ **Pure business functions** are testable without frameworks
-✅ **Database indexes + prepared statements** ensure performance and security
-✅ **Type safety** across entire stack prevents runtime errors
-
----
-
-**Last Updated**: 2025-10-01

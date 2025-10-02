@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { KanbanFilters } from '../kanban-filters'

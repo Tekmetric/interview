@@ -11,7 +11,6 @@ export function parseFilterFromUrl(searchParams: URLSearchParams): Filter | null
   const filterParam = searchParams.get('filter')
   if (!filterParam) return null
 
-  // Handle special "overdue" filter
   if (filterParam === 'overdue') {
     return {
       id: nanoid(),
@@ -21,7 +20,6 @@ export function parseFilterFromUrl(searchParams: URLSearchParams): Filter | null
     }
   }
 
-  // Handle status filters: status:waiting-parts
   if (filterParam.startsWith('status:')) {
     const statusSlug = filterParam.replace('status:', '')
     const statusMapping: Record<string, { name: string; value: RepairOrderStatus }> = {

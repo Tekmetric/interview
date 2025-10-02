@@ -8,9 +8,7 @@ export function usePersistedState<T>(
   const [state, setState] = useState<T>(() => getItem(key, defaultValue))
   const isMountedRef = useRef(false)
 
-  // Sync state to localStorage (debounced)
   useEffect(() => {
-    // Skip first render to avoid writing default value immediately
     if (!isMountedRef.current) {
       isMountedRef.current = true
       return

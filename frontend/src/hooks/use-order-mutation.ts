@@ -37,13 +37,10 @@ export function useOrderMutation(): UseOrderMutationReturn {
     mutationFn: ({ orderId, status }: { orderId: string; status: RepairOrderStatus }) =>
       updateOrderStatus(orderId, status),
     onMutate: async ({ orderId, status }) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
 
-      // Snapshot previous value
       const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
 
-      // Optimistically update cache
       if (previousOrders) {
         queryClient.setQueryData<RepairOrder[]>(
           ['repairOrders'],
@@ -56,7 +53,6 @@ export function useOrderMutation(): UseOrderMutationReturn {
       return { previousOrders }
     },
     onError: (err: Error, _variables, context) => {
-      // Rollback on error
       if (context?.previousOrders) {
         queryClient.setQueryData(['repairOrders'], context.previousOrders)
       }

@@ -15,7 +15,7 @@ export function validate(
       const data = req[source]
       const validated = schema.parse(data)
 
-      // Replace request data with validated data
+      // Replace requesst data with validated data
       // Use Object.defineProperty for query/params since they might be read-only
       try {
         req[source] = validated

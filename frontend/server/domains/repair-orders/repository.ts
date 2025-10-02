@@ -24,7 +24,7 @@ export function createRepairOrder(data: Partial<RepairOrder>): RepairOrder {
   const stmt = db.prepare(`
     INSERT INTO repair_orders (
       id, status, customer_name, customer_phone, customer_email,
-      vehicle_year, vehicle_make, vehicle_moqdel, vehicle_trim,
+      vehicle_year, vehicle_make, vehicle_model, vehicle_trim,
       vehicle_vin, vehicle_plate, vehicle_mileage, vehicle_color,
       services, technician_id, priority, estimated_duration,
       estimated_cost, due_time, notes

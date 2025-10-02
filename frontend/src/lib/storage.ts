@@ -26,7 +26,6 @@ export function getItem<T>(key: string, defaultValue: T): T {
 
     const parsed = JSON.parse(item) as StorageSchema<T>
 
-    // Version mismatch - return default and clear old data
     if (parsed.version !== STORAGE_VERSION) {
       window.localStorage.removeItem(key)
       return defaultValue

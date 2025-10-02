@@ -11,35 +11,41 @@ import { RO_FORM_DEFAULTS } from '../ro-constants'
 
 const STORAGE_KEY = 'ro-create-draft'
 
-export function useRepairOrderForm(defaultValues?: Partial<CreateRepairOrderInput>) {
+export function getCleanFormDefaults(): CreateRepairOrderInput {
   const currentYear = new Date().getFullYear()
+  return {
+    customer: {
+      name: '',
+      phone: '',
+      email: '',
+    },
+    vehicle: {
+      year: currentYear,
+      make: '',
+      model: '',
+      trim: '',
+      vin: '',
+      plate: '',
+      mileage: undefined,
+      color: '',
+    },
+    services: [],
+    priority: PRIORITY.NORMAL,
+    estimatedDuration: RO_FORM_DEFAULTS.ESTIMATED_DURATION,
+    estimatedCost: RO_FORM_DEFAULTS.ESTIMATED_COST,
+    dueTime: undefined,
+    notes: '',
+  }
+}
 
+export function useRepairOrderForm(defaultValues?: Partial<CreateRepairOrderInput>) {
   const savedDraft = getItem<Partial<CreateRepairOrderInput>>(STORAGE_KEY, {})
+  const cleanDefaults = getCleanFormDefaults()
 
   const form = useForm<CreateRepairOrderInput>({
     resolver: zodResolver(createRepairOrderSchema) as any,
     defaultValues: {
-      customer: {
-        name: '',
-        phone: '',
-        email: '',
-      },
-      vehicle: {
-        year: currentYear,
-        make: '',
-        model: '',
-        trim: '',
-        vin: '',
-        plate: '',
-        mileage: undefined,
-        color: '',
-      },
-      services: [],
-      priority: PRIORITY.NORMAL,
-      estimatedDuration: RO_FORM_DEFAULTS.ESTIMATED_DURATION,
-      estimatedCost: RO_FORM_DEFAULTS.ESTIMATED_COST,
-      dueTime: undefined,
-      notes: '',
+      ...cleanDefaults,
       ...savedDraft,
       ...defaultValues,
     },

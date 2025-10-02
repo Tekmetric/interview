@@ -46,7 +46,10 @@ export function ROMetadataFields({
         >
           <SelectTrigger>
             <SelectValue>
-              <Badge variant='outline' className={PRIORITY_COLORS[priority || 'NORMAL']}>
+              <Badge
+                variant='outline'
+                className={PRIORITY_COLORS[(priority || 'NORMAL') as Priority]}
+              >
                 {priority || 'NORMAL'}
               </Badge>
             </SelectValue>

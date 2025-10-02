@@ -52,13 +52,10 @@ export function DeleteOrdersDialog({
   const mutation = useMutation({
     mutationFn: () => deleteOrders(selectedOrderIds),
     onMutate: async () => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
 
-      // Snapshot previous value
       const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
 
-      // Optimistically remove from cache
       if (previousOrders) {
         queryClient.setQueryData<RepairOrder[]>(
           ['repairOrders'],
@@ -69,7 +66,6 @@ export function DeleteOrdersDialog({
       return { previousOrders }
     },
     onError: (err: Error, _variables, context) => {
-      // Rollback on error
       if (context?.previousOrders) {
         queryClient.setQueryData(['repairOrders'], context.previousOrders)
       }

@@ -56,7 +56,6 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
       setPreferences((prev) => ({
         ...prev,
         savedFilters: prev.savedFilters.filter((p) => p.id !== presetId),
-        // Clear default if it was the deleted preset
         defaultFilterPreset:
           prev.defaultFilterPreset === presetId ? undefined : prev.defaultFilterPreset,
       }))

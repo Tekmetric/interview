@@ -113,8 +113,8 @@ function generateRepairOrder(index: number) {
   ]
   const status = faker.helpers.weightedArrayElement(statusWeights) as RepairOrderStatus
 
-  // 12% chance of overdue
-  const isOverdue = Math.random() < 0.12
+  // 15% chance of overdue
+  const isOverdue = Math.random() < 0.15
   const dueTime = isOverdue
     ? faker.date.past({ refDate: new Date() }).toISOString()
     : faker.date.soon({ refDate: new Date() }).toISOString()

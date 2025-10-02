@@ -47,7 +47,7 @@ export function useKanbanDndHandlers({
     setLocalOrders(orders)
   }, [orders])
 
-  const activeOrder = activeId ? localOrders.find((o) => o.id === activeId) : null
+  const activeOrder = localOrders.find((o) => o.id === activeId) ?? null
 
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {

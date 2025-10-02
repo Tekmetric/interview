@@ -63,15 +63,12 @@ export function useUpdateRepairOrder() {
     mutationFn: ({ id, data }: { id: string; data: UpdateRepairOrderInput }) =>
       updateRepairOrder(id, data),
     onMutate: async ({ id, data }) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
       await queryClient.cancelQueries({ queryKey: ['repairOrder', id] })
 
-      // Snapshot previous values
       const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
       const previousOrder = queryClient.getQueryData<RepairOrder>(['repairOrder', id])
 
-      // Optimistically update both caches
       if (previousOrder) {
         const optimisticOrder = { ...previousOrder, ...data }
         queryClient.setQueryData(['repairOrder', id], optimisticOrder)
@@ -89,7 +86,6 @@ export function useUpdateRepairOrder() {
       return { previousOrders, previousOrder }
     },
     onError: (_err, { id }, context) => {
-      // Rollback on error
       if (context?.previousOrders) {
         queryClient.setQueryData(['repairOrders'], context.previousOrders)
       }
@@ -98,7 +94,6 @@ export function useUpdateRepairOrder() {
       }
     },
     onSuccess: (updatedOrder) => {
-      // Update with actual server response
       queryClient.setQueryData(['repairOrder', updatedOrder.id], updatedOrder)
       queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
     },
@@ -111,13 +106,10 @@ export function useDeleteRepairOrder() {
   return useMutation({
     mutationFn: (id: string) => deleteRepairOrder(id),
     onMutate: async (id) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
 
-      // Snapshot previous value
       const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
 
-      // Optimistically remove from cache
       if (previousOrders) {
         queryClient.setQueryData(
           ['repairOrders'],
@@ -128,7 +120,6 @@ export function useDeleteRepairOrder() {
       return { previousOrders }
     },
     onError: (_err, _id, context) => {
-      // Rollback on error
       if (context?.previousOrders) {
         queryClient.setQueryData(['repairOrders'], context.previousOrders)
       }
@@ -145,24 +136,20 @@ export function useCreateRepairOrder() {
   return useMutation({
     mutationFn: (data: CreateRepairOrderInput) => createRepairOrder(data),
     onMutate: async (data) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
 
-      // Snapshot previous value
       const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
 
-      // Create optimistic order with temporary ID
       const optimisticOrder: RepairOrder = {
         id: `temp-${Date.now()}`,
         ...data,
-        status: 'NEW',
+        status: 'NEW' as const,
         assignedTech: null,
         approvedByCustomer: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
 
-      // Optimistically add to cache
       if (previousOrders) {
         queryClient.setQueryData<RepairOrder[]>(
           ['repairOrders'],
@@ -173,13 +160,11 @@ export function useCreateRepairOrder() {
       return { previousOrders, optimisticOrder }
     },
     onError: (_err, _data, context) => {
-      // Rollback on error
       if (context?.previousOrders) {
         queryClient.setQueryData(['repairOrders'], context.previousOrders)
       }
     },
     onSuccess: (newOrder, _data, context) => {
-      // Replace optimistic order with real order from server
       const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
       if (previousOrders && context?.optimisticOrder) {
         queryClient.setQueryData<RepairOrder[]>(

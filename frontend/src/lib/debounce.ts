@@ -13,12 +13,10 @@ const timers: DebounceTimers = {}
  * debounce('search', () => fetchResults(query), 300)
  */
 export function debounce(key: string, fn: () => void, delayMs = 500): void {
-  // Clear existing timer for this key
   if (timers[key]) {
     clearTimeout(timers[key])
   }
 
-  // Set new debounced execution
   timers[key] = setTimeout(() => {
     fn()
     delete timers[key]

@@ -1,5 +1,8 @@
+import { useEffect } from 'react'
+import type { MutableRefObject } from 'react'
 import { Button } from '@/components/ui/button'
-import { useRepairOrderForm } from './hooks/useRepairOrderForm'
+import { Eraser } from 'lucide-react'
+import { useRepairOrderForm, getCleanFormDefaults } from './hooks/useRepairOrderForm'
 import { CustomerInfoFields } from './fields/CustomerInfoFields'
 import { VehicleInfoFields } from './fields/VehicleInfoFields'
 import { ServiceSelector } from './fields/ServiceSelector'
@@ -10,9 +13,19 @@ type ROCreateFormProps = {
   onSubmit: (data: CreateRepairOrderInput) => void
   onCancel: () => void
   isPending?: boolean
+  hasLocalStorageData?: boolean
+  onClear?: () => void
+  resetRef?: MutableRefObject<(() => void) | null>
 }
 
-export function ROCreateForm({ onSubmit, onCancel, isPending }: ROCreateFormProps) {
+export function ROCreateForm({
+  onSubmit,
+  onCancel,
+  isPending,
+  hasLocalStorageData,
+  onClear,
+  resetRef,
+}: ROCreateFormProps) {
   const form = useRepairOrderForm()
   const {
     register,
@@ -20,9 +33,30 @@ export function ROCreateForm({ onSubmit, onCancel, isPending }: ROCreateFormProp
     formState: { errors },
     watch,
     setValue,
+    reset,
   } = form
 
   const services = watch('services')
+
+  useEffect(() => {
+    if (resetRef) {
+      resetRef.current = () => reset(getCleanFormDefaults())
+    }
+  }, [reset, resetRef])
+
+  const clearButton = hasLocalStorageData && onClear && (
+    <Button
+      type='button'
+      variant='ghost'
+      size='sm'
+      onClick={onClear}
+      disabled={isPending}
+      className='gap-2'
+    >
+      <Eraser className='h-4 w-4' />
+      Clear Form
+    </Button>
+  )
 
   return (
     <form
@@ -30,7 +64,11 @@ export function ROCreateForm({ onSubmit, onCancel, isPending }: ROCreateFormProp
       className='flex h-[calc(100vh-100px)] flex-col overflow-hidden'
     >
       <div className='flex-1 space-y-6 overflow-y-auto p-6 pb-4'>
-        <CustomerInfoFields register={register} errors={errors} />
+        <CustomerInfoFields
+          register={register}
+          errors={errors}
+          headerAction={clearButton}
+        />
         <VehicleInfoFields register={register} errors={errors} />
         <ServiceSelector services={services} setValue={setValue} errors={errors} />
         <ROMetadataFields

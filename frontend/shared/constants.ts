@@ -139,13 +139,42 @@ export const KANBAN_LABELS = {
   },
 
   STATUS: {
-    NEW: 'New',
+    NEW: 'Created',
     IN_PROGRESS: 'In Progress',
     COMPLETED: 'Completed',
     WAITING_PARTS: 'Waiting Parts',
-    AWAITING_APPROVAL: 'Awaiting Approval',
+    AWAITING_APPROVAL: 'Waiting Approval',
   },
 } as const
+
+// Kanban Board Column Configuration
+export const KANBAN_COLUMNS = [
+  {
+    status: RO_STATUS.NEW,
+    title: KANBAN_LABELS.STATUS.NEW,
+    color: 'bg-blue-100 text-blue-700',
+  },
+  {
+    status: RO_STATUS.AWAITING_APPROVAL,
+    title: KANBAN_LABELS.STATUS.AWAITING_APPROVAL,
+    color: 'bg-amber-100 text-amber-700',
+  },
+  {
+    status: RO_STATUS.IN_PROGRESS,
+    title: KANBAN_LABELS.STATUS.IN_PROGRESS,
+    color: 'bg-indigo-100 text-indigo-700',
+  },
+  {
+    status: RO_STATUS.WAITING_PARTS,
+    title: KANBAN_LABELS.STATUS.WAITING_PARTS,
+    color: 'bg-orange-100 text-orange-700',
+  },
+  {
+    status: RO_STATUS.COMPLETED,
+    title: KANBAN_LABELS.STATUS.COMPLETED,
+    color: 'bg-green-100 text-green-700',
+  },
+] as const
 
 // Filter Labels
 export const FILTER_LABELS = {

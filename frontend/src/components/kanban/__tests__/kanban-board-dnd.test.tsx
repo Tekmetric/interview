@@ -1,12 +1,12 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import { toast } from 'sonner'
+import { render, screen } from '@testing-library/react'
 import { KanbanBoard } from '../kanban-board'
-import { RO_STATUS, KANBAN_LABELS } from '@shared/constants'
+import { RO_STATUS } from '@shared/constants'
 import { PreferencesContext } from '@/contexts/preferences-context'
 import { DEFAULT_PREFERENCES } from '@/types/preferences'
 import { SelectionProvider } from '@/contexts/selection-context'
 import type { RepairOrder } from '@shared/types'
+import type { ReactElement } from 'react'
 
 vi.mock('sonner', () => ({
   toast: {
@@ -33,7 +33,7 @@ describe('KanbanBoard - Drag and Drop Transitions', () => {
     ...overrides,
   })
 
-  const customRender = (ui: React.ReactElement) => {
+  const customRender = (ui: ReactElement) => {
     return render(
       <PreferencesContext.Provider
         value={{

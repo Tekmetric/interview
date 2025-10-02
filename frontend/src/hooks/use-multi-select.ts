@@ -24,15 +24,11 @@ export function useMultiSelectKeyboard(orderIds: string[]) {
       const searchParams = new URLSearchParams(search)
       const isSidebarOpen = searchParams.has('roId') || searchParams.has('createRO')
 
-      // Cmd/Ctrl+A: Select all (skip if sidebar is open)
-      if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
-        if (!isSidebarOpen) {
-          e.preventDefault()
-          selectAll(orderIds)
-        }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'a' && !isSidebarOpen) {
+        e.preventDefault()
+        selectAll(orderIds)
       }
 
-      // Escape: Clear selection
       if (e.key === 'Escape') {
         clearSelection()
       }

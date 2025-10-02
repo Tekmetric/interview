@@ -39,27 +39,20 @@ export function ROTimeline({ order }: { order: RepairOrder }) {
   })
 
   return (
-    <div className='px-4 py-4'>
+    <div className='px-4 py-2'>
       <div className='relative'>
         <div className='absolute top-4 right-0 left-0 h-1 bg-gray-200' />
 
         <div className='relative flex justify-between'>
           {events.map((event, idx) => {
-            const isLast = idx === events.length - 1
-            const isFirst = idx === 0
             return (
-              <div
-                key={idx}
-                className={`flex items-center gap-2 ${isLast ? 'flex-row-reverse' : ''}`}
-              >
+              <div key={idx} className='flex flex-col items-center gap-2'>
                 <div
                   className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${event.iconBg} ${event.isActive ? 'text-white' : 'text-gray-500'}`}
                 >
                   {event.icon}
                 </div>
-                <div
-                  className={`flex flex-col gap-1 ${isLast ? 'items-end' : isFirst ? 'items-start' : 'items-center'}`}
-                >
+                <div className={`flex flex-col items-center gap-1`}>
                   <p
                     className={`text-xs font-semibold ${event.isActive ? 'text-gray-900' : 'text-gray-400'}`}
                   >

@@ -1,4 +1,4 @@
-import { type MouseEvent } from 'react'
+import { type MouseEvent, memo, useCallback, useMemo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Badge } from '@/components/ui/badge'
@@ -25,9 +25,13 @@ type KanbanCardProps = {
   dropPosition?: 'top' | 'bottom'
 }
 
-export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCardProps) {
+export const KanbanCard = memo(function KanbanCard({
+  order,
+  showStatus = true,
+  dropPosition,
+}: KanbanCardProps) {
   const [, setLocation] = useLocation()
-  const searchParams = new URLSearchParams(useSearch())
+  const search = useSearch()
   const { preferences } = usePreferences()
   const { isSelected, toggleSelection, selection } = useMultiSelect()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } =
@@ -35,13 +39,15 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
       id: order.id,
     })
 
+  const searchParams = useMemo(() => new URLSearchParams(search), [search])
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 1 : 1,
   }
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (isDragging) return
 
     // When in selection mode, clicking card toggles selection
@@ -53,13 +59,23 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
     // Otherwise, open details drawer (existing behavior)
     searchParams.set('roId', order.id)
     setLocation(`?${searchParams.toString()}`)
-  }
+  }, [
+    isDragging,
+    selection.isSelecting,
+    toggleSelection,
+    order.id,
+    searchParams,
+    setLocation,
+  ])
 
-  const handleViewDetails = (e: MouseEvent) => {
-    e.stopPropagation()
-    searchParams.set('roId', order.id)
-    setLocation(`?${searchParams.toString()}`)
-  }
+  const handleViewDetails = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation()
+      searchParams.set('roId', order.id)
+      setLocation(`?${searchParams.toString()}`)
+    },
+    [order.id, searchParams, setLocation],
+  )
 
   const status = STATUS_CONFIG[order.status]
 
@@ -204,4 +220,4 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
       </div>
     </div>
   )
-}
+})

@@ -1,42 +1,42 @@
 import { Page, Locator, expect } from '@playwright/test';
 
 type PaymentDetails = {
-    nameOnCard: string;
-    cardNumber: string;
-    cvc: string;
-    expiration: string;
+  nameOnCard: string;
+  cardNumber: string;
+  cvc: string;
+  expiration: string;
 };
 
 export class PaymentPage {
-    // Form Elements
-    private readonly nameOnCardInput: Locator;
-    private readonly cardNumberInput: Locator;
-    private readonly cvcInput: Locator;
-    private readonly expirationMonthInput: Locator;
-    private readonly expirationYearInput: Locator;
-    private readonly payAndConfirmButton: Locator;
+  // Form Elements
+  private readonly nameOnCardInput: Locator;
+  private readonly cardNumberInput: Locator;
+  private readonly cvcInput: Locator;
+  private readonly expirationMonthInput: Locator;
+  private readonly expirationYearInput: Locator;
+  private readonly payAndConfirmButton: Locator;
 
-    // Messages
-    private readonly successMessage: Locator;
-    private readonly errorMessage: Locator;
+  // Messages
+  private readonly successMessage: Locator;
+  private readonly errorMessage: Locator;
 
-    constructor(private readonly page: Page) {
-        // Initialize Form Fields
-        this.nameOnCardInput = page.locator('[data-qa="name-on-card"]');
-        this.cardNumberInput = page.locator('[data-qa="card-number"]');
-        this.cvcInput = page.locator('[data-qa="cvc"]');
-        this.expirationMonthInput = page.locator('[data-qa="expiry-month"]');
-        this.expirationYearInput = page.locator('[data-qa="expiry-year"]');
-        this.payAndConfirmButton = page.locator('[data-qa="pay-button"]');
-        
-        // Initialize Messages
-        this.successMessage = page.locator('[data-qa="success-message"]', {
-            hasText: 'Your order has been placed'
-        });
-        this.errorMessage = page.locator('[data-qa="error-message"]', {
-            hasText: 'Payment failed'
-        });
-    }
+  constructor(private readonly page: Page) {
+    // Initialize Form Fields
+    this.nameOnCardInput = page.locator('[data-qa="name-on-card"]');
+    this.cardNumberInput = page.locator('[data-qa="card-number"]');
+    this.cvcInput = page.locator('[data-qa="cvc"]');
+    this.expirationMonthInput = page.locator('[data-qa="expiry-month"]');
+    this.expirationYearInput = page.locator('[data-qa="expiry-year"]');
+    this.payAndConfirmButton = page.locator('[data-qa="pay-button"]');
+    
+    // Initialize Messages
+    this.successMessage = page.locator('[data-qa="success-message"]', {
+      hasText: 'Your order has been placed'
+    });
+    this.errorMessage = page.locator('[data-qa="error-message"]', {
+      hasText: 'Payment failed'
+    });
+  }
 
     /**
      * Navigate to the payment page
@@ -46,38 +46,38 @@ export class PaymentPage {
         await this.waitForPageLoad();
     }
 
-    /**
-     * Fill in all payment details
-     */
-    async fillPaymentDetails(details: PaymentDetails) {
-        await Promise.all([
-            this.nameOnCardInput.fill(details.nameOnCard),
-            this.cardNumberInput.fill(details.cardNumber),
-            this.cvcInput.fill(details.cvc)
-        ]);
+  /**
+   * Fill in all payment details
+   */
+  async fillPaymentDetails(details: PaymentDetails) {
+    await Promise.all([
+      this.nameOnCardInput.fill(details.nameOnCard),
+      this.cardNumberInput.fill(details.cardNumber),
+      this.cvcInput.fill(details.cvc)
+    ]);
 
-        const [month, year] = details.expiration.split('/');
-        await Promise.all([
-            this.expirationMonthInput.fill(month.trim()),
-            this.expirationYearInput.fill(year.trim())
-        ]);
-    }
+    const [month, year] = details.expiration.split('/');
+    await Promise.all([
+      this.expirationMonthInput.fill(month.trim()),
+      this.expirationYearInput.fill(year.trim())
+    ]);
+  }
 
-    /**
-     * Submit payment form
-     */
-    async submitPayment() {
-        await this.payAndConfirmButton.click();
-        // await this.waitForAlertMessage();
-    }
+  /**
+   * Submit payment form
+   */
+  async submitPayment() {
+    await this.payAndConfirmButton.click();
+    // await this.waitForAlertMessage();
+  }
 
-    /**
-     * Complete payment flow with provided details
-     */
-    async completePayment(details: PaymentDetails) {
-        await this.fillPaymentDetails(details);
-        await this.submitPayment();
-    }
+  /**
+   * Complete payment flow with provided details
+   */
+  async completePayment(details: PaymentDetails) {
+    await this.fillPaymentDetails(details);
+    await this.submitPayment();
+  }
 
     /**
      * Verify successful payment
@@ -157,38 +157,38 @@ export class PaymentPage {
     /**
      * Wait for page load
      */
-		private async waitForPageLoad() {
-			await Promise.all([
-				this.payAndConfirmButton.waitFor({ state: 'visible', timeout: 10000 }),
-				this.nameOnCardInput.waitFor({ state: 'visible', timeout: 10000 }),
-				this.cardNumberInput.waitFor({ state: 'visible', timeout: 10000 })
-			]).catch(error => {
-				throw new Error('Failed to load payment page elements: ' + error.message);
-			});
-		}
+  private async waitForPageLoad() {
+    await Promise.all([
+      this.payAndConfirmButton.waitFor({ state: 'visible', timeout: 10000 }),
+      this.nameOnCardInput.waitFor({ state: 'visible', timeout: 10000 }),
+      this.cardNumberInput.waitFor({ state: 'visible', timeout: 10000 })
+    ]).catch(error => {
+      throw new Error('Failed to load payment page elements: ' + error.message);
+    });
+  }
 
-    /**
-     * Wait for alert messages
-     */
-    private async waitForAlertMessage(timeout = 10000) {
-        try {
-            // Try to find either success or error message
-            const [successVisible, errorVisible] = await Promise.all([
-                this.successMessage.isVisible(),
-                this.errorMessage.isVisible()
-            ]);
+  /**
+   * Wait for alert messages
+   */
+  private async waitForAlertMessage(timeout = 10000) {
+    try {
+      // Try to find either success or error message
+      const [successVisible, errorVisible] = await Promise.all([
+        this.successMessage.isVisible(),
+        this.errorMessage.isVisible()
+      ]);
 
-            if (!successVisible && !errorVisible) {
-                // If neither is visible, wait for one to appear
-                await Promise.race([
-                    this.successMessage.waitFor({ state: 'visible', timeout }),
-                    this.errorMessage.waitFor({ state: 'visible', timeout })
-                ]);
-            }
-        } catch (error) {
-            throw new Error('Failed to find success or error message: ' + error.message);
-        }
+      if (!successVisible && !errorVisible) {
+        // If neither is visible, wait for one to appear
+        await Promise.race([
+          this.successMessage.waitFor({ state: 'visible', timeout }),
+          this.errorMessage.waitFor({ state: 'visible', timeout })
+        ]);
+      }
+    } catch (error) {
+      throw new Error('Failed to find success or error message: ' + error.message);
     }
+  }
 
     // Test Utility Methods
     async expectFieldToBeVisible(fieldName: 'nameOnCard' | 'cardNumber' | 'cvc' | 'expirationMonth' | 'expirationYear' | 'payButton') {
@@ -226,67 +226,67 @@ export class PaymentPage {
         return field.inputValue();
     }
 
-    async waitForTimeout(ms: number) {
-        await this.page.waitForTimeout(ms);
-    }
+  async waitForTimeout(ms: number) {
+    await this.page.waitForTimeout(ms);
+  }
 
-    async validateMaskedCardNumber(expectedValue: string) {
-        // Give time for masking to apply and retry a few times if needed
-        let attempts = 3;
-        while (attempts-- > 0) {
-            await this.page.waitForTimeout(100);
-            const displayedValue = await this.cardNumberInput.inputValue();
-            if (displayedValue !== expectedValue && displayedValue.match(/[*•●]+1111/)) {
-                return { displayedValue, isMasked: true };
-            }
-        }
-        const displayedValue = await this.cardNumberInput.inputValue();
-        return { displayedValue, isMasked: false };
+  async validateMaskedCardNumber(expectedValue: string) {
+    // Give time for masking to apply and retry a few times if needed
+    let attempts = 3;
+    while (attempts-- > 0) {
+      await this.page.waitForTimeout(100);
+      const displayedValue = await this.cardNumberInput.inputValue();
+      if (displayedValue !== expectedValue && displayedValue.match(/[*•●]+1111/)) {
+        return { displayedValue, isMasked: true };
+      }
     }
+    const displayedValue = await this.cardNumberInput.inputValue();
+    return { displayedValue, isMasked: false };
+  }
 
-    async validateMaskedCVC(expectedValue: string) {
-        // Give time for masking to apply and retry a few times if needed
-        let attempts = 3;
-        while (attempts-- > 0) {
-            await this.page.waitForTimeout(100);
-            const displayedValue = await this.cvcInput.inputValue();
-            if (displayedValue !== expectedValue && displayedValue.match(/[*•●]{3}/)) {
-                return { displayedValue, isMasked: true };
-            }
-        }
-        const displayedValue = await this.cvcInput.inputValue();
-        return { displayedValue, isMasked: false };
+  async validateMaskedCVC(expectedValue: string) {
+    // Give time for masking to apply and retry a few times if needed
+    let attempts = 3;
+    while (attempts-- > 0) {
+      await this.page.waitForTimeout(100);
+      const displayedValue = await this.cvcInput.inputValue();
+      if (displayedValue !== expectedValue && displayedValue.match(/[*•●]{3}/)) {
+        return { displayedValue, isMasked: true };
+      }
     }
+    const displayedValue = await this.cvcInput.inputValue();
+    return { displayedValue, isMasked: false };
+  }
 
-    async focusField(fieldName: 'nameOnCard' | 'cardNumber' | 'cvc' | 'expirationMonth' | 'expirationYear' | 'payButton') {
-        const field = {
-            nameOnCard: this.nameOnCardInput,
-            cardNumber: this.cardNumberInput,
-            cvc: this.cvcInput,
-            expirationMonth: this.expirationMonthInput,
-            expirationYear: this.expirationYearInput,
-            payButton: this.payAndConfirmButton
-        }[fieldName];
-        await field.focus();
-    }
+  async focusField(fieldName: 'nameOnCard' | 'cardNumber' | 'cvc' | 'expirationMonth' | 'expirationYear' | 'payButton') {
+    const field = {
+      nameOnCard: this.nameOnCardInput,
+      cardNumber: this.cardNumberInput,
+      cvc: this.cvcInput,
+      expirationMonth: this.expirationMonthInput,
+      expirationYear: this.expirationYearInput,
+      payButton: this.payAndConfirmButton
+    }[fieldName];
+    await field.focus();
+  }
 
-    async expectFieldToBeFocused(fieldName: 'nameOnCard' | 'cardNumber' | 'cvc' | 'expirationMonth' | 'expirationYear' | 'payButton') {
-        const field = {
-            nameOnCard: this.nameOnCardInput,
-            cardNumber: this.cardNumberInput,
-            cvc: this.cvcInput,
-            expirationMonth: this.expirationMonthInput,
-            expirationYear: this.expirationYearInput,
-            payButton: this.payAndConfirmButton
-        }[fieldName];
-        await expect(field).toBeFocused();
-    }
+  async expectFieldToBeFocused(fieldName: 'nameOnCard' | 'cardNumber' | 'cvc' | 'expirationMonth' | 'expirationYear' | 'payButton') {
+    const field = {
+      nameOnCard: this.nameOnCardInput,
+      cardNumber: this.cardNumberInput,
+      cvc: this.cvcInput,
+      expirationMonth: this.expirationMonthInput,
+      expirationYear: this.expirationYearInput,
+      payButton: this.payAndConfirmButton
+    }[fieldName];
+    await expect(field).toBeFocused();
+  }
 
-    async pressKey(key: string) {
-        await this.page.keyboard.press(key);
-    }
+  async pressKey(key: string) {
+    await this.page.keyboard.press(key);
+  }
 
-    async setRoute(pattern: string, handler: (route: any) => void) {
-        await this.page.route(pattern, handler);
-    }
+  async setRoute(pattern: string, handler: (route: any) => void) {
+    await this.page.route(pattern, handler);
+  }
 }

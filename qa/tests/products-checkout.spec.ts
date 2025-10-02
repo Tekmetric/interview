@@ -13,71 +13,69 @@ test.describe('Product Checkout Flow', () => {
     await loginPage.loginAs('ryandandrow@gmail.com', 'testPassword');
   });
 
-	test.describe('Product Checkout Flow', () => {
-		test('should add product to cart and proceed to checkout', async ({ page }) => {
-			// Create an instance of ProductsPage
-			const productsPage = new ProductsPage(page);
+  test('should add product to cart and proceed to checkout', async ({ page }) => {
+    // Create an instance of ProductsPage
+    const productsPage = new ProductsPage(page);
 
-			// Create an instance of CartPage
-			const cartPage = new CartPage(page);
+    // Create an instance of CartPage
+    const cartPage = new CartPage(page);
 
-			// Navigate to products page and add first product to cart
-			await productsPage.navigateToProductsView();
+    // Navigate to products page and add first product to cart
+    await productsPage.navigateToProductsView();
 
-			// Add first product to cart
-			await productsPage.getAddToCartButtons().first().click();
+    // Add first product to cart
+    await productsPage.getAddToCartButtons().first().click();
 
-			// Verify the "Added!" modal appears
-			await expect(productsPage.getAddedModal()).toBeVisible({ timeout: 5000 });
+    // Verify the "Added!" modal appears
+    await expect(productsPage.getAddedModal()).toBeVisible({ timeout: 5000 });
 
-			// Navigate to cart and proceed to checkout
-			await cartPage.navigateToCart();
+    // Navigate to cart and proceed to checkout
+    await cartPage.navigateToCart();
 
-			// Validate cart info is visible
-			expect(cartPage.validateCartInfo());
+    // Validate cart info is visible
+    expect(cartPage.validateCartInfo());
 
-			// click the checkout link
-			await cartPage.getProceedToCheckoutButton().click();
+    // click the checkout link
+    await cartPage.getProceedToCheckoutButton().click();
 
-			// validate checkout URL and header
-			await expect(page).toHaveURL('https://www.automationexercise.com/checkout', { timeout: 5000 });
-		});
+    // validate checkout URL and header
+    await expect(page).toHaveURL('https://www.automationexercise.com/checkout', { timeout: 5000 });
+  });
 
-		test("should validate data on the checkout page ", async ({ page }) => {
-			// Create an instance of CheckoutPage
-			const checkoutPage = new CheckoutPage(page);
+  test("should validate data on the checkout page ", async ({ page }) => {
+    // Create an instance of CheckoutPage
+    const checkoutPage = new CheckoutPage(page);
 
-			// Navigate to checkout page
-			await checkoutPage.navigateToCheckout();
+    // Navigate to checkout page
+    await checkoutPage.navigateToCheckout();
 
-			// Verify checkout form is visible
-			await expect(checkoutPage.getCheckoutInfo()).toBeVisible();
+    // Verify checkout form is visible
+    await expect(checkoutPage.getCheckoutInfo()).toBeVisible();
 
-			// Validate user details section is visible and contains expected fields
-			await expect(checkoutPage.getDeliveryAddressHeaderTest()).toContainText('Your delivery address');
-			await expect(checkoutPage.getDeliveryAddressFullName()).toContainText('Mr. Ryan Dandrow');
-			await expect(checkoutPage.getDeliveryAddressCompany()).toContainText('Beacon Consulting');
-			await expect(checkoutPage.getDeliveryAddressLine1()).toContainText('24 Plantation Dr');
-			await expect(checkoutPage.getDeliveryAddressCityStateZip()).toContainText('Little Egg Harbor New Jersey 08087');
-			await expect(checkoutPage.getDeliveryAddressCountry()).toContainText('United States');
-			await expect(checkoutPage.getDeliveryAddressPhoneNumber()).toContainText('6093126779');
+    // Validate user details section is visible and contains expected fields
+    await expect(checkoutPage.getDeliveryAddressHeaderTest()).toContainText('Your delivery address');
+    await expect(checkoutPage.getDeliveryAddressFullName()).toContainText('Mr. Ryan Dandrow');
+    await expect(checkoutPage.getDeliveryAddressCompany()).toContainText('Beacon Consulting');
+    await expect(checkoutPage.getDeliveryAddressLine1()).toContainText('24 Plantation Dr');
+    await expect(checkoutPage.getDeliveryAddressCityStateZip()).toContainText('Little Egg Harbor New Jersey 08087');
+    await expect(checkoutPage.getDeliveryAddressCountry()).toContainText('United States');
+    await expect(checkoutPage.getDeliveryAddressPhoneNumber()).toContainText('6093126779');
 
-			// Validate billing details section is visible and contains expected fields
-			await expect(checkoutPage.getBillingAddress()).toContainText('Your billing address');
-			await expect(checkoutPage.getBillingAddressFullName()).toContainText('Mr. Ryan Dandrow');
-			await expect(checkoutPage.getBillingAddressCompany()).toContainText('Beacon Consulting');
-			await expect(checkoutPage.getBillingAddress1()).toContainText('24 Plantation Dr');
-			await expect(checkoutPage.getBillingCityStateZip()).toContainText('Little Egg Harbor New Jersey 08087');
-			await expect(checkoutPage.getBillingCountry()).toContainText('United States');
-			await expect(checkoutPage.getBillingMobileNumber()).toContainText('6093126779');
+    // Validate billing details section is visible and contains expected fields
+    await expect(checkoutPage.getBillingAddress()).toContainText('Your billing address');
+    await expect(checkoutPage.getBillingAddressFullName()).toContainText('Mr. Ryan Dandrow');
+    await expect(checkoutPage.getBillingAddressCompany()).toContainText('Beacon Consulting');
+    await expect(checkoutPage.getBillingAddress1()).toContainText('24 Plantation Dr');
+    await expect(checkoutPage.getBillingCityStateZip()).toContainText('Little Egg Harbor New Jersey 08087');
+    await expect(checkoutPage.getBillingCountry()).toContainText('United States');
+    await expect(checkoutPage.getBillingMobileNumber()).toContainText('6093126779');
 
-			// Validate order review section is visible and contains expected headers
-			await expect(checkoutPage.getOrderReviewSectionHeader()).toHaveText('Review Your Order');
-			await expect(checkoutPage.getCartDescription()).toContainText('Item');
-			await expect(checkoutPage.getCartDescription()).toContainText('Description');
-			await expect(checkoutPage.getCartDescription()).toContainText('Price');
-			await expect(checkoutPage.getCartDescription()).toContainText('Quantity');
-			await expect(checkoutPage.getCartDescription()).toContainText('Total');
-		});
+    // Validate order review section is visible and contains expected headers
+    await expect(checkoutPage.getOrderReviewSectionHeader()).toHaveText('Review Your Order');
+    await expect(checkoutPage.getCartDescription()).toContainText('Item');
+    await expect(checkoutPage.getCartDescription()).toContainText('Description');
+    await expect(checkoutPage.getCartDescription()).toContainText('Price');
+    await expect(checkoutPage.getCartDescription()).toContainText('Quantity');
+    await expect(checkoutPage.getCartDescription()).toContainText('Total');
   });
 });

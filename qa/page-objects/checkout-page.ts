@@ -1,189 +1,190 @@
 import { Page } from '@playwright/test';
 
 export class CheckoutPage {
-  	readonly page: Page;
+  readonly page: Page;
 
-    constructor(page: Page) {
-      this.page = page;
-    }
+  constructor(page: Page) {
+    this.page = page;
+  }
 
-    // Returns the user details section on the checkout page
-    getUserDetailsSection() {
-      return this.page.locator('.user-details-section');
-    }
+  // Returns the user details section on the checkout page
+  getUserDetailsSection() {
+    return this.page.locator('.user-details-section');
+  }
 
-    // Navigates to the cart page
-    async navigateToCheckout() {
-      await this.page.goto('https://www.automationexercise.com/checkout');
-    }
+  // Navigates to the cart page
+  async navigateToCheckout() {
+    await this.page.goto('https://www.automationexercise.com/checkout');
+  }
 
-    // Returns the checkout information section
-    getCheckoutInfo() {
-      return this.page.locator('.checkout-information');
-    }
+  // Returns the checkout information section
+  getCheckoutInfo() {
+    return this.page.locator('.checkout-information');
+  }
 
-    // Returns the "Place Order" button
-    getPlaceOrderButton() {
-      return this.page.locator('a[href="/payment"]');
-    }
+  // Returns the "Place Order" button
+  getPlaceOrderButton() {
+    return this.page.locator('a[href="/payment"]');
+  }
 
-    // Returns the cart total price
-    getCartTotal() {
-      return this.page.locator('.cart_total');
-    }
+  // Returns the cart total price
+  getCartTotal() {
+    return this.page.locator('.cart_total');
+  }
 
-    // Returns the cart quantity
-    getCartQuantity() {
-	    return this.page.locator('.disabled');
-    }
+  // Returns the cart quantity
+  getCartQuantity() {
+    return this.page.locator('.disabled');
+  }
 
-    // Returns the delivery address section
-    getDeliveryAddress() {
-      return this.page.locator('#address_delivery');
-    }
+  // Returns the delivery address section
+  getDeliveryAddress() {
+    return this.page.locator('#address_delivery');
+  }
 
-    // Returns the billing address section
-    getBillingAddress() {
-      return this.page.locator('#address_invoice');
-    }
+  // Returns the billing address section
+  getBillingAddress() {
+    return this.page.locator('#address_invoice');
+  }
 
-    // Returns the cart description
-    getCartDescription() {
-      return this.page.locator('#cart_info');
-    }
+  // Returns the cart description
+  getCartDescription() {
+    return this.page.locator('#cart_info');
+  }
 
-    // Returns the comment text area
-    getCommentBox() {
-      return this.page.locator('textarea[name="message"]');
-    }
+  // Returns the comment text area
+  getCommentBox() {
+    return this.page.locator('textarea[name="message"]');
+  }
 
-		// Order Review Section
-    getOrderReviewSectionHeader() {
-      return this.page.locator('#cart_items > div > div:nth-child(4) > h2');
-    }
+  // Order Review Section
+  getOrderReviewSectionHeader() {
+    return this.page.locator('#cart_items > div > div:nth-child(4) > h2');
+  }
 
-    getProductNameInOrderReview() {
-      return this.page.locator('.order_review .cart_description h4 a');
-    }
+  getProductNameInOrderReview() {
+    return this.page.locator('.order_review .cart_description h4 a');
+  }
 
-    getProductPriceInOrderReview() {
-      return this.page.locator('.order_review .cart_price p');
-    }
+  getProductPriceInOrderReview() {
+    return this.page.locator('.order_review .cart_price p');
+  }
 
-    getProductQuantityInOrderReview() {
-      return this.page.locator('.order_review .cart_quantity p');
-    }
+  getProductQuantityInOrderReview() {
+    return this.page.locator('.order_review .cart_quantity p');
+  }
 
-    getProductTotalInOrderReview() {
-      return this.page.locator('.order_review .cart_total_price');
-    }
+  getProductTotalInOrderReview() {
+    return this.page.locator('.order_review .cart_total_price');
+  }
 
-    getSubtotalInOrderReview() {
-      return this.page.locator('.order_review .cart_subtotal .cart_total_price');
-    }
+  getSubtotalInOrderReview() {
+    return this.page.locator('.order_review .cart_subtotal .cart_total_price');
+  }
 
-    getShippingInOrderReview() {
-      return this.page.locator('.order_review .shipping .cart_total_price');
-    }
+  getShippingInOrderReview() {
+    return this.page.locator('.order_review .shipping .cart_total_price');
+  }
 
-    getTotalInOrderReview() {
-        return this.page.locator('.order_review .order_total .cart_total_price');
-    }
+  getTotalInOrderReview() {
+    return this.page.locator('.order_review .order_total .cart_total_price');
+  }
 
-    // Delivery Address fields
-		getDeliveryAddressHeaderTest() {
-			return this.page.locator('#address_delivery h3');
-		}
+  // Delivery Address fields
+  getDeliveryAddressHeaderTest() {
+    return this.page.locator('#address_delivery h3');
+  }
 
-    getDeliveryAddressFullName() {
-      return this.page.locator('#address_delivery .address_firstname.address_lastname');
-    }
+  getDeliveryAddressFullName() {
+    return this.page.locator('#address_delivery .address_firstname.address_lastname');
+  }
 
-    getDeliveryAddressCompany() {
-      return this.page.locator('#address_delivery > li:nth-child(3)');
-    }
+  getDeliveryAddressCompany() {
+    return this.page.locator('#address_delivery > li:nth-child(3)');
+  }
 
-    getDeliveryAddressLine1() {
-      return this.page.locator('#address_delivery > li:nth-child(4)');
-    }
+  getDeliveryAddressLine1() {
+    return this.page.locator('#address_delivery > li:nth-child(4)');
+  }
 
-    getDeliveryAddressCityStateZip() {
+  getDeliveryAddressCityStateZip() {
     return this.page.locator('#address_delivery .address_city.address_state_name.address_postcode');
-    }
+  }
 
-    getDeliveryAddressCountry() {
-      return this.page.locator('#address_delivery .address_country_name');
-    }
+  getDeliveryAddressCountry() {
+    return this.page.locator('#address_delivery .address_country_name');
+  }
 
-    getDeliveryAddressMobileNumber() {
-      return this.page.locator('#address_delivery .address_phone');
-    }
+  getDeliveryAddressMobileNumber() {
+    return this.page.locator('#address_delivery .address_phone');
+  }
 
-    getDeliveryAddressPhoneNumber() {
-      return this.page.locator('#address_delivery .address_phone');
-    }
+  getDeliveryAddressPhoneNumber() {
+    return this.page.locator('#address_delivery .address_phone');
+  }
 
-    // Billing Address fields
-    getBillingAddressHeader() {
-      return this.page.locator('#address_invoice h3');
-    }
+  // Billing Address fields
+  getBillingAddressHeader() {
+    return this.page.locator('#address_invoice h3');
+  }
 
-    getBillingAddressFullName() {
-      return this.page.locator('#address_invoice .address_firstname.address_lastname');
-    }
+  getBillingAddressFullName() {
+    return this.page.locator('#address_invoice .address_firstname.address_lastname');
+  }
 
-    getBillingAddressCompany() {
-      return this.page.locator('#address_invoice > li:nth-child(3)');
-    }
-    
-    getBillingAddress1() {
-      return this.page.locator('#address_invoice > li:nth-child(4)');
-    }
-    
-    getBillingAddress2() {
-      return this.page.locator('#address_invoice .address_address2');
-    }
+  getBillingAddressCompany() {
+    return this.page.locator('#address_invoice > li:nth-child(3)');
+  }
+  
+  getBillingAddress1() {
+    return this.page.locator('#address_invoice > li:nth-child(4)');
+  }
+  
+  getBillingAddress2() {
+    return this.page.locator('#address_invoice .address_address2');
+  }
 
-    getBillingCityStateZip() {
-      return this.page.locator('#address_invoice .address_city.address_state_name.address_postcode');
-    }
+  getBillingCityStateZip() {
+    return this.page.locator('#address_invoice .address_city.address_state_name.address_postcode');
+  }
 
-    getBillingCountry() {
-      return this.page.locator('#address_invoice .address_country_name');
-    }
+  getBillingCountry() {
+    return this.page.locator('#address_invoice .address_country_name');
+  }
 
-    getBillingMobileNumber() {
-      return this.page.locator('#address_invoice .address_phone');
-    }
+  getBillingMobileNumber() {
+    return this.page.locator('#address_invoice .address_phone');
+  }
 
-    // Clicks the "Place Order" button
-    async clickPlaceOrderButton() {
-      await this.getPlaceOrderButton().click();
-    }
+  // Clicks the "Place Order" button
+  async clickPlaceOrderButton() {
+    await this.getPlaceOrderButton().click();
+  }
 
-    // Adds a comment to the order
-    async addComment(comment: string) {
-      await this.getCommentBox().fill(comment);
-    }
-    // Returns the cart total amount
-    async validateCartTotal(): Promise<string> {
-      const totalElement = this.page.locator('.cart_total_price');
-      return totalElement.innerText();
-    }
+  // Adds a comment to the order
+  async addComment(comment: string) {
+    await this.getCommentBox().fill(comment);
+  }
 
-    async submitOrder() {
-      await this.page.click('button[type="submit"]');
-    }
+  // Returns the cart total amount
+  async validateCartTotal(): Promise<string> {
+    const totalElement = this.page.locator('.cart_total_price');
+    return totalElement.innerText();
+  }
 
-    getPaymentForm(): any {
-			return this.page.locator('[data-test-id="payment-form"]');
-		}
+  async submitOrder() {
+    await this.page.click('button[type="submit"]');
+  }
 
-    getOrderConfirmation() {
-  	  return this.page.locator('[data-test-id="order-confirmation"]');
-    }
+  getPaymentForm(): any {
+    return this.page.locator('[data-test-id="payment-form"]');
+  }
 
-		getPaymentFormHeader(): any {
-			return this.page.locator('[data-qa="payment-form-header"]');
-		}
+  getOrderConfirmation() {
+    return this.page.locator('[data-test-id="order-confirmation"]');
+  }
+
+  getPaymentFormHeader(): any {
+    return this.page.locator('[data-qa="payment-form-header"]');
+  }
 }

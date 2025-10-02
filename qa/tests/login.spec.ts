@@ -2,9 +2,9 @@ import { test, expect } from '@playwright/test';
 import { LoginPage } from '../page-objects/login-page';
 
 let loginPage: LoginPage;
-  test.beforeEach(async ({ page }) => {
-    loginPage = new LoginPage(page);
-  });
+test.beforeEach(async ({ page }) => {
+  loginPage = new LoginPage(page);
+});
 
 test.describe('Login Flow', () => {
   test('should fail login with invalid credentials', async ({ page }) => {

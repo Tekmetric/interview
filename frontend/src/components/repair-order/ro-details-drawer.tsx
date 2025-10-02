@@ -7,6 +7,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -18,6 +19,7 @@ import {
 } from '@/components/ui/dialog'
 import { RODetailsForm } from './ro-details-form'
 import { useRepairOrder, useUpdateRepairOrder, useDeleteRepairOrder } from './hooks/useRepairOrderDetails'
+import { STATUS_CONFIG } from './ro-constants'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
@@ -79,11 +81,28 @@ function RODetailsContent({ orderId, onClose }: { orderId: string; onClose: () =
     })
   }
 
+  const statusConfig = STATUS_CONFIG[order.status]
+
   return (
     <>
       <SheetHeader className='border-b bg-white px-6 py-4'>
-        <SheetTitle className='text-lg'>{REPAIR_ORDER_LABELS.DETAILS}</SheetTitle>
-        <SheetDescription className='mt-1 font-mono text-sm'>{order.id}</SheetDescription>
+        <div className='flex items-center justify-between'>
+          {/* Left: Smaller label + Large RO number */}
+          <div className='flex flex-col gap-1'>
+            <SheetDescription className='text-xs font-medium text-gray-500'>
+              {REPAIR_ORDER_LABELS.DETAILS}
+            </SheetDescription>
+            <SheetTitle className='text-2xl font-bold text-gray-900'>{order.id}</SheetTitle>
+          </div>
+
+          {/* Right: Status badge */}
+          <Badge
+            variant='outline'
+            className={`${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} border px-3 py-1 text-sm font-semibold`}
+          >
+            {statusConfig.label}
+          </Badge>
+        </div>
       </SheetHeader>
 
       <RODetailsForm

@@ -28,7 +28,7 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
   const [, setLocation] = useLocation()
   const searchParams = new URLSearchParams(useSearch())
   const { preferences } = usePreferences()
-  const { isSelected, selectRange, toggleSelection, selection } = useMultiSelect()
+  const { isSelected, toggleSelection, selection } = useMultiSelect()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } =
     useSortable({
       id: order.id,

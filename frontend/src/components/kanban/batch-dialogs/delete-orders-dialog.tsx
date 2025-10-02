@@ -12,6 +12,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { API_ENDPOINTS } from '@shared/constants'
+import type { RepairOrder } from '@shared/types'
 
 type DeleteOrdersDialogProps = {
   open: boolean
@@ -50,6 +51,30 @@ export function DeleteOrdersDialog({
 
   const mutation = useMutation({
     mutationFn: () => deleteOrders(selectedOrderIds),
+    onMutate: async () => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
+
+      // Snapshot previous value
+      const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
+
+      // Optimistically remove from cache
+      if (previousOrders) {
+        queryClient.setQueryData<RepairOrder[]>(
+          ['repairOrders'],
+          previousOrders.filter((order) => !selectedOrderIds.includes(order.id)),
+        )
+      }
+
+      return { previousOrders }
+    },
+    onError: (err: Error, _variables, context) => {
+      // Rollback on error
+      if (context?.previousOrders) {
+        queryClient.setQueryData(['repairOrders'], context.previousOrders)
+      }
+      toast.error(err.message || 'Failed to delete orders')
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
       toast.success(
@@ -57,9 +82,6 @@ export function DeleteOrdersDialog({
       )
       onSuccess()
       onOpenChange(false)
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || 'Failed to delete orders')
     },
   })
 

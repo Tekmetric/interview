@@ -1,4 +1,4 @@
-
+import { type ReactNode } from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { SettingsDialog } from '../settings-dialog'
 import { PreferencesContext } from '@/contexts/preferences-context'
@@ -21,7 +21,7 @@ const mockPreferences: PreferencesContextType['preferences'] = {
   },
 }
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper = ({ children }: { children: ReactNode }) => (
   <PreferencesContext.Provider
     value={{ preferences: mockPreferences, updateColumnVisibility: vi.fn() }}
   >

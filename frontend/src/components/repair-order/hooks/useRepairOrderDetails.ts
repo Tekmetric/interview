@@ -62,8 +62,43 @@ export function useUpdateRepairOrder() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateRepairOrderInput }) =>
       updateRepairOrder(id, data),
+    onMutate: async ({ id, data }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
+      await queryClient.cancelQueries({ queryKey: ['repairOrder', id] })
+
+      // Snapshot previous values
+      const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
+      const previousOrder = queryClient.getQueryData<RepairOrder>(['repairOrder', id])
+
+      // Optimistically update both caches
+      if (previousOrder) {
+        const optimisticOrder = { ...previousOrder, ...data }
+        queryClient.setQueryData(['repairOrder', id], optimisticOrder)
+      }
+
+      if (previousOrders) {
+        queryClient.setQueryData(
+          ['repairOrders'],
+          previousOrders.map((order) =>
+            order.id === id ? { ...order, ...data } : order,
+          ),
+        )
+      }
+
+      return { previousOrders, previousOrder }
+    },
+    onError: (_err, { id }, context) => {
+      // Rollback on error
+      if (context?.previousOrders) {
+        queryClient.setQueryData(['repairOrders'], context.previousOrders)
+      }
+      if (context?.previousOrder) {
+        queryClient.setQueryData(['repairOrder', id], context.previousOrder)
+      }
+    },
     onSuccess: (updatedOrder) => {
-      // Update both the single order cache and the list cache
+      // Update with actual server response
       queryClient.setQueryData(['repairOrder', updatedOrder.id], updatedOrder)
       queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
     },
@@ -75,6 +110,29 @@ export function useDeleteRepairOrder() {
 
   return useMutation({
     mutationFn: (id: string) => deleteRepairOrder(id),
+    onMutate: async (id) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
+
+      // Snapshot previous value
+      const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
+
+      // Optimistically remove from cache
+      if (previousOrders) {
+        queryClient.setQueryData(
+          ['repairOrders'],
+          previousOrders.filter((order) => order.id !== id),
+        )
+      }
+
+      return { previousOrders }
+    },
+    onError: (_err, _id, context) => {
+      // Rollback on error
+      if (context?.previousOrders) {
+        queryClient.setQueryData(['repairOrders'], context.previousOrders)
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
     },

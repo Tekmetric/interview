@@ -19,7 +19,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { API_ENDPOINTS } from '@shared/constants'
 import { STATUS_CONFIG } from '@/components/repair-order/ro-constants'
-import type { RepairOrderStatus } from '@shared/types'
+import type { RepairOrder, RepairOrderStatus } from '@shared/types'
 
 type ChangeStatusDialogProps = {
   open: boolean
@@ -61,6 +61,32 @@ export function ChangeStatusDialog({
 
   const mutation = useMutation({
     mutationFn: (status: RepairOrderStatus) => changeStatusForOrders(selectedOrderIds, status),
+    onMutate: async (status) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
+
+      // Snapshot previous value
+      const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
+
+      // Optimistically update cache
+      if (previousOrders) {
+        queryClient.setQueryData<RepairOrder[]>(
+          ['repairOrders'],
+          previousOrders.map((order) =>
+            selectedOrderIds.includes(order.id) ? { ...order, status } : order,
+          ),
+        )
+      }
+
+      return { previousOrders }
+    },
+    onError: (err: Error, _variables, context) => {
+      // Rollback on error
+      if (context?.previousOrders) {
+        queryClient.setQueryData(['repairOrders'], context.previousOrders)
+      }
+      toast.error(err.message || 'Failed to change status')
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
       toast.success(
@@ -69,9 +95,6 @@ export function ChangeStatusDialog({
       onSuccess()
       onOpenChange(false)
       setSelectedStatus('')
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || 'Failed to change status')
     },
   })
 

@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { API_ENDPOINTS } from '@shared/constants'
+import type { RepairOrder } from '@shared/types'
 
 type UpdatePriorityDialogProps = {
   open: boolean
@@ -60,6 +61,32 @@ export function UpdatePriorityDialog({
   const mutation = useMutation({
     mutationFn: (priority: 'HIGH' | 'NORMAL') =>
       updatePriorityForOrders(selectedOrderIds, priority),
+    onMutate: async (priority) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
+
+      // Snapshot previous value
+      const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
+
+      // Optimistically update cache
+      if (previousOrders) {
+        queryClient.setQueryData<RepairOrder[]>(
+          ['repairOrders'],
+          previousOrders.map((order) =>
+            selectedOrderIds.includes(order.id) ? { ...order, priority } : order,
+          ),
+        )
+      }
+
+      return { previousOrders }
+    },
+    onError: (err: Error, _variables, context) => {
+      // Rollback on error
+      if (context?.previousOrders) {
+        queryClient.setQueryData(['repairOrders'], context.previousOrders)
+      }
+      toast.error(err.message || 'Failed to update priority')
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
       toast.success(
@@ -68,9 +95,6 @@ export function UpdatePriorityDialog({
       onSuccess()
       onOpenChange(false)
       setSelectedPriority('')
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || 'Failed to update priority')
     },
   })
 

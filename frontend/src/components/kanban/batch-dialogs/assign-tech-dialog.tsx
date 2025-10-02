@@ -19,6 +19,7 @@ import { useTechnicians } from '@/components/technician/hooks/useTechnicians'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { API_ENDPOINTS } from '@shared/constants'
+import type { RepairOrder } from '@shared/types'
 
 type AssignTechDialogProps = {
   open: boolean
@@ -61,6 +62,35 @@ export function AssignTechDialog({
 
   const mutation = useMutation({
     mutationFn: (techId: string) => assignTechToOrders(selectedOrderIds, techId),
+    onMutate: async (techId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
+
+      // Snapshot previous value
+      const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
+
+      // Find the tech object
+      const assignedTech = technicians.find((t) => t.id === techId) || null
+
+      // Optimistically update cache
+      if (previousOrders) {
+        queryClient.setQueryData<RepairOrder[]>(
+          ['repairOrders'],
+          previousOrders.map((order) =>
+            selectedOrderIds.includes(order.id) ? { ...order, assignedTech } : order,
+          ),
+        )
+      }
+
+      return { previousOrders }
+    },
+    onError: (err: Error, _variables, context) => {
+      // Rollback on error
+      if (context?.previousOrders) {
+        queryClient.setQueryData(['repairOrders'], context.previousOrders)
+      }
+      toast.error(err.message || 'Failed to assign technician')
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['repairOrders'] })
       toast.success(
@@ -69,9 +99,6 @@ export function AssignTechDialog({
       onSuccess()
       onOpenChange(false)
       setSelectedTech('')
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || 'Failed to assign technician')
     },
   })
 

@@ -1,3 +1,4 @@
+import { type MouseEvent } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Badge } from '@/components/ui/badge'
@@ -54,7 +55,7 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
     setLocation(`?${searchParams.toString()}`)
   }
 
-  const handleViewDetails = (e: React.MouseEvent) => {
+  const handleViewDetails = (e: MouseEvent) => {
     e.stopPropagation()
     searchParams.set('roId', order.id)
     setLocation(`?${searchParams.toString()}`)

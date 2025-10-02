@@ -1,11 +1,8 @@
 import { Link, useLocation } from 'wouter'
-import { useState } from 'react'
 import { WELCOME_LABELS, DASHBOARD_LABELS, KANBAN_LABELS, NAV_LABELS } from '@shared/constants'
-import { SettingsDialog } from '@/components/settings/settings-dialog'
 
 export function Sidebar() {
   const [location] = useLocation()
-  const [settingsOpen, setSettingsOpen] = useState(false)
 
   return (
     <aside className='flex h-screen w-64 flex-col border-r border-gray-200 bg-white'>
@@ -103,29 +100,7 @@ export function Sidebar() {
           </svg>
           {NAV_LABELS.REPORTS}
         </a>
-
-        <button
-          onClick={() => setSettingsOpen(true)}
-          className='flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900'
-        >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='currentColor'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            strokeWidth='2'
-            className='h-5 w-5'
-          >
-            <circle cx='12' cy='12' r='3' />
-            <path d='M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24' />
-          </svg>
-          {NAV_LABELS.SETTINGS}
-        </button>
       </nav>
-
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
 
       <div className='border-t border-gray-200 p-4'>
         <div className='flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-gray-100'>

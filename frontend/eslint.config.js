@@ -55,7 +55,17 @@ export default [
         URLSearchParams: 'readonly',
         HTMLLabelElement: 'readonly',
         HTMLTextAreaElement: 'readonly',
+        KeyboardEvent: 'readonly',
         global: 'readonly',
+        // Vitest globals
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        vi: 'readonly',
       },
     },
     plugins: {

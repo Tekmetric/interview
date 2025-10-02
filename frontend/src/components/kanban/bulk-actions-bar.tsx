@@ -11,7 +11,7 @@ type BulkActionsBarProps = {
   orders: Array<{ id: string }>
 }
 
-export function BulkActionsBar({ orders }: BulkActionsBarProps) {
+export function BulkActionsBar({}: BulkActionsBarProps) {
   const { selection, clearSelection } = useMultiSelect()
   const [assignTechOpen, setAssignTechOpen] = useState(false)
   const [changeStatusOpen, setChangeStatusOpen] = useState(false)

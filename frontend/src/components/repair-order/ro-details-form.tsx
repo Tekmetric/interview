@@ -19,7 +19,7 @@ import { useTechnicians } from '@/components/technician/hooks/useTechnicians'
 import { canTransition, ALLOWED_TRANSITIONS } from '@shared/transitions'
 import type { RepairOrder, RepairOrderStatus, Priority } from '@shared/types'
 import { updateRepairOrderSchema } from '@shared/validation'
-import { STATUS_COLORS, PRIORITY_COLORS, STATUS_CONFIG } from './ro-constants'
+import { STATUS_COLORS, PRIORITY_COLORS } from './ro-constants'
 import { REPAIR_ORDER_LABELS, COMMON_LABELS } from '@shared/constants'
 
 type RODetailsFormProps = {
@@ -34,7 +34,6 @@ type RODetailsFormProps = {
 export function RODetailsForm({
   order,
   onSubmit,
-  onCancel,
   onDelete,
   isPending,
   isDeleting,
@@ -85,7 +84,6 @@ export function RODetailsForm({
   }
 
   const statusOptions = getStatusOptions()
-  const statusConfig = STATUS_CONFIG[(currentStatus as RepairOrderStatus) || order.status]
 
   return (
     <form

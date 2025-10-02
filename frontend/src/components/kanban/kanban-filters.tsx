@@ -1,119 +1,130 @@
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Search, X } from 'lucide-react'
+import { Users, Flag, Layers, Search } from 'lucide-react'
+import * as React from 'react'
+import {
+  FilterType,
+  FilterOption,
+  Filter,
+  Filters,
+  FilterPopover,
+} from '@/components/ui/filters'
 import type { Technician } from '@shared/types'
-import { FILTER_LABELS, COMMON_LABELS } from '@shared/constants'
-import { FilterPresetDropdown } from './filter-preset-dropdown'
+import { FILTER_LABELS } from '@shared/constants'
 
 type KanbanFiltersProps = {
+  filters: Filter[]
+  onFiltersChange: (filters: Filter[]) => void
   searchQuery: string
   onSearchChange: (query: string) => void
-  priorityFilter: 'ALL' | 'HIGH' | 'NORMAL'
-  onPriorityChange: (priority: 'ALL' | 'HIGH' | 'NORMAL') => void
-  techFilter: string
-  onTechChange: (techId: string) => void
   technicians: Technician[]
-  onApplyPreset?: (filters: {
-    searchQuery: string
-    priorityFilter: 'ALL' | 'HIGH' | 'NORMAL'
-    techFilter: string
-  }) => void
 }
 
+// Filter view options (main categories)
+export const filterViewOptions: FilterOption[][] = [
+  [
+    {
+      name: FilterType.STATUS,
+      icon: <Layers className='text-muted-foreground size-3 shrink-0' />,
+    },
+    {
+      name: FilterType.PRIORITY,
+      icon: <Flag className='text-muted-foreground size-3 shrink-0' />,
+    },
+    {
+      name: FilterType.TECHNICIAN,
+      icon: <Users className='text-muted-foreground size-3 shrink-0' />,
+    },
+  ],
+]
+
+// Status filter options
+const statusOptions: FilterOption[] = [
+  { name: 'New', icon: <div className='size-2 rounded-full bg-blue-500' /> },
+  {
+    name: 'Awaiting Approval',
+    icon: <div className='size-2 rounded-full bg-amber-500' />,
+  },
+  { name: 'In Progress', icon: <div className='size-2 rounded-full bg-indigo-500' /> },
+  { name: 'Waiting Parts', icon: <div className='size-2 rounded-full bg-orange-500' /> },
+  { name: 'Completed', icon: <div className='size-2 rounded-full bg-green-500' /> },
+]
+
+// Priority filter options
+const priorityOptions: FilterOption[] = [
+  { name: 'High', icon: <Flag className='size-3 text-red-500' /> },
+  { name: 'Normal', icon: <Flag className='size-3 text-gray-400' /> },
+]
+
 export function KanbanFilters({
+  filters,
+  onFiltersChange,
   searchQuery,
   onSearchChange,
-  priorityFilter,
-  onPriorityChange,
-  techFilter,
-  onTechChange,
   technicians,
-  onApplyPreset,
 }: KanbanFiltersProps) {
-  const activeFiltersCount =
-    (searchQuery ? 1 : 0) + (priorityFilter !== 'ALL' ? 1 : 0) + (techFilter !== 'ALL' ? 1 : 0)
+  const [localFilters, setLocalFilters] = React.useState<Filter[]>(filters)
 
-  const clearAll = () => {
-    onSearchChange('')
-    onPriorityChange('ALL')
-    onTechChange('ALL')
+  // Sync local filters with parent
+  React.useEffect(() => {
+    onFiltersChange(localFilters)
+  }, [localFilters, onFiltersChange])
+
+  // Generate technician options
+  const technicianOptions: FilterOption[] = [
+    { name: 'Unassigned', icon: <Users className='size-3 text-gray-400' /> },
+    ...technicians
+      .filter((t) => t.active)
+      .map((tech) => ({
+        name: tech.name,
+        icon: <Users className='size-3 text-blue-500' />,
+      })),
+  ]
+
+  // Map filter types to their options
+  const filterViewToFilterOptions: Record<FilterType, FilterOption[]> = {
+    [FilterType.STATUS]: statusOptions,
+    [FilterType.PRIORITY]: priorityOptions,
+    [FilterType.TECHNICIAN]: technicianOptions,
   }
 
+  const hasActiveFilters = localFilters.filter((filter) => filter.value?.length > 0).length > 0
+
   return (
-    <div className='flex flex-col gap-3 rounded-lg bg-white p-4 shadow-sm'>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
-          <h3 className='text-sm font-semibold text-gray-700'>{FILTER_LABELS.TITLE}</h3>
-          {activeFiltersCount > 0 && (
-            <Badge variant='secondary' className='h-5 text-xs'>
-              {activeFiltersCount}
-            </Badge>
-          )}
-        </div>
-        {activeFiltersCount > 0 && (
-          <button
-            onClick={clearAll}
-            className='flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700'
-          >
-            <X className='h-3 w-3' />
-            {COMMON_LABELS.CLEAR_ALL}
-          </button>
-        )}
+    <div className='flex flex-wrap items-center gap-2'>
+      {/* Search Field */}
+      <div className='relative min-w-[240px] flex-1'>
+        <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+        <Input
+          placeholder={FILTER_LABELS.SEARCH_PLACEHOLDER}
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className='h-8 pl-9'
+        />
       </div>
 
-      <div className='flex flex-col gap-3'>
-        <div className='flex flex-wrap gap-3'>
-          {/* Search */}
-          <div className='relative flex-1 min-w-[240px]'>
-            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
-            <Input
-              placeholder={FILTER_LABELS.SEARCH_PLACEHOLDER}
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className='pl-9'
-            />
-          </div>
+      {/* Filter Badges */}
+      <Filters filters={localFilters} setFilters={setLocalFilters} />
 
-          {/* Priority Filter */}
-          <Select value={priorityFilter} onValueChange={onPriorityChange}>
-            <SelectTrigger className='w-[140px]'>
-              <SelectValue placeholder={FILTER_LABELS.PRIORITY} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='ALL'>{FILTER_LABELS.ALL_PRIORITY}</SelectItem>
-              <SelectItem value='HIGH'>{FILTER_LABELS.HIGH_PRIORITY}</SelectItem>
-              <SelectItem value='NORMAL'>{FILTER_LABELS.NORMAL_PRIORITY}</SelectItem>
-            </SelectContent>
-          </Select>
+      {/* Clear Button */}
+      {hasActiveFilters && (
+        <Button
+          variant='outline'
+          size='sm'
+          className='group h-6 items-center rounded-sm text-xs transition'
+          onClick={() => setLocalFilters([])}
+        >
+          Clear
+        </Button>
+      )}
 
-          {/* Tech Filter */}
-          <Select value={techFilter} onValueChange={onTechChange}>
-            <SelectTrigger className='w-[180px]'>
-              <SelectValue placeholder={FILTER_LABELS.ASSIGNED_TECH} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='ALL'>{FILTER_LABELS.ALL_TECHNICIANS}</SelectItem>
-              <SelectItem value='UNASSIGNED'>{COMMON_LABELS.UNASSIGNED}</SelectItem>
-              {technicians
-                .filter((t) => t.active)
-                .map((tech) => (
-                  <SelectItem key={tech.id} value={tech.id}>
-                    {tech.name}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Filter Presets */}
-        {onApplyPreset && (
-          <FilterPresetDropdown
-            currentFilters={{ searchQuery, priorityFilter, techFilter }}
-            onApplyPreset={onApplyPreset}
-          />
-        )}
-      </div>
+      {/* Filter Popover */}
+      <FilterPopover
+        filters={localFilters}
+        setFilters={setLocalFilters}
+        filterViewOptions={filterViewOptions}
+        filterViewToFilterOptions={filterViewToFilterOptions}
+      />
     </div>
   )
 }

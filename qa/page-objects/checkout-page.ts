@@ -167,7 +167,7 @@ export class CheckoutPage {
     }
     // Returns the cart total amount
     async validateCartTotal(): Promise<string> {
-      const totalElement = await this.page.locator('.cart_total_price');
+      const totalElement = this.page.locator('.cart_total_price');
       return totalElement.innerText();
     }
 
@@ -185,14 +185,5 @@ export class CheckoutPage {
 
 		getPaymentFormHeader(): any {
 			return this.page.locator('[data-qa="payment-form-header"]');
-		}
-
-		fillPaymentDetails(arg0: { nameOnCard: string; cardNumber: string; cvc: string; expiryMonth: string; expiryYear: string; }) {
-      this.page.fill('[data-qa="name-on-card"]', arg0.nameOnCard);
-      this.page.fill('[data-qa="card-number"]', arg0.cardNumber);
-      this.page.fill('[data-qa="cvc"]', arg0.cvc);
-      this.page.fill('[data-qa="expiry-month"]', arg0.expiryMonth);
-      this.page.fill('[data-qa="expiry-year"]', arg0.expiryYear);
-      this.submitOrder();
 		}
 }

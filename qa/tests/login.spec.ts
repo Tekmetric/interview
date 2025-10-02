@@ -1,11 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../page-objects/login-page';
 
+let loginPage: LoginPage;
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+  });
+
 test.describe('Login Flow', () => {
   test('should fail login with invalid credentials', async ({ page }) => {
-    // Create an instance of LoginPage
-    const loginPage = new LoginPage(page);
-
     // Use the new loginAs method to perform login
     await loginPage.loginAs('test@rxample.com', 'wrongpassword');
 
@@ -14,17 +16,11 @@ test.describe('Login Flow', () => {
   });
 
   test('should login via UI', async ({ page }) => {
-    // Create an instance of LoginPage 
-    const loginPage = new LoginPage(page);
-
     // Use the new loginAs method to perform login
     await loginPage.loginAs('ryandandrow@gmail.com', 'testPassword');
     
     // Validate successful login by checking for elements visible only when logged in
-    expect(loginPage.getLogoutButton()).toBeTruthy();
-    expect(loginPage.getDeleteAccountButton()).toBeTruthy();
-
-    // TODO: Investigate why this assertion is causing issues
-    // expect(loginPage.validateLoggedinHeader()).toBeTruthy();
+    await loginPage.validateLogoutButton();
+    await loginPage.validateDeleteAccountButton();
   });
 });

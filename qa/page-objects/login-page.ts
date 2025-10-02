@@ -27,11 +27,6 @@ export class LoginPage {
 		return this.page.locator('button[data-qa="login-button"]');
 	}
 
-	// Returns the "Logged in as [username]" header
-	getLoggedInHeader() {
-		return this.page.locator('h2:has-text("Logged In")');
-	}
-
 	// Returns the logout button
 	getLogoutButton() {
 		return this.page.locator('a[href="/logout"]');
@@ -40,6 +35,7 @@ export class LoginPage {
 	// Returns the delete account button
 	getDeleteAccountButton() {
 		return this.page.locator('a[href="/delete_account"]');
+		
 	}
 
 	// Returns the login error message
@@ -67,19 +63,40 @@ export class LoginPage {
 		return this.getloginErrorMessage().isVisible();
 	}
 
-	// Returns true if login header is visible
-	async validateLoggedinHeader() {
-		return this.getLoggedInHeader().isVisible();
-	}
-
-	// Returns true if logout button is visible
-	async validateLogoutButton() {
-		return this.getLogoutButton().isVisible();
+	/**
+	 * Validates if the logout button is visible
+	 * @param options Optional configuration for validation
+	 * @returns Promise<boolean> true if button is visible
+	 * @throws Error if the validation fails unexpectedly
+	 */
+	async validateLogoutButton(options = { timeout: 5000 }): Promise<boolean> {
+		try {
+			const button = this.getLogoutButton();
+			await button.waitFor({ state: 'visible', timeout: options.timeout });
+			return true;
+		} catch (error) {
+			throw new Error(`Failed to validate logout button: ${error.message}`);
+		}
 	}
 	
-	// Returns true if delete account button is visible
-	async validateDeleteAccountButton() {
-		return this.getDeleteAccountButton().isVisible();
+	/**
+	 * Validates if the delete account button is visible and accessible
+	 * @param options Optional configuration for validation
+	 * @returns Promise<boolean> true if button is visible and accessible
+	 * @throws Error if the validation fails unexpectedly
+	 */
+	async validateDeleteAccountButton(options = { timeout: 5000 }): Promise<boolean> {
+		try {
+			const button = this.getDeleteAccountButton();
+			await button.waitFor({ state: 'attached', timeout: options.timeout });
+			const [isVisible, isEnabled] = await Promise.all([
+				button.isVisible(),
+				button.isEnabled()
+			]);
+			return isVisible && isEnabled;
+		} catch (error) {
+			throw new Error(`Failed to validate delete account button: ${error.message}`);
+		}
 	}
 
 	// Logs in using the provided email and password

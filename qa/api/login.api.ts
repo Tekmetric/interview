@@ -16,10 +16,10 @@ export class LoginApi {
      */
     async verifyLogin(email: string, password: string): Promise<LoginResponse> {
         try {
-            const response = await axios.post(`${BASE_URL}/verifyLogin`, {
-                email,
-                password
-            });
+            const params = new URLSearchParams();
+            params.append('email', email);
+            params.append('password', password);
+            const response = await axios.post(`${BASE_URL}/verifyLogin`, params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
@@ -82,10 +82,10 @@ export class LoginApi {
      */
     async verifyLoginWithInvalidDetails(email: string, password: string): Promise<LoginResponse> {
         try {
-            const response = await axios.post(`${BASE_URL}/verifyLogin`, {
-                email,
-                password
-            });
+            const params = new URLSearchParams();
+            params.append('email', email);
+            params.append('password', password);
+            const response = await axios.post(`${BASE_URL}/verifyLogin`, params);
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {

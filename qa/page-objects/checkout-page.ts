@@ -59,7 +59,7 @@ export class CheckoutPage {
 
 		// Order Review Section
     getOrderReviewSectionHeader() {
-      return this.page.locator('h2.heading :has-text("Review Your Order")');
+      return this.page.locator('#cart_items > div > div:nth-child(4) > h2');
     }
 
     getProductNameInOrderReview() {
@@ -100,11 +100,11 @@ export class CheckoutPage {
     }
 
     getDeliveryAddressCompany() {
-      return this.page.locator('#address_delivery .address_company');
+      return this.page.locator('#address_delivery > li:nth-child(3)');
     }
 
     getDeliveryAddressLine1() {
-      return this.page.locator('#address_delivery .address_address1');
+      return this.page.locator('#address_delivery > li:nth-child(4)');
     }
 
     getDeliveryAddressCityStateZip() {
@@ -133,11 +133,11 @@ export class CheckoutPage {
     }
 
     getBillingAddressCompany() {
-      return this.page.locator('#address_invoice .address_company');
+      return this.page.locator('#address_invoice > li:nth-child(3)');
     }
     
     getBillingAddress1() {
-      return this.page.locator('#address_invoice .address_address1');
+      return this.page.locator('#address_invoice > li:nth-child(4)');
     }
     
     getBillingAddress2() {
@@ -175,7 +175,24 @@ export class CheckoutPage {
       await this.page.click('button[type="submit"]');
     }
 
+    getPaymentForm(): any {
+			return this.page.locator('[data-test-id="payment-form"]');
+		}
+
     getOrderConfirmation() {
   	  return this.page.locator('[data-test-id="order-confirmation"]');
     }
+
+		getPaymentFormHeader(): any {
+			return this.page.locator('[data-qa="payment-form-header"]');
+		}
+
+		fillPaymentDetails(arg0: { nameOnCard: string; cardNumber: string; cvc: string; expiryMonth: string; expiryYear: string; }) {
+      this.page.fill('[data-qa="name-on-card"]', arg0.nameOnCard);
+      this.page.fill('[data-qa="card-number"]', arg0.cardNumber);
+      this.page.fill('[data-qa="cvc"]', arg0.cvc);
+      this.page.fill('[data-qa="expiry-month"]', arg0.expiryMonth);
+      this.page.fill('[data-qa="expiry-year"]', arg0.expiryYear);
+      this.submitOrder();
+		}
 }

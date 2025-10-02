@@ -290,4 +290,3 @@ export class PaymentPage {
         await this.page.route(pattern, handler);
     }
 }
-

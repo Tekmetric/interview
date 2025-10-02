@@ -81,6 +81,3 @@ test.describe('Signup Flow', () => {
     await expect(signupPage.page).toHaveURL('https://www.automationexercise.com/');
   }); 
 });
-
-
-

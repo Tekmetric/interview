@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { CartPage } from '../page-objects/cart.page'; 
-import { ProductsPage } from '../page-objects/products.page';
-import { CheckoutPage } from '../page-objects/checkout.page';
+import { CartPage } from '../page-objects/cart-page'; 
+import { ProductsPage } from '../page-objects/products-page';
+import { CheckoutPage } from '../page-objects/checkout-page';
 import { beforeEach } from 'node:test';
-import { LoginPage } from '../page-objects/login.page';
+import { LoginPage } from '../page-objects/login-page';
 
 // Simulate checkout flows based on Automation Exercise test cases
 

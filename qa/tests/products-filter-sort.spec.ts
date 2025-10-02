@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { ProductsPage } from '../page-objects/products.page';
+import { ProductsPage } from '../page-objects/products-page';
 
 test.describe('Product Filtering and Sorting', () => {
   test('should filter products by category', async ({ page }) => {

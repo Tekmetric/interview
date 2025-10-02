@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { SignupPage } from '../page-objects/signup.page';
+import { SignupPage } from '../page-objects/signup-page';
 
 // Example test data
 const testName = 'Test User';

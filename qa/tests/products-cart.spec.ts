@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { CartPage } from '../page-objects/cart.page';
-import { ProductsPage } from '../page-objects/products.page';
+import { CartPage } from '../page-objects/cart-page';
+import { ProductsPage } from '../page-objects/products-page';
 
 test.describe('Cart Operations', () => {
     let productsPage: ProductsPage;

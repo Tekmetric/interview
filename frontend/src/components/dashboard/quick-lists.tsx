@@ -43,7 +43,9 @@ export function QuickLists() {
               ))}
             </div>
           ) : (
-            <p className='text-center text-sm text-gray-500'>{DASHBOARD_LABELS.NO_OVERDUE_ORDERS}</p>
+            <p className='text-center text-sm text-gray-500'>
+              {DASHBOARD_LABELS.NO_OVERDUE_ORDERS}
+            </p>
           )}
         </CardContent>
       </Card>
@@ -83,7 +85,9 @@ export function QuickLists() {
               ))}
             </div>
           ) : (
-            <p className='text-center text-sm text-gray-500'>{DASHBOARD_LABELS.NO_RECENT_ORDERS}</p>
+            <p className='text-center text-sm text-gray-500'>
+              {DASHBOARD_LABELS.NO_RECENT_ORDERS}
+            </p>
           )}
         </CardContent>
       </Card>

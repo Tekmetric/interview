@@ -79,7 +79,9 @@ describe('Technician Routes', () => {
       const response = await request(app).get('/api/technicians')
 
       expect(response.status).toBe(200)
-      expect(response.body.find((t: { name: string }) => t.name === 'Bob Inactive')).toBeUndefined()
+      expect(
+        response.body.find((t: { name: string }) => t.name === 'Bob Inactive'),
+      ).toBeUndefined()
     })
 
     it('should return JSON content type', async () => {

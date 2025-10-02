@@ -143,45 +143,45 @@ export function useKanbanDnd(
 
     // If moving across statuses, validate before applying
     if (targetStatus && targetStatus !== originalStatus) {
-      const validation = canTransition(originalStatus, targetStatus, order);
+      const validation = canTransition(originalStatus, targetStatus, order)
       if (!validation.allowed) {
         toast.error(KANBAN_LABELS.CANNOT_MOVE, {
           description: validation.reason || KANBAN_LABELS.TRANSITION_NOT_ALLOWED,
           duration: 3000,
-        });
-        return;
+        })
+        return
       }
-      onStatusChange(orderId, targetStatus);
-      return;
+      onStatusChange(orderId, targetStatus)
+      return
     }
 
     // Local reorder so the card stays where it's dropped
-    const next = [...localOrders];
-    const fromIndex = next.findIndex((o) => o.id === orderId);
-    if (fromIndex === -1) return;
-    const [moved] = next.splice(fromIndex, 1);
+    const next = [...localOrders]
+    const fromIndex = next.findIndex((o) => o.id === orderId)
+    if (fromIndex === -1) return
+    const [moved] = next.splice(fromIndex, 1)
 
     if (targetStatus) {
-      moved.status = targetStatus;
+      moved.status = targetStatus
     }
 
-    let insertIndex = fromIndex;
+    let insertIndex = fromIndex
     if (overCard) {
-      const overIndex = next.findIndex((o) => o.id === overCard.id);
-      const pos = dropIndicatorById[overCard.id] || 'bottom';
+      const overIndex = next.findIndex((o) => o.id === overCard.id)
+      const pos = dropIndicatorById[overCard.id] || 'bottom'
       insertIndex =
-        overIndex === -1 ? next.length : overIndex + (pos === 'bottom' ? 1 : 0);
+        overIndex === -1 ? next.length : overIndex + (pos === 'bottom' ? 1 : 0)
     } else if (overStatus && targetStatus) {
       // Insert at end of the target status group
-      let lastIndex = -1;
+      let lastIndex = -1
       for (let i = 0; i < next.length; i += 1) {
-        if (next[i].status === targetStatus) lastIndex = i;
+        if (next[i].status === targetStatus) lastIndex = i
       }
-      insertIndex = lastIndex === -1 ? next.length : lastIndex + 1;
+      insertIndex = lastIndex === -1 ? next.length : lastIndex + 1
     }
 
-    next.splice(insertIndex, 0, moved);
-    setLocalOrders(next);
+    next.splice(insertIndex, 0, moved)
+    setLocalOrders(next)
   }
 
   return {

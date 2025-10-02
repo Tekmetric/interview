@@ -28,31 +28,28 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  const selectRange = useCallback(
-    (orderId: string) => {
-      setSelection((prev) => {
-        if (!prev.lastSelectedId) {
-          // No previous selection, just select this one
-          return {
-            selectedIds: new Set([orderId]),
-            isSelecting: true,
-            lastSelectedId: orderId,
-          }
-        }
-
-        // This will be enhanced when we have order positions available
-        // For now, just add to selection
-        const newSelectedIds = new Set(prev.selectedIds)
-        newSelectedIds.add(orderId)
+  const selectRange = useCallback((orderId: string) => {
+    setSelection((prev) => {
+      if (!prev.lastSelectedId) {
+        // No previous selection, just select this one
         return {
-          selectedIds: newSelectedIds,
+          selectedIds: new Set([orderId]),
           isSelecting: true,
           lastSelectedId: orderId,
         }
-      })
-    },
-    [],
-  )
+      }
+
+      // This will be enhanced when we have order positions available
+      // For now, just add to selection
+      const newSelectedIds = new Set(prev.selectedIds)
+      newSelectedIds.add(orderId)
+      return {
+        selectedIds: newSelectedIds,
+        isSelecting: true,
+        lastSelectedId: orderId,
+      }
+    })
+  }, [])
 
   const selectAll = useCallback((orderIds: string[]) => {
     setSelection({

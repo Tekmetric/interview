@@ -62,6 +62,8 @@ describe('ColumnVisibilitySettings', () => {
     render(<ColumnVisibilitySettings />, { wrapper })
 
     expect(screen.getByText('Card Display Options')).toBeInTheDocument()
-    expect(screen.getByText('Choose which fields to show on kanban cards')).toBeInTheDocument()
+    expect(
+      screen.getByText('Choose which fields to show on kanban cards'),
+    ).toBeInTheDocument()
   })
 })

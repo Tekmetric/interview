@@ -281,16 +281,16 @@ describe('Repair Orders Repository', () => {
 
   describe('getOverdueOrders', () => {
     beforeEach(() => {
-      vi.useFakeTimers();
-    });
+      vi.useFakeTimers()
+    })
 
     afterEach(() => {
-      vi.useRealTimers();
-    });
+      vi.useRealTimers()
+    })
 
     it('should return only orders that are past their due_time and not completed', () => {
-      const now = new Date('2024-01-03T12:00:00Z');
-      vi.setSystemTime(now);
+      const now = new Date('2024-01-03T12:00:00Z')
+      vi.setSystemTime(now)
 
       const overdue = getOverdueOrders()
       expect(overdue).toHaveLength(1)
@@ -298,20 +298,48 @@ describe('Repair Orders Repository', () => {
     })
 
     it('should respect the limit parameter', () => {
-      const now = new Date('2024-01-03T12:00:00Z');
-      vi.setSystemTime(now);
+      const now = new Date('2024-01-03T12:00:00Z')
+      vi.setSystemTime(now)
 
       const overdue = getOverdueOrders(1)
       expect(overdue).toHaveLength(1)
     })
 
     it('should return orders sorted by due_time ASC', () => {
-      const now = new Date('2024-01-03T12:00:00Z');
-      vi.setSystemTime(now);
+      const now = new Date('2024-01-03T12:00:00Z')
+      vi.setSystemTime(now)
 
-      mockDb.current!.exec('DELETE FROM repair_orders');
-      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-LATER', 'IN_PROGRESS', '2024-01-03T11:00:00Z', 'a','a',2020,'a','a','[]');
-      mockDb.current!.prepare('INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('RO-EARLIER', 'IN_PROGRESS', '2024-01-03T10:00:00Z', 'a','a',2020,'a','a','[]');
+      mockDb.current!.exec('DELETE FROM repair_orders')
+      mockDb
+        .current!.prepare(
+          'INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        )
+        .run(
+          'RO-LATER',
+          'IN_PROGRESS',
+          '2024-01-03T11:00:00Z',
+          'a',
+          'a',
+          2020,
+          'a',
+          'a',
+          '[]',
+        )
+      mockDb
+        .current!.prepare(
+          'INSERT INTO repair_orders (id, status, due_time, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        )
+        .run(
+          'RO-EARLIER',
+          'IN_PROGRESS',
+          '2024-01-03T10:00:00Z',
+          'a',
+          'a',
+          2020,
+          'a',
+          'a',
+          '[]',
+        )
 
       const overdue = getOverdueOrders()
       expect(overdue).toHaveLength(2)
@@ -323,9 +351,21 @@ describe('Repair Orders Repository', () => {
   describe('getRecentOrders', () => {
     it('should return orders sorted by created_at DESC', () => {
       mockDb.current!.exec('DELETE FROM repair_orders')
-      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-OLD', 'NEW', '2023-01-01 10:00:00', 'a','a',2020,'a','a','[]')").run();
-      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-NEW', 'NEW', '2023-01-02 10:00:00', 'a','a',2020,'a','a','[]')").run();
-      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-MID', 'NEW', '2023-01-01 12:00:00', 'a','a',2020,'a','a','[]')").run();
+      mockDb
+        .current!.prepare(
+          "INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-OLD', 'NEW', '2023-01-01 10:00:00', 'a','a',2020,'a','a','[]')",
+        )
+        .run()
+      mockDb
+        .current!.prepare(
+          "INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-NEW', 'NEW', '2023-01-02 10:00:00', 'a','a',2020,'a','a','[]')",
+        )
+        .run()
+      mockDb
+        .current!.prepare(
+          "INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-MID', 'NEW', '2023-01-01 12:00:00', 'a','a',2020,'a','a','[]')",
+        )
+        .run()
 
       const recent = getRecentOrders(3)
       expect(recent).toHaveLength(3)
@@ -336,8 +376,16 @@ describe('Repair Orders Repository', () => {
 
     it('should respect the limit parameter', () => {
       mockDb.current!.exec('DELETE FROM repair_orders')
-      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-1', 'NEW', '2023-01-01 10:00:00', 'a','a',2020,'a','a','[]')").run();
-      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-2', 'NEW', '2023-01-02 10:00:00', 'a','a',2020,'a','a','[]')").run();
+      mockDb
+        .current!.prepare(
+          "INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-1', 'NEW', '2023-01-01 10:00:00', 'a','a',2020,'a','a','[]')",
+        )
+        .run()
+      mockDb
+        .current!.prepare(
+          "INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-2', 'NEW', '2023-01-02 10:00:00', 'a','a',2020,'a','a','[]')",
+        )
+        .run()
 
       const recent = getRecentOrders(1)
       expect(recent).toHaveLength(1)

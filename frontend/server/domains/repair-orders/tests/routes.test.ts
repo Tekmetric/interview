@@ -2,7 +2,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import express, { type Express } from 'express'
 import request from 'supertest'
 import Database from 'better-sqlite3'
-import { createTestDb, cleanupDb, seedTestTechnicians, seedTestRepairOrders } from '@server/tests/test-utils'
+import {
+  createTestDb,
+  cleanupDb,
+  seedTestTechnicians,
+  seedTestRepairOrders,
+} from '@server/tests/test-utils'
 
 // Mock the db import - shared across both imports
 const mockDb = { current: null as Database.Database | null }
@@ -43,32 +48,40 @@ describe('Repair Order Routes', () => {
     }
   })
 
-    describe('GET /api/repairOrders/overdue', () => {
-      beforeEach(() => {
-        vi.useFakeTimers();
-      });
+  describe('GET /api/repairOrders/overdue', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
 
-      afterEach(() => {
-        vi.useRealTimers();
-      });
+    afterEach(() => {
+      vi.useRealTimers()
+    })
 
-      it('should return overdue orders', async () => {
-        const now = new Date('2024-01-03T12:00:00Z');
-        vi.setSystemTime(now);
+    it('should return overdue orders', async () => {
+      const now = new Date('2024-01-03T12:00:00Z')
+      vi.setSystemTime(now)
 
-        const response = await request(app).get('/api/repairOrders/overdue');
+      const response = await request(app).get('/api/repairOrders/overdue')
 
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveLength(1);
-        expect(response.body[0].id).toBe('RO-2');
-      });
-    });
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(1)
+      expect(response.body[0].id).toBe('RO-2')
+    })
+  })
 
   describe('GET /api/repairOrders/recent', () => {
     it('should return recent orders in descending order of creation', async () => {
       mockDb.current!.exec('DELETE FROM repair_orders')
-      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-OLD', 'NEW', '2023-01-01 10:00:00', 'a','a',2020,'a','a','[]')").run();
-      mockDb.current!.prepare("INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-NEW', 'NEW', '2023-01-02 10:00:00', 'a','a',2020,'a','a','[]')").run();
+      mockDb
+        .current!.prepare(
+          "INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-OLD', 'NEW', '2023-01-01 10:00:00', 'a','a',2020,'a','a','[]')",
+        )
+        .run()
+      mockDb
+        .current!.prepare(
+          "INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-NEW', 'NEW', '2023-01-02 10:00:00', 'a','a',2020,'a','a','[]')",
+        )
+        .run()
 
       const response = await request(app).get('/api/repairOrders/recent?limit=2')
 

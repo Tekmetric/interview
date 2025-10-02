@@ -32,7 +32,10 @@ export function RepairOrderItem({ order }: RepairOrderItemProps) {
       <div className='flex flex-1 flex-col gap-2'>
         <div className='flex items-center gap-2'>
           <span className='text-base font-bold text-gray-900'>{order.id}</span>
-          <Badge variant='outline' className={`${status.bg} ${status.text} ${status.border} text-xs font-medium`}>
+          <Badge
+            variant='outline'
+            className={`${status.bg} ${status.text} ${status.border} text-xs font-medium`}
+          >
             {status.label}
           </Badge>
         </div>

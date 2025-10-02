@@ -1,10 +1,6 @@
 import { createContext, ReactNode, useCallback, useMemo } from 'react'
 import { usePersistedState } from '@/hooks/use-persisted-state'
-import type {
-  UserPreferences,
-  ColumnVisibility,
-  SavedFilter,
-} from '@/types/preferences'
+import type { UserPreferences, ColumnVisibility, SavedFilter } from '@/types/preferences'
 import { DEFAULT_PREFERENCES } from '@/types/preferences'
 
 interface PreferencesContextValue {
@@ -104,5 +100,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     ],
   )
 
-  return <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>
+  return (
+    <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>
+  )
 }

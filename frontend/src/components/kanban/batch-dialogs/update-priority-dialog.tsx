@@ -131,7 +131,10 @@ export function UpdatePriorityDialog({
           <Button variant='outline' onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={mutation.isPending || !selectedPriority}>
+          <Button
+            onClick={handleSubmit}
+            disabled={mutation.isPending || !selectedPriority}
+          >
             {mutation.isPending ? 'Updating...' : 'Update Priority'}
           </Button>
         </DialogFooter>

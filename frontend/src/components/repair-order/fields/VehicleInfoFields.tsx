@@ -37,11 +37,7 @@ export function VehicleInfoFields({ register, errors }: VehicleInfoFieldsProps) 
           <Label htmlFor='vehicle.make'>
             Make <span className='text-red-500'>*</span>
           </Label>
-          <Input
-            id='vehicle.make'
-            {...register('vehicle.make')}
-            placeholder='Toyota'
-          />
+          <Input id='vehicle.make' {...register('vehicle.make')} placeholder='Toyota' />
           {errors.vehicle?.make && (
             <p className='text-xs text-red-600'>{errors.vehicle.make.message}</p>
           )}
@@ -53,11 +49,7 @@ export function VehicleInfoFields({ register, errors }: VehicleInfoFieldsProps) 
           <Label htmlFor='vehicle.model'>
             Model <span className='text-red-500'>*</span>
           </Label>
-          <Input
-            id='vehicle.model'
-            {...register('vehicle.model')}
-            placeholder='Camry'
-          />
+          <Input id='vehicle.model' {...register('vehicle.model')} placeholder='Camry' />
           {errors.vehicle?.model && (
             <p className='text-xs text-red-600'>{errors.vehicle.model.message}</p>
           )}
@@ -65,11 +57,7 @@ export function VehicleInfoFields({ register, errors }: VehicleInfoFieldsProps) 
 
         <div className='space-y-2'>
           <Label htmlFor='vehicle.trim'>Trim</Label>
-          <Input
-            id='vehicle.trim'
-            {...register('vehicle.trim')}
-            placeholder='XLE'
-          />
+          <Input id='vehicle.trim' {...register('vehicle.trim')} placeholder='XLE' />
           {errors.vehicle?.trim && (
             <p className='text-xs text-red-600'>{errors.vehicle.trim.message}</p>
           )}
@@ -120,11 +108,7 @@ export function VehicleInfoFields({ register, errors }: VehicleInfoFieldsProps) 
 
       <div className='space-y-2'>
         <Label htmlFor='vehicle.color'>Color</Label>
-        <Input
-          id='vehicle.color'
-          {...register('vehicle.color')}
-          placeholder='Silver'
-        />
+        <Input id='vehicle.color' {...register('vehicle.color')} placeholder='Silver' />
         {errors.vehicle?.color && (
           <p className='text-xs text-red-600'>{errors.vehicle.color.message}</p>
         )}

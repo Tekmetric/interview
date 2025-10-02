@@ -56,8 +56,7 @@ export const REPAIR_ORDER_LABELS = {
   // Titles & Headers
   TITLE: 'Repair Order',
   DETAILS: 'Repair Order Details',
-  CREATE_NEW: 'Create New Repair Order',
-  NEW_ORDER: 'New Order',
+  CREATE_NEW: 'New Repair Order',
   CREATE_NOT_IMPLEMENTED: 'Create RO not yet implemented',
   DELETE_TITLE: 'Delete Repair Order',
   ORDER_INFORMATION: 'Order Information',

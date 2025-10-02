@@ -20,10 +20,14 @@ export function calculateKPIs(orders: RepairOrder[]): KPIMetrics {
     totalWIP: orders.filter((order) => order.status !== RO_STATUS.COMPLETED).length,
     overdueCount: orders.filter(
       (order) =>
-        order.dueTime && new Date(order.dueTime) < now && order.status !== RO_STATUS.COMPLETED,
+        order.dueTime &&
+        new Date(order.dueTime) < now &&
+        order.status !== RO_STATUS.COMPLETED,
     ).length,
-    waitingPartsCount: orders.filter((order) => order.status === RO_STATUS.WAITING_PARTS).length,
-    awaitingApprovalCount: orders.filter((order) => order.status === RO_STATUS.AWAITING_APPROVAL)
+    waitingPartsCount: orders.filter((order) => order.status === RO_STATUS.WAITING_PARTS)
       .length,
+    awaitingApprovalCount: orders.filter(
+      (order) => order.status === RO_STATUS.AWAITING_APPROVAL,
+    ).length,
   }
 }

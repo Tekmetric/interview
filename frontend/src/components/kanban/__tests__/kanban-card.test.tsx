@@ -90,8 +90,8 @@ describe('KanbanCard', () => {
     const highPriorityOrder = { ...mockOrder, priority: 'HIGH' as const }
     customRender(<KanbanCard order={highPriorityOrder} />)
 
-    const priorityIcon = screen.getByLabelText('High Priority');
-    expect(priorityIcon).toBeInTheDocument();
+    const priorityIcon = screen.getByLabelText('High Priority')
+    expect(priorityIcon).toBeInTheDocument()
   })
 
   it('should not render priority badge when priority is NORMAL', () => {
@@ -170,6 +170,4 @@ describe('KanbanCard', () => {
     const card = container.querySelector('.cursor-move')
     expect(card).toBeInTheDocument()
   })
-
-
 })

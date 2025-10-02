@@ -10,7 +10,12 @@ import {
   FilterPopover,
 } from '@/components/ui/filters'
 import type { Technician } from '@shared/types'
-import { FILTER_LABELS, KANBAN_LABELS, DASHBOARD_LABELS, COMMON_LABELS } from '@shared/constants'
+import {
+  FILTER_LABELS,
+  KANBAN_LABELS,
+  DASHBOARD_LABELS,
+  COMMON_LABELS,
+} from '@shared/constants'
 
 type KanbanFiltersProps = {
   filters: Filter[]
@@ -43,22 +48,34 @@ export const filterViewOptions: FilterOption[][] = [
 ]
 
 const statusOptions: FilterOption[] = [
-  { name: KANBAN_LABELS.STATUS.NEW, icon: <div className='size-2.5 rounded-full bg-blue-500' /> },
+  {
+    name: KANBAN_LABELS.STATUS.NEW,
+    icon: <div className='size-2.5 rounded-full bg-blue-500' />,
+  },
   {
     name: KANBAN_LABELS.STATUS.AWAITING_APPROVAL,
     icon: <div className='size-2.5 rounded-full bg-amber-500' />,
   },
-  { name: KANBAN_LABELS.STATUS.IN_PROGRESS, icon: <div className='size-2.5 rounded-full bg-indigo-500' /> },
+  {
+    name: KANBAN_LABELS.STATUS.IN_PROGRESS,
+    icon: <div className='size-2.5 rounded-full bg-indigo-500' />,
+  },
   {
     name: KANBAN_LABELS.STATUS.WAITING_PARTS,
     icon: <div className='size-2.5 rounded-full bg-orange-500' />,
   },
-  { name: KANBAN_LABELS.STATUS.COMPLETED, icon: <div className='size-2.5 rounded-full bg-green-500' /> },
+  {
+    name: KANBAN_LABELS.STATUS.COMPLETED,
+    icon: <div className='size-2.5 rounded-full bg-green-500' />,
+  },
 ]
 
 const priorityOptions: FilterOption[] = [
   { name: FILTER_LABELS.HIGH_PRIORITY, icon: <Flag className='size-3.5 text-red-500' /> },
-  { name: FILTER_LABELS.NORMAL_PRIORITY, icon: <Flag className='size-3.5 text-gray-400' /> },
+  {
+    name: FILTER_LABELS.NORMAL_PRIORITY,
+    icon: <Flag className='size-3.5 text-gray-400' />,
+  },
 ]
 
 const overdueOptions: FilterOption[] = [
@@ -86,7 +103,10 @@ export function KanbanFilters({
   }, [localFilters, onFiltersChange])
 
   const technicianOptions: FilterOption[] = [
-    { name: COMMON_LABELS.UNASSIGNED, icon: <Users className='size-3.5 text-gray-400' /> },
+    {
+      name: COMMON_LABELS.UNASSIGNED,
+      icon: <Users className='size-3.5 text-gray-400' />,
+    },
     ...technicians
       .filter((t) => t.active)
       .map((tech) => ({
@@ -103,9 +123,16 @@ export function KanbanFilters({
   }
 
   return (
-    <div className='flex flex-wrap items-center gap-2' role='search' aria-label='Filter and search repair orders'>
+    <div
+      className='flex flex-wrap items-center gap-2'
+      role='search'
+      aria-label='Filter and search repair orders'
+    >
       <div className='relative min-w-[240px] flex-1'>
-        <Search className='absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400' aria-hidden='true' />
+        <Search
+          className='absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400'
+          aria-hidden='true'
+        />
         <Input
           placeholder={FILTER_LABELS.SEARCH_PLACEHOLDER}
           value={searchQuery}

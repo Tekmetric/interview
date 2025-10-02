@@ -26,7 +26,10 @@ export function parseFilterFromUrl(searchParams: URLSearchParams): Filter | null
     const statusSlug = filterParam.replace('status:', '')
     const statusMapping: Record<string, { name: string; value: RepairOrderStatus }> = {
       'waiting-parts': { name: 'Waiting Parts', value: RO_STATUS.WAITING_PARTS },
-      'awaiting-approval': { name: 'Awaiting Approval', value: RO_STATUS.AWAITING_APPROVAL },
+      'awaiting-approval': {
+        name: 'Awaiting Approval',
+        value: RO_STATUS.AWAITING_APPROVAL,
+      },
       new: { name: 'New', value: RO_STATUS.NEW },
       'in-progress': { name: 'In Progress', value: RO_STATUS.IN_PROGRESS },
       completed: { name: 'Completed', value: RO_STATUS.COMPLETED },

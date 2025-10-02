@@ -80,7 +80,9 @@ router.post('/repairOrders', validate(createRepairOrderSchema), (req, res) => {
     const order = createRepairOrder(req.body)
     res.status(HTTP_STATUS.CREATED).json(order)
   } catch (error) {
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Failed to create repair order' })
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ error: 'Failed to create repair order' })
   }
 })
 

@@ -15,13 +15,15 @@ describe('KanbanFilters', () => {
       <KanbanFilters
         filters={[]}
         onFiltersChange={vi.fn()}
-        searchQuery=""
+        searchQuery=''
         onSearchChange={vi.fn()}
         technicians={mockTechnicians}
       />,
     )
 
-    expect(screen.getByPlaceholderText('Search by RO ID, customer, vehicle...')).toBeInTheDocument()
+    expect(
+      screen.getByPlaceholderText('Search by RO ID, customer, vehicle...'),
+    ).toBeInTheDocument()
     expect(screen.getByText('Filter')).toBeInTheDocument()
   })
 
@@ -31,13 +33,15 @@ describe('KanbanFilters', () => {
       <KanbanFilters
         filters={[]}
         onFiltersChange={vi.fn()}
-        searchQuery=""
+        searchQuery=''
         onSearchChange={onSearchChange}
         technicians={mockTechnicians}
       />,
     )
 
-    const searchInput = screen.getByPlaceholderText('Search by RO ID, customer, vehicle...')
+    const searchInput = screen.getByPlaceholderText(
+      'Search by RO ID, customer, vehicle...',
+    )
     fireEvent.change(searchInput, { target: { value: 'test' } })
 
     expect(onSearchChange).toHaveBeenCalledWith('test')
@@ -49,7 +53,7 @@ describe('KanbanFilters', () => {
       <KanbanFilters
         filters={[]}
         onFiltersChange={onFiltersChange}
-        searchQuery=""
+        searchQuery=''
         onSearchChange={vi.fn()}
         technicians={mockTechnicians}
       />,
@@ -65,14 +69,15 @@ describe('KanbanFilters', () => {
     const newButton = screen.getByText('New')
     fireEvent.click(newButton)
 
-    expect(onFiltersChange).toHaveBeenCalledTimes(2);
-    expect(onFiltersChange).toHaveBeenNthCalledWith(2, 
+    expect(onFiltersChange).toHaveBeenCalledTimes(2)
+    expect(onFiltersChange).toHaveBeenNthCalledWith(
+      2,
       expect.arrayContaining([
         expect.objectContaining({
           type: FilterType.STATUS,
           value: ['New'],
-        })
-      ])
-    );
+        }),
+      ]),
+    )
   })
 })

@@ -20,7 +20,9 @@ export function InvalidDropOverlay({ validationMessage }: InvalidDropOverlayProp
             clipRule='evenodd'
           />
         </svg>
-        <p className='text-sm font-semibold text-red-700'>{KANBAN_LABELS.CANNOT_MOVE_HERE}</p>
+        <p className='text-sm font-semibold text-red-700'>
+          {KANBAN_LABELS.CANNOT_MOVE_HERE}
+        </p>
         <p className='text-xs text-red-600'>{validationMessage}</p>
       </div>
     </div>

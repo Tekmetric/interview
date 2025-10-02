@@ -17,7 +17,9 @@ export function ColumnVisibilitySettings() {
     <div className='space-y-4'>
       <div>
         <h3 className='text-sm font-semibold text-gray-900'>Card Display Options</h3>
-        <p className='text-xs text-gray-600'>Choose which fields to show on kanban cards</p>
+        <p className='text-xs text-gray-600'>
+          Choose which fields to show on kanban cards
+        </p>
       </div>
 
       <div className='space-y-3'>
@@ -32,7 +34,7 @@ export function ColumnVisibilitySettings() {
             />
             <Label
               htmlFor={column.key}
-              className='text-sm font-normal text-gray-700 cursor-pointer'
+              className='cursor-pointer text-sm font-normal text-gray-700'
             >
               {column.label}
             </Label>

@@ -17,11 +17,7 @@ export function CustomerInfoFields({ register, errors }: CustomerInfoFieldsProps
         <Label htmlFor='customer.name'>
           Name <span className='text-red-500'>*</span>
         </Label>
-        <Input
-          id='customer.name'
-          {...register('customer.name')}
-          placeholder='John Doe'
-        />
+        <Input id='customer.name' {...register('customer.name')} placeholder='John Doe' />
         {errors.customer?.name && (
           <p className='text-xs text-red-600'>{errors.customer.name.message}</p>
         )}

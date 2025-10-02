@@ -60,7 +60,8 @@ export function ChangeStatusDialog({
   const [selectedStatus, setSelectedStatus] = useState<RepairOrderStatus | ''>('')
 
   const mutation = useMutation({
-    mutationFn: (status: RepairOrderStatus) => changeStatusForOrders(selectedOrderIds, status),
+    mutationFn: (status: RepairOrderStatus) =>
+      changeStatusForOrders(selectedOrderIds, status),
     onMutate: async (status) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['repairOrders'] })
@@ -106,7 +107,10 @@ export function ChangeStatusDialog({
     mutation.mutate(selectedStatus as RepairOrderStatus)
   }
 
-  const statuses = Object.entries(STATUS_CONFIG) as [RepairOrderStatus, typeof STATUS_CONFIG[RepairOrderStatus]][]
+  const statuses = Object.entries(STATUS_CONFIG) as [
+    RepairOrderStatus,
+    (typeof STATUS_CONFIG)[RepairOrderStatus],
+  ][]
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

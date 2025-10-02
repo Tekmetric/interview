@@ -9,8 +9,22 @@ import { SelectionProvider } from '@/contexts/selection-context'
 
 describe('KanbanBoard', () => {
   const mockOrders = [
-    { id: '1', status: RO_STATUS.NEW, customer: { name: 'John Doe' }, vehicle: { year: 2020, make: 'Toyota', model: 'Camry' }, services: [], approvedByCustomer: true, assignedTech: { id: 'tech-1', name: 'Tech 1'} },
-    { id: '2', status: RO_STATUS.IN_PROGRESS, customer: { name: 'Jane Smith' }, vehicle: { year: 2021, make: 'Honda', model: 'Civic' }, services: [] },
+    {
+      id: '1',
+      status: RO_STATUS.NEW,
+      customer: { name: 'John Doe' },
+      vehicle: { year: 2020, make: 'Toyota', model: 'Camry' },
+      services: [],
+      approvedByCustomer: true,
+      assignedTech: { id: 'tech-1', name: 'Tech 1' },
+    },
+    {
+      id: '2',
+      status: RO_STATUS.IN_PROGRESS,
+      customer: { name: 'Jane Smith' },
+      vehicle: { year: 2021, make: 'Honda', model: 'Civic' },
+      services: [],
+    },
   ]
 
   const customRender = (ui: React.ReactElement) => {
@@ -26,7 +40,7 @@ describe('KanbanBoard', () => {
         }}
       >
         <SelectionProvider>{ui}</SelectionProvider>
-      </PreferencesContext.Provider>
+      </PreferencesContext.Provider>,
     )
   }
 

@@ -10,7 +10,12 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { PRIORITY_COLORS } from '../ro-constants'
-import type { UseFormRegister, UseFormSetValue, UseFormWatch, FieldErrors } from 'react-hook-form'
+import type {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+  FieldErrors,
+} from 'react-hook-form'
 import type { CreateRepairOrderInput } from '@shared/validation'
 import type { Priority } from '@shared/types'
 
@@ -21,7 +26,12 @@ type ROMetadataFieldsProps = {
   errors: FieldErrors<CreateRepairOrderInput>
 }
 
-export function ROMetadataFields({ register, setValue, watch, errors }: ROMetadataFieldsProps) {
+export function ROMetadataFields({
+  register,
+  setValue,
+  watch,
+  errors,
+}: ROMetadataFieldsProps) {
   const priority = watch('priority')
 
   return (
@@ -91,11 +101,7 @@ export function ROMetadataFields({ register, setValue, watch, errors }: ROMetada
 
       <div className='space-y-2'>
         <Label htmlFor='dueTime'>Due Date & Time</Label>
-        <Input
-          id='dueTime'
-          type='datetime-local'
-          {...register('dueTime')}
-        />
+        <Input id='dueTime' type='datetime-local' {...register('dueTime')} />
         {errors.dueTime && (
           <p className='text-xs text-red-600'>{errors.dueTime.message}</p>
         )}
@@ -109,9 +115,7 @@ export function ROMetadataFields({ register, setValue, watch, errors }: ROMetada
           rows={4}
           {...register('notes')}
         />
-        {errors.notes && (
-          <p className='text-xs text-red-600'>{errors.notes.message}</p>
-        )}
+        {errors.notes && <p className='text-xs text-red-600'>{errors.notes.message}</p>}
       </div>
     </div>
   )

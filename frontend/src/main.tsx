@@ -6,18 +6,21 @@ import { Toaster } from 'sonner'
 import './index.css'
 import { Dashboard } from './pages/Dashboard'
 import { Kanban } from './pages/Kanban'
+import { PreferencesProvider } from './contexts/preferences-context'
 
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <Switch>
-        <Route path='/' component={Dashboard} />
-        <Route path='/kanban' component={Kanban} />
-        <Route>404 Not Found</Route>
-      </Switch>
-      <Toaster />
+      <PreferencesProvider>
+        <Switch>
+          <Route path='/' component={Dashboard} />
+          <Route path='/kanban' component={Kanban} />
+          <Route>404 Not Found</Route>
+        </Switch>
+        <Toaster />
+      </PreferencesProvider>
     </QueryClientProvider>
   </React.StrictMode>,
 )

@@ -92,7 +92,9 @@ export function RODetailsForm({
       <div className='flex-1 space-y-6 overflow-y-auto p-6 pb-4'>
         {/* Order Info - Read Only */}
         <div className='space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4'>
-          <h3 className='font-semibold text-gray-900'>{REPAIR_ORDER_LABELS.ORDER_INFORMATION}</h3>
+          <h3 className='font-semibold text-gray-900'>
+            {REPAIR_ORDER_LABELS.ORDER_INFORMATION}
+          </h3>
           <div className='grid grid-cols-2 gap-x-6 gap-y-2 text-sm'>
             <div>
               <p className='text-gray-500'>{REPAIR_ORDER_LABELS.ORDER_ID}</p>
@@ -117,7 +119,9 @@ export function RODetailsForm({
         <div className='grid grid-cols-2 gap-4'>
           {/* Customer Info */}
           <div className='space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4'>
-            <h3 className='font-semibold text-gray-900'>{REPAIR_ORDER_LABELS.CUSTOMER}</h3>
+            <h3 className='font-semibold text-gray-900'>
+              {REPAIR_ORDER_LABELS.CUSTOMER}
+            </h3>
             <div className='space-y-2 text-sm'>
               <p className='font-medium text-gray-900'>{order.customer.name}</p>
               <p className='text-gray-700'>{order.customer.phone}</p>
@@ -139,7 +143,9 @@ export function RODetailsForm({
               )}
               <div className='flex gap-4 text-xs'>
                 {order.vehicle.plate && (
-                  <span className='text-gray-700'>{REPAIR_ORDER_LABELS.PLATE} {order.vehicle.plate}</span>
+                  <span className='text-gray-700'>
+                    {REPAIR_ORDER_LABELS.PLATE} {order.vehicle.plate}
+                  </span>
                 )}
                 {order.vehicle.mileage && (
                   <span className='text-gray-700'>
@@ -169,7 +175,9 @@ export function RODetailsForm({
 
         {/* Editable Fields */}
         <div className='space-y-4 border-t pt-4'>
-          <h3 className='text-sm font-semibold text-gray-900'>{REPAIR_ORDER_LABELS.UPDATE_ORDER}</h3>
+          <h3 className='text-sm font-semibold text-gray-900'>
+            {REPAIR_ORDER_LABELS.UPDATE_ORDER}
+          </h3>
 
           {/* Status */}
           <div className='space-y-2'>
@@ -180,7 +188,11 @@ export function RODetailsForm({
             >
               <SelectTrigger>
                 <SelectValue>
-                  <Badge className={STATUS_COLORS[currentStatus as RepairOrderStatus || order.status]}>
+                  <Badge
+                    className={
+                      STATUS_COLORS[(currentStatus || order.status) as RepairOrderStatus]
+                    }
+                  >
                     {currentStatus || order.status}
                   </Badge>
                 </SelectValue>
@@ -200,7 +212,9 @@ export function RODetailsForm({
 
           {/* Assigned Tech */}
           <div className='space-y-2'>
-            <Label htmlFor='assignedTech'>{REPAIR_ORDER_LABELS.ASSIGNED_TECHNICIAN}</Label>
+            <Label htmlFor='assignedTech'>
+              {REPAIR_ORDER_LABELS.ASSIGNED_TECHNICIAN}
+            </Label>
             <Select
               value={watch('assignedTech')?.id || 'none'}
               onValueChange={(value) => {
@@ -242,7 +256,9 @@ export function RODetailsForm({
                 <SelectValue>
                   <Badge
                     variant='outline'
-                    className={PRIORITY_COLORS[watch('priority') as Priority || 'NORMAL']}
+                    className={
+                      PRIORITY_COLORS[(watch('priority') as Priority) || 'NORMAL']
+                    }
                   >
                     {watch('priority') || 'NORMAL'}
                   </Badge>
@@ -297,7 +313,9 @@ export function RODetailsForm({
           {/* Additional Info - Read Only */}
           {(order.estimatedDuration || order.estimatedCost || order.dueTime) && (
             <div className='space-y-1.5 rounded-lg border border-gray-200 bg-gray-50 p-3'>
-              <h4 className='text-xs font-semibold text-gray-700'>{REPAIR_ORDER_LABELS.ESTIMATES}</h4>
+              <h4 className='text-xs font-semibold text-gray-700'>
+                {REPAIR_ORDER_LABELS.ESTIMATES}
+              </h4>
               <div className='space-y-1 text-xs'>
                 {order.estimatedDuration && (
                   <p className='text-gray-900'>
@@ -324,13 +342,13 @@ export function RODetailsForm({
       </div>
 
       {/* Form Actions */}
-      <div className='flex shrink-0 gap-2 border-t bg-white px-6 py-3 shadow-[0_-2px_8px_rgba(0,0,0,0.08)]'>
+      <div className='flex shrink-0 gap-3 border-t-2 border-gray-200 bg-gray-50 px-6 py-4 shadow-lg'>
         <Button
           type='button'
           variant='outline'
           onClick={onDelete}
           disabled={isPending || isDeleting}
-          className='border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700'
+          className='border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700'
         >
           {isDeleting ? COMMON_LABELS.DELETING : COMMON_LABELS.DELETE}
         </Button>
@@ -343,7 +361,11 @@ export function RODetailsForm({
         >
           {COMMON_LABELS.CANCEL}
         </Button>
-        <Button type='submit' disabled={isPending || isDeleting} className='flex-1'>
+        <Button
+          type='submit'
+          disabled={isPending || isDeleting}
+          className='flex-1 bg-blue-600 hover:bg-blue-700'
+        >
           {isPending ? COMMON_LABELS.SAVING : COMMON_LABELS.SAVE_CHANGES}
         </Button>
       </div>

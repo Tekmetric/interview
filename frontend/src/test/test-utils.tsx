@@ -1,7 +1,7 @@
-/* eslint-disable react-refresh/only-export-components */
 import { render, RenderOptions } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactElement, ReactNode } from 'react'
+import { PreferencesProvider } from '@/contexts/preferences-context'
 
 const createTestQueryClient = () =>
   new QueryClient({
@@ -14,7 +14,11 @@ const createTestQueryClient = () =>
 
 const AllTheProviders = ({ children }: { children: ReactNode }) => {
   const queryClient = createTestQueryClient()
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  return (
+    <QueryClientProvider client={queryClient}>
+      <PreferencesProvider>{children}</PreferencesProvider>
+    </QueryClientProvider>
+  )
 }
 
 const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>

@@ -3,6 +3,9 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { KanbanCard } from '../kanban-card'
 import type { RepairOrder } from '@shared/types'
+import { PreferencesContext } from '@/contexts/preferences-context'
+import { DEFAULT_PREFERENCES } from '@/types/preferences'
+import { SelectionProvider } from '@/contexts/selection-context'
 
 // Mock @dnd-kit/sortable
 vi.mock('@dnd-kit/sortable', () => ({
@@ -24,6 +27,24 @@ vi.mock('@dnd-kit/utilities', () => ({
     },
   },
 }))
+
+const customRender = (ui: React.ReactElement, options?: any) => {
+  return render(
+    <PreferencesContext.Provider
+      value={{
+        preferences: { ...DEFAULT_PREFERENCES, savedFilters: [] },
+        updateColumnVisibility: vi.fn(),
+        saveFilterPreset: vi.fn(),
+        deleteFilterPreset: vi.fn(),
+        setDefaultPreset: vi.fn(),
+        getPresetById: vi.fn(),
+      }}
+    >
+      <SelectionProvider>{ui}</SelectionProvider>
+    </PreferencesContext.Provider>,
+    options,
+  )
+}
 
 describe('KanbanCard', () => {
   const mockOrder: RepairOrder = {
@@ -51,30 +72,30 @@ describe('KanbanCard', () => {
   }
 
   it('should render order ID', () => {
-    render(<KanbanCard order={mockOrder} />)
+    customRender(<KanbanCard order={mockOrder} />)
     expect(screen.getByText('RO-123')).toBeInTheDocument()
   })
 
   it('should render vehicle information', () => {
-    render(<KanbanCard order={mockOrder} />)
+    customRender(<KanbanCard order={mockOrder} />)
     expect(screen.getByText('2020 Toyota Camry')).toBeInTheDocument()
   })
 
   it('should render customer name', () => {
-    render(<KanbanCard order={mockOrder} />)
+    customRender(<KanbanCard order={mockOrder} />)
     expect(screen.getByText('John Doe')).toBeInTheDocument()
   })
 
   it('should render HIGH priority badge when priority is HIGH', () => {
     const highPriorityOrder = { ...mockOrder, priority: 'HIGH' as const }
-    render(<KanbanCard order={highPriorityOrder} />)
+    customRender(<KanbanCard order={highPriorityOrder} />)
 
     const priorityIcon = screen.getByLabelText('High Priority');
     expect(priorityIcon).toBeInTheDocument();
   })
 
   it('should not render priority badge when priority is NORMAL', () => {
-    render(<KanbanCard order={mockOrder} />)
+    customRender(<KanbanCard order={mockOrder} />)
 
     expect(screen.queryByText('HIGH')).not.toBeInTheDocument()
   })
@@ -90,13 +111,13 @@ describe('KanbanCard', () => {
         active: true,
       },
     }
-    render(<KanbanCard order={orderWithTech} />)
+    customRender(<KanbanCard order={orderWithTech} />)
 
     expect(screen.getByText('Jane Smith')).toBeInTheDocument()
   })
 
   it('should not render technician section when not assigned', () => {
-    render(<KanbanCard order={mockOrder} />)
+    customRender(<KanbanCard order={mockOrder} />)
 
     expect(screen.queryByText(/technician/i)).not.toBeInTheDocument()
   })
@@ -106,19 +127,19 @@ describe('KanbanCard', () => {
       ...mockOrder,
       dueTime: '2024-01-15T14:30:00Z',
     }
-    render(<KanbanCard order={orderWithDueTime} />)
+    customRender(<KanbanCard order={orderWithDueTime} />)
 
     expect(screen.getByText(/Due:/)).toBeInTheDocument()
   })
 
   it('should not render due time when not present', () => {
-    render(<KanbanCard order={mockOrder} />)
+    customRender(<KanbanCard order={mockOrder} />)
 
     expect(screen.queryByText(/Due:/)).not.toBeInTheDocument()
   })
 
   it('should render first 2 services', () => {
-    render(<KanbanCard order={mockOrder} />)
+    customRender(<KanbanCard order={mockOrder} />)
 
     expect(screen.getByText('Oil Change')).toBeInTheDocument()
     expect(screen.getByText('Tire Rotation')).toBeInTheDocument()
@@ -129,7 +150,7 @@ describe('KanbanCard', () => {
       ...mockOrder,
       services: ['Oil Change', 'Tire Rotation', 'Brake Service', 'Engine Repair'],
     }
-    render(<KanbanCard order={orderWithManyServices} />)
+    customRender(<KanbanCard order={orderWithManyServices} />)
 
     expect(screen.getByText('Oil Change')).toBeInTheDocument()
     expect(screen.getByText('Tire Rotation')).toBeInTheDocument()
@@ -138,13 +159,13 @@ describe('KanbanCard', () => {
   })
 
   it('should not show overflow indicator for 2 or fewer services', () => {
-    render(<KanbanCard order={mockOrder} />)
+    customRender(<KanbanCard order={mockOrder} />)
 
     expect(screen.queryByText(/\+\d+/)).not.toBeInTheDocument()
   })
 
   it('should have cursor-move class for drag functionality', () => {
-    const { container } = render(<KanbanCard order={mockOrder} />)
+    const { container } = customRender(<KanbanCard order={mockOrder} />)
 
     const card = container.querySelector('.cursor-move')
     expect(card).toBeInTheDocument()

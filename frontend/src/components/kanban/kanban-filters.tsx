@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Search, X } from 'lucide-react'
 import type { Technician } from '@shared/types'
 import { FILTER_LABELS, COMMON_LABELS } from '@shared/constants'
+import { FilterPresetDropdown } from './filter-preset-dropdown'
 
 type KanbanFiltersProps = {
   searchQuery: string
@@ -13,6 +14,11 @@ type KanbanFiltersProps = {
   techFilter: string
   onTechChange: (techId: string) => void
   technicians: Technician[]
+  onApplyPreset?: (filters: {
+    searchQuery: string
+    priorityFilter: 'ALL' | 'HIGH' | 'NORMAL'
+    techFilter: string
+  }) => void
 }
 
 export function KanbanFilters({
@@ -23,6 +29,7 @@ export function KanbanFilters({
   techFilter,
   onTechChange,
   technicians,
+  onApplyPreset,
 }: KanbanFiltersProps) {
   const activeFiltersCount =
     (searchQuery ? 1 : 0) + (priorityFilter !== 'ALL' ? 1 : 0) + (techFilter !== 'ALL' ? 1 : 0)
@@ -55,47 +62,57 @@ export function KanbanFilters({
         )}
       </div>
 
-      <div className='flex flex-wrap gap-3'>
-        {/* Search */}
-        <div className='relative flex-1 min-w-[240px]'>
-          <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
-          <Input
-            placeholder={FILTER_LABELS.SEARCH_PLACEHOLDER}
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className='pl-9'
-          />
+      <div className='flex flex-col gap-3'>
+        <div className='flex flex-wrap gap-3'>
+          {/* Search */}
+          <div className='relative flex-1 min-w-[240px]'>
+            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+            <Input
+              placeholder={FILTER_LABELS.SEARCH_PLACEHOLDER}
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className='pl-9'
+            />
+          </div>
+
+          {/* Priority Filter */}
+          <Select value={priorityFilter} onValueChange={onPriorityChange}>
+            <SelectTrigger className='w-[140px]'>
+              <SelectValue placeholder={FILTER_LABELS.PRIORITY} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='ALL'>{FILTER_LABELS.ALL_PRIORITY}</SelectItem>
+              <SelectItem value='HIGH'>{FILTER_LABELS.HIGH_PRIORITY}</SelectItem>
+              <SelectItem value='NORMAL'>{FILTER_LABELS.NORMAL_PRIORITY}</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Tech Filter */}
+          <Select value={techFilter} onValueChange={onTechChange}>
+            <SelectTrigger className='w-[180px]'>
+              <SelectValue placeholder={FILTER_LABELS.ASSIGNED_TECH} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='ALL'>{FILTER_LABELS.ALL_TECHNICIANS}</SelectItem>
+              <SelectItem value='UNASSIGNED'>{COMMON_LABELS.UNASSIGNED}</SelectItem>
+              {technicians
+                .filter((t) => t.active)
+                .map((tech) => (
+                  <SelectItem key={tech.id} value={tech.id}>
+                    {tech.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Priority Filter */}
-        <Select value={priorityFilter} onValueChange={onPriorityChange}>
-          <SelectTrigger className='w-[140px]'>
-            <SelectValue placeholder={FILTER_LABELS.PRIORITY} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='ALL'>{FILTER_LABELS.ALL_PRIORITY}</SelectItem>
-            <SelectItem value='HIGH'>{FILTER_LABELS.HIGH_PRIORITY}</SelectItem>
-            <SelectItem value='NORMAL'>{FILTER_LABELS.NORMAL_PRIORITY}</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* Tech Filter */}
-        <Select value={techFilter} onValueChange={onTechChange}>
-          <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder={FILTER_LABELS.ASSIGNED_TECH} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='ALL'>{FILTER_LABELS.ALL_TECHNICIANS}</SelectItem>
-            <SelectItem value='UNASSIGNED'>{COMMON_LABELS.UNASSIGNED}</SelectItem>
-            {technicians
-              .filter((t) => t.active)
-              .map((tech) => (
-                <SelectItem key={tech.id} value={tech.id}>
-                  {tech.name}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
+        {/* Filter Presets */}
+        {onApplyPreset && (
+          <FilterPresetDropdown
+            currentFilters={{ searchQuery, priorityFilter, techFilter }}
+            onApplyPreset={onApplyPreset}
+          />
+        )}
       </div>
     </div>
   )

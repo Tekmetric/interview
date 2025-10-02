@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState } from 'react'
+import { Suspense, useMemo, useState, useEffect, useRef } from 'react'
 import { AppLayout } from '@/components/layout/app-layout'
 import { KanbanBoard } from '@/components/kanban/kanban-board'
 import { KanbanFilters } from '@/components/kanban/kanban-filters'
@@ -11,6 +11,10 @@ import { toast } from 'sonner'
 import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
 import type { RepairOrderStatus } from '@shared/types'
 import { KANBAN_LABELS, REPAIR_ORDER_LABELS, API_ENDPOINTS } from '@shared/constants'
+import { usePreferences } from '@/hooks/use-preferences'
+import { SelectionProvider } from '@/contexts/selection-context'
+import { useMultiSelectKeyboard } from '@/hooks/use-multi-select'
+import { BulkActionsBar } from '@/components/kanban/bulk-actions-bar'
 
 async function updateOrderStatus(orderId: string, status: RepairOrderStatus) {
   const res = await fetch(API_ENDPOINTS.REPAIR_ORDERS.BY_ID(orderId), {
@@ -61,6 +65,7 @@ function KanbanContent() {
   const { data: orders } = useRepairOrders()
   const { data: technicians } = useTechnicians()
   const queryClient = useQueryClient()
+  const { preferences, getPresetById } = usePreferences()
 
   const [searchQuery, setSearchQuery] = useState('')
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'HIGH' | 'NORMAL'>('ALL')
@@ -92,6 +97,28 @@ function KanbanContent() {
     })
   }, [orders, searchQuery, priorityFilter, techFilter])
 
+  // Enable keyboard shortcuts for multi-select
+  const filteredOrderIds = useMemo(
+    () => filteredOrders.map((o) => o.id),
+    [filteredOrders],
+  )
+  useMultiSelectKeyboard(filteredOrderIds)
+
+  // Apply default preset on mount
+  const hasLoadedRef = useRef(false)
+  useEffect(() => {
+    if (hasLoadedRef.current) return
+    hasLoadedRef.current = true
+    if (preferences.defaultFilterPreset) {
+      const defaultPreset = getPresetById(preferences.defaultFilterPreset)
+      if (defaultPreset) {
+        setSearchQuery(defaultPreset.searchQuery)
+        setPriorityFilter(defaultPreset.priorityFilter)
+        setTechFilter(defaultPreset.techFilter)
+      }
+    }
+  }, [preferences.defaultFilterPreset, getPresetById])
+
   const mutation = useMutation({
     mutationFn: ({ orderId, status }: { orderId: string; status: RepairOrderStatus }) =>
       updateOrderStatus(orderId, status),
@@ -106,6 +133,16 @@ function KanbanContent() {
 
   const handleStatusChange = (orderId: string, newStatus: RepairOrderStatus) => {
     mutation.mutate({ orderId, status: newStatus })
+  }
+
+  const handleApplyPreset = (filters: {
+    searchQuery: string
+    priorityFilter: 'ALL' | 'HIGH' | 'NORMAL'
+    techFilter: string
+  }) => {
+    setSearchQuery(filters.searchQuery)
+    setPriorityFilter(filters.priorityFilter)
+    setTechFilter(filters.techFilter)
   }
 
   return (
@@ -123,9 +160,11 @@ function KanbanContent() {
           techFilter={techFilter}
           onTechChange={setTechFilter}
           technicians={technicians}
+          onApplyPreset={handleApplyPreset}
         />
 
         <KanbanBoard orders={filteredOrders} onStatusChange={handleStatusChange} />
+        <BulkActionsBar orders={filteredOrders} />
       </div>
     </AppLayout>
   )
@@ -135,7 +174,9 @@ export function Kanban() {
   return (
     <ErrorBoundary fallback={() => <KanbanError />}>
       <Suspense fallback={<KanbanLoading />}>
-        <KanbanContent />
+        <SelectionProvider>
+          <KanbanContent />
+        </SelectionProvider>
       </Suspense>
       <RODetailsDrawer />
     </ErrorBoundary>

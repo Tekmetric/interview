@@ -65,11 +65,9 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
 
   return (
     <div className='relative'>
-      {/* Placeholder while dragging */}
       {isDragging && (
         <div className='absolute inset-0 z-0 rounded-lg border-2 border-dashed border-blue-400 bg-blue-50/50' />
       )}
-      {/* Drop Indicator - Shows where card will be inserted */}
       {isOver && (
         <>
           {dropPosition !== 'bottom' && (
@@ -93,9 +91,7 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
         } ${selection.isSelecting ? 'cursor-pointer' : 'cursor-move active:cursor-grabbing'}`}
         onClick={handleClick}
       >
-        {/* Top-right action icons area */}
         <div className='absolute top-3 right-3 z-20 flex items-center gap-2'>
-          {/* View Details Button - Show on hover */}
           <Button
             onClick={handleViewDetails}
             variant='outline'
@@ -106,7 +102,6 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
             <Eye />
           </Button>
 
-          {/* Selection Checkbox - Always visible when selecting */}
           <Checkbox
             checked={isSelected(order.id)}
             onCheckedChange={() => toggleSelection(order.id)}
@@ -119,7 +114,6 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
           <div className='flex items-center gap-2'>
             <span className='text-base font-bold text-gray-900'>{order.id}</span>
 
-            {/* Fire icon inline with order number */}
             {order.priority === 'HIGH' && (
               <TooltipProvider>
                 <Tooltip>
@@ -157,14 +151,12 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
             )}
           </div>
 
-          {/* Vehicle Details - Conditional */}
           {preferences.columnVisibility.vehicleDetails && (
             <p className='text-sm font-semibold text-gray-800'>
               {order.vehicle.year} {order.vehicle.make} {order.vehicle.model}
             </p>
           )}
 
-          {/* Customer Name & Due Time */}
           <div className='flex items-center gap-3 text-xs text-gray-500'>
             <span>{order.customer.name}</span>
             {preferences.columnVisibility.customerPhone && order.customer.phone && (
@@ -184,9 +176,7 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
           </div>
         </div>
 
-        {/* Services & Technician */}
         <div className='mt-2 flex flex-col gap-2'>
-          {/* Services - Conditional */}
           {preferences.columnVisibility.services && order.services.length > 0 && (
             <div className='flex flex-wrap gap-1'>
               {order.services.slice(0, 2).map((service) => (
@@ -202,7 +192,6 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
             </div>
           )}
 
-          {/* Assigned Tech - Conditional */}
           {preferences.columnVisibility.assignedTech && order.assignedTech && (
             <div className='flex items-center gap-2 text-xs text-gray-500'>
               <span className='font-semibold'>

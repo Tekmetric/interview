@@ -37,7 +37,6 @@ export function KanbanColumn({
         isBeingDraggedOver && !isValidDropZone ? 'animate-pulse ring-2 ring-red-400' : ''
       }`}
     >
-      {/* Discrete Colored Header */}
       <div
         className={`flex items-center justify-between px-3 py-2.5 ${color} rounded-lg border-b border-gray-200/50`}
       >
@@ -47,7 +46,6 @@ export function KanbanColumn({
         </span>
       </div>
 
-      {/* Invalid Drop Overlay Message */}
       {isBeingDraggedOver && !isValidDropZone && validationMessage && (
         <InvalidDropOverlay validationMessage={validationMessage} />
       )}

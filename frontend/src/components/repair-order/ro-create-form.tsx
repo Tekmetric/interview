@@ -33,10 +33,14 @@ export function ROCreateForm({ onSubmit, onCancel, isPending }: ROCreateFormProp
         <CustomerInfoFields register={register} errors={errors} />
         <VehicleInfoFields register={register} errors={errors} />
         <ServiceSelector services={services} setValue={setValue} errors={errors} />
-        <ROMetadataFields register={register} setValue={setValue} watch={watch} errors={errors} />
+        <ROMetadataFields
+          register={register}
+          setValue={setValue}
+          watch={watch}
+          errors={errors}
+        />
       </div>
 
-      {/* Form Actions */}
       <div className='flex shrink-0 gap-2 border-t bg-white px-6 py-3 shadow-[0_-2px_8px_rgba(0,0,0,0.08)]'>
         <Button
           type='button'

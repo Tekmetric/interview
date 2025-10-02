@@ -4,7 +4,7 @@ import * as React from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { X, ListFilter, Layers, Flag, Users } from 'lucide-react'
+import { X, ListFilter, Layers, Flag, Users, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   Command,
@@ -22,6 +22,7 @@ export enum FilterType {
   STATUS = 'Status',
   PRIORITY = 'Priority',
   TECHNICIAN = 'Technician',
+  OVERDUE = 'Overdue',
 }
 
 export enum FilterOperator {
@@ -60,6 +61,8 @@ const getFilterIcon = (type: FilterType) => {
       return <Flag className='size-3.5 shrink-0' />
     case FilterType.TECHNICIAN:
       return <Users className='size-3.5 shrink-0' />
+    case FilterType.OVERDUE:
+      return <Clock className='size-3.5 shrink-0' />
     default:
       return null
   }
@@ -74,6 +77,8 @@ const getFilterColorClasses = (type: FilterType) => {
       return 'bg-orange-500/10 text-orange-700 dark:text-orange-400 hover:bg-orange-500/20 border-orange-200 dark:border-orange-800'
     case FilterType.TECHNICIAN:
       return 'bg-purple-500/10 text-purple-700 dark:text-purple-400 hover:bg-purple-500/20 border-purple-200 dark:border-purple-800'
+    case FilterType.OVERDUE:
+      return 'bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 border-amber-200 dark:border-amber-800'
     default:
       return 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
   }

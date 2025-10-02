@@ -124,61 +124,60 @@ export function RODetailsForm({
       <div className='flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-4'>
         <div className='flex flex-col gap-6'>
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-            <div className='flex flex-col gap-3 rounded-lg bg-gray-50 p-3'>
-              <div className='flex items-center gap-2'>
-                <User className='h-4 w-4 text-gray-500' />
-                <h3 className='text-xs font-semibold text-gray-500 uppercase'>
-                  {REPAIR_ORDER_LABELS.CUSTOMER}
-                </h3>
-              </div>
-              <div className='flex flex-col gap-2 text-sm'>
-                <p className='font-semibold text-gray-900'>{order.customer.name}</p>
-                <div className='flex items-center gap-2 text-gray-700'>
-                  <Phone className='h-3 w-3' />
-                  <span>{order.customer.phone}</span>
-                </div>
-                {order.customer.email && (
-                  <div className='flex items-center gap-2 text-gray-700'>
-                    <Mail className='h-3 w-3' />
-                    <span>{order.customer.email}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className='flex flex-col gap-3 rounded-lg bg-gray-50 p-3'>
+            <div className='flex flex-col gap-3 rounded-lg bg-gray-50 p-4'>
               <div className='flex items-center gap-2'>
                 <Car className='h-4 w-4 text-gray-500' />
                 <h3 className='text-xs font-semibold text-gray-500 uppercase'>
                   {REPAIR_ORDER_LABELS.VEHICLE}
                 </h3>
               </div>
-              <div className='flex flex-col gap-2 text-sm'>
-                <p className='font-semibold text-gray-900'>
+              <div className='flex flex-col gap-1'>
+                <p className='text-base font-semibold text-gray-900'>
                   {order.vehicle.year} {order.vehicle.make} {order.vehicle.model}
                 </p>
                 {order.vehicle.vin && (
-                  <div className='flex items-center gap-2 text-gray-700'>
-                    <Hash className='h-3 w-3' />
+                  <div className='flex items-center gap-1.5 text-sm text-gray-600'>
+                    <Hash className='h-3.5 w-3.5' />
                     <span className='font-mono text-xs'>{order.vehicle.vin}</span>
                   </div>
                 )}
-                <div className='flex gap-3 text-xs text-gray-600'>
+                <div className='flex items-center gap-4 text-sm text-gray-600'>
                   {order.vehicle.plate && (
-                    <div className='flex items-center gap-1'>
-                      <CreditCard className='h-3 w-3' />
+                    <div className='flex items-center gap-1.5'>
+                      <CreditCard className='h-3.5 w-3.5' />
                       <span>{order.vehicle.plate}</span>
                     </div>
                   )}
                   {order.vehicle.mileage && (
-                    <div className='flex items-center gap-1'>
-                      <Gauge className='h-3 w-3' />
-                      <span>
-                        {order.vehicle.mileage.toLocaleString()} {REPAIR_ORDER_LABELS.MI}
-                      </span>
+                    <div className='flex items-center gap-1.5'>
+                      <Gauge className='h-3.5 w-3.5' />
+                      <span>{order.vehicle.mileage.toLocaleString()} mi</span>
                     </div>
                   )}
                 </div>
+              </div>
+            </div>
+            <div className='flex flex-col gap-3 rounded-lg bg-gray-50 p-4'>
+              <div className='flex items-center gap-2'>
+                <User className='h-4 w-4 text-gray-500' />
+                <h3 className='text-xs font-semibold text-gray-500 uppercase'>
+                  {REPAIR_ORDER_LABELS.CUSTOMER}
+                </h3>
+              </div>
+              <div className='flex flex-col gap-1'>
+                <p className='text-base font-semibold text-gray-900'>
+                  {order.customer.name}
+                </p>
+                <div className='flex items-center gap-1.5 text-sm text-gray-600'>
+                  <Phone className='h-3.5 w-3.5' />
+                  <span>{order.customer.phone}</span>
+                </div>
+                {order.customer.email && (
+                  <div className='flex items-center gap-1.5 text-sm text-gray-600'>
+                    <Mail className='h-3.5 w-3.5' />
+                    <span>{order.customer.email}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -230,7 +229,6 @@ export function RODetailsForm({
           </h3>
 
           <div className='grid gap-4 md:grid-cols-3'>
-            {/* Status */}
             <div className='flex flex-col gap-2'>
               <Label htmlFor='status' className='text-xs font-semibold text-gray-600'>
                 {REPAIR_ORDER_LABELS.STATUS}
@@ -265,7 +263,6 @@ export function RODetailsForm({
               )}
             </div>
 
-            {/* Assigned Technician */}
             <div className='flex flex-col gap-2'>
               <Label
                 htmlFor='assignedTech'
@@ -303,7 +300,6 @@ export function RODetailsForm({
               )}
             </div>
 
-            {/* Priority */}
             <div className='flex flex-col gap-2'>
               <Label htmlFor='priority' className='text-xs font-semibold text-gray-600'>
                 {REPAIR_ORDER_LABELS.PRIORITY}
@@ -343,7 +339,6 @@ export function RODetailsForm({
             </div>
           </div>
 
-          {/* Notes - Full width */}
           <div className='mt-6 flex flex-col gap-2'>
             <Textarea
               id='notes'
@@ -386,7 +381,7 @@ export function RODetailsForm({
       <div className='flex shrink-0 gap-3 border-t bg-white px-6 py-3 shadow-[0_-2px_8px_rgba(0,0,0,0.08)]'>
         <Button
           type='button'
-          variant='outline'
+          variant='link'
           onClick={onDelete}
           disabled={isPending || isDeleting}
           className='border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700'

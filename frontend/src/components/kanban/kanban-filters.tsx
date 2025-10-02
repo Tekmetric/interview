@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
-import { Users, Flag, Layers, Search } from 'lucide-react'
+import { Users, Flag, Layers, Search, Clock } from 'lucide-react'
 
 import {
   FilterType,
@@ -35,6 +35,10 @@ export const filterViewOptions: FilterOption[][] = [
       name: FilterType.TECHNICIAN,
       icon: <Users className='size-4 shrink-0 text-purple-600 dark:text-purple-400' />,
     },
+    {
+      name: FilterType.OVERDUE,
+      icon: <Clock className='size-4 shrink-0 text-amber-600 dark:text-amber-400' />,
+    },
   ],
 ]
 
@@ -55,6 +59,10 @@ const statusOptions: FilterOption[] = [
 const priorityOptions: FilterOption[] = [
   { name: 'High', icon: <Flag className='size-3.5 text-red-500' /> },
   { name: 'Normal', icon: <Flag className='size-3.5 text-gray-400' /> },
+]
+
+const overdueOptions: FilterOption[] = [
+  { name: 'Overdue', icon: <Clock className='size-3.5 text-amber-600' /> },
 ]
 
 export function KanbanFilters({
@@ -86,11 +94,11 @@ export function KanbanFilters({
     [FilterType.STATUS]: statusOptions,
     [FilterType.PRIORITY]: priorityOptions,
     [FilterType.TECHNICIAN]: technicianOptions,
+    [FilterType.OVERDUE]: overdueOptions,
   }
 
   return (
     <div className='flex flex-wrap items-center gap-2'>
-      {/* Search Field */}
       <div className='relative min-w-[240px] flex-1'>
         <Search className='absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400' />
         <Input
@@ -101,14 +109,12 @@ export function KanbanFilters({
         />
       </div>
 
-      {/* Filter Badges */}
       <Filters
         filters={localFilters}
         setFilters={setLocalFilters}
         onEditFilter={(filterType) => setEditingFilterType(filterType)}
       />
 
-      {/* Filter Popover */}
       <FilterPopover
         filters={localFilters}
         setFilters={setLocalFilters}

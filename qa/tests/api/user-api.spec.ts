@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { UserApi, UserDetails } from '../api/user.api';
+import { UserApi, UserDetails } from '../../api/user.api';
 
 test.describe('User API Tests', () => {
     const userApi = new UserApi();

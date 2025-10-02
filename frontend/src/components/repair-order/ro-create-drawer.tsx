@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/sheet'
 import { ROCreateForm } from './ro-create-form'
 import { useCreateRepairOrder } from './hooks/useRepairOrderDetails'
+import { clearRODraft } from './hooks/useRepairOrderForm'
 import { toast } from 'sonner'
 import type { CreateRepairOrderInput } from '@shared/validation'
 import { REPAIR_ORDER_LABELS } from '@shared/constants'
@@ -27,6 +28,7 @@ export function ROCreateDrawer() {
   const handleSubmit = (data: CreateRepairOrderInput) => {
     createMutation.mutate(data, {
       onSuccess: () => {
+        clearRODraft()
         toast.success(REPAIR_ORDER_LABELS.CREATED_SUCCESS)
         handleClose()
       },

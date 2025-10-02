@@ -8,7 +8,6 @@ export const STAGE_ORDER: RepairOrderStatus[] = [
   'COMPLETED',
 ]
 
-// Allowed transitions from docs/specs.md
 export const ALLOWED_TRANSITIONS: Record<RepairOrderStatus, RepairOrderStatus[]> = {
   NEW: ['AWAITING_APPROVAL', 'IN_PROGRESS'],
   AWAITING_APPROVAL: ['IN_PROGRESS', 'NEW'],
@@ -27,12 +26,10 @@ export function canTransition(
   to: RepairOrderStatus,
   order?: Partial<RepairOrder>,
 ): ValidationResult {
-  // No change
   if (from === to) {
     return { allowed: true }
   }
 
-  // Check if transition is in allowed list
   const allowedTransitions = ALLOWED_TRANSITIONS[from]
 
   if (!allowedTransitions || !allowedTransitions.includes(to)) {

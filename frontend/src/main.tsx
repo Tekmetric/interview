@@ -3,10 +3,11 @@ import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Route, Switch } from 'wouter'
 import { Toaster } from 'sonner'
-import './index.css'
-import { Dashboard } from './pages/Dashboard'
-import { Kanban } from './pages/Kanban'
-import { PreferencesProvider } from './contexts/preferences-context'
+
+import { Dashboard } from '@/pages/Dashboard'
+import { Kanban } from '@/pages/Kanban'
+import { PreferencesProvider } from '@/contexts/preferences-context'
+import '@/index.css'
 
 const queryClient = new QueryClient()
 

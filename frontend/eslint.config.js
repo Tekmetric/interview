@@ -55,7 +55,11 @@ export default [
         URLSearchParams: 'readonly',
         HTMLLabelElement: 'readonly',
         HTMLTextAreaElement: 'readonly',
+        HTMLInputElement: 'readonly',
+        HTMLDivElement: 'readonly',
         KeyboardEvent: 'readonly',
+        MouseEvent: 'readonly',
+        Node: 'readonly',
         global: 'readonly',
         // Vitest globals
         describe: 'readonly',
@@ -81,7 +85,10 @@ export default [
       'react/prop-types': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'with-single-extends' }],
+      '@typescript-eslint/no-empty-object-type': [
+        'error',
+        { allowInterfaces: 'with-single-extends' },
+      ],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
     settings: {

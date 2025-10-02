@@ -1,14 +1,12 @@
 import { z } from 'zod'
 import { REPAIR_ORDER_STATUSES, PRIORITIES } from './constants'
 
-// Customer validation schema
 export const customerSchema = z.object({
   name: z.string().min(1, 'Customer name is required'),
   phone: z.string().min(1, 'Customer phone is required'),
   email: z.string().email('Invalid email address').optional(),
 })
 
-// Vehicle validation schema
 export const vehicleSchema = z.object({
   year: z
     .number()
@@ -24,13 +22,12 @@ export const vehicleSchema = z.object({
   color: z.string().optional(),
 })
 
-// Repair order status enum
-export const repairOrderStatusSchema = z.enum(REPAIR_ORDER_STATUSES as [string, ...string[]])
+export const repairOrderStatusSchema = z.enum(
+  REPAIR_ORDER_STATUSES as [string, ...string[]],
+)
 
-// Priority enum
 export const prioritySchema = z.enum(PRIORITIES as [string, ...string[]])
 
-// Create repair order schema
 export const createRepairOrderSchema = z.object({
   customer: customerSchema,
   vehicle: vehicleSchema,
@@ -42,7 +39,6 @@ export const createRepairOrderSchema = z.object({
   notes: z.string().default(''),
 })
 
-// Update repair order schema (all fields optional)
 export const updateRepairOrderSchema = z.object({
   status: repairOrderStatusSchema.optional(),
   assignedTech: z
@@ -56,7 +52,6 @@ export const updateRepairOrderSchema = z.object({
   approvedByCustomer: z.boolean().optional(),
 })
 
-// Query filters schema
 export const repairOrderFiltersSchema = z.object({
   status: repairOrderStatusSchema.optional(),
   tech: z.string().optional(),
@@ -64,7 +59,6 @@ export const repairOrderFiltersSchema = z.object({
   search: z.string().optional(),
 })
 
-// Export types
 export type CreateRepairOrderInput = z.infer<typeof createRepairOrderSchema>
 export type UpdateRepairOrderInput = z.infer<typeof updateRepairOrderSchema>
 export type RepairOrderFilters = z.infer<typeof repairOrderFiltersSchema>

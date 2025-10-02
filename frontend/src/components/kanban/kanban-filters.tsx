@@ -103,14 +103,15 @@ export function KanbanFilters({
   }
 
   return (
-    <div className='flex flex-wrap items-center gap-2'>
+    <div className='flex flex-wrap items-center gap-2' role='search' aria-label='Filter and search repair orders'>
       <div className='relative min-w-[240px] flex-1'>
-        <Search className='absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400' />
+        <Search className='absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400' aria-hidden='true' />
         <Input
           placeholder={FILTER_LABELS.SEARCH_PLACEHOLDER}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className='h-8 pl-9'
+          aria-label='Search repair orders'
         />
       </div>
 

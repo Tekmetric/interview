@@ -27,10 +27,10 @@ export function BulkActionsBar(_props: BulkActionsBarProps) {
 
   return (
     <>
-      <div className='fixed right-1/2 bottom-4 z-50 translate-x-1/2 rounded-lg border border-gray-200 bg-white p-4 shadow-lg'>
+      <div className='fixed right-1/2 bottom-4 z-50 translate-x-1/2 rounded-lg bg-orange-50 p-4 shadow-lg'>
         <div className='flex items-center gap-4'>
           <div className='flex items-center gap-2'>
-            <span className='text-sm font-medium text-gray-900'>
+            <span className='text-sm font-medium text-orange-600'>
               {selectedCount} {selectedCount === 1 ? 'order' : 'orders'} selected
             </span>
             <Button

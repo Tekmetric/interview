@@ -96,7 +96,7 @@ export function KanbanCard({ order, showStatus = true, dropPosition }: KanbanCar
             onClick={handleViewDetails}
             variant='outline'
             size='icon'
-            className={`h-8 w-8 rounded-full transition-opacity ${selection.isSelecting ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'}`}
+            className='h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100'
             aria-label='View details'
           >
             <Eye />

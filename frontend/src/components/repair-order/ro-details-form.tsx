@@ -120,14 +120,15 @@ export function RODetailsForm({
     <form
       onSubmit={handleSubmit(onSubmit)}
       className='flex h-[calc(100vh-70px)] flex-col overflow-hidden'
+      aria-label='Repair order details form'
     >
       <div className='flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-4'>
         <div className='flex flex-col gap-6'>
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-            <div className='flex flex-col gap-3 rounded-lg bg-gray-50 p-4'>
+            <div className='flex flex-col gap-3 rounded-lg bg-gray-50 p-4' role='group' aria-labelledby='vehicle-info-heading'>
               <div className='flex items-center gap-2'>
-                <Car className='h-4 w-4 text-gray-500' />
-                <h3 className='text-xs font-semibold text-gray-500 uppercase'>
+                <Car className='h-4 w-4 text-gray-500' aria-hidden='true' />
+                <h3 id='vehicle-info-heading' className='text-xs font-semibold text-gray-500 uppercase'>
                   {REPAIR_ORDER_LABELS.VEHICLE}
                 </h3>
               </div>
@@ -157,10 +158,10 @@ export function RODetailsForm({
                 </div>
               </div>
             </div>
-            <div className='flex flex-col gap-3 rounded-lg bg-gray-50 p-4'>
+            <div className='flex flex-col gap-3 rounded-lg bg-gray-50 p-4' role='group' aria-labelledby='customer-info-heading'>
               <div className='flex items-center gap-2'>
-                <User className='h-4 w-4 text-gray-500' />
-                <h3 className='text-xs font-semibold text-gray-500 uppercase'>
+                <User className='h-4 w-4 text-gray-500' aria-hidden='true' />
+                <h3 id='customer-info-heading' className='text-xs font-semibold text-gray-500 uppercase'>
                   {REPAIR_ORDER_LABELS.CUSTOMER}
                 </h3>
               </div>
@@ -185,16 +186,17 @@ export function RODetailsForm({
           <ROTimeline order={order} />
         </div>
 
-        <div className='rounded-lg border-blue-200 bg-blue-50 p-4'>
-          <h3 className='mb-3 text-xs font-semibold text-gray-700 uppercase'>
+        <div className='rounded-lg border-blue-200 bg-blue-50 p-4' role='region' aria-labelledby='services-heading'>
+          <h3 id='services-heading' className='mb-3 text-xs font-semibold text-gray-700 uppercase'>
             {REPAIR_ORDER_LABELS.SERVICES}
           </h3>
-          <div className='flex flex-wrap gap-2'>
+          <div className='flex flex-wrap gap-2' role='list'>
             {order.services.map((service, idx) => (
               <Badge
                 key={idx}
                 variant='default'
                 className='bg-blue-600 px-2.5 py-0.5 text-xs hover:bg-blue-700'
+                role='listitem'
               >
                 {service}
               </Badge>
@@ -223,8 +225,8 @@ export function RODetailsForm({
           )}
         </div>
 
-        <div className='rounded-lg bg-gray-50 p-6'>
-          <h3 className='mb-4 text-sm font-semibold tracking-wide text-gray-700 uppercase'>
+        <div className='rounded-lg bg-gray-50 p-6' role='region' aria-labelledby='quick-actions-heading'>
+          <h3 id='quick-actions-heading' className='mb-4 text-sm font-semibold tracking-wide text-gray-700 uppercase'>
             Quick Actions
           </h3>
 
@@ -237,7 +239,7 @@ export function RODetailsForm({
                 value={currentStatus}
                 onValueChange={(value) => setValue('status', value as RepairOrderStatus)}
               >
-                <SelectTrigger>
+                <SelectTrigger id='status' aria-label='Select repair order status'>
                   <SelectValue>
                     <Badge
                       className={
@@ -281,7 +283,7 @@ export function RODetailsForm({
                   }
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger id='assignedTech' aria-label='Select assigned technician'>
                   <SelectValue placeholder={REPAIR_ORDER_LABELS.SELECT_TECHNICIAN} />
                 </SelectTrigger>
                 <SelectContent>
@@ -308,7 +310,7 @@ export function RODetailsForm({
                 value={watch('priority')}
                 onValueChange={(value) => setValue('priority', value as Priority)}
               >
-                <SelectTrigger>
+                <SelectTrigger id='priority' aria-label='Select priority level'>
                   <SelectValue>
                     <Badge
                       variant='outline'
@@ -340,19 +342,21 @@ export function RODetailsForm({
           </div>
 
           <div className='mt-6 flex flex-col gap-2'>
+            <Label htmlFor='notes' className='sr-only'>Notes</Label>
             <Textarea
               id='notes'
               placeholder={REPAIR_ORDER_LABELS.ADD_NOTES_PLACEHOLDER}
               rows={4}
               {...register('notes')}
+              aria-label='Additional notes'
             />
             {errors.notes && (
-              <p className='text-xs text-red-600'>{errors.notes.message}</p>
+              <p className='text-xs text-red-600' role='alert'>{errors.notes.message}</p>
             )}
           </div>
         </div>
 
-        <div className='mt-auto rounded-lg border border-amber-300 bg-amber-50 p-4'>
+        <div className='mt-auto rounded-lg border border-amber-300 bg-amber-50 p-4' role='group' aria-labelledby='customer-approval-heading'>
           <div className='flex items-start gap-4'>
             <Checkbox
               id='approvedByCustomer'
@@ -361,15 +365,17 @@ export function RODetailsForm({
                 setValue('approvedByCustomer', checked === true)
               }
               className='mt-1 h-5 w-5'
+              aria-describedby='customer-approval-description'
             />
             <div className='flex-1'>
               <Label
                 htmlFor='approvedByCustomer'
+                id='customer-approval-heading'
                 className='cursor-pointer text-base font-semibold text-gray-900'
               >
                 {REPAIR_ORDER_LABELS.APPROVED_BY_CUSTOMER}
               </Label>
-              <p className='mt-1 text-sm text-gray-700'>
+              <p id='customer-approval-description' className='mt-1 text-sm text-gray-700'>
                 Customer authorization required before starting work. This confirms the
                 customer has reviewed and approved the work to be performed.
               </p>

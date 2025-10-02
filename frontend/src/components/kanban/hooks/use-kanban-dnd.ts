@@ -1,31 +1,11 @@
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverlay,
-  DragStartEvent,
-  DragOverEvent,
-  MouseSensor,
-  TouchSensor,
-  KeyboardSensor,
-  useSensor,
-  useSensors,
-  closestCorners,
-} from '@dnd-kit/core'
-import { useEffect, useMemo, useState } from 'react'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { toast } from 'sonner'
+import { useState, useMemo } from 'react'
+import { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core'
 import { canTransition } from '@shared/transitions'
-import { KanbanColumn } from './kanban-column'
-import { KanbanCard } from './kanban-card'
+import { toast } from 'sonner'
 import type { RepairOrder, RepairOrderStatus } from '@shared/types'
 import { KANBAN_LABELS, RO_STATUS } from '@shared/constants'
 
-type KanbanBoardProps = {
-  orders: RepairOrder[]
-  onStatusChange: (orderId: string, newStatus: RepairOrderStatus) => void
-}
-
-const COLUMNS: Array<{
+export const COLUMNS: Array<{
   status: RepairOrderStatus
   title: string
   color: string
@@ -57,7 +37,10 @@ const COLUMNS: Array<{
   },
 ]
 
-export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
+export function useKanbanDnd(
+  orders: RepairOrder[],
+  onStatusChange: (orderId: string, newStatus: RepairOrderStatus) => void,
+) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [dragOverStatus, setDragOverStatus] = useState<RepairOrderStatus | null>(null)
   const [isValidDrop, setIsValidDrop] = useState<boolean>(true)
@@ -66,27 +49,6 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
   const [dropIndicatorById, setDropIndicatorById] = useState<
     Record<string, 'top' | 'bottom'>
   >({})
-
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 200,
-        tolerance: 6,
-      },
-    }),
-    useSensor(KeyboardSensor),
-  )
-
-  useEffect(() => {
-    setLocalOrders(orders)
-  }, [orders])
-
-  const activeOrder = activeId ? localOrders.find((o) => o.id === activeId) : null
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string)
@@ -181,94 +143,65 @@ export function KanbanBoard({ orders, onStatusChange }: KanbanBoardProps) {
 
     // If moving across statuses, validate before applying
     if (targetStatus && targetStatus !== originalStatus) {
-      const validation = canTransition(originalStatus, targetStatus, order)
+      const validation = canTransition(originalStatus, targetStatus, order);
       if (!validation.allowed) {
         toast.error(KANBAN_LABELS.CANNOT_MOVE, {
           description: validation.reason || KANBAN_LABELS.TRANSITION_NOT_ALLOWED,
           duration: 3000,
-        })
-        return
+        });
+        return;
       }
+      onStatusChange(orderId, targetStatus);
+      return;
     }
 
     // Local reorder so the card stays where it's dropped
-    const next = [...localOrders]
-    const fromIndex = next.findIndex((o) => o.id === orderId)
-    if (fromIndex === -1) return
-    const [moved] = next.splice(fromIndex, 1)
+    const next = [...localOrders];
+    const fromIndex = next.findIndex((o) => o.id === orderId);
+    if (fromIndex === -1) return;
+    const [moved] = next.splice(fromIndex, 1);
 
     if (targetStatus) {
-      moved.status = targetStatus
+      moved.status = targetStatus;
     }
 
-    let insertIndex = fromIndex
+    let insertIndex = fromIndex;
     if (overCard) {
-      const overIndex = next.findIndex((o) => o.id === overCard.id)
-      const pos = dropIndicatorById[overCard.id] || 'bottom'
+      const overIndex = next.findIndex((o) => o.id === overCard.id);
+      const pos = dropIndicatorById[overCard.id] || 'bottom';
       insertIndex =
-        overIndex === -1 ? next.length : overIndex + (pos === 'bottom' ? 1 : 0)
+        overIndex === -1 ? next.length : overIndex + (pos === 'bottom' ? 1 : 0);
     } else if (overStatus && targetStatus) {
       // Insert at end of the target status group
-      let lastIndex = -1
+      let lastIndex = -1;
       for (let i = 0; i < next.length; i += 1) {
-        if (next[i].status === targetStatus) lastIndex = i
+        if (next[i].status === targetStatus) lastIndex = i;
       }
-      insertIndex = lastIndex === -1 ? next.length : lastIndex + 1
+      insertIndex = lastIndex === -1 ? next.length : lastIndex + 1;
     }
 
-    next.splice(insertIndex, 0, moved)
-    setLocalOrders(next)
-
-    // Persist status change if applicable
-    if (targetStatus && targetStatus !== originalStatus) {
-      onStatusChange(orderId, targetStatus)
-    }
+    next.splice(insertIndex, 0, moved);
+    setLocalOrders(next);
   }
 
-  const groupedOrders = useMemo(() => {
-    return COLUMNS.reduce(
-      (acc, col) => {
-        acc[col.status] = localOrders.filter((o) => o.status === col.status)
-        return acc
-      },
-      {} as Record<RepairOrderStatus, RepairOrder[]>,
-    )
-  }, [localOrders])
-
-  return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-    >
-      <ScrollArea className='w-full'>
-        <div className='flex gap-3 bg-gray-50/50 p-3'>
-          {COLUMNS.map((col) => (
-            <KanbanColumn
-              key={col.status}
-              status={col.status}
-              orders={groupedOrders[col.status]}
-              title={col.title}
-              color={col.color}
-              isBeingDraggedOver={dragOverStatus === col.status}
-              isValidDropZone={isValidDrop}
-              validationMessage={validationMessage}
-              dropIndicatorById={dropIndicatorById}
-            />
-          ))}
-        </div>
-        <ScrollBar orientation='horizontal' />
-      </ScrollArea>
-
-      <DragOverlay>
-        {activeOrder && (
-          <div className='scale-105 rotate-3 opacity-80'>
-            <KanbanCard order={activeOrder} />
-          </div>
-        )}
-      </DragOverlay>
-    </DndContext>
-  )
+  return {
+    activeId,
+    dragOverStatus,
+    isValidDrop,
+    validationMessage,
+    localOrders,
+    dropIndicatorById,
+    handleDragStart,
+    handleDragOver,
+    handleDragEnd,
+    groupedOrders: useMemo(() => {
+      return COLUMNS.reduce(
+        (acc, col) => {
+          acc[col.status] = localOrders.filter((o) => o.status === col.status)
+          return acc
+        },
+        {} as Record<RepairOrderStatus, RepairOrder[]>,
+      )
+    }, [localOrders]),
+  }
 }

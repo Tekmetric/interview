@@ -42,12 +42,21 @@ export function KPICard({
 
   return (
     <Card
-      className={`${variantStyles[variant]} ${onClick ? 'cursor-pointer transition-shadow hover:shadow-md' : ''}`}
+      className={`${variantStyles[variant]} ${onClick ? 'cursor-pointer transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2' : ''}`}
       onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick()
+        }
+      } : undefined}
+      aria-label={`${title}: ${value}${onClick ? '. Click to view details.' : ''}`}
     >
       <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-1'>
         <CardTitle className='text-xs font-medium'>{title}</CardTitle>
-        <div className={iconStyles[variant]}>{icon}</div>
+        <div className={iconStyles[variant]} aria-hidden='true'>{icon}</div>
       </CardHeader>
       <CardContent className='pt-1'>
         <div className={`text-xl font-bold ${valueStyles[variant]}`}>{value}</div>

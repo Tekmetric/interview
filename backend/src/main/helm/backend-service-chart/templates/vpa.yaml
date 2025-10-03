@@ -1,0 +1,24 @@
+{{- if and .Values.verticalPodAutoscaler.enabled ( not .Values.horizontalPodAutoscaler.enabled ) }}
+# Using the autoscaling.k8s.io/v1 API, which is supported by the
+# Kubernetes version specified in Chart.yaml (>=1.23.0-0).
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: {{ include "helm.fullname" . }}
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  # This targetRef points the VPA to our application's Deployment.
+  targetRef:
+    apiVersion: "apps/v1"
+    kind:       "Deployment"
+    name:       {{ include "helm.fullname" . }}
+  
+  # The updatePolicy controls how VPA applies its recommendations.
+  updatePolicy:
+    updateMode: "{{ .Values.verticalPodAutoscaler.updateMode }}"
+
+  # The resourcePolicy sets constraints on the VPA's recommendations.
+  resourcePolicy:
+{{- include "helm.vpaResourcePolicy" . | nindent 4 }}
+{{- end }}

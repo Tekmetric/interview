@@ -1,0 +1,18 @@
+{{- if .Capabilities.APIVersions.Has "keda.sh/v1alpha1/ScaledObject" }}
+{{- if .Values.keda.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "helm.fullname" . }}
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    name: {{ include "helm.fullname" . }}
+  pollingInterval: {{ .Values.keda.pollingInterval }}
+  minReplicaCount: {{ .Values.keda.minReplicaCount }}
+  maxReplicaCount: {{ .Values.keda.maxReplicaCount }}
+  triggers:
+    {{- toYaml .Values.keda.triggers | nindent 4 }}
+{{- end }}
+{{- end }}

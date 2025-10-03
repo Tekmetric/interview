@@ -1,0 +1,84 @@
+name: Tekmetric Backend CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      ci_run_id:
+        description: 'The ID of the CI workflow run to use for artifacts.'
+        required: true
+        type: string
+        
+  workflow_run:
+    workflows: ["Tekmetric Backend CI"]
+    types: [completed]
+
+concurrency:
+  group: deploy-${{ github.event.workflow_run.id || github.event.inputs.ci_run_id || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  retrieve-run-id:
+    runs-on: ubuntu-latest
+    name: Retrieve CI Run ID
+    if: |
+      github.event_name == 'workflow_dispatch' || 
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    outputs:
+      ci-run-id: ${{ steps.get-run-id.outputs.id }}
+    steps:
+      - name: Get CI Run ID
+        id: get-run-id
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            echo "id=${{ github.event.workflow_run.id }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            if [ -z "${{ github.event.inputs.ci_run_id }}" ]; then
+              echo "::error::Manual workflow dispatch requires the 'ci_run_id' input."
+              exit 1
+            fi
+            echo "id=${{ github.event.inputs.ci_run_id }}" >> $GITHUB_OUTPUT
+          fi
+          
+  deploy-to-staging:
+    name: Deploy to Staging
+    needs: retrieve-run-id
+    if: |
+      github.event_name == 'workflow_dispatch' || 
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    permissions:
+      contents: read
+      actions: write
+    uses: ./.github/workflows/reusable-deploy.yaml
+    with:
+      environment-name: staging
+      namespace: tekmetric-staging
+      release-name: staging-tekmetric-backend
+      chart-artifact-name: "helm-chart"
+      repo-name: ${{ github.repository }}
+      run-id: ${{ needs.retrieve-run-id.outputs.ci-run-id }}
+    secrets:
+      GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      REPO_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+  deploy-to-production:
+    name: Deploy to Production
+    needs: [deploy-to-staging, retrieve-run-id]
+    if: |
+      github.event_name == 'workflow_dispatch' || 
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    permissions:
+      contents: read
+      actions: write
+    uses: ./.github/workflows/reusable-deploy.yaml
+    with:
+      environment-name: production
+      namespace: tekmetric-production
+      release-name: production-tekmetric-backend
+      chart-artifact-name: "helm-chart"
+      repo-name: ${{ github.repository }}
+      run-id: ${{ needs.retrieve-run-id.outputs.ci-run-id }}
+    secrets:
+      GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      REPO_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}

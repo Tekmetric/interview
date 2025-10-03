@@ -1,0 +1,53 @@
+{{- if .Values.migration.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "helm.fullname" . }}-migration
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+  annotations:
+    # This annotation identifies this resource as a Helm hook.
+    # 'pre-install,pre-upgrade' means it runs before a new installation
+    # and before an upgrade.
+    "helm.sh/hook": "pre-install,pre-upgrade"
+
+    # hook-weight orders hooks. Lower numbers run first.
+    "helm.sh/hook-weight": "-5"
+
+    # This policy cleans up the Job. 'before-hook-creation' removes any
+    # old job before a new one runs. 'hook-succeeded' removes the job
+    # after it completes successfully.
+    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
+spec:
+  template:
+    metadata:
+      name: {{ include "helm.fullname" . }}-migration
+      labels:
+        {{- include "helm.selectorLabels" . | nindent 8 }}
+      annotations:
+        {{- with .Values.migration.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ include "helm.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: db-migrator
+          # --- BEGIN MODIFICATION ---
+          # Use the migration-specific securityContext if it exists, otherwise fall back to the global one.
+          securityContext:
+            {{- toYaml (coalesce .Values.migration.securityContext .Values.securityContext) | nindent 12 }}
+          # --- END MODIFICATION ---
+          image: "{{ .Values.migration.image.repository }}:{{ .Values.migration.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.migration.image.pullPolicy }}
+          command:
+            {{- toYaml .Values.migration.command | nindent 12 }}
+          resources:
+            {{- toYaml .Values.migration.resources | nindent 12 }}
+          {{- with .Values.migration.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

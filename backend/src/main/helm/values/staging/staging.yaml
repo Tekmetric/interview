@@ -1,0 +1,109 @@
+image:
+  name: tekmetric-backend
+  repository: ghcr.io/alinscreciu
+
+app:
+  name: backend-service
+  autoJvmMemory: true
+  jvmMemoryPercentage: 75
+  mgrPort: 8181
+  extraPorts:
+    - name: otel-metrics
+      containerPort: 9464
+      protocol: TCP
+
+podDisruptionBudget:
+  minAvailable: 2
+
+replicaCount: 6
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+env:
+  SPRING_PROFILES_ACTIVE: "local"
+
+sizeProfile: medium
+
+apm:
+  enabled: true
+  initContainer:
+    repository: "ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java"
+    tag: "2.20.1"
+    pullPolicy: "IfNotPresent"
+  copyCommand:
+    - "sh"
+    - "-c"
+    - "cp /javaagent.jar /apm/agent.jar"
+  agentPath: /apm/agent.jar
+  env:
+    # Configure OTLP export to the collector
+    OTEL_TRACES_EXPORTER: "otlp"
+    OTEL_METRICS_EXPORTER: "otlp,prometheus"  # Both OTLP and Prometheus
+    OTEL_LOGS_EXPORTER: "otlp"
+    
+    # OTLP endpoint configuration
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://opentelemetry-collector.observability.svc.cluster.local:4318"
+    OTEL_EXPORTER_OTLP_PROTOCOL: "http/protobuf"
+    
+    # Prometheus exporter for direct scraping
+    OTEL_EXPORTER_PROMETHEUS_PORT: "9464"
+    OTEL_EXPORTER_PROMETHEUS_HOST: "0.0.0.0"
+    
+    # Service identification
+    OTEL_SERVICE_NAME: '{{ include "helm.fullname" . }}'
+    OTEL_RESOURCE_ATTRIBUTES: "service.namespace={{ .Release.Namespace }},service.version={{ .Chart.AppVersion }}"
+    
+    # Optional: Configure batch processing
+    OTEL_BSP_SCHEDULE_DELAY: "5000"
+    OTEL_BSP_MAX_QUEUE_SIZE: "2048"
+    OTEL_BSP_MAX_EXPORT_BATCH_SIZE: "512"
+
+livenessProbe:
+  enabled: true
+  spec:
+    httpGet:
+      path: /actuator/health/liveness
+      port: http-management
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  spec:
+    httpGet:
+      path: /actuator/health/readiness
+      port: http-management
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+startupProbe:
+  enabled: true
+  spec:
+    httpGet:
+      path: /actuator/health/liveness
+      port: http-management
+    failureThreshold: 30
+    periodSeconds: 5
+
+serviceMonitor:
+  enabled: true
+  labels: 
+    prometheus: prometheus-stack 
+  endpoints:
+    # Scrape Spring Boot Actuator metrics
+    - port: http-management
+      interval: 15s
+      scrapeTimeout: 10s
+      path: /actuator/prometheus
+    # Scrape OpenTelemetry metrics directly from the app
+    - port: otel-metrics
+      interval: 15s
+      scrapeTimeout: 10s
+      path: /metrics

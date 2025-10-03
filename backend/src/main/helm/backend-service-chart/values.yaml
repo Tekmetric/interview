@@ -1,0 +1,408 @@
+# Default values for backend-service-chart.
+
+# -- The number of desired pods.
+replicaCount: 3
+
+image:
+  # name: tekmetric-backend
+  # repository: ghcr.io/alinscreciu
+  # -- The image pull policy. See https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
+  pullPolicy: Always
+
+# -- A list of image pull secrets to authenticate with private registries.
+imagePullSecrets:
+  - name: ghcr-creds
+
+# -- Overrides the chart name.
+nameOverride: ""
+# -- Overrides the full generated app name.
+fullnameOverride: ""
+
+app:
+  # -- The primary port the application listens on.
+  port: 8080
+  # -- The management port for the application (e.g., for Spring Boot Actuator).
+  mgrPort: 8181
+  # -- A list of extra ports to expose from the container.
+  extraPorts: []
+  #   - name: debug
+  #     containerPort: 5005
+  #     protocol: TCP
+  # -- Set to true to automatically calculate JVM heap size based on container memory limits.
+  autoJvmMemory: true
+  # -- The percentage of the container's memory limit to allocate to the JVM heap.
+  # Must be an integer between 1 and 90.
+  jvmMemoryPercentage: 70
+
+# -- JMX (Java Management Extensions) configuration.
+# This exposes a separate port for JVM monitoring and management. See https://docs.oracle.com/javase/8/docs/technotes/guides/jmx/index.html
+jmx:
+  # -- Set to true to enable the JMX port and related JVM arguments.
+  enabled: false
+  # -- The port on which the JMX agent will listen.
+  port: 9010
+  # -- Set to true to require authentication for JMX connections.
+  # This is strongly recommended for production environments.
+  authenticate: false
+  # -- Set to true to enable SSL for JMX connections.
+  ssl: false
+
+# -- Create a ConfigMap to be mounted as environment variables.
+# For more information, see https://kubernetes.io/docs/concepts/configuration/configmap/
+# Note: Changing the data in this section will trigger a rolling update of the pods
+# due to a checksum annotation, ensuring the new configuration is applied.
+configMap:
+  # -- Set to true to create a ConfigMap.
+  create: false
+  # -- Data key-value pairs for the ConfigMap.
+  data: {}
+  #  SPRING_PROFILES_ACTIVE: "production"
+  #  LOGGING_LEVEL_ROOT: "INFO"
+
+# -- Create a Secret to be mounted as environment variables.
+# Use this for sensitive data. Values are automatically base64 encoded by Helm.
+# For more information, see https://kubernetes.io/docs/concepts/configuration/secret/
+# Note: Changing the data in this section will trigger a rolling update of the pods
+# due to a checksum annotation, ensuring the new sensitive data is applied.
+secret:
+  # -- Set to true to create a Secret.
+  create: false
+  # -- Data key-value pairs for the Secret.
+  data: {}
+  #  DATABASE_PASSWORD: "my-secret-password"
+  #  API_KEY: "super-secret-key"
+
+# -- APM and Tracing agent injection.
+# This allows dynamically attaching a Java agent (e.g., OpenTelemetry, DataDog)
+# without modifying the application's Docker image.
+apm:
+  enabled: false
+
+  # -- The initContainer image used to provide the agent JAR.
+  # See https://opentelemetry.io/docs/instrumentation/java/automatic/ for OpenTelemetry or https://docs.datadoghq.com/tracing/setup/java/ for Datadog.
+  initContainer:
+    repository: "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/opentelemetry-java-instrumentation"
+    tag: "latest"
+    pullPolicy: "IfNotPresent"
+
+  # -- The command for the initContainer to copy the agent to the shared volume.
+  copyCommand:
+    - "sh"
+    - "-c"
+    - "cp /opentelemetry-java-instrumentation.jar /apm/agent.jar"
+
+  # -- The path in the shared volume where the agent JAR will be stored.
+  agentPath: /apm/agent.jar
+  # -- Environment variables to configure the APM agent.
+  env: {}
+
+# -- Database migration job configuration.
+# Creates a Kubernetes Job as a Helm hook to run database migrations
+# before the main application is installed or upgraded.
+# See https://helm.sh/docs/topics/charts_hooks/ for more information on Helm hooks.
+migration:
+  # -- Set to true to enable the database migration Job.
+  enabled: false
+  # -- The container image for the migration task.
+  image:
+    repository: "busybox"
+    pullPolicy: IfNotPresent
+    tag: "1.28"
+  # -- The command to execute for the migration.
+  command:
+    - "/bin/sh"
+    - "-c"
+    - "echo 'Running migrations...'; sleep 10; echo 'Migrations complete!'"
+  # -- Resource requests and limits for the migration Job.
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  # -- Environment variables from secrets or configmaps for the migration container.
+  envFrom: []
+  # -- Annotations to add to the migration job's pod.
+  podAnnotations: {}
+  # -- A specific security context for the migration container.
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    runAsUser: 10001
+    runAsGroup: 10001
+    capabilities:
+      drop:
+        - ALL
+
+# -- Override the container's entrypoint (command) and arguments (args).
+# By default, the chart uses the container's built-in ENTRYPOINT.
+command: []
+args: []
+
+# -- Deployment strategy. See https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+# -- Security context for the pod. See https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+podSecurityContext:
+  fsGroup: 10001
+  runAsUser: 10001
+  runAsGroup: 10001
+  runAsNonRoot: true
+
+# -- Security context for the container. See https://kubernetes.io/docs/concepts/security/pod-security-standards/
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  # -- The port the service will expose.
+  port: 8080
+  # -- Configuration for a separate management service.
+  # This exposes the management port on its own service.
+  management:
+    port: 8181
+    type: ClusterIP
+
+# -- ServiceMonitor configuration for Prometheus Operator. See https://prometheus.io/
+serviceMonitor:
+  enabled: false
+  # -- Additional labels for the ServiceMonitor.
+  labels: {}
+  # -- A list of endpoints on the service to scrape for metrics.
+  endpoints:
+    - port: http-management
+      interval: 15s
+      scrapeTimeout: 10s
+      path: /actuator/prometheus
+
+# -- PodMonitor configuration for Prometheus Operator.
+# Scrapes metrics directly from pods, bypassing the need for a service.
+podMonitor:
+  enabled: false
+  # -- Additional labels for the PodMonitor.
+  labels: {}
+  # -- A list of endpoints on the pod to scrape for metrics.
+  endpoints:
+    - port: mgr-port
+      interval: 15s
+      scrapeTimeout: 10s
+      path: /actuator/prometheus
+
+# -- Ingress configuration. See https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+# -- Resource requests and limits for the container.
+# It is strongly recommended to set these values in production.
+# See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+    ephemeral-storage: 512Mi
+
+# -- Sizing profiles for easy resource allocation.
+sizeProfile: medium # Select which profile to use
+sizing:
+  # -- Select a predefined profile or "custom" to use the main 'resources' block.
+  # Options: small, medium, large, custom
+  # -- A map of predefined resource profiles.
+  profiles:
+    small:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+        ephemeral-storage: 500Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+        ephemeral-storage: 250Mi
+    medium:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+        ephemeral-storage: 512Mi
+    large:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+        ephemeral-storage: 2Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+        ephemeral-storage: 1Gi
+
+# -- Liveness, Readiness, and Startup probe configuration.
+# For more information, see https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  enabled: true
+  spec:
+    httpGet:
+      path: /actuator/health/liveness
+      port: service-port
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  spec:
+    httpGet:
+      path: /actuator/health/readiness
+      port: service-port
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+startupProbe:
+  enabled: true
+  spec:
+    httpGet:
+      path: /actuator/health/liveness
+      port: service-port
+    failureThreshold: 30
+    periodSeconds: 5
+
+# -- Horizontal Pod Autoscaler configuration. See https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+horizontalPodAutoscaler:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# -- Vertical Pod Autoscaler configuration. See https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
+verticalPodAutoscaler:
+  enabled: false
+  updateMode: "Off"
+  # -- Resource policies for the VPA. Used if sizing.profile is "custom".
+  resourcePolicy:
+    containerPolicies:
+      - containerName: "*"
+        minAllowed:
+          cpu: 100m
+          memory: 128Mi
+
+# -- Pod topology spread constraints. See https://kubernetes.io/docs/concepts/workloads/controllers/pod-topology-spread-constraints/
+topologySpreadConstraints:
+  enabled: true
+  maxSkew: 1
+  whenUnsatisfiable: "DoNotSchedule"
+
+# -- Pod Disruption Budget configuration.
+# This protects the application from voluntary disruptions (e.g., node maintenance).
+# See https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# -- Network Policy configuration.
+# This provides network isolation for the pods. See https://kubernetes.io/docs/concepts/services-networking/network-policies/
+networkPolicy:
+  enabled: false
+  ingress: []
+
+# -- Kubernetes Gateway API HTTPRoute configuration. See https://gateway-api.sigs.k8s.io/
+httpRoute:
+  enabled: false
+  parentRefs: []
+  hostnames: []
+
+# -- Environment variables for the container.
+env: {}
+
+# -- Environment variables from secrets or configmaps.
+envFrom: []
+
+# -- CronJob configuration.
+# Allows defining one or more scheduled jobs.
+# Each key under 'cronjobs' will be a unique CronJob.
+# See https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+cronjobs:
+  {}
+  # daily-report:
+  #   enabled: true
+  #   schedule: "0 1 * * *"
+  #   concurrencyPolicy: Forbid
+  #   image:
+  #     repository: "your-app/reporter"
+  #     pullPolicy: IfNotPresent
+  #     tag: "1.0.5"
+  #   command:
+  #     - "/bin/sh"
+  #     - "-c"
+  #     - "generate-daily-report --send-email"
+  #   resources:
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #   envFrom:
+  #   - secretRef:
+  #       name: my-db-credentials
+
+# -- KEDA (Kubernetes Event-driven Autoscaling) configuration.
+# Creates a KEDA ScaledObject for advanced autoscaling. See https://keda.sh/
+keda:
+  enabled: false
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  pollingInterval: 30
+  triggers:
+    # -- Example for a cron trigger.
+    # - type: cron
+    #   metadata:
+    #     timezone: "America/New_York"
+    #     start: "0 8 * * 1-5"
+    #     end: "0 18 * * 1-5"
+    #     desiredReplicas: "3"
+    # - type: cpu
+    #   metadata:
+    #     value: "80"
+
+# -- A list of extra volumes to add to the pod.
+extraVolumes: []
+
+# -- A list of extra volume mounts to add to the main container.
+extraVolumeMounts: []
+
+# -- Heap dump configuration for post-mortem analysis.
+heapDump:
+  enabled: false
+  volumeName: "heap-dump"
+  mountPath: "/data/heapdumps"

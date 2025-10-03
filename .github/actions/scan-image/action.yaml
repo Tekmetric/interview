@@ -1,0 +1,32 @@
+name: "Scan Docker Image Action"
+description: "Scans a Docker image for vulnerabilities using Trivy."
+
+inputs:
+  image-ref:
+    description: "The full reference of the Docker image to scan (e.g., ghcr.io/owner/repo:tag)."
+    required: true
+  registry-username:
+    description: "Username for the container registry."
+    required: true
+  registry-password:
+    description: "Password or token for the container registry."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@0.24.0
+      env:
+        TRIVY_USERNAME: ${{ inputs.registry-username }}
+        TRIVY_PASSWORD: ${{ inputs.registry-password }}
+      with:
+        image-ref: ${{ inputs.image-ref }}
+        format: "sarif"
+        output: "trivy-results.sarif"
+        severity: "CRITICAL,HIGH"
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: "trivy-results.sarif"

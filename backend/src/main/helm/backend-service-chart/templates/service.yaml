@@ -1,0 +1,26 @@
+# Source: backend-service-chart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helm.fullname" . }}
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: service-port
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.app.port }}
+    - name: http-management
+      protocol: TCP
+      port: {{ .Values.service.management.port }}
+      targetPort: {{ .Values.app.mgrPort }}
+    {{- range .Values.app.extraPorts }}
+    - name: {{ .name }}
+      protocol: {{ .protocol | default "TCP" }}
+      port: {{ .containerPort }}
+      targetPort: {{ .containerPort }}
+    {{- end }}
+  selector:
+    {{- include "helm.selectorLabels" . | nindent 4 }}

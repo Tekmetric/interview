@@ -1,0 +1,172 @@
+name: Reusable Helm Deployment Workflow
+
+on:
+  workflow_call:
+    inputs:
+      environment-name:
+        description: "Name of the target environment (e.g., staging, production)."
+        required: true
+        type: string
+      namespace:
+        description: "Kubernetes namespace for the deployment."
+        required: true
+        type: string
+      release-name:
+        description: "Helm release name for the deployment."
+        required: true
+        type: string
+      chart-artifact-name:
+        description: "Name of the Helm chart artifact from the CI workflow."
+        required: true
+        type: string
+      repo-name:
+        description: "The repository name (owner/repo) to download artifacts from."
+        required: true
+        type: string
+      run-id:
+        description: "The ID of the CI workflow run to download artifacts from."
+        required: true
+        type: string
+    secrets:
+      GPG_SECRET_KEY:
+        description: "GPG private key for Helm chart verification."
+        required: true
+      KUBE_CONFIG:
+        description: "Base64-encoded Kubeconfig file for the target cluster."
+        required: true
+      REPO_ACCESS_TOKEN:
+        description: "A GitHub token with read access to the repository artifacts."
+        required: true
+
+# Concurrency group to prevent multiple concurrent deployments to the same environment.
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.environment-name }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: self-hosted
+    name: Generate Deployment Plan
+    environment:
+      name: ${{ inputs.environment-name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+        env:
+          RUNNER_TOOL_CACHE: /tmp/runner_cache
+
+      - name: Create Python virtual environment
+        run: python3.12 -m venv /tmp/.venv
+
+      - name: Install Python dependencies
+        run: /tmp/.venv/bin/pip install -r .github/scripts/release-and-monitor/requirements.txt
+
+      - name: Configure Kubeconfig & GPG
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > "${{ runner.temp }}/kubeconfig"
+          echo "${{ secrets.GPG_SECRET_KEY }}" | base64 --decode | gpg --batch --import
+        env:
+          KUBECONFIG: "${{ runner.temp }}/kubeconfig"
+
+      - name: Download Helm Chart & Checksum Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.chart-artifact-name }}
+          path: .
+          run-id: ${{ inputs.run-id }}
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          
+      - name: Debugging Kubeconfig
+        env:
+          KUBECONFIG: "${{ runner.temp }}/kubeconfig"
+        run: |
+          echo "KUBECONFIG is set to: ${KUBECONFIG}"
+          echo "File content:"
+          cat "${KUBECONFIG}"
+
+      - name: Generate Deployment Plan using release.py
+        shell: bash
+        env:
+          KUBECONFIG: "${{ runner.temp }}/kubeconfig"
+        run: |
+          CHART_PACKAGE=$(ls *.tgz)
+          echo "Generating deployment plan using release.py..."
+          /tmp/.venv/bin/python .github/scripts/release-and-monitor/release.py \
+            --namespace "${{ inputs.namespace }}" \
+            --release-name "${{ inputs.release-name }}" \
+            --chart-path "${CHART_PACKAGE}" \
+            --values-file "backend/src/main/helm/values/${{ inputs.environment-name }}/${{ inputs.environment-name }}.yaml" \
+            --secrets-file "backend/src/main/helm/values/${{ inputs.environment-name }}/${{ inputs.environment-name }}.secrets.yaml" \
+            --dry-run
+
+      - name: Upload Plan Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-plan-${{ github.run_id }}-${{ inputs.environment-name }}
+          path: |
+            *.tgz
+            *.sha256
+
+  apply:
+    runs-on: self-hosted
+    name: Apply Deployment
+    needs: plan
+    environment:
+      name: ${{ inputs.environment-name }}
+      url: https://tekmetric-backend-${{ inputs.environment-name }}.mycompany.com
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+        env:
+          RUNNER_TOOL_CACHE: /tmp/runner_cache
+
+      - name: Create Python virtual environment
+        run: python3.12 -m venv /tmp/.venv
+
+      - name: Install Python dependencies
+        run: /tmp/.venv/bin/pip install -r .github/scripts/release-and-monitor/requirements.txt
+
+      - name: Configure Kubeconfig & GPG
+        run: |
+          if [ -z "${{ secrets.KUBE_CONFIG }}" ]; then
+            echo "::error::Kubeconfig secret is empty. Please check the secret value in the environment settings."
+            exit 1
+          fi
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > "${{ runner.temp }}/kubeconfig"
+          echo "${{ secrets.GPG_SECRET_KEY }}" | base64 --decode | gpg --batch --import
+        env:
+          KUBECONFIG: "${{ runner.temp }}/kubeconfig"
+
+      - name: Download Plan Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-plan-${{ github.run_id }}-${{ inputs.environment-name }}
+          path: .
+
+      - name: Deploy with Helm using release.py
+        shell: bash
+        env:
+          KUBECONFIG: "${{ runner.temp }}/kubeconfig"
+        run: |
+          CHART_PACKAGE=$(ls *.tgz)
+          echo "Deploying Helm chart..."
+          /tmp/.venv/bin/python .github/scripts/release-and-monitor/release.py \
+            --namespace "${{ inputs.namespace }}" \
+            --release-name "${{ inputs.release-name }}" \
+            --chart-path "${CHART_PACKAGE}" \
+            --values-file "backend/src/main/helm/values/${{ inputs.environment-name }}/${{ inputs.environment-name }}.yaml" \
+            --secrets-file "backend/src/main/helm/values/${{ inputs.environment-name }}/${{ inputs.environment-name }}.secrets.yaml"
+
+      - name: Output deployment status
+        if: success()
+        run: echo "Deployment to ${{ inputs.environment-name }} was successful!"

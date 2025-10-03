@@ -1,0 +1,107 @@
+name: "Java Test & Package Action"
+description: "Downloads a workspace, runs tests, and packages the application with a semantic version."
+
+inputs:
+  java-version:
+    description: "JDK version."
+    required: false
+    default: "25"
+  distribution:
+    description: "JDK distribution (e.g., temurin, corretto)."
+    required: false
+    default: "corretto"
+  working-directory:
+    description: "Directory of the pom.xml, for monorepos."
+    required: false
+    default: "backend"
+  jar-artifact-name:
+    description: "Name for the final uploaded JAR artifact."
+    required: false
+    default: "java-app-jar"
+  workspace-artifact-name:
+    description: "Name of the workspace artifact to download."
+    required: false
+    default: "workspace"
+
+outputs:
+  version:
+    description: "The full SemVer-compliant version string with build metadata."
+    value: ${{ steps.generate-version.outputs.version }}
+  docker_tag:
+    description: "The sanitized version string suitable for a Docker tag."
+    value: ${{ steps.generate-version.outputs.docker_tag }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK with Maven caching
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: ${{ inputs.distribution }}
+        cache: "maven"
+        cache-dependency-path: ${{ inputs.working-directory }}/pom.xml
+
+    - name: Download Workspace
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.workspace-artifact-name }}
+        path: .
+
+    - name: Generate Semantic Version
+      id: generate-version
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "Attempting to get base version from pom.xml..."
+        # We use -q (quiet) to suppress Maven's download logs and get only the version string.
+        BASE_VERSION=$(mvn -q help:evaluate -Dexpression=project.base.version -DforceStdout)
+
+        echo "Base version retrieved by Maven: [${BASE_VERSION}]"
+
+        # If the quiet command fails to produce a version, we re-run it in verbose mode
+        # to see the full error logs before failing the workflow.
+        if [ -z "$BASE_VERSION" ]; then
+          echo "::error::Base version from pom.xml is empty. Rerunning Maven in verbose mode for details."
+          mvn help:evaluate -Dexpression=project.base.version -DforceStdout
+          exit 1
+        fi
+
+        PATCH_VERSION="${{ github.run_number }}"
+        BUILD_METADATA="$(date +'%Y%m%d').${GITHUB_SHA::7}"
+
+        if [[ "${{ github.ref_name }}" != "master" ]]; then
+          VERSION="${BASE_VERSION}.${PATCH_VERSION}-SNAPSHOT+${BUILD_METADATA}"
+        else
+          VERSION="${BASE_VERSION}.${PATCH_VERSION}+${BUILD_METADATA}"
+        fi
+
+        # Replace the '+' with a '-' to create a valid Docker tag.
+        DOCKER_TAG=$(echo "${VERSION}" | tr '+' '-')
+
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "docker_tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
+
+        echo "Generated SemVer version: ${VERSION}"
+        echo "Sanitized Docker tag: ${DOCKER_TAG}"
+
+    - name: Run Tests with Maven
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: mvn -B test -Drevision="${{ steps.generate-version.outputs.version }}"
+
+    - name: Package Application
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: mvn -B package -DskipTests -Drevision="${{ steps.generate-version.outputs.version }}"
+
+    - name: Rename JAR for consistency
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: mv target/interview-${{ steps.generate-version.outputs.version }}.jar target/app.jar
+
+    - name: Upload JAR Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.jar-artifact-name }}
+        path: ${{ inputs.working-directory }}/target/app.jar

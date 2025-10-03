@@ -1,0 +1,23 @@
+Your {{ include "helm.name" . }} application has been successfully deployed.
+
+{{- if .Values.ingress.enabled }}
+Since you have enabled Ingress, you can access your application at the hosts you've configured:
+{{- range .Values.ingress.hosts }}
+http://{{ .host }}{{ (first .paths).path }}
+{{- end }}
+
+{{- else if eq .Values.service.type "LoadBalancer" }}
+Your service is exposed via a LoadBalancer. You can get the external IP by running:
+kubectl get svc {{ include "helm.fullname" . }} --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}"
+
+{{- else }}
+Your service is only exposed within the cluster. To access it from your local machine, you can use port-forwarding.
+
+Run the following command in a separate terminal:
+kubectl port-forward svc/{{ include "helm.fullname" . }} {{ .Values.service.port }}:{{ .Values.app.port }}
+
+You can now access the application at http://localhost:{{ .Values.service.port }}
+
+{{- end }}
+
+Have a great day!

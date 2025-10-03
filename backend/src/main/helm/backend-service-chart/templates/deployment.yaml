@@ -1,0 +1,188 @@
+{{- if and .Values.verticalPodAutoscaler.enabled .Values.horizontalPodAutoscaler.enabled }}
+{{- fail "Cannot enable both Vertical and Horizontal Pod Autoscaler. Please choose one." }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm.fullname" . }}
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  # -- Replicas are not set if HPA is enabled.
+  {{- if not .Values.horizontalPodAutoscaler.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    {{- toYaml .Values.strategy | nindent 4 }}
+  selector:
+    matchLabels:
+      {{- include "helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- if or .Values.podAnnotations .Values.configMap.create .Values.secret.create }}
+      annotations:
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.configMap.create }}
+        checksum/config: {{ tpl (toYaml .Values.configMap.data) . | sha256sum }}
+        {{- end }}
+        {{- if .Values.secret.create }}
+        checksum/secret: {{ tpl (toYaml .Values.secret.data) . | sha256sum }}
+        {{- end }}
+      {{- end }}
+      labels:
+        {{- include "helm.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "helm.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.topologySpreadConstraints.enabled }}
+      topologySpreadConstraints:
+        - maxSkew: {{ .Values.topologySpreadConstraints.maxSkew }}
+          topologyKey: "topology.kubernetes.io/zone"
+          whenUnsatisfiable: {{ .Values.topologySpreadConstraints.whenUnsatisfiable }}
+          labelSelector:
+            matchLabels:
+              {{- include "helm.selectorLabels" . | nindent 14 }}
+        - maxSkew: 1
+          topologyKey: "kubernetes.io/hostname"
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              {{- include "helm.selectorLabels" . | nindent 14 }}
+      {{- end }}
+      {{- if .Values.apm.enabled }}
+      initContainers:
+        - name: apm-agent-installer
+          image: "{{ .Values.apm.initContainer.repository }}:{{ .Values.apm.initContainer.tag }}"
+          imagePullPolicy: {{ .Values.apm.initContainer.pullPolicy }}
+          command: {{- toYaml .Values.apm.copyCommand | nindent 12 }}
+          volumeMounts:
+            - name: apm-agent
+              mountPath: /apm
+      {{- end }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      {{- if .Values.apm.enabled }}
+        - name: apm-agent
+          emptyDir: {}
+      {{- end }}
+      {{- if .Values.heapDump.enabled }}
+        - name: {{ .Values.heapDump.volumeName }}
+          emptyDir: {}
+      {{- end }}
+      {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Chart.AppVersion | replace "+" "-" }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: service-port
+              containerPort: {{ .Values.app.port }}
+              protocol: TCP
+            - name: http-management
+              containerPort: {{ .Values.app.mgrPort }}
+              protocol: TCP
+            {{- if .Values.jmx.enabled }}
+            - name: jmx
+              containerPort: {{ .Values.jmx.port }}
+              protocol: TCP
+            {{- end }}
+            {{- with .Values.app.extraPorts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            {{- if .Values.apm.enabled }}
+            - name: apm-agent
+              mountPath: /apm
+            {{- end }}
+            {{- if .Values.heapDump.enabled }}
+            - name: {{ .Values.heapDump.volumeName }}
+              mountPath: {{ .Values.heapDump.mountPath }}
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe.spec | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe.spec | nindent 12 }}
+          {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            {{- toYaml .Values.startupProbe.spec | nindent 12 }}
+          {{- end }}
+          {{- with .Values.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          args:
+            {{- if .Values.app.autoJvmMemory }}
+            {{- include "helm.jvmMemoryOptions" . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.args }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- include "helm.resources" . | nindent 12 }}
+          {{- if or (len .Values.env) .Values.apm.enabled .Values.jmx.enabled }}
+          env:
+            {{- if or .Values.apm.enabled .Values.jmx.enabled .Values.heapDump.enabled }}
+            - name: JAVA_TOOL_OPTIONS
+              value: >-
+                {{- if .Values.apm.enabled }}
+                -javaagent:{{ .Values.apm.agentPath }}
+                {{- end -}}
+                {{- if .Values.jmx.enabled }}
+                -Dcom.sun.management.jmxremote
+                -Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }}
+                -Dcom.sun.management.jmxremote.rmi.port={{ .Values.jmx.port }}
+                -Dcom.sun.management.jmxremote.local.only=false
+                -Dcom.sun.management.jmxremote.authenticate={{ .Values.jmx.authenticate }}
+                -Dcom.sun.management.jmxremote.ssl={{ .Values.jmx.ssl }}
+                {{- end -}}
+                {{- if .Values.heapDump.enabled }}
+                -XX:+HeapDumpOnOutOfMemoryError
+                -XX:HeapDumpPath={{ .Values.heapDump.mountPath }}/
+                {{- end -}}
+            {{- end }}
+            {{- range $name, $value := .Values.apm.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $name, $value := .Values.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
+            {{- end }}
+          {{- end }}
+          envFrom:
+            {{- if .Values.configMap.create }}
+            - configMapRef:
+                name: {{ include "helm.fullname" . }}-config
+            {{- end }}
+            {{- if .Values.secret.create }}
+            - secretRef:
+                name: {{ include "helm.fullname" . }}-secret
+            {{- end }}
+            {{- with .Values.envFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}

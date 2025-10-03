@@ -1,0 +1,89 @@
+name: "Publish Helm Chart Action"
+description: "Packages, publishes a Helm chart to ChartMuseum, and uploads it as a build artifact."
+
+inputs:
+  chart-path:
+    description: "The path to the Helm chart directory."
+    required: true
+  chartmuseum-url:
+    description: "The URL of the ChartMuseum instance."
+    required: true
+  app-version:
+    description: "The full semantic version of the application (e.g., 1.0.1+20250923.abc)."
+    required: true
+  artifact-name:
+    description: "Name for the uploaded Helm chart artifact."
+    required: false
+    default: 'helm-chart'
+
+outputs:
+  packaged_chart_name:
+    description: "The filename of the packaged Helm chart .tgz file."
+    value: ${{ steps.package_chart.outputs.packaged_chart }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: "v3.13.0"
+
+    - name: Install helm-push plugin
+      shell: bash
+      run: |
+        if ! helm plugin list | grep -q 'cm-push'; then
+          echo "helm-push plugin not found. Installing..."
+          helm plugin install https://github.com/chartmuseum/helm-push
+        else
+          echo "helm-push plugin is already installed."
+        fi
+
+    - name: Prepare Helm Versions
+      id: versions
+      shell: bash
+      run: |
+        FULL_APP_VERSION="${{ inputs.app-version }}"
+        if [ -z "$FULL_APP_VERSION" ]; then
+          echo "::error::Input 'app-version' is empty. A valid version is required."
+          exit 1
+        fi
+
+        CHART_VERSION=$(echo "$FULL_APP_VERSION" | cut -d'+' -f1)
+
+        echo "chart_version=${CHART_VERSION}" >> $GITHUB_OUTPUT
+        echo "app_version=${FULL_APP_VERSION}" >> $GITHUB_OUTPUT
+
+    - name: Package Helm Chart
+      id: package_chart
+      shell: bash
+      run: |
+        helm package ${{ inputs.chart-path }} --version ${{ steps.versions.outputs.chart_version }} --app-version ${{ steps.versions.outputs.app_version }}
+
+        CHART_NAME=$(helm show chart ${{ inputs.chart-path }} | grep '^name:' | awk '{print $2}')
+        PACKAGE_FILE="${CHART_NAME}-${{ steps.versions.outputs.chart_version }}.tgz"
+
+        echo "packaged_chart=${PACKAGE_FILE}" >> $GITHUB_OUTPUT
+
+    - name: Update chart dependency
+      shell: bash
+      run: helm dependency update ${{ inputs.chart-path }}
+      
+    - name: Push chart using helm-push
+      shell: bash
+      run: helm cm-push ${{ steps.package_chart.outputs.packaged_chart }} ${{ inputs.chartmuseum-url }}
+
+    - name: Generate Checksum
+      id: checksum
+      shell: bash
+      run: |
+        sha256sum ${{ steps.package_chart.outputs.packaged_chart }} > ${{ steps.package_chart.outputs.packaged_chart }}.sha256
+        echo "checksum_file=${{ steps.package_chart.outputs.packaged_chart }}.sha256" >> $GITHUB_OUTPUT
+
+    - name: Upload Helm Chart Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: |
+          ${{ steps.package_chart.outputs.packaged_chart }}
+          ${{ steps.checksum.outputs.checksum_file }}

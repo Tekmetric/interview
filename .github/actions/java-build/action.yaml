@@ -1,0 +1,51 @@
+name: 'Java Build Action'
+description: 'Checks out, compiles a Java application, and uploads the workspace.'
+
+inputs:
+  java-version:
+    description: 'JDK version.'
+    required: false
+    default: '25'
+  distribution:
+    description: 'JDK distribution (e.g., temurin, corretto).'
+    required: false
+    default: 'corretto'
+  working-directory:
+    description: 'Directory of the pom.xml, for monorepos.'
+    required: false
+    default: '.'
+  maven-args:
+    description: 'Extra arguments for the Maven command.'
+    required: false
+    default: ''
+  artifact-name:
+    description: 'Name for the uploaded workspace artifact.'
+    required: false
+    default: 'workspace'
+  artifact-retention-days:
+    description: 'How long to retain the workspace artifact.'
+    required: false
+    default: "1"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK with Maven caching
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: ${{ inputs.distribution }}
+        cache: 'maven'
+        cache-dependency-path: ${{ inputs.working-directory }}/pom.xml
+
+    - name: Compile with Maven
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: mvn -B compile ${{ inputs.maven-args }}
+
+    - name: Upload Workspace Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: .
+        retention-days: ${{ inputs.artifact-retention-days }}

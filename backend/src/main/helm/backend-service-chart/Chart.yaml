@@ -1,0 +1,11 @@
+apiVersion: v2
+name: backend-service-chart
+description: A production-ready Helm chart for Java backend services
+
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+# Require a Kubernetes version that supports the stable autoscaling/v2 API,
+# available since v1.23. This avoids using deprecated API versions.
+kubeVersion: ">= 1.23.0-0"

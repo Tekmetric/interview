@@ -1,0 +1,56 @@
+image:
+  name: tekmetric-backend
+  repository: ghcr.io/alinscreciu
+app:
+  name: backend-service
+  autoJvmMemory: true
+  jvmMemoryPercentage: 75
+
+podDisruptionBudget:
+  minAvailable: 2
+
+replicaCount: 6
+# -- Deployment strategy. See https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 
+
+env:
+  SPRING_PROFILES_ACTIVE: "local"
+
+sizeProfile: medium
+
+# -- Liveness, Readiness, and Startup probe configuration.
+# For more information, see https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  enabled: true
+  spec:
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  spec:
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+startupProbe:
+  enabled: true
+  spec:
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    failureThreshold: 30
+    periodSeconds: 5

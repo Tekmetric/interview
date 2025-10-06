@@ -6,8 +6,8 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import DarkModeToggle from './DarkModeToggle';
-import themeReducer from '../store/themeSlice';
-import '../i18n';
+import themeReducer from '../../../store/themeSlice';
+import '../../../i18n';
 
 // Create a mock store
 const createMockStore = (isDarkMode = false) =>

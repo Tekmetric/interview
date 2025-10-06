@@ -1,17 +1,19 @@
 import React, { useRef, useEffect, Suspense, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
-import { useAppSelector } from '../store/hooks';
-import { convertHeight, convertWeight, capitalize } from '../lib/utils';
-import { COLUMN_WIDTHS, typeColors, classes } from '../lib/styles';
+import { useAppSelector } from '../../store/hooks';
+import { convertHeight, convertWeight, capitalize } from '../../lib/utils';
+import { COLUMN_WIDTHS, typeColors, classes } from '../../lib/styles';
 import { TableCell } from './TableCell';
-import { KeyboardNavigationWrapper } from './KeyboardNavigation';
-import { Pokemon } from '../types/pokemon';
-import { usePokemonPrefetch } from '../store/api';
+import { KeyboardNavigationWrapper } from '../ui/KeyboardNavigation/KeyboardNavigation';
+import { Pokemon } from '../../types/pokemon';
+import { usePokemonPrefetch } from '../../store/api';
 
-const BarChart = lazy(() => import('./BarChart'));
+const BarChart = lazy(() => import('../ui/BarChart/BarChart'));
 
 const Cell = TableCell;
+
+const DEFAULT_ROW_HEIGHT = 120;
 
 interface TableBodyProps {
   filteredPokemon: Pokemon[];
@@ -21,6 +23,31 @@ interface TableBodyProps {
   rowHeights: React.MutableRefObject<Record<number, number>>;
   setRowHeight: (index: number, size: number) => void;
 }
+
+/**
+ * Transform Pokemon data for display
+ */
+interface PokemonDisplayData {
+  id: number;
+  name: string;
+  displayName: string;
+  height: string;
+  weight: string;
+  sprite: string;
+  types: Pokemon['types'];
+  stats: Pokemon['stats'];
+}
+
+const transformPokemonForDisplay = (pokemon: Pokemon, isMetric: boolean): PokemonDisplayData => ({
+  id: pokemon.id,
+  name: pokemon.name,
+  displayName: capitalize(pokemon.name),
+  height: convertHeight(pokemon.height, isMetric),
+  weight: convertWeight(pokemon.weight, isMetric),
+  sprite: pokemon.sprites.front_default || '',
+  types: pokemon.types,
+  stats: pokemon.stats,
+});
 
 const TableBody: React.FC<TableBodyProps> = ({
   filteredPokemon,
@@ -37,7 +64,7 @@ const TableBody: React.FC<TableBodyProps> = ({
   const { prefetchPokemon } = usePokemonPrefetch();
 
   const getRowHeight = (index: number): number => {
-    return rowHeights.current[index] || 120;
+    return rowHeights.current[index] || DEFAULT_ROW_HEIGHT;
   };
 
   const Row: React.FC<ListChildComponentProps> = ({ index, style }) => {
@@ -54,8 +81,7 @@ const TableBody: React.FC<TableBodyProps> = ({
       return null;
     }
 
-    const height = convertHeight(pokemon.height, isMetric);
-    const weight = convertWeight(pokemon.weight, isMetric);
+    const displayData = transformPokemonForDisplay(pokemon, isMetric);
 
     return (
       <div
@@ -63,21 +89,21 @@ const TableBody: React.FC<TableBodyProps> = ({
         style={style}
         className={classes.row}
         role="row"
-        aria-label={`pokemon: ${capitalize(pokemon.name)}, Number ${pokemon.id}`}
-        onMouseEnter={() => prefetchPokemon(pokemon.id)}
+        aria-label={`pokemon: ${displayData.displayName}, Number ${displayData.id}`}
+        onMouseEnter={() => prefetchPokemon(displayData.id)}
       >
         <Cell width={COLUMN_WIDTHS.id} className={classes.cellId(isMobile)}>
-          {pokemon.id}
+          {displayData.id}
         </Cell>
         <Cell width={COLUMN_WIDTHS.image} className={classes.cellImage(isMobile)}>
           <img
-            src={pokemon.sprites.front_default || ''}
-            alt={`${capitalize(pokemon.name)} sprite`}
-            aria-label={`${capitalize(pokemon.name)} image`}
+            src={displayData.sprite}
+            alt={`${displayData.displayName} sprite`}
+            aria-label={`${displayData.displayName} image`}
             className={classes.pokemonImage}
           />
           <div className={classes.typeBadgeContainer}>
-            {pokemon.types?.map((type) => (
+            {displayData.types?.map((type) => (
               <span
                 key={type.type.name}
                 className={classes.typeBadge}
@@ -90,24 +116,24 @@ const TableBody: React.FC<TableBodyProps> = ({
         </Cell>
         <Cell width={COLUMN_WIDTHS.name} className={classes.cellName(isMobile)}>
           <a
-            href={`https://www.pokemon.com/us/pokedex/${pokemon.name}`}
+            href={`https://www.pokemon.com/us/pokedex/${displayData.name}`}
             target="_blank"
             rel="noopener noreferrer"
             className={classes.pokemonLink}
           >
-            {capitalize(pokemon.name)}
+            {displayData.displayName}
           </a>
         </Cell>
         <Cell width={COLUMN_WIDTHS.height} className={classes.cellHeight(isMobile)}>
-          {height}
+          {displayData.height}
         </Cell>
         <Cell width={COLUMN_WIDTHS.weight} className={classes.cellWeight(isMobile)}>
-          {weight}
+          {displayData.weight}
         </Cell>
         {!isMobile && (
           <Cell width={COLUMN_WIDTHS.stats} className={classes.cellStats}>
             <Suspense fallback={<div className="h-16 w-full flex items-center justify-center text-gray-400 text-sm">Loading chart...</div>}>
-              <BarChart stats={pokemon.stats} />
+              <BarChart stats={displayData.stats} />
             </Suspense>
           </Cell>
         )}

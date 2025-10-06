@@ -1,6 +1,6 @@
 import React from 'react';
-import { classes } from '../lib/styles';
-import { logger } from '../lib/logger';
+import { classes } from '../../../lib/styles';
+import { logger } from '../../../lib/logger';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;

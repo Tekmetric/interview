@@ -2,7 +2,7 @@ import React from 'react';
 import { VariableSizeList } from 'react-window';
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
-import { Pokemon } from '../types/pokemon';
+import { Pokemon } from '../../types/pokemon';
 
 interface TableProps {
   filteredPokemon: Pokemon[];

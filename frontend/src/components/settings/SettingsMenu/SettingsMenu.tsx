@@ -6,8 +6,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import DarkModeToggle from './DarkModeToggle';
-import LanguageSwitcher from './LanguageSwitcher';
+import DarkModeToggle from '../DarkModeToggle/DarkModeToggle';
+import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 
 const SettingsMenu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

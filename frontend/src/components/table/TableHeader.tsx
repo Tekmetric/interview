@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { COLUMN_WIDTHS, classes } from '../lib/styles';
+import { COLUMN_WIDTHS, classes } from '../../lib/styles';
 import { TableHeaderCell } from './TableCell';
 
 interface TableHeaderProps {

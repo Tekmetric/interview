@@ -4,7 +4,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import BarChart from './BarChart';
-import type { PokemonStat } from '../types/pokemon';
+import type { PokemonStat } from '../../../types/pokemon';
 
 const meta: Meta<typeof BarChart> = {
   title: 'Components/BarChart',

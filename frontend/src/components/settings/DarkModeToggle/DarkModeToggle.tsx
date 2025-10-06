@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { toggleTheme as toggleThemeAction } from '../store/themeSlice';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { toggleTheme as toggleThemeAction } from '../../../store/themeSlice';
 
 const DarkModeToggle: React.FC = () => {
   const dispatch = useAppDispatch();

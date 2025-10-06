@@ -1,3 +1,9 @@
+// Conversion constants
+const DECIMETERS_PER_METER = 10;
+const DECIMETERS_TO_INCHES = 3.93701; // 1 decimeter = 3.93701 inches
+const INCHES_PER_FOOT = 12;
+const INCHES_ROUNDED_TO_FOOT = 12;
+
 /**
  * Converts Pokemon height from decimeters to metric or imperial units
  *
@@ -16,21 +22,24 @@ export const convertHeight = (height: number | null | undefined, isMetric: boole
   if (!height) return 'Unknown';
 
   if (isMetric) {
-    return `${(height / 10).toFixed(1)} m`;
+    return `${(height / DECIMETERS_PER_METER).toFixed(1)} m`;
   }
 
-  const totalInches = (height / 10) * 39.3701;
-  let feet = Math.floor(totalInches / 12);
-  let inches = Math.round(totalInches % 12);
+  const totalInches = height * DECIMETERS_TO_INCHES;
+  let feet = Math.floor(totalInches / INCHES_PER_FOOT);
+  let inches = Math.round(totalInches % INCHES_PER_FOOT);
 
   // If inches rounds to 12, convert to 1 additional foot
-  if (inches === 12) {
+  if (inches === INCHES_ROUNDED_TO_FOOT) {
     feet += 1;
     inches = 0;
   }
 
   return inches === 0 ? `${feet}'` : `${feet}'${inches}"`;
 };
+
+const HECTOGRAMS_PER_KILOGRAM = 10;
+const KILOGRAMS_TO_POUNDS = 2.20462;
 
 /**
  * Converts Pokemon weight from hectograms to metric or imperial units
@@ -50,10 +59,11 @@ export const convertWeight = (weight: number | null | undefined, isMetric: boole
   if (!weight) return 'Unknown';
 
   if (isMetric) {
-    return `${(weight / 10).toFixed(1)} kg`;
+    return `${(weight / HECTOGRAMS_PER_KILOGRAM).toFixed(1)} kg`;
   }
 
-  return `${((weight / 10) * 2.20462).toFixed(1)} lb`;
+  const kilograms = weight / HECTOGRAMS_PER_KILOGRAM;
+  return `${(kilograms * KILOGRAMS_TO_POUNDS).toFixed(1)} lb`;
 };
 
 /**

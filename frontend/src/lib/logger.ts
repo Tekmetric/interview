@@ -5,7 +5,7 @@
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-type LogFunction = (...args: any[]) => void;
+type LogFunction = (...args: unknown[]) => void;
 
 interface Logger {
   log: LogFunction;
@@ -16,30 +16,30 @@ interface Logger {
 }
 
 export const logger: Logger = {
-  log: (...args: any[]): void => {
+  log: (...args: unknown[]): void => {
     if (isDevelopment) {
       console.log(...args);
     }
   },
 
-  info: (...args: any[]): void => {
+  info: (...args: unknown[]): void => {
     if (isDevelopment) {
       console.info(...args);
     }
   },
 
-  warn: (...args: any[]): void => {
+  warn: (...args: unknown[]): void => {
     if (isDevelopment) {
       console.warn(...args);
     }
   },
 
-  error: (...args: any[]): void => {
+  error: (...args: unknown[]): void => {
     // Always log errors, even in production
     console.error(...args);
   },
 
-  debug: (...args: any[]): void => {
+  debug: (...args: unknown[]): void => {
     if (isDevelopment) {
       console.debug(...args);
     }

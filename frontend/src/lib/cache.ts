@@ -7,7 +7,13 @@ import { logger } from './logger';
 
 const CACHE_PREFIX = 'pokedex_cache_';
 const CACHE_VERSION = 'v1';
-const DEFAULT_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+// Time constants
+const HOURS_IN_DAY = 24;
+const MINUTES_IN_HOUR = 60;
+const SECONDS_IN_MINUTE = 60;
+const MS_IN_SECOND = 1000;
+const DEFAULT_TTL = HOURS_IN_DAY * MINUTES_IN_HOUR * SECONDS_IN_MINUTE * MS_IN_SECOND; // 24 hours in milliseconds
 
 interface CacheEntry<T> {
   data: T;
@@ -70,10 +76,10 @@ export const setInCache = <T = any>(key: string, data: T, ttl: number = DEFAULT_
 
     localStorage.setItem(cacheKey, serialized);
     logger.debug(`Successfully cached ${key}`);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error writing to cache:', error);
     // If quota exceeded, clear old cache entries
-    if (error.name === 'QuotaExceededError') {
+    if (error instanceof Error && error.name === 'QuotaExceededError') {
       clearExpiredCache();
       // Try again
       try {

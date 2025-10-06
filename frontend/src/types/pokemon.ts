@@ -30,6 +30,31 @@ export interface Pokemon {
   stats: PokemonStat[];
 }
 
+/**
+ * Raw PokeAPI response type
+ * Used for API responses that may have optional/missing fields
+ */
+export interface PokeApiPokemonResponse {
+  id: number;
+  name: string;
+  height?: number;
+  weight?: number;
+  sprites?: {
+    front_default?: string | null;
+  };
+  types?: Array<{
+    type: {
+      name: string;
+    };
+  }>;
+  stats?: Array<{
+    stat: {
+      name: string;
+    };
+    base_stat: number;
+  }>;
+}
+
 export interface ApiHealthStatus {
   status: 'healthy' | 'unhealthy';
   message: string;

@@ -5,7 +5,7 @@ import { store } from './store/store';
 import './index.css';
 import './i18n'; // Initialize i18n
 import App from './App';
-import { GranularErrorBoundary } from './components/GranularErrorBoundary';
+import { GranularErrorBoundary } from './components/errors/GranularErrorBoundary/GranularErrorBoundary';
 import { initMonitoring, captureError } from './lib/monitoring';
 
 // Initialize Sentry monitoring (only runs in production)

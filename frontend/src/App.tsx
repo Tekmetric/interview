@@ -5,9 +5,9 @@ import { useAppDispatch, useAppSelector } from './store/hooks';
 import { setSearchTerm } from './store/pokemonSlice';
 import { useGetAllPokemonQuery } from './store/api';
 import { selectSearchTerm, selectIsDarkMode } from './store/selectors';
-import Table from './components/Table';
-import ErrorBoundary from './components/ErrorBoundary';
-import SettingsMenu from './components/SettingsMenu';
+import Table from './components/table/Table';
+import ErrorBoundary from './components/errors/ErrorBoundary/ErrorBoundary';
+import SettingsMenu from './components/settings/SettingsMenu/SettingsMenu';
 import { backgroundStyle, darkBackgroundStyle, classes } from './lib/styles';
 
 function App() {
@@ -45,7 +45,15 @@ function App() {
   const isMobile = windowWidth < 768;
 
   // Format error message
-  const error = queryError ? ('message' in queryError ? queryError.message : 'Failed to load Pokemon data') : null;
+  const formatErrorMessage = (err: unknown): string | null => {
+    if (!err) return null;
+    if (typeof err === 'object' && err !== null && 'message' in err) {
+      return (err as { message: string }).message;
+    }
+    return 'Failed to load Pokemon data';
+  };
+
+  const error = formatErrorMessage(queryError);
 
   useEffect(() => {
     const handleResize = () => {

@@ -1,6 +1,21 @@
 import React from 'react';
 import { VariableSizeList } from 'react-window';
 
+// Keyboard navigation scroll distances
+const SCROLL_STEP = 100; // Arrow key scroll amount in pixels
+const SCROLL_PAGE = 400; // Page up/down scroll amount in pixels
+
+/**
+ * Internal react-window state type
+ * This is not exported by react-window, but needed for keyboard navigation
+ * Using a type alias to avoid interface extension issues
+ */
+type VariableSizeListWithState = VariableSizeList & {
+  state?: {
+    scrollOffset?: number;
+  };
+};
+
 export const useKeyboardNavigation = (
   listRef: React.RefObject<VariableSizeList | null>,
   itemCount: number
@@ -16,24 +31,25 @@ export const useKeyboardNavigation = (
     if (!listRef.current) return;
 
     // Access scrollOffset from the internal state
-    const currentScrollOffset = (listRef.current as any).state?.scrollOffset || 0;
+    const internalList = listRef.current as unknown as VariableSizeListWithState;
+    const currentScrollOffset = internalList.state?.scrollOffset || 0;
 
     switch(e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        listRef.current.scrollTo(currentScrollOffset + 100);
+        listRef.current.scrollTo(currentScrollOffset + SCROLL_STEP);
         break;
       case 'ArrowUp':
         e.preventDefault();
-        listRef.current.scrollTo(Math.max(0, currentScrollOffset - 100));
+        listRef.current.scrollTo(Math.max(0, currentScrollOffset - SCROLL_STEP));
         break;
       case 'PageDown':
         e.preventDefault();
-        listRef.current.scrollTo(currentScrollOffset + 400);
+        listRef.current.scrollTo(currentScrollOffset + SCROLL_PAGE);
         break;
       case 'PageUp':
         e.preventDefault();
-        listRef.current.scrollTo(Math.max(0, currentScrollOffset - 400));
+        listRef.current.scrollTo(Math.max(0, currentScrollOffset - SCROLL_PAGE));
         break;
       case 'Home':
         e.preventDefault();

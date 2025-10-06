@@ -5,7 +5,7 @@ export const COLUMN_WIDTHS = {
   id: '60px',
   image: '140px',
   name: '150px',
-  height: '80px',
+  height: '100px',
   weight: '120px',
   stats: '250px'
 } as const;

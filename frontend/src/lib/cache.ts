@@ -19,6 +19,7 @@ export interface CacheStats {
   totalEntries: number;
   validEntries: number;
   expiredEntries: number;
+  invalidEntries: number;
   totalSizeBytes: number;
   totalSizeKB: string;
 }
@@ -156,6 +157,7 @@ export const getCacheStats = (): CacheStats | null => {
     let totalSize = 0;
     let validEntries = 0;
     let expiredEntries = 0;
+    let invalidEntries = 0;
 
     cacheKeys.forEach((key) => {
       try {
@@ -170,7 +172,10 @@ export const getCacheStats = (): CacheStats | null => {
           }
         }
       } catch (error) {
-        // Invalid entry
+        // Invalid entry - log and remove it
+        logger.warn('Invalid cache entry found, removing:', { key, error });
+        localStorage.removeItem(key);
+        invalidEntries++;
       }
     });
 
@@ -178,6 +183,7 @@ export const getCacheStats = (): CacheStats | null => {
       totalEntries: cacheKeys.length,
       validEntries,
       expiredEntries,
+      invalidEntries,
       totalSizeBytes: totalSize,
       totalSizeKB: (totalSize / 1024).toFixed(2),
     };

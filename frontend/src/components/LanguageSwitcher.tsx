@@ -14,7 +14,8 @@ const LanguageSwitcher: React.FC = () => {
     { code: 'es', name: t('language.es'), flag: '🇪🇸' },
     { code: 'ja', name: t('language.ja'), flag: '🇯🇵' },
     { code: 'fr', name: t('language.fr'), flag: '🇫🇷' },
-    { code: 'de', name: t('language.de'), flag: '🇩🇪' }
+    { code: 'de', name: t('language.de'), flag: '🇩🇪' },
+    { code: 'zh', name: t('language.zh'), flag: '🇨🇳' }
   ];
 
   const changeLanguage = (lng: string): void => {

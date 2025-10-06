@@ -7,9 +7,10 @@ import translationES from './locales/es.json';
 import translationJA from './locales/ja.json';
 import translationFR from './locales/fr.json';
 import translationDE from './locales/de.json';
+import translationZH from './locales/zh.json';
 
 // Define supported languages
-export type SupportedLanguage = 'en' | 'es' | 'ja' | 'fr' | 'de';
+export type SupportedLanguage = 'en' | 'es' | 'ja' | 'fr' | 'de' | 'zh';
 
 // the translations
 const resources = {
@@ -27,6 +28,9 @@ const resources = {
   },
   de: {
     translation: translationDE
+  },
+  zh: {
+    translation: translationZH
   }
 } as const;
 

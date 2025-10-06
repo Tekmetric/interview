@@ -41,7 +41,7 @@ const TableBody = ({ filteredPokemon, isMobile, windowHeight, listRef, rowHeight
         style={style}
         className={classes.row}
         role="row"
-        aria-label={`pokemonn: ${capitalize(pokemon.name)}, Number ${pokemon.id}`}
+        aria-label={`pokemon: ${capitalize(pokemon.name)}, Number ${pokemon.id}`}
       >
         <Cell width={COLUMN_WIDTHS.id} className={classes.cellId(isMobile)}>
           {pokemon.id}

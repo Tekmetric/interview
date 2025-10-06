@@ -1,0 +1,39 @@
+{
+  "app": {
+    "title": "Pokédex",
+    "tagline": "Gotta catch 'em all!",
+    "search": "Search by name, number, or type...",
+    "loading": "Loading...",
+    "error": {
+      "title": "API Error",
+      "retry": "Retry"
+    },
+    "footer": "© {{year}} Pokédex. All rights reserved.",
+    "skipToContent": "Skip to main content"
+  },
+  "table": {
+    "headers": {
+      "number": "No.",
+      "image": "Image",
+      "name": "Name",
+      "height": "Height",
+      "weight": "Weight",
+      "stats": "Stats"
+    },
+    "ariaLabel": "Pokemon list - use arrow keys, page up/down, home/end to scroll"
+  },
+  "language": {
+    "select": "Language",
+    "en": "English",
+    "es": "Español",
+    "ja": "日本語",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
+  }
+}

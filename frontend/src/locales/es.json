@@ -1,0 +1,39 @@
+{
+  "app": {
+    "title": "Pokédex",
+    "tagline": "¡Hazte con todos!",
+    "search": "Buscar por nombre, número o tipo...",
+    "loading": "Cargando...",
+    "error": {
+      "title": "Error de API",
+      "retry": "Reintentar"
+    },
+    "footer": "© {{year}} Pokédex. Todos los derechos reservados.",
+    "skipToContent": "Saltar al contenido principal"
+  },
+  "table": {
+    "headers": {
+      "number": "Nº",
+      "image": "Imagen",
+      "name": "Nombre",
+      "height": "Altura",
+      "weight": "Peso",
+      "stats": "Estadísticas"
+    },
+    "ariaLabel": "Lista de Pokémon - usa las flechas, página arriba/abajo, inicio/fin para desplazarte"
+  },
+  "language": {
+    "select": "Idioma",
+    "en": "English",
+    "es": "Español",
+    "ja": "日本語",
+    "fr": "Français",
+    "de": "Deutsch"
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "switchToLight": "Cambiar a modo claro",
+    "switchToDark": "Cambiar a modo oscuro"
+  }
+}

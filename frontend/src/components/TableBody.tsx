@@ -7,6 +7,7 @@ import { COLUMN_WIDTHS, typeColors, classes } from '../lib/styles';
 import { TableCell } from './TableCell';
 import { KeyboardNavigationWrapper } from './KeyboardNavigation';
 import { Pokemon } from '../types/pokemon';
+import { usePokemonPrefetch } from '../store/api';
 
 const BarChart = lazy(() => import('./BarChart'));
 
@@ -31,6 +32,9 @@ const TableBody: React.FC<TableBodyProps> = ({
 }) => {
   const { t } = useTranslation();
   const isMetric = useAppSelector((state) => state.pokemon.isMetric);
+
+  // Prefetch hook for optimistic data loading
+  const { prefetchPokemon } = usePokemonPrefetch();
 
   const getRowHeight = (index: number): number => {
     return rowHeights.current[index] || 120;
@@ -60,6 +64,7 @@ const TableBody: React.FC<TableBodyProps> = ({
         className={classes.row}
         role="row"
         aria-label={`pokemon: ${capitalize(pokemon.name)}, Number ${pokemon.id}`}
+        onMouseEnter={() => prefetchPokemon(pokemon.id)}
       >
         <Cell width={COLUMN_WIDTHS.id} className={classes.cellId(isMobile)}>
           {pokemon.id}

@@ -5,7 +5,11 @@ import { store } from './store/store';
 import './index.css';
 import './i18n'; // Initialize i18n
 import App from './App';
-import ErrorBoundary from './components/ErrorBoundary';
+import { GranularErrorBoundary } from './components/GranularErrorBoundary';
+import { initMonitoring, captureError } from './lib/monitoring';
+
+// Initialize Sentry monitoring (only runs in production)
+initMonitoring();
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Failed to find the root element');
@@ -14,8 +18,18 @@ const root = createRoot(container);
 
 root.render(
   <Provider store={store}>
-    <ErrorBoundary>
+    <GranularErrorBoundary
+      componentName="App"
+      severity="critical"
+      onError={(error, errorInfo) => {
+        // Send to Sentry
+        captureError(error, {
+          componentStack: errorInfo.componentStack,
+          severity: 'critical',
+        });
+      }}
+    >
       <App />
-    </ErrorBoundary>
+    </GranularErrorBoundary>
   </Provider>
 );

@@ -41,6 +41,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
     "@playwright/test": "^1.55.1",
+    "@sentry/react": "^10.17.0",
     "@storybook/addon-docs": "^9.1.10",
     "@storybook/addon-onboarding": "^9.1.10",
     "@storybook/preset-create-react-app": "^9.1.10",

@@ -1,9 +1,12 @@
 import React from 'react';
-import { render, wait } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import App from './App';
 import './i18n'; // Initialize i18n for tests
-import { ThemeProvider } from './contexts/ThemeContext';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import pokemonReducer from './store/pokemonSlice';
+import themeReducer from './store/themeSlice';
 
 // Mock BarChart component to avoid SVG rendering issues in tests
 jest.mock('./components/BarChart', () => {
@@ -13,11 +16,19 @@ jest.mock('./components/BarChart', () => {
 });
 
 // Helper to render with providers
-const renderWithProviders = (component) => {
+const renderWithProviders = (component, preloadedState = {}) => {
+  const store = configureStore({
+    reducer: {
+      pokemon: pokemonReducer,
+      theme: themeReducer,
+    },
+    preloadedState,
+  });
+
   return render(
-    <ThemeProvider>
+    <Provider store={store}>
       {component}
-    </ThemeProvider>
+    </Provider>
   );
 };
 
@@ -88,7 +99,7 @@ const mockPokemonData = [
 
 describe('App Component - Link Functionality', () => {
   const waitForLinks = async (container) => {
-    await wait(() => {
+    await waitFor(() => {
       const links = container.querySelectorAll('a[href*="pokemon.com"]');
       expect(links.length).toBeGreaterThan(0);
     });
@@ -185,7 +196,7 @@ describe('App Component - Event Handlers', () => {
     renderWithProviders(<App />);
 
     // Wait for component to mount
-    await wait(() => {
+    await waitFor(() => {
       expect(global.fetch).toHaveBeenCalled();
     });
 
@@ -200,7 +211,7 @@ describe('App Component - Event Handlers', () => {
   test('handles Ctrl+F keyboard shortcut', async () => {
     const { container } = renderWithProviders(<App />);
 
-    await wait(() => {
+    await waitFor(() => {
       expect(global.fetch).toHaveBeenCalled();
     });
 
@@ -228,7 +239,7 @@ describe('App Component - Event Handlers', () => {
   test('handles Cmd+F keyboard shortcut', async () => {
     const { container } = renderWithProviders(<App />);
 
-    await wait(() => {
+    await waitFor(() => {
       expect(global.fetch).toHaveBeenCalled();
     });
 
@@ -270,7 +281,7 @@ describe('App Component - Error States', () => {
 
     const { getByText } = renderWithProviders(<App />);
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/API Error/i)).toBeInTheDocument();
     }, { timeout: 10000 });
 
@@ -285,7 +296,7 @@ describe('App Component - Error States', () => {
 
     const { getByText } = renderWithProviders(<App />);
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/API Error/i)).toBeInTheDocument();
     }, { timeout: 10000 });
 
@@ -302,7 +313,7 @@ describe('App Component - Error States', () => {
 
     const { getByText } = renderWithProviders(<App />);
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/API Error/i)).toBeInTheDocument();
     }, { timeout: 10000 });
 

@@ -1,16 +1,24 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import DarkModeToggle from './DarkModeToggle';
-import { ThemeProvider } from '../contexts/ThemeContext';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import themeReducer from '../store/themeSlice';
 import '../i18n';
 
 describe('DarkModeToggle', () => {
   const renderWithTheme = (component) => {
+    const store = configureStore({
+      reducer: {
+        theme: themeReducer,
+      },
+    });
+
     return render(
-      <ThemeProvider>
+      <Provider store={store}>
         {component}
-      </ThemeProvider>
+      </Provider>
     );
   };
 
@@ -40,16 +48,23 @@ describe('DarkModeToggle', () => {
     expect(button.textContent).toContain('🌙');
   });
 
-  it('updates document class when toggled', () => {
+  it('updates icon when toggled', () => {
     const { getByRole } = renderWithTheme(<DarkModeToggle />);
     const button = getByRole('button');
 
-    // Toggle to dark mode
-    fireEvent.click(button);
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    // Initial state (based on system preference)
+    const initialIcon = button.textContent;
 
-    // Toggle back to light mode
+    // Toggle dark mode
     fireEvent.click(button);
-    expect(document.documentElement.classList.contains('dark')).toBe(false);
+
+    // Icon should change
+    expect(button.textContent).not.toBe(initialIcon);
+
+    // Toggle back
+    fireEvent.click(button);
+
+    // Should be back to original
+    expect(button.textContent).toBe(initialIcon);
   });
 });

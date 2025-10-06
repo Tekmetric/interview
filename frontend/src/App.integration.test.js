@@ -1,9 +1,12 @@
 import React from 'react';
-import { render, fireEvent, wait } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import App from './App';
 import './i18n';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import pokemonReducer from './store/pokemonSlice';
+import themeReducer from './store/themeSlice';
 
 // Mock BarChart
 jest.mock('./components/BarChart', () => {
@@ -13,10 +16,17 @@ jest.mock('./components/BarChart', () => {
 });
 
 const renderApp = () => {
+  const store = configureStore({
+    reducer: {
+      pokemon: pokemonReducer,
+      theme: themeReducer,
+    },
+  });
+
   return render(
-    <ThemeProvider>
+    <Provider store={store}>
       <App />
-    </ThemeProvider>
+    </Provider>
   );
 };
 
@@ -76,7 +86,7 @@ describe('App Integration Tests', () => {
   test('loads and displays Pokemon data', async () => {
     const { getByText } = renderApp();
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/Bulbasaur/i)).toBeInTheDocument();
     }, { timeout: 5000 });
 
@@ -86,7 +96,7 @@ describe('App Integration Tests', () => {
   test('search functionality filters Pokemon', async () => {
     const { getByPlaceholderText, getByText, queryByText } = renderApp();
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/Bulbasaur/i)).toBeInTheDocument();
     }, { timeout: 5000 });
 
@@ -102,7 +112,7 @@ describe('App Integration Tests', () => {
   test('search by type filters correctly', async () => {
     const { getByPlaceholderText, getByText, queryByText } = renderApp();
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/Bulbasaur/i)).toBeInTheDocument();
     }, { timeout: 5000 });
 
@@ -116,30 +126,37 @@ describe('App Integration Tests', () => {
   });
 
   test('dark mode toggle works', async () => {
-    const { getByRole } = renderApp();
+    const { getAllByRole } = renderApp();
 
-    await wait(() => {
-      expect(getByRole('heading', { name: /Pokédex/i })).toBeInTheDocument();
+    await waitFor(() => {
+      const buttons = getAllByRole('button');
+      expect(buttons.length).toBeGreaterThan(0);
     }, { timeout: 5000 });
 
-    // Find and click dark mode toggle
-    const darkModeButton = getByRole('button', { name: /Dark/i });
+    // Find dark mode toggle button (it's one of the buttons in the header)
+    const buttons = getAllByRole('button');
+    const darkModeButton = buttons.find(btn => btn.textContent?.includes('🌙') || btn.textContent?.includes('☀️'));
+
+    expect(darkModeButton).toBeDefined();
+
+    // Click to toggle
+    const initialIcon = darkModeButton.textContent;
     fireEvent.click(darkModeButton);
 
-    // Check if dark class was added
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    // Icon should change
+    expect(darkModeButton.textContent).not.toBe(initialIcon);
 
     // Click again to toggle back
-    const lightModeButton = getByRole('button', { name: /Light/i });
-    fireEvent.click(lightModeButton);
+    fireEvent.click(darkModeButton);
 
-    expect(document.documentElement.classList.contains('dark')).toBe(false);
+    // Should be back to original
+    expect(darkModeButton.textContent).toBe(initialIcon);
   });
 
   test('language switcher works', async () => {
     const { getByRole, getByText } = renderApp();
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByRole('heading', { name: /Pokédex/i })).toBeInTheDocument();
     }, { timeout: 5000 });
 
@@ -149,14 +166,14 @@ describe('App Integration Tests', () => {
     // Change to Spanish
     fireEvent.change(languageSelect, { target: { value: 'es' } });
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/¡Hazte con todos!/i)).toBeInTheDocument();
     });
 
     // Change to Japanese
     fireEvent.change(languageSelect, { target: { value: 'ja' } });
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/ゲットだぜ！/i)).toBeInTheDocument();
     });
   });

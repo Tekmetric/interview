@@ -1,4 +1,13 @@
-.vercel
+# Build artifacts
+build/
+dist/
 
+# Test coverage
+coverage/
+
+# Storybook
 *storybook.log
-storybook-static
+storybook-static/
+
+# Deployment
+.vercel

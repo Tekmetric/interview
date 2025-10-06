@@ -1,18 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
 import BarChart from './BarChart';
-
-// Mock the Chart components to avoid SVG rendering issues in tests
-jest.mock('@devexpress/dx-react-chart-material-ui', () => ({
-  Chart: ({ children }) => <div data-testid="mock-chart">{children}</div>,
-  BarSeries: () => <div data-testid="bar-series" />,
-  ArgumentAxis: () => <div data-testid="argument-axis" />,
-  ValueAxis: () => <div data-testid="value-axis" />,
-}));
-
-jest.mock('@devexpress/dx-react-chart', () => ({
-  ValueScale: () => <div data-testid="value-scale" />,
-}));
 
 describe('BarChart', () => {
   test('renders "Unknown" when stats is undefined', () => {
@@ -29,7 +18,7 @@ describe('BarChart', () => {
     const mockStats = [
       { stat: { name: 'hp' }, base_stat: 45 },
       { stat: { name: 'attack' }, base_stat: 49 },
-      { stat: { name: 'defense' }, base_stat: 49 },
+      { stat: { name: 'defense' }, base_stat: 50 },
     ];
 
     const { getByText } = render(<BarChart stats={mockStats} />);
@@ -37,6 +26,7 @@ describe('BarChart', () => {
     // Check that stat values are displayed
     expect(getByText('45')).toBeInTheDocument();
     expect(getByText('49')).toBeInTheDocument();
+    expect(getByText('50')).toBeInTheDocument();
   });
 
   test('renders special-attack stat with abbreviated label', () => {
@@ -46,6 +36,7 @@ describe('BarChart', () => {
 
     const { getByText } = render(<BarChart stats={mockStats} />);
     expect(getByText('65')).toBeInTheDocument();
+    expect(getByText('s. atk')).toBeInTheDocument();
   });
 
   test('renders special-defense stat with abbreviated label', () => {
@@ -55,6 +46,7 @@ describe('BarChart', () => {
 
     const { getByText } = render(<BarChart stats={mockStats} />);
     expect(getByText('65')).toBeInTheDocument();
+    expect(getByText('s. def')).toBeInTheDocument();
   });
 
   test('renders speed stat with abbreviated label', () => {
@@ -64,6 +56,7 @@ describe('BarChart', () => {
 
     const { getByText } = render(<BarChart stats={mockStats} />);
     expect(getByText('45')).toBeInTheDocument();
+    expect(getByText('spd')).toBeInTheDocument();
   });
 
   test('renders regular stat names correctly', () => {
@@ -75,6 +68,8 @@ describe('BarChart', () => {
     const { getByText } = render(<BarChart stats={mockStats} />);
     expect(getByText('45')).toBeInTheDocument();
     expect(getByText('49')).toBeInTheDocument();
+    expect(getByText('hp')).toBeInTheDocument();
+    expect(getByText('att')).toBeInTheDocument();
   });
 
   test('renders all stat types together', () => {

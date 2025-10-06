@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { classes } from '../lib/styles';
+import { logger } from '../lib/logger';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -17,7 +18,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    logger.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({
       error,
       errorInfo

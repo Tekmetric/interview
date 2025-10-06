@@ -1,12 +1,13 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, Suspense, lazy } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { VariableSizeList } from 'react-window';
 import { convertHeight, convertWeight, capitalize } from '../lib/utils';
-import BarChart from './BarChart';
 import { COLUMN_WIDTHS, typeColors, classes } from '../lib/styles';
 import { TableCell } from './TableCell';
 import { KeyboardNavigationWrapper } from './KeyboardNavigation';
+
+const BarChart = lazy(() => import('./BarChart'));
 
 const Cell = TableCell;
 
@@ -83,7 +84,9 @@ const TableBody = ({ filteredPokemon, isMobile, windowHeight, listRef, rowHeight
         </Cell>
         {!isMobile && (
           <Cell width={COLUMN_WIDTHS.stats} className={classes.cellStats}>
-            <BarChart stats={pokemon.stats} />
+            <Suspense fallback={<div className="h-16 w-full flex items-center justify-center text-gray-400 text-sm">Loading chart...</div>}>
+              <BarChart stats={pokemon.stats} />
+            </Suspense>
           </Cell>
         )}
       </div>

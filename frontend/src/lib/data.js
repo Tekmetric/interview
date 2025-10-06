@@ -1,4 +1,5 @@
 import { getFromCache, setInCache, removeFromCache, clearAllCache, clearExpiredCache, getCacheStats } from './cache';
+import { logger } from './logger';
 
 const POKEDEX_MAX_ID = 1302;
 const POKEAPI_BASE_URL = 'https://pokeapi.co/api/v2';
@@ -74,25 +75,25 @@ export const fetchPokemonData = async () => {
     // Check cache first
     const cachedData = getFromCache(CACHE_KEY_ALL_POKEMON);
     if (cachedData) {
-      console.log('Returning Pokemon data from cache');
+      logger.info('Returning Pokemon data from cache');
       return cachedData;
     }
 
     // Check API health before fetching all data
     const healthCheck = await checkApiHealth();
     if (healthCheck.status === 'unhealthy') {
-      console.error('API health check failed:', healthCheck.message);
+      logger.error('API health check failed:', healthCheck.message);
       throw new Error(healthCheck.message);
     }
 
-    console.log('Fetching Pokemon data from API...');
+    logger.info('Fetching Pokemon data from API...');
     const pokemonFetches = [];
     for (let i = 1; i <= POKEDEX_MAX_ID; i++) {
       pokemonFetches.push(
         fetch(`${POKEAPI_BASE_URL}/pokemon/${i}`)
           .then(response => response.ok ? response.json() : null)
           .catch(error => {
-            console.error(error);
+            logger.error(error);
             return null;
           })
       );
@@ -106,11 +107,11 @@ export const fetchPokemonData = async () => {
 
     // Cache the reduced results
     setInCache(CACHE_KEY_ALL_POKEMON, reducedPokemon);
-    console.log(`Cached ${reducedPokemon.length} Pokemon`);
+    logger.info(`Cached ${reducedPokemon.length} Pokemon`);
 
     return validPokemon;
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return [];
   }
 };
@@ -121,5 +122,5 @@ export const fetchPokemonData = async () => {
  */
 export const invalidatePokemonCache = () => {
   removeFromCache(CACHE_KEY_ALL_POKEMON);
-  console.log('Pokemon cache invalidated');
+  logger.info('Pokemon cache invalidated');
 };

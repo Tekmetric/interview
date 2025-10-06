@@ -3,6 +3,8 @@
  * Uses localStorage with expiration
  */
 
+import { logger } from './logger';
+
 const CACHE_PREFIX = 'pokedex_cache_';
 const CACHE_VERSION = 'v1';
 const DEFAULT_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
@@ -31,7 +33,7 @@ export const getFromCache = (key) => {
 
     return data;
   } catch (error) {
-    console.error('Error reading from cache:', error);
+    logger.error('Error reading from cache:', error);
     return null;
   }
 };
@@ -54,12 +56,12 @@ export const setInCache = (key, data, ttl = DEFAULT_TTL) => {
     };
 
     const serialized = JSON.stringify(cacheData);
-    console.log(`Attempting to cache ${key}: ${(serialized.length / 1024 / 1024).toFixed(2)} MB`);
+    logger.debug(`Attempting to cache ${key}: ${(serialized.length / 1024 / 1024).toFixed(2)} MB`);
 
     localStorage.setItem(cacheKey, serialized);
-    console.log(`Successfully cached ${key}`);
+    logger.debug(`Successfully cached ${key}`);
   } catch (error) {
-    console.error('Error writing to cache:', error);
+    logger.error('Error writing to cache:', error);
     // If quota exceeded, clear old cache entries
     if (error.name === 'QuotaExceededError') {
       clearExpiredCache();
@@ -70,7 +72,7 @@ export const setInCache = (key, data, ttl = DEFAULT_TTL) => {
         const cacheData = { data, expiry, cachedAt: Date.now() };
         localStorage.setItem(cacheKey, JSON.stringify(cacheData));
       } catch (retryError) {
-        console.error('Failed to cache after cleanup:', retryError);
+        logger.error('Failed to cache after cleanup:', retryError);
       }
     }
   }
@@ -85,7 +87,7 @@ export const removeFromCache = (key) => {
     const cacheKey = `${CACHE_PREFIX}${CACHE_VERSION}_${key}`;
     localStorage.removeItem(cacheKey);
   } catch (error) {
-    console.error('Error removing from cache:', error);
+    logger.error('Error removing from cache:', error);
   }
 };
 
@@ -114,7 +116,7 @@ export const clearExpiredCache = () => {
       }
     });
   } catch (error) {
-    console.error('Error clearing expired cache:', error);
+    logger.error('Error clearing expired cache:', error);
   }
 };
 
@@ -130,7 +132,7 @@ export const clearAllCache = () => {
       }
     });
   } catch (error) {
-    console.error('Error clearing all cache:', error);
+    logger.error('Error clearing all cache:', error);
   }
 };
 
@@ -173,7 +175,7 @@ export const getCacheStats = () => {
       totalSizeKB: (totalSize / 1024).toFixed(2),
     };
   } catch (error) {
-    console.error('Error getting cache stats:', error);
+    logger.error('Error getting cache stats:', error);
     return null;
   }
 };

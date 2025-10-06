@@ -71,15 +71,19 @@
   "jest": {
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "\\.stories\\.js$",
+      "\\.stories\\.(js|tsx)$",
       "src/stories/",
-      "src/index.js"
+      "src/index.(js|tsx)"
     ],
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx}",
-      "!src/**/*.stories.js",
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.stories.{js,tsx}",
       "!src/stories/**",
-      "!src/index.js"
+      "!src/index.tsx",
+      "!src/**/*.d.ts"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(@reduxjs/toolkit|@standard-schema)/)"
     ]
   }
 }

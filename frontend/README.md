@@ -1,12 +1,12 @@
 # Pokédex Application
 
-Vercel deployment [https://frontend-h0j5decnv-jonyens-projects.vercel.app/]
+Vercel deployment (https://frontend-h0j5decnv-jonyens-projects.vercel.app/)
 
 Project summary:
 
 NOTE: this entire section was written by hand and not AI-generated
 
-I initially built out this project manually without the use of AI, setting up a Promise-based fetch to the Pokemon API to retrieve the initial 150 Pokemon and displaying it in a simple table, showing the Pokedex number, the image of the Pokemon, and the name and type of the Pokemon. To display the data, I used React Table Library [https://react-table-library.com/?path=/story/getting-started-installation--page]. For the purpose of this coding exercise, I felt that would have been sufficient.
+I initially built out this project manually without the use of AI, setting up a Promise-based fetch to the Pokemon API to retrieve the initial 150 Pokemon and displaying it in a simple table, showing the Pokedex number, the image of the Pokemon, and the name and type of the Pokemon. To display the data, I used React Table Library (https://react-table-library.com/?path=/story/getting-started-installation--page). For the purpose of this coding exercise, I felt that would have been sufficient.
 
 Then I spun up Claude CLI and that's when things got fun (and crazy):
 * Requested that we implement virtualization to handle larger chunks of data (and subsequently changed the fetch to all 1025 Pokemon) - this put react-window in place of React Table Library

@@ -2,22 +2,23 @@ import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VariableSizeList } from 'react-window';
 import { useAppDispatch, useAppSelector } from './store/hooks';
-import { fetchPokemonData, setSearchTerm } from './store/pokemonSlice';
-import { selectFilteredPokemon, selectPokemonLoading, selectPokemonError, selectSearchTerm, selectIsDarkMode } from './store/selectors';
+import { setSearchTerm } from './store/pokemonSlice';
+import { useGetAllPokemonQuery } from './store/api';
+import { selectFilteredPokemon, selectSearchTerm, selectIsDarkMode } from './store/selectors';
 import Table from './components/Table';
 import ErrorBoundary from './components/ErrorBoundary';
-import LanguageSwitcher from './components/LanguageSwitcher';
-import DarkModeToggle from './components/DarkModeToggle';
+import SettingsMenu from './components/SettingsMenu';
 import { backgroundStyle, darkBackgroundStyle, classes } from './lib/styles';
 
 function App() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
+  // RTK Query - automatic data fetching, caching, and state management
+  const { isLoading, error: queryError } = useGetAllPokemonQuery();
+
   // Redux state using memoized selectors
   const filteredPokemon = useAppSelector(selectFilteredPokemon);
-  const loading = useAppSelector(selectPokemonLoading);
-  const error = useAppSelector(selectPokemonError);
   const searchQuery = useAppSelector(selectSearchTerm);
   const isDark = useAppSelector(selectIsDarkMode);
 
@@ -31,6 +32,9 @@ function App() {
   const rowHeights = useRef<Record<number, number>>({});
 
   const isMobile = windowWidth < 768;
+
+  // Format error message
+  const error = queryError ? ('message' in queryError ? queryError.message : 'Failed to load Pokemon data') : null;
 
   useEffect(() => {
     const handleResize = () => {
@@ -64,19 +68,14 @@ function App() {
     }
   };
 
-  // Fetch Pokemon data on mount
-  useEffect(() => {
-    dispatch(fetchPokemonData());
-  }, [dispatch]);
-
   useEffect(() => {
     // Focus search input when data is loaded
-    if (!loading && !error && searchInputRef.current) {
+    if (!isLoading && !error && searchInputRef.current) {
       searchInputRef.current.focus();
     }
-  }, [loading, error]);
+  }, [isLoading, error]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className={classes.loadingContainer}>
         <img src="/pokeball.svg" alt={t('app.loading')} className={classes.loadingImage} />
@@ -111,9 +110,8 @@ function App() {
       >
         {t('app.skipToContent')}
       </a>
-      <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-        <DarkModeToggle />
-        <LanguageSwitcher />
+      <div className="absolute top-4 right-4 z-10">
+        <SettingsMenu />
       </div>
       <div className={classes.card} id="main-content">
         <div className={classes.header(isMobile)}>

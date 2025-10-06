@@ -24,6 +24,7 @@
   },
   "language": {
     "select": "Language",
+    "label": "Language",
     "en": "English",
     "es": "Español",
     "ja": "日本語",
@@ -33,7 +34,11 @@
   "theme": {
     "light": "Light",
     "dark": "Dark",
+    "mode": "Theme",
     "switchToLight": "Switch to light mode",
     "switchToDark": "Switch to dark mode"
+  },
+  "settings": {
+    "menu": "Settings"
   }
 }

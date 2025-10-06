@@ -94,6 +94,7 @@ export const pokemonApi = createApi({
 
     /**
      * Fetch single Pokemon by ID
+     * Used for detail views and prefetching
      */
     getPokemonById: builder.query<Pokemon, number>({
       query: (id) => `/pokemon/${id}`,
@@ -108,7 +109,23 @@ export const {
   useGetPokemonByIdQuery,
   useLazyGetAllPokemonQuery,
   useLazyGetPokemonByIdQuery,
+  // Prefetch hooks for optimistic data loading
+  usePrefetch,
 } = pokemonApi;
 
 // Export endpoints for direct usage
 export const { getAllPokemon, getPokemonById } = pokemonApi.endpoints;
+
+/**
+ * Prefetch utility for Pokemon data
+ * Usage: const prefetchPokemon = usePrefetch('getPokemonById');
+ *        <div onMouseEnter={() => prefetchPokemon(25)}>Pikachu</div>
+ */
+export const usePokemonPrefetch = () => {
+  const prefetchPokemon = usePrefetch('getPokemonById');
+
+  return {
+    prefetchPokemon,
+    prefetchAll: usePrefetch('getAllPokemon'),
+  };
+};

@@ -66,7 +66,7 @@ export const store = configureStore({
 
 ## 2. Advanced TypeScript Patterns 🎯
 
-**File**: `src/types/advanced.ts`
+**File**: `src/types/types.ts`
 
 ### Discriminated Unions
 

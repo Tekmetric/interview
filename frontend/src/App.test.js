@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import pokemonReducer from './store/pokemonSlice';
 import themeReducer from './store/themeSlice';
+import { pokemonApi } from './store/api';
 
 // Mock BarChart component to avoid SVG rendering issues in tests
 jest.mock('./components/BarChart', () => {
@@ -21,7 +22,10 @@ const renderWithProviders = (component, preloadedState = {}) => {
     reducer: {
       pokemon: pokemonReducer,
       theme: themeReducer,
+      [pokemonApi.reducerPath]: pokemonApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(pokemonApi.middleware),
     preloadedState,
   });
 

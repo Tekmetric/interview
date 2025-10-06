@@ -24,6 +24,7 @@
   },
   "language": {
     "select": "言語",
+    "label": "言語",
     "en": "English",
     "es": "Español",
     "ja": "日本語",
@@ -33,7 +34,11 @@
   "theme": {
     "light": "ライト",
     "dark": "ダーク",
+    "mode": "テーマ",
     "switchToLight": "ライトモードに切り替え",
     "switchToDark": "ダークモードに切り替え"
+  },
+  "settings": {
+    "menu": "設定"
   }
 }

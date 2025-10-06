@@ -25,7 +25,7 @@ npm run build # Production build
 ## ✨ Features
 
 ### Core Features
-- **1,302 Pokemon** - Complete Pokédex data from PokeAPI
+- **1,025 Pokemon** - Complete Pokédex data from PokeAPI (through Gen 9)
 - **Smart Search** - Filter by name, ID, or type with memoized selectors  
 - **5 Languages** - English, Spanish, Japanese, French, German
 - **Dark Mode** - System preference detection + manual toggle
@@ -62,7 +62,7 @@ npm run build # Production build
 ```typescript
 RootState {
   pokemon: {
-    data: Pokemon[]           // All Pokemon (1302 items)
+    data: Pokemon[]           // All Pokemon (1025 items)
     loading: boolean          // Async loading state
     error: string | null      // Error messages
     searchTerm: string        // Current search query

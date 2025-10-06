@@ -10,7 +10,7 @@ import type { Pokemon } from '../types/pokemon';
 import { logger } from '../lib/logger';
 
 const POKEMON_API_BASE = 'https://pokeapi.co/api/v2';
-const TOTAL_POKEMON = 1302; // Total number of Pokemon to fetch
+const TOTAL_POKEMON = 1025; // Total number of Pokemon in PokeAPI (through Gen 9)
 
 /**
  * RTK Query API definition

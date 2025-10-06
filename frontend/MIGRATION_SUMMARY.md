@@ -64,7 +64,7 @@ This document summarizes the comprehensive migration and modernization of the Po
 // State Structure
 RootState {
   pokemon: {
-    data: Pokemon[]           // 1,302 Pokemon
+    data: Pokemon[]           // 1,025 Pokemon
     loading: boolean
     error: string | null
     searchTerm: string
@@ -245,7 +245,7 @@ File sizes after gzip:
 ## Features Retained
 
 All original features preserved and enhanced:
-- ✅ 1,302 Pokemon with complete data
+- ✅ 1,025 Pokemon with complete data
 - ✅ Smart search (name, ID, type)
 - ✅ 5 languages (EN, ES, JA, FR, DE)
 - ✅ Dark mode with system preference detection

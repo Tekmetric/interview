@@ -44,7 +44,7 @@ function MyComponent() {
 
 ### API Endpoints
 
-- `getAllPokemon()` - Fetches all 1,302 Pokemon
+- `getAllPokemon()` - Fetches all 1,025 Pokemon
 - `getPokemonById(id)` - Fetches single Pokemon by ID
 
 ### Store Integration

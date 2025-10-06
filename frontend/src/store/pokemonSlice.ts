@@ -3,7 +3,7 @@ import { Pokemon } from '../types/pokemon';
 import { getFromCache, setInCache } from '../lib/cache';
 import { logger } from '../lib/logger';
 
-const POKEDEX_MAX_ID = 1302;
+const POKEDEX_MAX_ID = 1025; // Total Pokemon in PokeAPI (through Gen 9)
 const POKEAPI_BASE_URL = 'https://pokeapi.co/api/v2';
 const CACHE_KEY_ALL_POKEMON = 'all_pokemon';
 

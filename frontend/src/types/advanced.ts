@@ -28,8 +28,8 @@ export type PokemonId = Brand<number, 'PokemonId'>;
  * Creates a branded PokemonId from a number
  */
 export const createPokemonId = (id: number): PokemonId => {
-  if (id < 1 || id > 1302) {
-    throw new Error(`Invalid Pokemon ID: ${id}. Must be between 1 and 1302`);
+  if (id < 1 || id > 1025) {
+    throw new Error(`Invalid Pokemon ID: ${id}. Must be between 1 and 1025`);
   }
   return id as PokemonId;
 };

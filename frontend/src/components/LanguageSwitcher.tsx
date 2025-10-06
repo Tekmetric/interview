@@ -1,10 +1,15 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const LanguageSwitcher = () => {
+interface Language {
+  code: string;
+  name: string;
+  flag: string;
+}
+
+const LanguageSwitcher: React.FC = () => {
   const { i18n, t } = useTranslation();
 
-  const languages = [
+  const languages: Language[] = [
     { code: 'en', name: t('language.en'), flag: '🇺🇸' },
     { code: 'es', name: t('language.es'), flag: '🇪🇸' },
     { code: 'ja', name: t('language.ja'), flag: '🇯🇵' },
@@ -12,7 +17,7 @@ const LanguageSwitcher = () => {
     { code: 'de', name: t('language.de'), flag: '🇩🇪' }
   ];
 
-  const changeLanguage = (lng) => {
+  const changeLanguage = (lng: string): void => {
     i18n.changeLanguage(lng);
   };
 

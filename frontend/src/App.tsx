@@ -1,25 +1,35 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { VariableSizeList } from 'react-window';
+import { useAppDispatch, useAppSelector } from './store/hooks';
+import { fetchPokemonData, setSearchTerm } from './store/pokemonSlice';
+import { selectFilteredPokemon, selectPokemonLoading, selectPokemonError, selectSearchTerm, selectIsDarkMode } from './store/selectors';
 import Table from './components/Table';
 import ErrorBoundary from './components/ErrorBoundary';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import DarkModeToggle from './components/DarkModeToggle';
-import { useTheme } from './contexts/ThemeContext';
 import { backgroundStyle, darkBackgroundStyle, classes } from './lib/styles';
-import { fetchPokemonData } from './lib/data';
 
 function App() {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
-  const [pokemon, setPokemon] = useState([])
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useAppDispatch();
+
+  // Redux state using memoized selectors
+  const filteredPokemon = useAppSelector(selectFilteredPokemon);
+  const loading = useAppSelector(selectPokemonLoading);
+  const error = useAppSelector(selectPokemonError);
+  const searchQuery = useAppSelector(selectSearchTerm);
+  const isDark = useAppSelector(selectIsDarkMode);
+
+  // Local state
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [searchQuery, setSearchQuery] = useState('');
-  const listRef = useRef();
-  const searchInputRef = useRef();
-  const rowHeights = useRef({});
+
+  // Refs
+  const listRef = useRef<VariableSizeList>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const rowHeights = useRef<Record<number, number>>({});
+
   const isMobile = windowWidth < 768;
 
   useEffect(() => {
@@ -29,7 +39,7 @@ function App() {
     };
 
     // Override find-in-browser as it wouldn't work in a virtualized window
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
         e.preventDefault();
         searchInputRef.current?.focus();
@@ -45,7 +55,7 @@ function App() {
     };
   }, []);
 
-  const setRowHeight = (index, size) => {
+  const setRowHeight = (index: number, size: number) => {
     if (rowHeights.current[index] !== size) {
       rowHeights.current[index] = size;
       if (listRef.current) {
@@ -54,21 +64,10 @@ function App() {
     }
   };
 
+  // Fetch Pokemon data on mount
   useEffect(() => {
-    async function loadData() {
-      try {
-        const data = await fetchPokemonData();
-        setPokemon(data);
-        setError(null);
-      } catch (err) {
-        setError(err.message || 'Failed to load Pokemon data');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadData();
-  }, []);
+    dispatch(fetchPokemonData());
+  }, [dispatch]);
 
   useEffect(() => {
     // Focus search input when data is loaded
@@ -76,16 +75,6 @@ function App() {
       searchInputRef.current.focus();
     }
   }, [loading, error]);
-
-  const filteredPokemon = pokemon.filter(poke => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      poke.name.toLowerCase().includes(query) ||
-      poke.id.toString().includes(query) ||
-      poke.types?.some(type => type.type.name.toLowerCase().includes(query))
-    );
-  });
 
   if (loading) {
     return (
@@ -141,7 +130,7 @@ function App() {
             type="text"
             placeholder={t('app.search')}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => dispatch(setSearchTerm(e.target.value))}
             className={classes.searchInput}
             aria-label={t('app.search')}
             tabIndex={0}
@@ -180,8 +169,7 @@ function App() {
         </div>
       </div>
     </div>
-  )
-  
+  );
 }
 
 export default App;

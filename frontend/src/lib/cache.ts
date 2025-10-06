@@ -9,12 +9,24 @@ const CACHE_PREFIX = 'pokedex_cache_';
 const CACHE_VERSION = 'v1';
 const DEFAULT_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
+interface CacheEntry<T> {
+  data: T;
+  expiry: number;
+  cachedAt: number;
+}
+
+export interface CacheStats {
+  totalEntries: number;
+  validEntries: number;
+  expiredEntries: number;
+  totalSizeBytes: number;
+  totalSizeKB: string;
+}
+
 /**
  * Get item from cache
- * @param {string} key - Cache key
- * @returns {any|null} Cached data or null if not found/expired
  */
-export const getFromCache = (key) => {
+export const getFromCache = <T = any>(key: string): T | null => {
   try {
     const cacheKey = `${CACHE_PREFIX}${CACHE_VERSION}_${key}`;
     const cached = localStorage.getItem(cacheKey);
@@ -23,7 +35,7 @@ export const getFromCache = (key) => {
       return null;
     }
 
-    const { data, expiry } = JSON.parse(cached);
+    const { data, expiry } = JSON.parse(cached) as CacheEntry<T>;
 
     // Check if expired
     if (Date.now() > expiry) {
@@ -40,16 +52,13 @@ export const getFromCache = (key) => {
 
 /**
  * Set item in cache with expiration
- * @param {string} key - Cache key
- * @param {any} data - Data to cache
- * @param {number} ttl - Time to live in milliseconds (default: 24 hours)
  */
-export const setInCache = (key, data, ttl = DEFAULT_TTL) => {
+export const setInCache = <T = any>(key: string, data: T, ttl: number = DEFAULT_TTL): void => {
   try {
     const cacheKey = `${CACHE_PREFIX}${CACHE_VERSION}_${key}`;
     const expiry = Date.now() + ttl;
 
-    const cacheData = {
+    const cacheData: CacheEntry<T> = {
       data,
       expiry,
       cachedAt: Date.now(),
@@ -60,7 +69,7 @@ export const setInCache = (key, data, ttl = DEFAULT_TTL) => {
 
     localStorage.setItem(cacheKey, serialized);
     logger.debug(`Successfully cached ${key}`);
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Error writing to cache:', error);
     // If quota exceeded, clear old cache entries
     if (error.name === 'QuotaExceededError') {
@@ -69,7 +78,7 @@ export const setInCache = (key, data, ttl = DEFAULT_TTL) => {
       try {
         const cacheKey = `${CACHE_PREFIX}${CACHE_VERSION}_${key}`;
         const expiry = Date.now() + ttl;
-        const cacheData = { data, expiry, cachedAt: Date.now() };
+        const cacheData: CacheEntry<T> = { data, expiry, cachedAt: Date.now() };
         localStorage.setItem(cacheKey, JSON.stringify(cacheData));
       } catch (retryError) {
         logger.error('Failed to cache after cleanup:', retryError);
@@ -80,9 +89,8 @@ export const setInCache = (key, data, ttl = DEFAULT_TTL) => {
 
 /**
  * Remove item from cache
- * @param {string} key - Cache key
  */
-export const removeFromCache = (key) => {
+export const removeFromCache = (key: string): void => {
   try {
     const cacheKey = `${CACHE_PREFIX}${CACHE_VERSION}_${key}`;
     localStorage.removeItem(cacheKey);
@@ -94,7 +102,7 @@ export const removeFromCache = (key) => {
 /**
  * Clear all expired cache entries
  */
-export const clearExpiredCache = () => {
+export const clearExpiredCache = (): void => {
   try {
     const keys = Object.keys(localStorage);
     const now = Date.now();
@@ -104,7 +112,7 @@ export const clearExpiredCache = () => {
         try {
           const cached = localStorage.getItem(key);
           if (cached) {
-            const { expiry } = JSON.parse(cached);
+            const { expiry } = JSON.parse(cached) as CacheEntry<any>;
             if (now > expiry) {
               localStorage.removeItem(key);
             }
@@ -123,7 +131,7 @@ export const clearExpiredCache = () => {
 /**
  * Clear all cache entries (including non-expired)
  */
-export const clearAllCache = () => {
+export const clearAllCache = (): void => {
   try {
     const keys = Object.keys(localStorage);
     keys.forEach((key) => {
@@ -138,9 +146,8 @@ export const clearAllCache = () => {
 
 /**
  * Get cache statistics
- * @returns {object} Cache stats
  */
-export const getCacheStats = () => {
+export const getCacheStats = (): CacheStats | null => {
   try {
     const keys = Object.keys(localStorage);
     const cacheKeys = keys.filter(key => key.startsWith(CACHE_PREFIX));
@@ -155,7 +162,7 @@ export const getCacheStats = () => {
         const cached = localStorage.getItem(key);
         if (cached) {
           totalSize += cached.length;
-          const { expiry } = JSON.parse(cached);
+          const { expiry } = JSON.parse(cached) as CacheEntry<any>;
           if (now > expiry) {
             expiredEntries++;
           } else {

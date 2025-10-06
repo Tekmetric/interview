@@ -1,8 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { PokemonStat } from '../types/pokemon';
 
-const BarChart = ({ stats }) => {
-  if (!stats) return 'Unknown';
+interface BarChartProps {
+  stats?: PokemonStat[];
+}
+
+const BarChart: React.FC<BarChartProps> = ({ stats }) => {
+  if (!stats) return <>Unknown</>;
 
   const MAX_STAT_VALUE = 150;
 
@@ -41,17 +45,6 @@ const BarChart = ({ stats }) => {
       })}
     </div>
   );
-};
-
-BarChart.propTypes = {
-  stats: PropTypes.arrayOf(
-    PropTypes.shape({
-      stat: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-      }).isRequired,
-      base_stat: PropTypes.number.isRequired,
-    })
-  ),
 };
 
 export default BarChart;

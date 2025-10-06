@@ -1,9 +1,26 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { VariableSizeList } from 'react-window';
 import TableHeader from './TableHeader';
 import TableBody from './TableBody';
+import { Pokemon } from '../types/pokemon';
 
-const Table = ({ filteredPokemon, isMobile, windowHeight, listRef, rowHeights, setRowHeight }) => {
+interface TableProps {
+  filteredPokemon: Pokemon[];
+  isMobile: boolean;
+  windowHeight: number;
+  listRef: React.RefObject<VariableSizeList | null>;
+  rowHeights: React.MutableRefObject<Record<number, number>>;
+  setRowHeight: (index: number, size: number) => void;
+}
+
+const Table: React.FC<TableProps> = ({
+  filteredPokemon,
+  isMobile,
+  windowHeight,
+  listRef,
+  rowHeights,
+  setRowHeight
+}) => {
   return (
     <div role="table" aria-label="Pokemon data table" className="flex-1 flex flex-col overflow-hidden">
       <TableHeader isMobile={isMobile} />
@@ -17,15 +34,6 @@ const Table = ({ filteredPokemon, isMobile, windowHeight, listRef, rowHeights, s
       />
     </div>
   );
-};
-
-Table.propTypes = {
-  filteredPokemon: PropTypes.arrayOf(PropTypes.object).isRequired,
-  isMobile: PropTypes.bool.isRequired,
-  windowHeight: PropTypes.number.isRequired,
-  listRef: PropTypes.object.isRequired,
-  rowHeights: PropTypes.object.isRequired,
-  setRowHeight: PropTypes.func.isRequired,
 };
 
 export default Table;

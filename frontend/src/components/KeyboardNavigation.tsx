@@ -1,18 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { VariableSizeList } from 'react-window';
 
-export const useKeyboardNavigation = (listRef, itemCount) => {
-  const handleKeyDown = (e) => {
+export const useKeyboardNavigation = (
+  listRef: React.RefObject<VariableSizeList | null>,
+  itemCount: number
+) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     // Only handle keyboard navigation if this element is focused
     // and not if focus is on an input or link
-    const targetTag = e.target.tagName.toLowerCase();
+    const targetTag = (e.target as HTMLElement).tagName.toLowerCase();
     if (targetTag === 'input' || targetTag === 'a' || targetTag === 'button') {
       return;
     }
 
     if (!listRef.current) return;
 
-    const currentScrollOffset = listRef.current.state.scrollOffset;
+    // Access scrollOffset from the internal state
+    const currentScrollOffset = (listRef.current as any).state?.scrollOffset || 0;
 
     switch(e.key) {
       case 'ArrowDown':
@@ -47,7 +51,21 @@ export const useKeyboardNavigation = (listRef, itemCount) => {
   return handleKeyDown;
 };
 
-export const KeyboardNavigationWrapper = ({ listRef, itemCount, className, ariaLabel, children }) => {
+interface KeyboardNavigationWrapperProps {
+  listRef: React.RefObject<VariableSizeList | null>;
+  itemCount: number;
+  className?: string;
+  ariaLabel?: string;
+  children: React.ReactNode;
+}
+
+export const KeyboardNavigationWrapper: React.FC<KeyboardNavigationWrapperProps> = ({
+  listRef,
+  itemCount,
+  className,
+  ariaLabel,
+  children
+}) => {
   const handleKeyDown = useKeyboardNavigation(listRef, itemCount);
 
   return (
@@ -61,12 +79,4 @@ export const KeyboardNavigationWrapper = ({ listRef, itemCount, className, ariaL
       {children}
     </div>
   );
-};
-
-KeyboardNavigationWrapper.propTypes = {
-  listRef: PropTypes.object.isRequired,
-  itemCount: PropTypes.number.isRequired,
-  className: PropTypes.string,
-  ariaLabel: PropTypes.string,
-  children: PropTypes.node.isRequired,
 };

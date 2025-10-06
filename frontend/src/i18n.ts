@@ -8,6 +8,9 @@ import translationJA from './locales/ja.json';
 import translationFR from './locales/fr.json';
 import translationDE from './locales/de.json';
 
+// Define supported languages
+export type SupportedLanguage = 'en' | 'es' | 'ja' | 'fr' | 'de';
+
 // the translations
 const resources = {
   en: {
@@ -25,7 +28,7 @@ const resources = {
   de: {
     translation: translationDE
   }
-};
+} as const;
 
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next

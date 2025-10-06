@@ -5,31 +5,41 @@
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-export const logger = {
-  log: (...args) => {
+type LogFunction = (...args: any[]) => void;
+
+interface Logger {
+  log: LogFunction;
+  info: LogFunction;
+  warn: LogFunction;
+  error: LogFunction;
+  debug: LogFunction;
+}
+
+export const logger: Logger = {
+  log: (...args: any[]): void => {
     if (isDevelopment) {
       console.log(...args);
     }
   },
 
-  info: (...args) => {
+  info: (...args: any[]): void => {
     if (isDevelopment) {
       console.info(...args);
     }
   },
 
-  warn: (...args) => {
+  warn: (...args: any[]): void => {
     if (isDevelopment) {
       console.warn(...args);
     }
   },
 
-  error: (...args) => {
+  error: (...args: any[]): void => {
     // Always log errors, even in production
     console.error(...args);
   },
 
-  debug: (...args) => {
+  debug: (...args: any[]): void => {
     if (isDevelopment) {
       console.debug(...args);
     }

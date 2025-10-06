@@ -1,10 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { COLUMN_WIDTHS, classes } from '../lib/styles';
 import { TableHeaderCell } from './TableCell';
 
-const TableHeader = ({ isMobile }) => {
+interface TableHeaderProps {
+  isMobile: boolean;
+}
+
+const TableHeader: React.FC<TableHeaderProps> = ({ isMobile }) => {
   const { t } = useTranslation();
 
   return (
@@ -19,10 +21,6 @@ const TableHeader = ({ isMobile }) => {
       </div>
     </div>
   );
-};
-
-TableHeader.propTypes = {
-  isMobile: PropTypes.bool.isRequired,
 };
 
 export default TableHeader;

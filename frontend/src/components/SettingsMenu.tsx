@@ -36,7 +36,7 @@ const SettingsMenu: React.FC = () => {
       {/* Settings Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 h-9 text-sm rounded-lg bg-white bg-opacity-20 text-white font-medium hover:bg-opacity-30 transition-all focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+        className="flex items-center gap-2 px-3 py-1.5 h-9 text-sm rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
         aria-label={t('settings.menu')}
         aria-expanded={isOpen}
         aria-haspopup="true"
@@ -44,7 +44,7 @@ const SettingsMenu: React.FC = () => {
         <span className="text-lg" role="img" aria-hidden="true">
           ⚙️
         </span>
-        <span className="hidden sm:inline">Settings</span>
+        <span className="hidden sm:inline">{t('settings.menu')}</span>
       </button>
 
       {/* Dropdown Menu */}
@@ -57,7 +57,7 @@ const SettingsMenu: React.FC = () => {
           {/* Menu Header */}
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              Settings
+              {t('settings.menu')}
             </h3>
           </div>
 

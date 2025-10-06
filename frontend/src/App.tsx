@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VariableSizeList } from 'react-window';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { setSearchTerm } from './store/pokemonSlice';
 import { useGetAllPokemonQuery } from './store/api';
-import { selectFilteredPokemon, selectSearchTerm, selectIsDarkMode } from './store/selectors';
+import { selectSearchTerm, selectIsDarkMode } from './store/selectors';
 import Table from './components/Table';
 import ErrorBoundary from './components/ErrorBoundary';
 import SettingsMenu from './components/SettingsMenu';
@@ -15,12 +15,23 @@ function App() {
   const dispatch = useAppDispatch();
 
   // RTK Query - automatic data fetching, caching, and state management
-  const { isLoading, error: queryError } = useGetAllPokemonQuery();
+  const { data: pokemonData = [], isLoading, error: queryError } = useGetAllPokemonQuery();
 
-  // Redux state using memoized selectors
-  const filteredPokemon = useAppSelector(selectFilteredPokemon);
+  // Redux state
   const searchQuery = useAppSelector(selectSearchTerm);
   const isDark = useAppSelector(selectIsDarkMode);
+
+  // Filter Pokemon based on search query
+  const filteredPokemon = React.useMemo(() => {
+    if (!searchQuery) return pokemonData;
+
+    const query = searchQuery.toLowerCase();
+    return pokemonData.filter(pokemon =>
+      pokemon.name.toLowerCase().includes(query) ||
+      pokemon.id.toString().includes(query) ||
+      pokemon.types?.some(type => type.type.name.toLowerCase().includes(query))
+    );
+  }, [pokemonData, searchQuery]);
 
   // Local state
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -110,18 +121,20 @@ function App() {
       >
         {t('app.skipToContent')}
       </a>
-      <div className="absolute top-4 right-4 z-10">
-        <SettingsMenu />
-      </div>
       <div className={classes.card} id="main-content">
         <div className={classes.header(isMobile)}>
-          <div className="mb-4">
-            <h1 className={classes.title(isMobile)}>
-              {t('app.title')}
-            </h1>
-            <p className={classes.tagline(isMobile)}>
-              {t('app.tagline')}
-            </p>
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              <h1 className={classes.title(isMobile)}>
+                {t('app.title')}
+              </h1>
+              <p className={classes.tagline(isMobile)}>
+                {t('app.tagline')}
+              </p>
+            </div>
+            <div className="ml-4">
+              <SettingsMenu />
+            </div>
           </div>
           <input
             ref={searchInputRef}

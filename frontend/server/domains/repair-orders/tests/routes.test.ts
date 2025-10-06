@@ -291,4 +291,128 @@ describe('Repair Order Routes', () => {
       expect(response.status).toBe(404)
     })
   })
+
+  describe('Bulk Operations', () => {
+    beforeEach(() => {
+      // Seed additional orders for bulk testing
+      mockDb
+        .current!.prepare(
+          "INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-BULK-1', 'NEW', '2024-01-01 10:00:00', 'Test 1','555-0001',2020,'Honda','Civic','[]')",
+        )
+        .run()
+      mockDb
+        .current!.prepare(
+          "INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-BULK-2', 'NEW', '2024-01-01 10:00:00', 'Test 2','555-0002',2020,'Toyota','Corolla','[]')",
+        )
+        .run()
+      mockDb
+        .current!.prepare(
+          "INSERT INTO repair_orders (id, status, created_at, customer_name, customer_phone, vehicle_year, vehicle_make, vehicle_model, services) VALUES ('RO-BULK-3', 'NEW', '2024-01-01 10:00:00', 'Test 3','555-0003',2020,'Ford','Focus','[]')",
+        )
+        .run()
+    })
+
+    it('should handle concurrent technician assignments', async () => {
+      const orderIds = ['RO-BULK-1', 'RO-BULK-2', 'RO-BULK-3']
+      const techId = 'tech-1'
+
+      // Simulate bulk operation: concurrent PATCH requests
+      const requests = orderIds.map((orderId) =>
+        request(app).patch(`/api/repairOrders/${orderId}`).send({
+          assignedTech: { id: techId },
+        }),
+      )
+
+      const responses = await Promise.all(requests)
+
+      // All requests should succeed
+      responses.forEach((response) => {
+        expect(response.status).toBe(200)
+        expect(response.body.assignedTech.id).toBe(techId)
+      })
+
+      // Verify all orders were updated in database
+      const verifyRequests = orderIds.map((orderId) =>
+        request(app).get(`/api/repairOrders/${orderId}`),
+      )
+      const verifyResponses = await Promise.all(verifyRequests)
+
+      verifyResponses.forEach((response) => {
+        expect(response.status).toBe(200)
+        expect(response.body.assignedTech.id).toBe(techId)
+      })
+    })
+
+    it('should handle partial failures in bulk operations', async () => {
+      const requests = [
+        request(app).patch('/api/repairOrders/RO-BULK-1').send({ priority: 'HIGH' }),
+        request(app).patch('/api/repairOrders/RO-BULK-2').send({ priority: 'HIGH' }),
+        request(app).patch('/api/repairOrders/RO-INVALID').send({ priority: 'HIGH' }), // Should fail
+      ]
+
+      const responses = await Promise.allSettled(
+        requests.map((r) => r.then((res) => ({ status: res.status, body: res.body }))),
+      )
+
+      // First two should succeed
+      expect(responses[0].status).toBe('fulfilled')
+      expect(responses[1].status).toBe('fulfilled')
+
+      // Third should fail (404)
+      expect(responses[2].status).toBe('fulfilled')
+      if (responses[2].status === 'fulfilled') {
+        expect(responses[2].value.status).toBe(404)
+      }
+    })
+  })
+
+  describe('Date Field Handling', () => {
+    it('should correctly store and retrieve promisedAt date', async () => {
+      const promisedDate = '2024-12-31T15:30:00.000Z'
+
+      const response = await request(app).patch('/api/repairOrders/RO-1').send({
+        promisedAt: promisedDate,
+      })
+
+      expect(response.status).toBe(200)
+      expect(response.body.promisedAt).toBe(promisedDate)
+
+      // Verify date persisted correctly
+      const getResponse = await request(app).get('/api/repairOrders/RO-1')
+      expect(getResponse.status).toBe(200)
+      expect(getResponse.body.promisedAt).toBe(promisedDate)
+    })
+
+    it('should handle date field in creation', async () => {
+      const promisedDate = '2024-06-15T10:00:00.000Z'
+      const newOrder = {
+        customer: {
+          name: 'Date Test Customer',
+          phone: '555-9999',
+        },
+        vehicle: {
+          year: 2021,
+          make: 'Tesla',
+          model: 'Model 3',
+          plate: 'TEST123',
+          mileage: 5000,
+        },
+        services: ['Inspection'],
+        promisedAt: promisedDate,
+      }
+
+      const response = await request(app).post('/api/repairOrders').send(newOrder)
+
+      expect(response.status).toBe(201)
+      expect(response.body.promisedAt).toBe(promisedDate)
+    })
+
+    it('should reject invalid date format', async () => {
+      const response = await request(app).patch('/api/repairOrders/RO-1').send({
+        promisedAt: 'invalid-date',
+      })
+
+      expect(response.status).toBe(400)
+    })
+  })
 })

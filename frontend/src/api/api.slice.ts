@@ -10,7 +10,7 @@ export const apiSlice = createApi({
   }),
   endpoints: (builder) => ({
     // Anime paths
-    getAllAnimes: builder.query<GetAllAnimesResponse[], void>({
+    getAllAnimes: builder.query<GetAllAnimesResponse, void>({
       query: () => `${API_PATHS.ANIME}${ANIME_PATHS.GET_ALL_ANIMES}`,
     }),
   }),

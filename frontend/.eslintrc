@@ -16,6 +16,7 @@
     "import/prefer-default-export": ["off", { "allowSingleExports": true }],
     "react/function-component-definition": ["off"],
     "jsx-a11y/label-has-associated-control": ["off"],
-    "no-promise-executor-return": ["off"]
+    "no-promise-executor-return": ["off"],
+    "import/no-named-as-default": ["off"] 
   }
 }

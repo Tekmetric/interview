@@ -2,7 +2,7 @@
 	"name": "jikan-proxy",
 	"version": "1.0.0",
 	"scripts": {
-		"start": "ts-node src/proxyServer.js"
+		"start": "node src/proxyServer.js"
 	},
 	"dependencies": {
 		"express": "^5.1.0",

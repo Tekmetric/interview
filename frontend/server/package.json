@@ -1,0 +1,12 @@
+{
+	"name": "jikan-proxy",
+	"version": "1.0.0",
+	"scripts": {
+		"start": "ts-node src/proxyServer.js"
+	},
+	"dependencies": {
+		"express": "^5.1.0",
+		"http-proxy-middleware": "^3.0.5",
+		"request": "^2.88.2"
+	}
+}

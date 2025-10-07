@@ -12,6 +12,10 @@
   },
   "rules": {
     "max-len": ["error", { "code": 140 }],
-    "import/no-extraneous-dependencies": ["off"]
+    "import/no-extraneous-dependencies": ["off"],
+    "import/prefer-default-export": ["off", { "allowSingleExports": true }],
+    "react/function-component-definition": ["off"],
+    "jsx-a11y/label-has-associated-control": ["off"],
+    "no-promise-executor-return": ["off"]
   }
 }

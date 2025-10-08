@@ -17,8 +17,6 @@ export type AnimeRow = {
 export type TableBodyRowProps = AnimeRow;
 
 export const TableBodyRow: FC<{ row: TableBodyRowProps }> = ({ row }) => {
-  console.log('TableRow');
-
   return (
     <TableRowContainer onClick={() => console.log('click', row.id)}>
       <div style={{ height: '30px', width: `${(3 / 9) * 100}%` }}>{row.title}</div>

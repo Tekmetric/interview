@@ -12,8 +12,7 @@ export const apiSlice = createApi({
     // Anime paths
     getAllAnimes: builder.infiniteQuery<GetAllAnimesResponse, void, number>({
       infiniteQueryOptions: {
-        // Must provide a default initial page param value
-        initialPageParam: 0,
+        initialPageParam: 1,
         getNextPageParam: (
           lastPage,
           allPages,
@@ -25,7 +24,7 @@ export const apiSlice = createApi({
           firstPageParam,
         ) => (firstPageParam > 0 ? firstPageParam - 1 : undefined),
       },
-      query: () => `${API_PATHS.ANIME}${ANIME_PATHS.GET_ALL_ANIMES}`,
+      query: ({ pageParam }) => `${API_PATHS.ANIME}${ANIME_PATHS.GET_ALL_ANIMES}?page=${pageParam}`,
     }),
   }),
 });

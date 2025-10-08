@@ -33,14 +33,14 @@ export const HEADERS = [
 
 type TableProps = TableBodyProps & {
   fetchNextPage: () => {};
+  isFetching: boolean;
 };
 
-export const Table: FC<TableProps> = ({ fetchNextPage, rows }) => {
-  console.log('Table component rendered');
+export const Table: FC<TableProps> = ({ isFetching, fetchNextPage, rows }) => {
   return (
     <TableContainer>
       <TableHeader headers={HEADERS} />
-      <TableBody fetchNextPage={fetchNextPage} rows={rows} />
+      <TableBody isFetching={isFetching} fetchNextPage={fetchNextPage} rows={rows} />
     </TableContainer>
   );
 };

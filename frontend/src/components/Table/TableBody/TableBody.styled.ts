@@ -2,8 +2,13 @@ import styled from 'styled-components';
 
 export const TableBodyContainer = styled.div`
   vertical-align: text-top;
-  overflow-y: auto;
+  overflow: hidden;
   display: block;
-  height: 94%;
+  height: 100%;
   width: 100%;
+`;
+
+export const TableBodyScroll = styled.div`
+  height: 100%;
+  overflow-y: scroll;
 `;

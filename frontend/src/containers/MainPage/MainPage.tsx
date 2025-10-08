@@ -31,19 +31,23 @@ export const getRowsFromData = (data: AnimeItem[]) => data?.map((item) => ({
 }
 ));
 
-export const MainPage: FC = () => {
-  const { data, isLoading, fetchNextPage } = useGetAllAnimesInfiniteQuery();
-  // const { data, isLoading } = useGetAllAnimesInfiniteQuery();
+export const flattenDataArray = (array: { data: AnimeItem[]; pagination: object }[]): any[] => array?.reduce((acc, item) => {
+  if (array && Array.isArray(item.data)) {
+    acc.push(...item.data);
+  }
+  return acc;
+}, [] as any[]);
 
-  console.log(data?.pages.flat() ?? []);
-  console.log('MainPage component rendered');
+export const MainPage: FC = () => {
+  const {
+    data, isLoading, fetchNextPage, isFetching,
+  } = useGetAllAnimesInfiniteQuery();
 
   if (isLoading) {
     return <div>Loading</div>;
   }
 
   const handleNextPage = async () => {
-    console.log('fetch');
     fetchNextPage();
   };
 
@@ -52,7 +56,7 @@ export const MainPage: FC = () => {
       <Header>
         akds
       </Header>
-      <Table fetchNextPage={handleNextPage} rows={getRowsFromData((data?.pages.flat() ?? [])[0]?.data)} />
+      <Table isFetching={isFetching} fetchNextPage={handleNextPage} rows={getRowsFromData(flattenDataArray(data?.pages))} />
     </MainContainer>
   );
 };

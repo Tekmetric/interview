@@ -12,7 +12,7 @@ app.use((req, res, next) => {
 app.get('/:route_path', (req, res) => {
   request(
     // used the route_path param to make it dynamic
-    { url: `${API_URL}/${req.params.route_path}` },
+    { url: `${API_URL}/${req.params.route_path}?page=${req.query.page}` },
     (error, response, body) => {
       if (error || response.statusCode !== 200) {
         return res.status(500).json({ type: 'error', message: error.message });

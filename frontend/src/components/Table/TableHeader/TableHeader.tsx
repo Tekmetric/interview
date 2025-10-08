@@ -17,8 +17,6 @@ type TableHeaderProps = {
 export const TableHeader: FC<TableHeaderProps> = ({
   headers,
 }) => {
-  console.log('TableHeader component rendered');
-
   return (
     <TableHeaderContainer>
       {headers.map((header) => (

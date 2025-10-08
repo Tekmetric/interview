@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 
+export const ROW_HEIGHT = 36;
+
 export const TableRowContainer = styled.div`
-  height: 36px;
+  height: ${`${ROW_HEIGHT}px`};
   display: flex;
   flex-direction: row;
   padding-left: 10px;

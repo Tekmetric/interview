@@ -31,7 +31,7 @@ export const HEADERS = [
     label: 'Type', key: 'type', isSortable: false, size: (1 / 9) * 100,
   },
   {
-    label: 'Episodes', key: 'episodes', isSortable: false, size: (1 / 9) * 100,
+    label: 'Episodes', key: 'episodes', isSortable: true, size: (1 / 9) * 100,
   },
   {
     label: 'Aired from', key: 'aired_from', isSortable: false, size: (1 / 9) * 100,
@@ -43,7 +43,7 @@ export const HEADERS = [
     label: 'Rating', key: 'rating', isSortable: false, size: (1 / 9) * 100,
   },
   {
-    label: 'Score', key: 'score', isSortable: false, size: (1 / 9) * 100,
+    label: 'Score', key: 'score', isSortable: true, size: (1 / 9) * 100,
   },
 ];
 

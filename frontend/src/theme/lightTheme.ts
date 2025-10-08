@@ -12,6 +12,7 @@ const colors = {
   scrollbarBackGdColor: colorTokens.white,
   headerColor: colorTokens.pink,
   background: colorTokens.white,
+  headerText: colorTokens.white,
 };
 
 const spacing = {

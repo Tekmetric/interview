@@ -8,6 +8,5 @@ export const NotFoundContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
   opacity: ${({ theme }) => theme.opacity.backgroundLight};
   border-spacing: 0;
-  display: flex;
   flex-direction: column;
 `;

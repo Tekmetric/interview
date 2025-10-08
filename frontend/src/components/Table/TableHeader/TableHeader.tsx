@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 
 import { TableHeaderContainer } from './TableHeader.styled';
+import TableCell from '../TableCell/TableCell';
 
 export type TableHeaderCell = {
   label: string;
@@ -20,9 +21,7 @@ export const TableHeader: FC<TableHeaderProps> = ({
   return (
     <TableHeaderContainer>
       {headers.map((header) => (
-        <div key={header.key} style={{ width: `${header.size}%` }}>
-          {header.label}
-        </div>
+        <TableCell key={header.key} width={header.size} value={header.label} />
       ))}
     </TableHeaderContainer>
   );

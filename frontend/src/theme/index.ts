@@ -13,6 +13,7 @@ declare module 'styled-components' {
       scrollbarBackGdColor: string;
       headerColor: string;
       background: string;
+      headerText: string;
     },
     spacing: {
       s: string;

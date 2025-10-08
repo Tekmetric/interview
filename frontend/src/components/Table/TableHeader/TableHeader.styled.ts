@@ -2,10 +2,8 @@ import styled from 'styled-components';
 
 export const TableHeaderContainer = styled.div`
   background: ${({ theme }) => theme.colors.headerColor};
-  color: white;
-  height: 48px;
+  color: ${({ theme }) => theme.colors.headerText};
   font-size: ${({ theme }) => theme.fontSize.m};
-  display: block;
   text-align: left;
   padding-left: ${({ theme }) => theme.spacing.s};
   padding-right: ${({ theme }) => theme.spacing.m};

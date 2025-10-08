@@ -14,7 +14,7 @@ export const CardContainer = styled.div`
   align-items: center;
   height: 360px;
   width: 80%;
-  background: white;
+  background: ${({ theme }) => theme.colors.background};
   padding: ${({ theme }) => theme.spacing.l};
   opacity: ${({ theme }) => theme.opacity.background};
 `;

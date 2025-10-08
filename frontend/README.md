@@ -11,7 +11,7 @@
   - proxy-memoize v3
 
 ## Instructions
-- Install the dependencies:
+- Install the dependencies in frontend and frontend/server:
   - npm install
 - In a separate terminal, start the proxy server:
   - cd server
@@ -26,6 +26,17 @@
 - Images:
   - anime_background: https://www.freepik.com/free-ai-image/anime-style-clouds_94937388.htm#fromView=keyword&page=1&position=10&uuid=f9c8c631-8d99-434c-8e99-2e231e868e2b&query=Anime+background 
   - anime_icon: https://www.flaticon.com/free-icon/animate_5261267?term=anime&page=1&position=4&origin=tag&related_id=5261267 
+  -  error_icon: https://www.freepik.com/icon/error_10633473#fromView=keyword&page=1&position=41&uuid=b64a59c8-fc9e-4241-8be0-915b66762ecf
+  - empty_icon: https://www.freepik.com/icon/delete_1388968#fromView=search&page=1&position=38&uuid=b375e5dd-8d03-45e4-9692-4e0bb167bac4
 - Color pallete generator from image:
   - https://color.adobe.com/create/image 
-  
+
+## Further Improvements
+- Enhance table scroll
+- Add table virtualization
+- Table sorting: changing sorting order or column does not currently reset the scrollTop
+- Expand the theme tokens, add more themes and a theme selector
+- Expand Anime Listing Page
+- Make the table responsive
+- Add specific errors for each API
+- Add ErrorBoundary

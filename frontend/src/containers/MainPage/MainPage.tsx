@@ -71,12 +71,8 @@ export const MainPage: FC = () => {
   const activeSorting = useSelector(selectActiveSorting);
   const dispatch = useDispatch<AppDispatch>();
   const {
-    data, isLoading, fetchNextPage, isFetching,
+    data, fetchNextPage, isFetching, error,
   } = useGetAllAnimesInfiniteQuery({ sort: activeSorting.sortDirection, orderBy: activeSorting.columnId });
-
-  if (isLoading) {
-    return <div>Loading</div>;
-  }
 
   const handleNextPage = async () => {
     fetchNextPage();
@@ -92,9 +88,10 @@ export const MainPage: FC = () => {
         headers={HEADERS}
         isFetching={isFetching}
         fetchNextPage={handleNextPage}
-        rows={getRowsFromData(flattenDataArray(data?.pages))}
+        rows={getRowsFromData(flattenDataArray(data?.pages)) || []}
         activeSorting={activeSorting}
         onSort={(columnId, sortDirection) => dispatch(setActiveSorting({ columnId, sortDirection }))}
+        hasError={!!error}
       />
     </MainContainer>
   );

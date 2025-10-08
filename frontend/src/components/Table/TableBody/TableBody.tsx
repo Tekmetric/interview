@@ -18,7 +18,7 @@ export const TableBody: FC<TableBodyProps> = ({ isFetching, fetchNextPage, rows 
     if (!isFetching) {
       const { scrollTop, clientHeight } = scrollRef.current;
 
-      if (((rows.length || 0) * ROW_HEIGHT - scrollTop - clientHeight) < (ROW_HEIGHT + 10)) {
+      if (((rows.length || 0) * ROW_HEIGHT - scrollTop - clientHeight) < (ROW_HEIGHT + 20)) {
         fetchNextPage();
       }
     }

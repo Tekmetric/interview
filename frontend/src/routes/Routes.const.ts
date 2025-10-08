@@ -1,4 +1,5 @@
 export const ROUTES = {
   HOME: '/',
-  ABOUT: '/about',
-};
+  ALL_ANIME: '/all-animes',
+  ANIME_LISTING: '/anime/:id',
+} as const;

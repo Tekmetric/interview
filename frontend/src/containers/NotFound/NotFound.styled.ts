@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 
 export const NotFoundContainer = styled.div`
-  height: 80%;
-  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
   background: white;
   opacity: 0.8;
   border-spacing: 0;

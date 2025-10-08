@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 export const TableHeaderContainer = styled.div`
-  // background: #705E84;
   background: #a082c1;
   color: white;
   height: 48px;

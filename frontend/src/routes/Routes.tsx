@@ -4,19 +4,20 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 import MainPage from '../containers/MainPage/MainPage';
 import AnimeListing from '../containers/AnimeListing/AnimeListing';
 import NotFound from '../containers/NotFound/NotFound';
+import { ROUTES } from './Routes.const';
 
 export const Router: FC = () => {
   const router = createBrowserRouter([
     {
-      path: '/all-animes',
+      path: ROUTES.ALL_ANIME,
       element: <MainPage />,
     },
     {
-      path: '/anime/:id',
+      path: ROUTES.ANIME_LISTING,
       element: <AnimeListing />,
     },
     {
-      path: '/',
+      path: ROUTES.HOME,
       element: <MainPage />,
     },
     {

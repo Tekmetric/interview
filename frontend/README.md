@@ -7,6 +7,7 @@
   - React DOM v19
   - RTK v2
   - MUI v7
+  - styled-components v6
 
 ## Instructions
 - Install the dependencies:

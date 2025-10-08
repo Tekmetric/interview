@@ -8,7 +8,7 @@ export const TableHeaderCellContainer = styled.div<TableCellContainerProps & { $
   width: ${({ $width }) => ($width ? `${$width}%` : `${(3 / 9) * 100}%`)};
   display: flex;
   align-items: center;
-  color: ${({ $active, theme }) => ($active && theme.colors.active)};
+  color: ${({ $active, theme }) => ($active && theme.colors.headerActiveText)};
   font-weight: ${({ $active }) => ($active && 700)};
 
   &:hover {

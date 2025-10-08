@@ -10,7 +10,7 @@ export const apiSlice = createApi({
   }),
   endpoints: (builder) => ({
     // Anime paths
-    getAllAnimes: builder.infiniteQuery<GetAllAnimesResponse, void, number>({
+    getAllAnimes: builder.infiniteQuery<GetAllAnimesResponse, { sort: string, orderBy: string }, number>({
       infiniteQueryOptions: {
         initialPageParam: 1,
         getNextPageParam: (
@@ -24,7 +24,18 @@ export const apiSlice = createApi({
           firstPageParam,
         ) => (firstPageParam > 0 ? firstPageParam - 1 : undefined),
       },
-      query: ({ pageParam }) => `${API_PATHS.ANIME}${ANIME_PATHS.GET_ALL_ANIMES}?page=${pageParam}`,
+      query: (
+        { queryArg, pageParam },
+      ) => {
+        let path = `${API_PATHS.ANIME}${ANIME_PATHS.GET_ALL_ANIMES}?page=${pageParam}`;
+        if (queryArg.sort) {
+          path += `${queryArg.sort && `&sort=${queryArg.sort}`}`;
+        }
+        if (queryArg.orderBy) {
+          path += `${queryArg.orderBy && `&order_by=${queryArg.orderBy}`}`;
+        }
+        return path;
+      },
     }),
     // Note: unfortunately, this public API exposes the same structure for one anime as it is in the list of all the animes
     // I added this query (which fetches some data that the app already has) just to showcase the difference between

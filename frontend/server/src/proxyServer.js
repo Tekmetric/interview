@@ -12,10 +12,27 @@ app.use((req, res, next) => {
 app.get('/:route_path', (req, res) => {
   request(
     // used the route_path param to make it dynamic
-    { url: `${API_URL}/${req.params.route_path}?page=${req.query.page}` },
+    { url: `${API_URL}/${req.params.route_path}?${req.query.sort && `sort=${req.query.sort}`}${req.query.order_by && `&order_by=${req.query.order_by}&`}page=${req.query.page}` },
     (error, response, body) => {
+      console.log(req.url);
       if (error || response.statusCode !== 200) {
         return res.status(500).json({ type: 'error', message: error.message });
+      }
+
+      res.json(JSON.parse(body));
+    }
+  );
+});
+
+
+
+app.get('/:route_path/:id', (req, res) => {
+  request(
+    // used the route_path param to make it dynamic
+    { url: `${API_URL}/${req.params.route_path}/${req.params.id}` },
+    (error, response, body) => {
+      if (error || response.statusCode !== 200) {
+        return res.status(response.statusCode).json({ type: 'error', message: error?.message });
       }
 
       res.json(JSON.parse(body));

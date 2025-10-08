@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AnimeItem } from 'src/types';
 import { useGetAllAnimesInfiniteQuery } from '../../states/api/api.slice';
 import { Table } from '../../components/Table/Table';
-import { selectActiveSorting, setActiveSorting } from '../../states/mainPage.slice/mainPage.slice';
+import { selectActiveSorting, setActiveSorting, resetActiveSorting } from '../../states/mainPage.slice/mainPage.slice';
 import { AppDispatch } from '../../store/store';
 
-import { MainContainer, Header } from './MainPage.styled';
+import { MainContainer, Header, Button } from './MainPage.styled';
 
 export const mock = {
   title: 'Title',
@@ -72,7 +72,7 @@ export const MainPage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const {
     data, isLoading, fetchNextPage, isFetching,
-  } = useGetAllAnimesInfiniteQuery();
+  } = useGetAllAnimesInfiniteQuery({ sort: activeSorting.sortDirection, orderBy: activeSorting.columnId });
 
   if (isLoading) {
     return <div>Loading</div>;
@@ -86,6 +86,7 @@ export const MainPage: FC = () => {
     <MainContainer>
       <Header>
         Infinte Scroll Table With Anime Listings
+        <Button type="button" onClick={() => dispatch(resetActiveSorting())}>Reset sorting</Button>
       </Header>
       <Table
         headers={HEADERS}

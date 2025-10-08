@@ -5,5 +5,5 @@ export const API_PATHS = {
 };
 
 export const ANIME_PATHS = {
-  GET_ALL_ANIMES: '/',
+  GET_ALL_ANIMES: '',
 };

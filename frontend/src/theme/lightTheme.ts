@@ -3,6 +3,7 @@ const colorTokens = {
   pink: '#a082c1',
   dustyViolet: '#705E84',
   white: '#FFFFFF',
+  darkBlue: '#204473',
 };
 
 const colors = {
@@ -13,6 +14,8 @@ const colors = {
   headerColor: colorTokens.pink,
   background: colorTokens.white,
   headerText: colorTokens.white,
+  headerActiveText: colorTokens.darkBlue,
+  buttonColor: colorTokens.pink,
 };
 
 const spacing = {

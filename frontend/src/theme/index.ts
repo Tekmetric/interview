@@ -14,6 +14,8 @@ declare module 'styled-components' {
       headerColor: string;
       background: string;
       headerText: string;
+      buttonColor: string;
+      headerActiveText: string;
     },
     spacing: {
       s: string;

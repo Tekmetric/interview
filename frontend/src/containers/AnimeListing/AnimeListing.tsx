@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 
 import { AnimeListingContainer, CardContainer, Details } from './AnimeListing.styled';
 import NotFound from '../NotFound/NotFound';
-import { useGetAnimeByIdQuery } from '../../api/api.slice';
+import { useGetAnimeByIdQuery } from '../../states/api/api.slice';
 
 export const AnimeListing: FC = () => {
   const params = useParams();

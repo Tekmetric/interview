@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import type { GetAllAnimesResponse, GetAnimeByIdResponse } from '../types';
+import type { GetAllAnimesResponse, GetAnimeByIdResponse } from '../../types';
 import { BASE_URL, API_PATHS, ANIME_PATHS } from './api.routes';
 
 export const apiSlice = createApi({
-  reducerPath: 'api',
+  reducerPath: 'anime-api',
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
   }),

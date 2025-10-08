@@ -8,6 +8,7 @@
   - RTK v2
   - MUI v7
   - styled-components v6
+  - proxy-memoize v3
 
 ## Instructions
 - Install the dependencies:

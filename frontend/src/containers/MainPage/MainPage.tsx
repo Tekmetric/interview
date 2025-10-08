@@ -1,8 +1,11 @@
 import React, { FC } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { AnimeItem } from 'src/types';
-import { useGetAllAnimesInfiniteQuery } from '../../api/api.slice';
+import { useGetAllAnimesInfiniteQuery } from '../../states/api/api.slice';
 import { Table } from '../../components/Table/Table';
+import { selectActiveSorting, setActiveSorting } from '../../states/mainPage.slice/mainPage.slice';
+import { AppDispatch } from '../../store/store';
 
 import { MainContainer, Header } from './MainPage.styled';
 
@@ -25,22 +28,22 @@ export const HEADERS = [
     label: 'Genre', key: 'genres', isSortable: false, size: (1 / 9) * 100,
   },
   {
-    label: 'Type', key: 'type', isSortable: true, size: (1 / 9) * 100,
+    label: 'Type', key: 'type', isSortable: false, size: (1 / 9) * 100,
   },
   {
-    label: 'Episodes', key: 'episodes', isSortable: true, size: (1 / 9) * 100,
+    label: 'Episodes', key: 'episodes', isSortable: false, size: (1 / 9) * 100,
   },
   {
-    label: 'Aired from', key: 'aired_from', isSortable: true, size: (1 / 9) * 100,
+    label: 'Aired from', key: 'aired_from', isSortable: false, size: (1 / 9) * 100,
   },
   {
-    label: 'Aired to', key: 'aired_to', isSortable: true, size: (1 / 9) * 100,
+    label: 'Aired to', key: 'aired_to', isSortable: false, size: (1 / 9) * 100,
   },
   {
-    label: 'Rating', key: 'rating', isSortable: true, size: (1 / 9) * 100,
+    label: 'Rating', key: 'rating', isSortable: false, size: (1 / 9) * 100,
   },
   {
-    label: 'Score', key: 'score', isSortable: true, size: (1 / 9) * 100,
+    label: 'Score', key: 'score', isSortable: false, size: (1 / 9) * 100,
   },
 ];
 
@@ -65,6 +68,8 @@ export const flattenDataArray = (array: { data: AnimeItem[]; pagination: object 
 }, [] as any[]);
 
 export const MainPage: FC = () => {
+  const activeSorting = useSelector(selectActiveSorting);
+  const dispatch = useDispatch<AppDispatch>();
   const {
     data, isLoading, fetchNextPage, isFetching,
   } = useGetAllAnimesInfiniteQuery();
@@ -87,6 +92,8 @@ export const MainPage: FC = () => {
         isFetching={isFetching}
         fetchNextPage={handleNextPage}
         rows={getRowsFromData(flattenDataArray(data?.pages))}
+        activeSorting={activeSorting}
+        onSort={(columnId, sortDirection) => dispatch(setActiveSorting({ columnId, sortDirection }))}
       />
     </MainContainer>
   );

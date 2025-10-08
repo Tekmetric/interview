@@ -4,7 +4,8 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 
-const pages = ['All Animes', 'Pricing', 'Blog'];
+// Added NavBar just to showcase the functionality :)
+const pages = ['All Animes'];
 
 export const ResponsiveAppBar: FC = () => (
   <AppBar position="absolute">

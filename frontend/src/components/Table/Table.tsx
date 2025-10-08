@@ -9,7 +9,7 @@ export const HEADERS = [
     label: 'Title', key: 'title', isSortable: true, size: (3 / 9) * 100,
   },
   {
-    label: 'Genres', key: 'genres', isSortable: false, size: (1 / 9) * 100,
+    label: 'Genre', key: 'genres', isSortable: false, size: (1 / 9) * 100,
   },
   {
     label: 'Type', key: 'type', isSortable: true, size: (1 / 9) * 100,

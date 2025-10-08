@@ -19,8 +19,7 @@ export const mock = {
 
 export const getRowsFromData = (data: AnimeItem[]) => data?.map((item) => ({
   title: item.title,
-  // genres: item.genres,
-  genres: 'g',
+  genres: item.genres,
   type: item.type,
   episodes: item.episodes,
   airedFrom: item.aired.from,

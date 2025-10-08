@@ -1,7 +1,9 @@
 import React, { FC } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router';
 
 import MainPage from '../containers/MainPage/MainPage';
+import AnimeListing from '../containers/AnimeListing/AnimeListing';
+import NotFound from '../containers/NotFound/NotFound';
 
 export const Router: FC = () => {
   const router = createBrowserRouter([
@@ -10,8 +12,8 @@ export const Router: FC = () => {
       element: <MainPage />,
     },
     {
-      path: '/about',
-      element: <div>About</div>,
+      path: '/anime/:id',
+      element: <AnimeListing />,
     },
     {
       path: '/',
@@ -19,7 +21,7 @@ export const Router: FC = () => {
     },
     {
       path: '*',
-      element: <div>Not Found</div>,
+      element: <NotFound />,
     },
   ]);
   return <RouterProvider router={router} />;

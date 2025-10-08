@@ -28,3 +28,4 @@
   - anime_icon: https://www.flaticon.com/free-icon/animate_5261267?term=anime&page=1&position=4&origin=tag&related_id=5261267 
 - Color pallete generator from image:
   - https://color.adobe.com/create/image 
+  

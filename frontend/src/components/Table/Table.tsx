@@ -6,42 +6,41 @@ import TableBody, { TableBodyProps } from './TableBody/TableBody';
 
 export const HEADERS = [
   {
-    label: 'Title', key: 'title', isSortable: true, size: 1 / 2,
+    label: 'Title', key: 'title', isSortable: true, size: (3 / 9) * 100,
   },
   {
-    label: 'Genres', key: 'genres', isSortable: false, size: 1 / 3,
+    label: 'Genres', key: 'genres', isSortable: false, size: (1 / 9) * 100,
   },
   {
-    label: 'Type', key: 'type', isSortable: true, size: 1 / 9,
+    label: 'Type', key: 'type', isSortable: true, size: (1 / 9) * 100,
   },
   {
-    label: 'Episodes', key: 'episodes', isSortable: true, size: 1 / 9,
+    label: 'Episodes', key: 'episodes', isSortable: true, size: (1 / 9) * 100,
   },
   {
-    label: 'Aired from', key: 'aired_from', isSortable: true, size: 1 / 9,
+    label: 'Aired from', key: 'aired_from', isSortable: true, size: (1 / 9) * 100,
   },
   {
-    label: 'Aired to', key: 'aired_to', isSortable: true, size: 1 / 9,
+    label: 'Aired to', key: 'aired_to', isSortable: true, size: (1 / 9) * 100,
   },
   {
-    label: 'Rating', key: 'rating', isSortable: true, size: 1 / 9,
+    label: 'Rating', key: 'rating', isSortable: true, size: (1 / 9) * 100,
   },
   {
-    label: 'Ranking', key: 'ranking', isSortable: true, size: 1 / 9,
-  },
-  {
-    label: 'Score', key: 'score', isSortable: true, size: 1 / 9,
+    label: 'Score', key: 'score', isSortable: true, size: (1 / 9) * 100,
   },
 ];
 
-type TableProps = TableBodyProps;
+type TableProps = TableBodyProps & {
+  fetchNextPage: () => {};
+};
 
-export const Table: FC<TableProps> = ({ rows }) => {
+export const Table: FC<TableProps> = ({ fetchNextPage, rows }) => {
   console.log('Table component rendered');
   return (
     <TableContainer>
       <TableHeader headers={HEADERS} />
-      <TableBody rows={rows} />
+      <TableBody fetchNextPage={fetchNextPage} rows={rows} />
     </TableContainer>
   );
 };

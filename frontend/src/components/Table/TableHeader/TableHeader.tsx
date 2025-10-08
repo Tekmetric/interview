@@ -21,13 +21,11 @@ export const TableHeader: FC<TableHeaderProps> = ({
 
   return (
     <TableHeaderContainer>
-      <tr>
-        {headers.map((header) => (
-          <th key={header.key} style={{ width: `${header.size}%` }}>
-            {header.label}
-          </th>
-        ))}
-      </tr>
+      {headers.map((header) => (
+        <div key={header.key} style={{ width: `${header.size}%` }}>
+          {header.label}
+        </div>
+      ))}
     </TableHeaderContainer>
   );
 };

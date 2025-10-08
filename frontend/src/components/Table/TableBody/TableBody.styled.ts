@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const TableBodyContainer = styled.tbody`
+export const TableBodyContainer = styled.div`
   vertical-align: text-top;
   overflow-y: auto;
   display: block;

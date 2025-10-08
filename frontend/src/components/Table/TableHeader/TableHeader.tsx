@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 import { TableHeaderContainer } from './TableHeader.styled';
 
-type TableHeaderCell = {
+export type TableHeaderCell = {
   label: string;
   key: string;
   isSortable: boolean;

@@ -17,4 +17,5 @@ export const Header = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
   opacity: ${({ theme }) => theme.opacity.background};
   margin: ${({ theme }) => theme.spacing.m};
+  font-size: ${({ theme }) => theme.fontSize.m};
 `;

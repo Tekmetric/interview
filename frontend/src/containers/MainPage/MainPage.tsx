@@ -17,6 +17,33 @@ export const mock = {
   score: 4,
 };
 
+export const HEADERS = [
+  {
+    label: 'Title', key: 'title', isSortable: true, size: (3 / 9) * 100,
+  },
+  {
+    label: 'Genre', key: 'genres', isSortable: false, size: (1 / 9) * 100,
+  },
+  {
+    label: 'Type', key: 'type', isSortable: true, size: (1 / 9) * 100,
+  },
+  {
+    label: 'Episodes', key: 'episodes', isSortable: true, size: (1 / 9) * 100,
+  },
+  {
+    label: 'Aired from', key: 'aired_from', isSortable: true, size: (1 / 9) * 100,
+  },
+  {
+    label: 'Aired to', key: 'aired_to', isSortable: true, size: (1 / 9) * 100,
+  },
+  {
+    label: 'Rating', key: 'rating', isSortable: true, size: (1 / 9) * 100,
+  },
+  {
+    label: 'Score', key: 'score', isSortable: true, size: (1 / 9) * 100,
+  },
+];
+
 export const getRowsFromData = (data: AnimeItem[]) => data?.map((item) => ({
   title: item.title,
   genres: item.genres,
@@ -53,9 +80,14 @@ export const MainPage: FC = () => {
   return (
     <MainContainer>
       <Header>
-        akds
+        Infinte Scroll Table With Anime Listings
       </Header>
-      <Table isFetching={isFetching} fetchNextPage={handleNextPage} rows={getRowsFromData(flattenDataArray(data?.pages))} />
+      <Table
+        headers={HEADERS}
+        isFetching={isFetching}
+        fetchNextPage={handleNextPage}
+        rows={getRowsFromData(flattenDataArray(data?.pages))}
+      />
     </MainContainer>
   );
 };

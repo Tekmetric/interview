@@ -6,15 +6,15 @@ export const TableRowContainer = styled.div`
   height: ${`${ROW_HEIGHT}px`};
   display: flex;
   flex-direction: row;
-  padding-left: 10px;
+  padding-left: ${({ theme }) => theme.spacing.s};
   
   &:hover {
-    background: #E0D5D9;
+    background: ${({ theme }) => theme.colors.hover};
     cursor: pointer;
   }
 
   &:active {
-    background: #705E84;
+    background: ${({ theme }) => theme.colors.active};
     cursor: pointer;
   }
 `;

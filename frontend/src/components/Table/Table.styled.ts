@@ -4,7 +4,7 @@ export const TableContainer = styled.div`
   height: 80%;
   width: 80%;
   background: white;
-  opacity: 0.8;
+  opacity: ${({ theme }) => theme.opacity.background};
   border-spacing: 0;
   display: flex;
   flex-direction: column;

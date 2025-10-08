@@ -15,7 +15,8 @@ export const CardContainer = styled.div`
   height: 360px;
   width: 80%;
   background: white;
-  padding: 32px;
+  padding: ${({ theme }) => theme.spacing.l};
+  opacity: ${({ theme }) => theme.opacity.background};
 `;
 
 export const Details = styled.div`
@@ -23,5 +24,5 @@ export const Details = styled.div`
   flex-direction: column;
   align-items: top;
   height: 100%;
-  padding-left: 16px;
+  padding-left: ${({ theme }) => theme.spacing.m};
 `;

@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 
 export const TableHeaderContainer = styled.div`
-  background: #a082c1;
+  background: ${({ theme }) => theme.colors.headerColor};
   color: white;
   height: 48px;
-  font-size: 20px;
+  font-size: ${({ theme }) => theme.fontSize.m};
   display: block;
   text-align: left;
-  padding-left: 10px;
-  padding-right: 16px;
+  padding-left: ${({ theme }) => theme.spacing.s};
+  padding-right: ${({ theme }) => theme.spacing.m};
   display: flex;
   flex-direction: row;
   align-items: center;

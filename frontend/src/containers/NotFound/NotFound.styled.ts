@@ -5,8 +5,8 @@ export const NotFoundContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: white;
-  opacity: 0.8;
+  background-color: ${({ theme }) => theme.colors.background};
+  opacity: ${({ theme }) => theme.opacity.backgroundLight};
   border-spacing: 0;
   display: flex;
   flex-direction: column;

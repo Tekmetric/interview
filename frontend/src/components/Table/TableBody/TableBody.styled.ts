@@ -11,4 +11,5 @@ export const TableBodyContainer = styled.div`
 export const TableBodyScroll = styled.div`
   height: 100%;
   overflow-y: scroll;
+  scrollbar-color: ${({ theme }) => `${theme.colors.scrollbarColor} ${theme.colors.scrollbarBackGdColor}`};
 `;

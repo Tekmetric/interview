@@ -14,14 +14,7 @@ export const Header = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: white;
-  opacity: 0.8;
-  margin: 20px;
-`;
-
-export const ContentTable = styled.table`
-  height: 80%;
-  width: 80%;
-  background-color: white;
-  opacity: 0.8;
+  background-color: ${({ theme }) => theme.colors.background};
+  opacity: ${({ theme }) => theme.opacity.background};
+  margin: ${({ theme }) => theme.spacing.m};
 `;

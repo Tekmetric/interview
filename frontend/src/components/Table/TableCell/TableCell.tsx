@@ -3,14 +3,9 @@ import { format } from 'date-fns';
 
 import { TableCellContainer } from './TableCell.styled';
 import { AdditionalDetails } from '../../../types';
+import { DATE_FORMAT } from '../../../constants';
 
-type TabelCellValue = string | number | AdditionalDetails[];
-
-type TableCellProps = {
-  value: TabelCellValue;
-  type?: string;
-  width?: number;
-};
+import { TabelCellValue, TableCellProps } from '../Table.types';
 
 export const extractGenreFirstName = (genres: AdditionalDetails[]): string => {
   if (genres) {
@@ -25,7 +20,7 @@ const isAdditionalDetailType = (value: TabelCellValue) => {
 };
 
 const FORMATTERS = {
-  date: (value: TabelCellValue) => typeof value === 'string' && format(value, 'yyyy/MM/dd'),
+  date: (value: TabelCellValue) => typeof value === 'string' && format(value, DATE_FORMAT),
   genre: (value: TabelCellValue) => isAdditionalDetailType(value) && extractGenreFirstName(value),
   rating: (value: TabelCellValue) => typeof value === 'string' && value.split(' ')[0],
 };

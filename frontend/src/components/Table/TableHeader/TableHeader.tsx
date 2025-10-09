@@ -1,21 +1,9 @@
 import React, { FC } from 'react';
 
 import { TableHeaderContainer } from './TableHeader.styled';
-import TableHeaderCell, { ActiveSorting } from '../TableHeaderCell/TableHeaderCell';
+import TableHeaderCell from '../TableHeaderCell/TableHeaderCell';
 
-export type TableHeaderCellItem = {
-  label: string;
-  key: string;
-  isSortable: boolean;
-  sortDirection?: 'asc' | 'desc';
-  size: number;
-};
-
-type TableHeaderProps = {
-  headers: TableHeaderCellItem[];
-  activeSorting: ActiveSorting;
-  onSort: (_columnId: string, _sortDirection: string) => void;
-};
+import { TableHeaderProps } from '../Table.types';
 
 export const TableHeader: FC<TableHeaderProps> = ({
   headers,

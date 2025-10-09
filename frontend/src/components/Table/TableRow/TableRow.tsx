@@ -1,24 +1,11 @@
 import React, { FC } from 'react';
 import { useNavigate } from 'react-router';
 import { TableRowContainer } from './TableRow.styled';
-import { AdditionalDetails } from '../../../types';
 import TableCell from '../TableCell/TableCell';
 
-export type AnimeRow = {
-  title: string;
-  genres: AdditionalDetails[];
-  type: string;
-  episodes: number;
-  airedFrom: string;
-  rating: string;
-  airedTo: string;
-  score: number;
-  id: number;
-};
+import { TableBodyRowProps } from '../Table.types';
 
-export type TableBodyRowProps = AnimeRow;
-
-export const TableBodyRow: FC<{ row: TableBodyRowProps }> = ({ row }) => {
+export const TableBodyRow: FC<TableBodyRowProps> = ({ row }) => {
   const navigate = useNavigate();
   return (
     <TableRowContainer onClick={() => navigate(`/anime/${row.id}`)}>

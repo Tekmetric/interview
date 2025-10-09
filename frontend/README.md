@@ -40,3 +40,6 @@
 - Make the table responsive
 - Add specific errors for each API
 - Add ErrorBoundary
+- Refactor TableRow
+- Use const and enums for all the magic strings
+- Refactor types

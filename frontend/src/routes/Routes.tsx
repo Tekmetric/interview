@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 
 import MainPage from '../containers/MainPage/MainPage';
 import AnimeListing from '../containers/AnimeListing/AnimeListing';
-import NotFound from '../containers/NotFound/NotFound';
+import { NotFound } from '../containers/NotFound';
 import { ROUTES } from './Routes.const';
 
 export const Router: FC = () => {

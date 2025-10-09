@@ -1,19 +1,11 @@
 import React, { FC } from 'react';
 
 import { TableContainer } from './Table.styled';
-import TableHeader, { TableHeaderCellItem } from './TableHeader/TableHeader';
-import TableBody, { TableBodyProps } from './TableBody/TableBody';
-import { ActiveSorting } from './TableHeaderCell/TableHeaderCell';
+import TableHeader from './TableHeader/TableHeader';
+import TableBody from './TableBody/TableBody';
 import UtilsPage from '../UtilPages/UtilPages';
 
-type TableProps = TableBodyProps & {
-  fetchNextPage: () => {};
-  isFetching: boolean;
-  headers: TableHeaderCellItem[];
-  activeSorting: ActiveSorting;
-  onSort: (_columnId: string, _sortDirection: string) => void;
-  hasError?: boolean
-};
+import { TableProps } from './Table.types';
 
 export const Table: FC<TableProps> = ({
   isFetching, fetchNextPage, rows, headers, activeSorting, onSort, hasError,

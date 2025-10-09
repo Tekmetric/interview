@@ -1,14 +1,10 @@
 import React, { FC, useRef } from 'react';
 
 import { TableBodyScroll, TableBodyContainer } from './TableBody.styled';
-import { TableBodyRowProps, TableBodyRow } from '../TableRow/TableRow';
+import { TableBodyRow } from '../TableRow/TableRow';
 import { ROW_HEIGHT } from '../TableRow/TableRow.styled';
 
-export type TableBodyProps = {
-  rows: TableBodyRowProps[];
-  fetchNextPage: () => {};
-  isFetching: boolean;
-};
+import { TableBodyProps } from '../Table.types';
 
 export const TableBody: FC<TableBodyProps> = ({ isFetching, fetchNextPage, rows }) => {
   const containerRef = useRef<HTMLDivElement>(null);

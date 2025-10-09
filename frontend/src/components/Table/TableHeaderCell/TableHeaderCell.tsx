@@ -4,22 +4,9 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 import { TableHeaderCellContainer } from './TableHeaderCell.styled';
+import { TableHeaderCellProps } from '../Table.types';
 
-export type ActiveSorting = {
-  columnId: string;
-  sortDirection: string;
-};
-
-type TableCellProps = {
-  id: string;
-  value: string;
-  width?: number;
-  onSort?: (_columnId: string, _sortDirection: string) => void;
-  activeSorting?: ActiveSorting;
-  isSortable: boolean;
-};
-
-export const TableHeaderCell: FC<TableCellProps> = ({
+export const TableHeaderCell: FC<TableHeaderCellProps> = ({
   id, value, width, onSort, activeSorting, isSortable,
 }) => {
   if (!isSortable) {

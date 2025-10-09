@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:5000/';
+export const BASE_URL = 'https://api.jikan.moe/v4';
 
 export const API_PATHS = {
   ANIME: '/anime',

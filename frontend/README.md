@@ -11,11 +11,8 @@
   - proxy-memoize v3
 
 ## Instructions
-- Install the dependencies in frontend and frontend/server:
+- Install the dependencies
   - npm install
-- In a separate terminal, start the proxy server:
-  - cd server
-  - npm run start
 - Start the FE app:
   - npm run dev 
 

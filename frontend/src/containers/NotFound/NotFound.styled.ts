@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 
+import { ContainerStyles } from '../../shared/styledComponents';
+
 export const NotFoundContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  ${ContainerStyles}
+  
   background-color: ${({ theme }) => theme.colors.background};
   opacity: ${({ theme }) => theme.opacity.backgroundLight};
   border-spacing: 0;
-  flex-direction: column;
 `;

@@ -3,9 +3,10 @@ import styled from 'styled-components';
 export const ROW_HEIGHT = 36;
 
 export const TableRowContainer = styled.div`
-  height: ${`${ROW_HEIGHT}px`};
   display: flex;
   flex-direction: row;
+
+  height: ${`${ROW_HEIGHT}px`};
   padding-left: ${({ theme }) => theme.spacing.s};
   
   &:hover {

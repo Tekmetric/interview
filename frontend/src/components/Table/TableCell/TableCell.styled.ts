@@ -6,8 +6,9 @@ export type TableCellContainerProps = {
 };
 
 export const TableCellContainer = styled.div<TableCellContainerProps>`
-  height: ${ROW_HEIGHT}px;
-  width: ${({ $width }) => ($width ? `${$width}%` : `${(3 / 9) * 100}%`)};
   display: flex;
   align-items: center;
+
+  height: ${ROW_HEIGHT}px;
+  width: ${({ $width }) => ($width ? `${$width}%` : `${(3 / 9) * 100}%`)};
 `;

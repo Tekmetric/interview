@@ -18,7 +18,7 @@ export const AnimeListing: FC = () => {
   if (error) {
     return (
       <AnimeListingContainer>
-        <CardContainer>
+        <CardContainer $centered>
           <UtilPages type={'status' in error && error?.status === 404 ? 'NOT_FOUND' : 'ERROR'} />
         </CardContainer>
       </AnimeListingContainer>

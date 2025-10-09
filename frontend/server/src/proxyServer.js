@@ -16,7 +16,7 @@ app.get('/:route_path', (req, res) => {
     (error, response, body) => {
       console.log(req.url);
       if (error || response.statusCode !== 200) {
-        return res.status(500).json({ type: 'error', message: error.message });
+        return res.status(500).json({ type: 'error', message: error?.message });
       }
 
       res.json(JSON.parse(body));

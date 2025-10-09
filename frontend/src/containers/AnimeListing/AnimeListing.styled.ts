@@ -5,10 +5,11 @@ export const AnimeListingContainer = styled.div`
   ${ContainerStyles}
 `;
 
-export const CardContainer = styled.div`
+export const CardContainer = styled.div<{ $centered?: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: ${({ $centered }) => $centered && 'center'};
 
   height: 360px;
   width: 80%;

@@ -4,5 +4,5 @@ export const flattenDataArray = (array: { data: AnimeItem[]; pagination: object 
   if (array && Array.isArray(item.data)) {
     acc.push(...item.data);
   }
-  return acc;
+  return acc || [];
 }, [] as any[]);

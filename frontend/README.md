@@ -19,6 +19,13 @@
 - Start the FE app:
   - npm run dev 
 
+## Functionality 
+- Infinite scroll data grid that fetches paginated anime listings data from a public API
+- Supports paginated sorting on 3 columns
+- Clicking on a row will redirect to another page, that contains the Anime Listing
+- Test setup with testing-library
+- Theme passed through styled-components's ThemeProvider
+
 ## Resources
 - Public API: 
   - https://jikan.moe/ 

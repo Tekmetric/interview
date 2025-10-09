@@ -79,3 +79,15 @@ export type AnimeItem = {
   themes: AdditionalDetails[];
   demographics: any[];
 };
+
+export type AnimeRow = {
+  title: string;
+  genres: AdditionalDetails[];
+  type: string;
+  episodes: number;
+  airedFrom: string;
+  rating: string;
+  airedTo: string;
+  score: number;
+  id: number;
+};

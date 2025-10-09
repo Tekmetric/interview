@@ -1,16 +1,4 @@
-import { AdditionalDetails } from '../../types';
-
-export type AnimeRow = {
-  title: string;
-  genres: AdditionalDetails[];
-  type: string;
-  episodes: number;
-  airedFrom: string;
-  rating: string;
-  airedTo: string;
-  score: number;
-  id: number;
-};
+import { AdditionalDetails, AnimeRow } from '../../types';
 
 export type HeaderCell = {
   label: string;

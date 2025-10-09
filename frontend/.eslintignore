@@ -1,4 +1,6 @@
 node_modules
 build
-*.config.js
+*.config.*s
 server
+*.setup.ts
+setupTests.ts

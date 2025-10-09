@@ -1,0 +1,85 @@
+import { AnimeItem, AnimeRow } from '../types';
+
+export const animeItemMock: AnimeItem = {
+  title: 'Naruto',
+  genres: [{
+    mal_id: 1, type: '-', url: '-', name: 'Action',
+  }, {
+    mal_id: 1, type: '-', url: '-', name: 'Adventure',
+  }],
+  type: 'TV',
+  episodes: 220,
+  aired: {
+    from: '2002-10-03',
+    to: '2007-02-08',
+    prop: {
+      from: { day: 3, month: 10, year: 2002 },
+      to: { day: 8, month: 2, year: 2007 },
+    },
+    string: 'Oct 3, 2002 to Feb 8, 2007',
+  },
+  rating: 'PG-13',
+  score: 8.2,
+  mal_id: 20,
+  url: '',
+  images: {
+    jpg: {
+      image_url: '',
+      small_image_url: '',
+      large_image_url: '',
+    },
+    webp: {
+      image_url: '',
+      small_image_url: '',
+      large_image_url: '',
+    },
+  },
+  trailer: {
+    youtube_id: '',
+    url: '',
+    embed_url: '',
+    images: undefined,
+  },
+  approved: false,
+  titles: [],
+  title_english: '',
+  title_japanese: '',
+  title_synonyms: [],
+  source: '',
+  status: '',
+  airing: false,
+  duration: '',
+  scored_by: 0,
+  rank: 0,
+  popularity: 0,
+  members: 0,
+  favorites: 0,
+  synopsis: '',
+  background: '',
+  season: '',
+  year: 0,
+  broadcast: {
+    mal_id: 0,
+    type: '',
+    name: '',
+    url: '',
+  },
+  producers: [],
+  licensors: [],
+  studios: [],
+  explicit_genres: [],
+  themes: [],
+  demographics: [],
+};
+
+export const animeRowMock: AnimeRow = {
+  title: animeItemMock.title,
+  genres: animeItemMock.genres,
+  type: animeItemMock.type,
+  episodes: animeItemMock.episodes,
+  airedFrom: animeItemMock.aired.from,
+  airedTo: animeItemMock.aired.to,
+  rating: animeItemMock.rating,
+  score: animeItemMock.score,
+  id: animeItemMock.mal_id,
+};

@@ -12,7 +12,7 @@ function App() {
   return (
     <Provider store={store}>
       <ThemeProvider theme={lightTheme}>
-        <AppContainer style={{ backgroundImage: "url('/images/anime_background.jpg')" }}>
+        <AppContainer data-testid="app-container" style={{ backgroundImage: "url('/images/anime_background.jpg')" }}>
           <NavigationBar />
           <Routes />
         </AppContainer>

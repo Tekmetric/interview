@@ -8,6 +8,7 @@
     "esModuleInterop": true,
     "jsx": "react",
     "baseUrl": ".",
+    "types": ["jest", "@testing-library/jest-dom"],
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src/types/jest.d.ts"]
 }

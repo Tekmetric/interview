@@ -24,22 +24,6 @@ app.get('/:route_path', (req, res) => {
   );
 });
 
-
-
-app.get('/:route_path/:id', (req, res) => {
-  request(
-    // used the route_path param to make it dynamic
-    { url: `${API_URL}/${req.params.route_path}/${req.params.id}` },
-    (error, response, body) => {
-      if (error || response.statusCode !== 200) {
-        return res.status(response.statusCode).json({ type: 'error', message: error?.message });
-      }
-
-      res.json(JSON.parse(body));
-    }
-  );
-});
-
 app.get('/:route_path/:id', (req, res) => {
   request(
     // used the route_path param to make it dynamic

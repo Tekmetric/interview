@@ -4,8 +4,7 @@ import { TableContainer } from './Table.styled';
 import TableHeader, { TableHeaderCellItem } from './TableHeader/TableHeader';
 import TableBody, { TableBodyProps } from './TableBody/TableBody';
 import { ActiveSorting } from './TableHeaderCell/TableHeaderCell';
-import ErrorPage from '../ErrorPage/ErrorPage';
-import EmptyPage from '../EmptyPage/EmptyPage';
+import UtilsPage from '../UtilPages/UtilPages';
 
 type TableProps = TableBodyProps & {
   fetchNextPage: () => {};
@@ -22,8 +21,8 @@ export const Table: FC<TableProps> = ({
   return (
     <TableContainer>
       <TableHeader activeSorting={activeSorting} onSort={onSort} headers={headers} />
-      {hasError && <ErrorPage />}
-      {(!rows || !rows.length) && <EmptyPage /> }
+      {hasError && <UtilsPage type="ERROR" />}
+      {(!rows || !rows.length) && <UtilsPage type="NOT_FOUND" />}
       {!hasError && rows.length && <TableBody isFetching={isFetching} fetchNextPage={fetchNextPage} rows={rows} />}
     </TableContainer>
   );

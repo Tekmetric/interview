@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { useParams } from 'react-router';
 import Skeleton from '@mui/material/Skeleton';
 
-import ErrorPage from '../../components/ErrorPage/ErrorPage';
+import UtilPages from '../../components/UtilPages/UtilPages';
 import { AnimeListingContainer, CardContainer, Details } from './AnimeListing.styled';
 import NotFound from '../NotFound/NotFound';
 import { useGetAnimeByIdQuery } from '../../states/api/api.slice';
@@ -19,7 +19,7 @@ export const AnimeListing: FC = () => {
     return (
       <AnimeListingContainer>
         <CardContainer>
-          <ErrorPage />
+          <UtilPages type={'status' in error && error?.status === 404 ? 'NOT_FOUND' : 'ERROR'} />
         </CardContainer>
       </AnimeListingContainer>
     );
@@ -38,7 +38,6 @@ export const AnimeListing: FC = () => {
     );
   }
 
-  console.log(isFetching);
   return (
     <AnimeListingContainer>
       <CardContainer>

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const ErrorPageContainer = styled.div`
+export const UtilPagesContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -18,16 +18,19 @@ export default function ImageGallery() {
   useEffect(() => {
     const fetchApod = async () => {
       try {
-        const apiKey = import.meta.env.PUBLIC_NASA_API_KEY;
-        const response = await fetch(
-          `https://api.nasa.gov/planetary/apod?api_key=${apiKey}`
-        );
+        const response = await fetch('/api/apod');
 
         if (!response.ok) {
           throw new Error('Failed to fetch APOD data');
         }
 
         const data = await response.json();
+
+        // Check if there was an error from our API
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
         setApodData(data);
         setLoading(false);
       } catch (err) {

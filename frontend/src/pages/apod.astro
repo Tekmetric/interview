@@ -1,0 +1,23 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import ImageGallery from "../components/ImageGallery";
+import { SITE_TITLE } from "../consts";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`Astronomy Picture of the Day - ${SITE_TITLE}`}
+      description="View NASA's Astronomy Picture of the Day"
+    />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>Astronomy Picture of the Day</h1>
+      <ImageGallery client:load />
+    </main>
+  </body>
+</html>

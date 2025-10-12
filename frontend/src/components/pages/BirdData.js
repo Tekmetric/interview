@@ -29,8 +29,8 @@ import {
   useGetRecentObservationsQuery,
   useGetRecentNotableObservationsQuery,
   useGetSubRegionsQuery,
-} from "../store/api/eBirdApi";
-import Text from "../assets/Text";
+} from "../../store/api/eBirdApi";
+import Text from "../../assets/Text";
 
 const BirdData = () => {
   const [regionCode, setRegionCode] = useState("US-CA"); // California as default

@@ -10,7 +10,7 @@ import {
   Box,
 } from "@mui/material";
 import { CheckCircle as CheckIcon } from "@mui/icons-material";
-import Text from "../assets/Text";
+import Text from "../../assets/Text";
 
 const Home = () => {
   return (

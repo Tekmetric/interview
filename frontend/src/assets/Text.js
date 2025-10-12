@@ -51,6 +51,29 @@ const Text = {
       exotic: "Exotic",
     },
   },
+  header: {
+    title: "Interview App",
+  },
+  navigation: {
+    home: "Home",
+    about: "About",
+    birdData: "Bird Data",
+    species: "Species Explorer",
+    hotspots: "Hotspots",
+    regions: "Regions",
+    activity: "Recent Activity",
+  },
+  notFound: {
+    title: "404 - Page Not Found",
+    subtitle: "Oops! The page you're looking for doesn't exist.",
+    description:
+      "The page you requested could not be found. It might have been moved, deleted, or you entered the wrong URL.",
+    homeButton: "Go to Home",
+    backButton: "Go Back",
+    suggestions: {
+      title: "Here are some suggestions:",
+    },
+  },
 };
 
 export default Text;

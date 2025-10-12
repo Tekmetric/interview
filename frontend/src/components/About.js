@@ -53,11 +53,11 @@ const About = () => {
         About
       </Typography>
 
-      <Typography variant="h6" paragraph>
+      <Typography variant="h6">
         This is a React application built with React 19.2.0 and React Router v7.
       </Typography>
 
-      <Typography variant="body1" paragraph>
+      <Typography variant="body1">
         It demonstrates modern React functionality with the latest features and
         Material-UI for a polished user interface.
       </Typography>

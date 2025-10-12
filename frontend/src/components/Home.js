@@ -10,27 +10,22 @@ import {
   Box,
 } from "@mui/material";
 import { CheckCircle as CheckIcon } from "@mui/icons-material";
+import Text from "../assets/Text";
 
 const Home = () => {
   return (
     <Box>
-      <Typography variant="h3" component="h1" gutterBottom>
-        Home Page
+      <Typography variant="h3" component="h4" gutterBottom>
+        {Text.home.title}
       </Typography>
 
-      <Typography variant="h6" paragraph>
-        Welcome to the interview app!
-      </Typography>
+      <Typography variant="h6">{Text.home.subtitle}</Typography>
 
-      <Typography variant="body1" paragraph>
-        This is the home page. Use the navigation above to explore different
-        sections. The app now features Material-UI components with light/dark
-        theme support!
-      </Typography>
+      <Typography variant="body1">{Text.home.description}</Typography>
 
       <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
         <Typography variant="h5" component="h3" gutterBottom>
-          Project Requirements:
+          {Text.home.projectRequirementsTitle}
         </Typography>
 
         <List>
@@ -39,15 +34,15 @@ const Home = () => {
               <CheckIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Fetch Data from a public API"
+              primary={Text.home.requirements.fetchData.primary}
               secondary={
                 <Link
-                  href="https://github.com/toddmotto/public-apis"
+                  href={Text.home.requirements.fetchData.linkUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   color="primary"
                 >
-                  View API Samples
+                  {Text.home.requirements.fetchData.linkText}
                 </Link>
               }
             />
@@ -57,7 +52,9 @@ const Home = () => {
             <ListItemIcon>
               <CheckIcon color="primary" />
             </ListItemIcon>
-            <ListItemText primary="Display data from API onto your page (Table, List, etc.)" />
+            <ListItemText
+              primary={Text.home.requirements.displayData.primary}
+            />
           </ListItem>
 
           <ListItem>
@@ -65,8 +62,8 @@ const Home = () => {
               <CheckIcon color="primary" />
             </ListItemIcon>
             <ListItemText
-              primary="Apply a styling solution of your choice to make your page look different"
-              secondary="Using Material-UI (MUI) with CSS-in-JS and theme support"
+              primary={Text.home.requirements.styling.primary}
+              secondary={Text.home.requirements.styling.secondary}
             />
           </ListItem>
         </List>

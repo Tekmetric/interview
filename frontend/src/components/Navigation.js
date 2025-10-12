@@ -65,18 +65,18 @@ const Navigation = () => {
 
           <Button
             component={RouterLink}
-            to="/api-data"
+            to="/bird-data"
             color="inherit"
             startIcon={<ApiIcon />}
-            variant={isActive("/api-data") ? "outlined" : "text"}
+            variant={isActive("/bird-data") ? "outlined" : "text"}
             sx={{
-              borderColor: isActive("/api-data") ? "white" : "transparent",
+              borderColor: isActive("/bird-data") ? "white" : "transparent",
               "&:hover": {
                 backgroundColor: "rgba(255, 255, 255, 0.1)",
               },
             }}
           >
-            API Data
+            Bird Data
           </Button>
 
           <IconButton

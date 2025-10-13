@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import {
   Drawer,
@@ -7,37 +6,24 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  IconButton,
   Box,
   Divider,
   useTheme,
-  useMediaQuery,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
 } from "@mui/material";
 import {
-  Menu as MenuIcon,
   Home as HomeIcon,
   Info as InfoIcon,
   Pets as BirdIcon,
   Category as SpeciesIcon,
-  LocationOn as HotspotIcon,
-  Public as RegionIcon,
-  Timeline as ActivityIcon,
 } from "@mui/icons-material";
 import Text from "../../assets/Text";
 
 const SideNav = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  const toggleDrawer = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-  };
 
   const isActive = (path) => location.pathname === path;
 
@@ -61,21 +47,6 @@ const SideNav = () => {
       text: Text.navigation.species,
       path: "/species",
       icon: <SpeciesIcon />,
-    },
-    {
-      text: Text.navigation.hotspots,
-      path: "/hotspots",
-      icon: <HotspotIcon />,
-    },
-    {
-      text: Text.navigation.regions,
-      path: "/regions",
-      icon: <RegionIcon />,
-    },
-    {
-      text: Text.navigation.activity,
-      path: "/activity",
-      icon: <ActivityIcon />,
     },
   ];
 
@@ -117,7 +88,7 @@ const SideNav = () => {
             <ListItemButton
               component={RouterLink}
               to={item.path}
-              onClick={isMobile ? handleClose : undefined}
+              onClick={undefined}
               selected={isActive(item.path)}
               sx={{
                 mx: 1,
@@ -180,28 +151,6 @@ const SideNav = () => {
 
   return (
     <>
-      {/* Menu Button for Mobile */}
-      <IconButton
-        color="inherit"
-        aria-label="open drawer"
-        edge="start"
-        onClick={toggleDrawer}
-        sx={{
-          position: "fixed",
-          top: 16,
-          left: 16,
-          zIndex: theme.zIndex.appBar + 1,
-          backgroundColor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
-          "&:hover": {
-            backgroundColor: theme.palette.primary.dark,
-          },
-          display: { md: "none" },
-        }}
-      >
-        <MenuIcon />
-      </IconButton>
-
       {/* Desktop Drawer */}
       <Drawer
         variant="permanent"
@@ -219,24 +168,54 @@ const SideNav = () => {
         {drawerContent}
       </Drawer>
 
-      {/* Mobile Drawer */}
-      <Drawer
-        variant="temporary"
-        open={isOpen}
-        onClose={handleClose}
-        ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
-        }}
+      {/* Mobile Bottom Navigation */}
+      <Paper
         sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: theme.zIndex.appBar,
           display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: drawerWidth,
-          },
+          borderRadius: 0,
+          boxShadow: theme.shadows[8],
         }}
+        elevation={8}
       >
-        {drawerContent}
-      </Drawer>
+        <BottomNavigation
+          value={location.pathname}
+          sx={{
+            height: 64,
+            backgroundColor: theme.palette.background.paper,
+            "& .MuiBottomNavigationAction-root": {
+              minWidth: "auto",
+              padding: "6px 8px",
+              "&.Mui-selected": {
+                color: theme.palette.primary.main,
+              },
+              "& .MuiBottomNavigationAction-label": {
+                fontSize: "0.75rem",
+                fontWeight: 500,
+                "&.Mui-selected": {
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                },
+              },
+            },
+          }}
+        >
+          {navigationItems.map((item) => (
+            <BottomNavigationAction
+              key={item.path}
+              label={item.text}
+              value={item.path}
+              icon={item.icon}
+              component={RouterLink}
+              to={item.path}
+            />
+          ))}
+        </BottomNavigation>
+      </Paper>
     </>
   );
 };

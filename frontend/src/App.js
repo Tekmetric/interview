@@ -10,9 +10,7 @@ import Home from "./components/pages/Home";
 import About from "./components/pages/About";
 import BirdData from "./components/pages/BirdData";
 import Species from "./components/pages/Species";
-import Hotspots from "./components/pages/Hotspots";
-import Regions from "./components/pages/Regions";
-import Activity from "./components/pages/Activity";
+import SpeciesDetail from "./components/pages/SpeciesDetail";
 
 // Layout component to handle responsive design
 const AppLayout = () => {
@@ -33,7 +31,8 @@ const AppLayout = () => {
         sx={{
           flexGrow: 1,
           ml: { md: `${drawerWidth}px` },
-          mt: { xs: 8, md: 8 }, // Account for header height
+          mt: { xs: 8, md: 8 }, // Account for header height only
+          mb: { xs: 8, md: 0 }, // Account for bottom navigation on mobile (64px = 8*8px)
           p: 3,
           backgroundColor: theme.palette.background.default,
           minHeight: "calc(100vh - 64px)",
@@ -45,9 +44,7 @@ const AppLayout = () => {
             <Route path="/about" element={<About />} />
             <Route path="/bird-data" element={<BirdData />} />
             <Route path="/species" element={<Species />} />
-            <Route path="/hotspots" element={<Hotspots />} />
-            <Route path="/regions" element={<Regions />} />
-            <Route path="/activity" element={<Activity />} />
+            <Route path="/species/:speciesCode" element={<SpeciesDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Container>

@@ -1,5 +1,3 @@
-import React from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
 import { AppBar, Toolbar, Typography, IconButton, Box } from "@mui/material";
 import {
   Brightness4 as DarkModeIcon,

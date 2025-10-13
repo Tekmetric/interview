@@ -74,6 +74,108 @@ const Text = {
       title: "Here are some suggestions:",
     },
   },
+  species: {
+    title: "Species Explorer",
+    subtitle: "Explore bird species from the eBird taxonomy",
+    loading: "Loading species data...",
+    error: "Failed to load species data. Please try again.",
+    tableHeaders: {
+      commonName: "Common Name",
+      scientificName: "Scientific Name",
+      category: "Category",
+      order: "Order",
+      family: "Family",
+      actions: "Actions",
+    },
+    pagination: {
+      rowsPerPage: "Rows per page:",
+      of: "of",
+    },
+    noData: "No species data available",
+    searchPlaceholder: "Search species...",
+    resultsText: {
+      showing: "Showing",
+      of: "of",
+      species: "species",
+      matching: "matching",
+    },
+  },
+  speciesDetail: {
+    loading: "Loading species details...",
+    backButton: "Back to Species List",
+    notFound: {
+      title: "Species not found. The species code",
+      message: "does not exist in our database.",
+    },
+    sections: {
+      speciesInformation: "Species Information",
+      recentObservations: "Recent Observations (US)",
+    },
+    fields: {
+      category: "Category:",
+      speciesCode: "Species Code:",
+      order: "Order:",
+      familyCommon: "Family (Common):",
+      familyScientific: "Family (Scientific):",
+      taxonomicOrder: "Taxonomic Order:",
+    },
+    observations: {
+      loading: "Loading observations...",
+      error: "Unable to load recent observations",
+      noData: "No recent observations found for this species",
+      tableHeaders: {
+        location: "Location",
+        date: "Date",
+        count: "Count",
+      },
+    },
+  },
+  about: {
+    title: "About",
+    subtitle:
+      "This is a React application built with React 19.2.0 and React Router v7.",
+    description:
+      "It demonstrates modern React functionality with the latest features and Material-UI for a polished user interface.",
+    sections: {
+      technologiesUsed: "Technologies Used:",
+      features: "Features:",
+    },
+    technologies: [
+      "React 19.2.0",
+      "React Router v7",
+      "Material-UI (MUI)",
+      "React Hooks",
+      "Functional Components",
+      "Theme Context",
+      "CSS-in-JS",
+    ],
+    features: [
+      {
+        title: "React Router v7",
+        description: "Modern routing with Routes and element props",
+      },
+      {
+        title: "React Hooks",
+        description: "Functional components with useState and useEffect",
+      },
+      {
+        title: "React 19",
+        description: "Latest React version with createRoot API",
+      },
+      {
+        title: "Material-UI",
+        description: "Modern React UI framework with theme support",
+      },
+      {
+        title: "Theme Toggle",
+        description: "Light and dark theme switching functionality",
+      },
+      {
+        title: "Responsive Design",
+        description: "Mobile-friendly layout with Material-UI components",
+      },
+    ],
+  },
 };
 
 export default Text;

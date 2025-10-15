@@ -59,7 +59,7 @@ describe('KanbanBoard - Drag and Drop Transitions', () => {
     customRender(<KanbanBoard orders={[order]} onStatusChange={mockOnStatusChange} />)
 
     // Simulate drag end with invalid transition
-    const board = screen.getByText('New').closest('div')
+    const board = screen.getByText('Created').closest('div')
     expect(board).toBeInTheDocument()
 
     // In a real test, we'd simulate the drag event
@@ -164,8 +164,8 @@ describe('KanbanBoard - Drag and Drop Transitions', () => {
   it('should render all 5 columns', () => {
     customRender(<KanbanBoard orders={[]} onStatusChange={mockOnStatusChange} />)
 
-    expect(screen.getByText('New')).toBeInTheDocument()
-    expect(screen.getByText('Awaiting Approval')).toBeInTheDocument()
+    expect(screen.getByText('Created')).toBeInTheDocument()
+    expect(screen.getByText('Waiting Approval')).toBeInTheDocument()
     expect(screen.getByText('In Progress')).toBeInTheDocument()
     expect(screen.getByText('Waiting Parts')).toBeInTheDocument()
     expect(screen.getByText('Completed')).toBeInTheDocument()

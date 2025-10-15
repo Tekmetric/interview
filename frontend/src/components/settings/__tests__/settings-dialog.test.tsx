@@ -2,7 +2,7 @@ import { type ReactNode } from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { SettingsDialog } from '../settings-dialog'
 import { PreferencesContext } from '@/contexts/preferences-context'
-import type { PreferencesContextType } from '@/contexts/preferences-context'
+import type { UserPreferences } from '@/types/preferences'
 
 // Mock the ColumnVisibilitySettings component
 vi.mock('../column-visibility-settings', () => ({
@@ -11,7 +11,7 @@ vi.mock('../column-visibility-settings', () => ({
 
 const mockOnOpenChange = vi.fn()
 
-const mockPreferences: PreferencesContextType['preferences'] = {
+const mockPreferences: UserPreferences = {
   columnVisibility: {
     customerPhone: true,
     vehicleDetails: true,
@@ -19,11 +19,19 @@ const mockPreferences: PreferencesContextType['preferences'] = {
     dueTime: true,
     services: true,
   },
+  savedFilters: [],
 }
 
 const wrapper = ({ children }: { children: ReactNode }) => (
   <PreferencesContext.Provider
-    value={{ preferences: mockPreferences, updateColumnVisibility: vi.fn() }}
+    value={{
+      preferences: mockPreferences,
+      updateColumnVisibility: vi.fn(),
+      saveFilterPreset: vi.fn(),
+      deleteFilterPreset: vi.fn(),
+      setDefaultPreset: vi.fn(),
+      getPresetById: vi.fn(),
+    }}
   >
     {children}
   </PreferencesContext.Provider>

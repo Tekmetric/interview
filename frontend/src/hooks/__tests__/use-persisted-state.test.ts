@@ -60,7 +60,7 @@ describe('usePersistedState', () => {
   })
 
   it('should persist on subsequent updates', () => {
-    const { result, rerender } = renderHook(() =>
+    const { result } = renderHook(() =>
       usePersistedState('test-key', 'initial'),
     )
 

@@ -6,8 +6,8 @@ import { FilterType } from '@/components/ui/filters'
 
 describe('KanbanFilters', () => {
   const mockTechnicians = [
-    { id: 'tech-1', name: 'John Doe', active: true },
-    { id: 'tech-2', name: 'Jane Smith', active: true },
+    { id: 'tech-1', name: 'John Doe', initials: 'JD', specialties: [], active: true },
+    { id: 'tech-2', name: 'Jane Smith', initials: 'JS', specialties: [], active: true },
   ]
 
   it('should render the search input and filters', () => {
@@ -18,6 +18,8 @@ describe('KanbanFilters', () => {
         searchQuery=''
         onSearchChange={vi.fn()}
         technicians={mockTechnicians}
+        sortBy='default'
+        onSortChange={vi.fn()}
       />,
     )
 
@@ -36,6 +38,8 @@ describe('KanbanFilters', () => {
         searchQuery=''
         onSearchChange={onSearchChange}
         technicians={mockTechnicians}
+        sortBy='default'
+        onSortChange={vi.fn()}
       />,
     )
 
@@ -56,6 +60,8 @@ describe('KanbanFilters', () => {
         searchQuery=''
         onSearchChange={vi.fn()}
         technicians={mockTechnicians}
+        sortBy='default'
+        onSortChange={vi.fn()}
       />,
     )
 
@@ -66,8 +72,8 @@ describe('KanbanFilters', () => {
     const statusButton = screen.getByText('Status')
     fireEvent.click(statusButton)
 
-    const newButton = screen.getByText('New')
-    fireEvent.click(newButton)
+    const createdButton = screen.getByText('Created')
+    fireEvent.click(createdButton)
 
     expect(onFiltersChange).toHaveBeenCalledTimes(2)
     expect(onFiltersChange).toHaveBeenNthCalledWith(
@@ -75,7 +81,7 @@ describe('KanbanFilters', () => {
       expect.arrayContaining([
         expect.objectContaining({
           type: FilterType.STATUS,
-          value: ['New'],
+          value: ['Created'],
         }),
       ]),
     )

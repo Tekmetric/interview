@@ -94,7 +94,7 @@ describe('useRepairOrderDetails hooks', () => {
 
       result.current.mutate({
         id: 'RO-001',
-        data: { notes: 'Updated note' },
+        data: { notes: 'Updated note', dueTime: undefined },
       })
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true))
@@ -110,7 +110,7 @@ describe('useRepairOrderDetails hooks', () => {
 
       result.current.mutate({
         id: 'RO-001',
-        data: { notes: 'Updated note' },
+        data: { notes: 'Updated note', dueTime: undefined },
       })
 
       await waitFor(() => expect(result.current.isError).toBe(true))

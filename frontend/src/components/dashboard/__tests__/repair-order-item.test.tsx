@@ -90,9 +90,9 @@ describe('RepairOrderItem', () => {
     ]
 
     const statusLabels: Record<RepairOrder['status'], string> = {
-      NEW: 'New',
+      NEW: 'Created',
       IN_PROGRESS: 'In Progress',
-      AWAITING_APPROVAL: 'Awaiting Approval',
+      AWAITING_APPROVAL: 'Waiting Approval',
       WAITING_PARTS: 'Waiting Parts',
       COMPLETED: 'Completed',
     }

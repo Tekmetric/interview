@@ -2,11 +2,11 @@ import { type ReactNode } from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { ColumnVisibilitySettings } from '../column-visibility-settings'
 import { PreferencesContext } from '@/contexts/preferences-context'
-import type { PreferencesContextType } from '@/contexts/preferences-context'
+import type { UserPreferences } from '@/types/preferences'
 
 const mockUpdateColumnVisibility = vi.fn()
 
-const mockPreferences: PreferencesContextType['preferences'] = {
+const mockPreferences: UserPreferences = {
   columnVisibility: {
     customerPhone: true,
     vehicleDetails: false,
@@ -14,6 +14,7 @@ const mockPreferences: PreferencesContextType['preferences'] = {
     dueTime: false,
     services: true,
   },
+  savedFilters: [],
 }
 
 const wrapper = ({ children }: { children: ReactNode }) => (
@@ -21,6 +22,10 @@ const wrapper = ({ children }: { children: ReactNode }) => (
     value={{
       preferences: mockPreferences,
       updateColumnVisibility: mockUpdateColumnVisibility,
+      saveFilterPreset: vi.fn(),
+      deleteFilterPreset: vi.fn(),
+      setDefaultPreset: vi.fn(),
+      getPresetById: vi.fn(),
     }}
   >
     {children}

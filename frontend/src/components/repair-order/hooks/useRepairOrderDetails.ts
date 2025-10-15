@@ -140,7 +140,7 @@ export function useCreateRepairOrder() {
 
       const previousOrders = queryClient.getQueryData<RepairOrder[]>(['repairOrders'])
 
-      const optimisticOrder: RepairOrder = {
+      const optimisticOrder = {
         id: `temp-${Date.now()}`,
         ...data,
         status: 'NEW' as const,
@@ -148,7 +148,7 @@ export function useCreateRepairOrder() {
         approvedByCustomer: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      }
+      } as RepairOrder
 
       if (previousOrders) {
         queryClient.setQueryData<RepairOrder[]>(

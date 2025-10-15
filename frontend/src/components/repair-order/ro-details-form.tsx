@@ -41,7 +41,7 @@ import { REPAIR_ORDER_LABELS, COMMON_LABELS, RO_STATUS } from '@shared/constants
 type RODetailsFormProps = {
   order: RepairOrder
   onSubmit: (
-    data: z.infer<typeof updateRepairOrderSchema>,
+    data: z.input<typeof updateRepairOrderSchema>,
     wasInEditMode: boolean,
   ) => void
   onCancel: () => void
@@ -78,7 +78,7 @@ export function RODetailsForm({
     formState: { errors },
     watch,
     setValue,
-  } = useForm<z.infer<typeof updateRepairOrderSchema>>({
+  } = useForm<z.input<typeof updateRepairOrderSchema>>({
     resolver: zodResolver(updateRepairOrderSchema),
     defaultValues: {
       status: order.status,
@@ -145,7 +145,7 @@ export function RODetailsForm({
 
   const statusOptions = getStatusOptions()
 
-  const handleFormSubmit = (data: z.infer<typeof updateRepairOrderSchema>) => {
+  const handleFormSubmit = (data: z.input<typeof updateRepairOrderSchema>) => {
     onSubmit(data, editMode)
     if (editMode) {
       setEditMode(false)

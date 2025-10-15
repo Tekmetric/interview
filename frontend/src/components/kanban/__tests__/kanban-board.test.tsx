@@ -12,18 +12,28 @@ describe('KanbanBoard', () => {
     {
       id: '1',
       status: RO_STATUS.NEW,
-      customer: { name: 'John Doe' },
+      customer: { name: 'John Doe', phone: '555-0100' },
       vehicle: { year: 2020, make: 'Toyota', model: 'Camry' },
       services: [],
       approvedByCustomer: true,
-      assignedTech: { id: 'tech-1', name: 'Tech 1' },
+      assignedTech: { id: 'tech-1', name: 'Tech 1', initials: 'T1', specialties: [], active: true },
+      priority: 'NORMAL' as const,
+      notes: '',
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
     },
     {
       id: '2',
       status: RO_STATUS.IN_PROGRESS,
-      customer: { name: 'Jane Smith' },
+      customer: { name: 'Jane Smith', phone: '555-0200' },
       vehicle: { year: 2021, make: 'Honda', model: 'Civic' },
       services: [],
+      approvedByCustomer: false,
+      assignedTech: null,
+      priority: 'NORMAL' as const,
+      notes: '',
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
     },
   ]
 
@@ -47,8 +57,8 @@ describe('KanbanBoard', () => {
   it('should render the correct number of columns with the correct titles', () => {
     customRender(<KanbanBoard orders={mockOrders} onStatusChange={vi.fn()} />)
 
-    expect(screen.getByText('New')).toBeInTheDocument()
-    expect(screen.getByText('Awaiting Approval')).toBeInTheDocument()
+    expect(screen.getByText('Created')).toBeInTheDocument()
+    expect(screen.getByText('Waiting Approval')).toBeInTheDocument()
     expect(screen.getByText('In Progress')).toBeInTheDocument()
     expect(screen.getByText('Waiting Parts')).toBeInTheDocument()
     expect(screen.getByText('Completed')).toBeInTheDocument()

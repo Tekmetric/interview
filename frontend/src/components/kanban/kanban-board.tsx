@@ -12,7 +12,7 @@ import {
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { KANBAN_COLUMNS } from '@shared/constants'
 import type { RepairOrder, RepairOrderStatus } from '@shared/types'
-import { useMultiSelect } from '@/hooks/use-multi-select'
+import { useMultiSelect } from '@/components/kanban/hooks/use-multi-select'
 
 import { KanbanColumn } from './kanban-column'
 import { KanbanCard } from './kanban-card'

@@ -16,7 +16,7 @@ import { STATUS_CONFIG } from '@/components/repair-order/ro-constants'
 import { REPAIR_ORDER_LABELS, FILTER_LABELS } from '@shared/constants'
 import { usePreferences } from '@/hooks/use-preferences'
 
-import { useMultiSelect } from '@/hooks/use-multi-select'
+import { useMultiSelect } from '@/components/kanban/hooks/use-multi-select'
 import { Eye } from 'lucide-react'
 
 type KanbanCardProps = {

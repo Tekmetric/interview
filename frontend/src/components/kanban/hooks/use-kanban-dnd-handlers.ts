@@ -41,6 +41,7 @@ export function useKanbanDndHandlers({
   const [dropIndicatorById, setDropIndicatorById] = useState<
     Record<string, 'top' | 'bottom'>
   >({})
+  const [lastOverCardId, setLastOverCardId] = useState<string | null>(null)
 
   // Sync local orders when prop changes
   useEffect(() => {
@@ -98,20 +99,47 @@ export function useKanbanDndHandlers({
 
       // Compute drop indicator position (top/bottom) when hovering over a card
       if (overCard && over.rect) {
+        setLastOverCardId(overId)
         const overCenterY = over.rect.top + over.rect.height / 2
-        const activeInitial = active.rect.current?.initial
-        if (!activeInitial) {
-          setDropIndicatorById({ [overId]: 'bottom' })
-        } else {
-          const activeCenterY =
-            activeInitial.top + activeInitial.height / 2 + event.delta.y
-          const position: 'top' | 'bottom' =
-            activeCenterY < overCenterY ? 'top' : 'bottom'
-          setDropIndicatorById({ [overId]: position })
+
+        // Use translated rect for accurate position during drag (accounts for scroll/transform)
+        const translated = active.rect.current?.translated
+        const activeCenterY = translated
+          ? translated.top + translated.height / 2
+          : (active.rect.current?.initial?.top ?? 0) +
+            (active.rect.current?.initial?.height ?? 0) / 2 +
+            event.delta.y
+
+        const position: 'top' | 'bottom' = activeCenterY < overCenterY ? 'top' : 'bottom'
+        setDropIndicatorById({ [overId]: position })
+      } else if (overStatus && !overCard && over.rect) {
+        // Column fallback: only if we DON'T already have an anchor in this column
+        const colOrders = localOrders.filter((o) => o.status === overStatus)
+        const hasAnchorInColumn =
+          lastOverCardId && colOrders.some((o) => o.id === lastOverCardId)
+
+        if (!hasAnchorInColumn && colOrders.length && active.rect.current) {
+          const translated = active.rect.current.translated
+          const activeCenterY = translated
+            ? translated.top + translated.height / 2
+            : (active.rect.current.initial?.top ?? 0) +
+              (active.rect.current.initial?.height ?? 0) / 2 +
+              event.delta.y
+          const colCenterY = over.rect.top + over.rect.height / 2
+
+          // Choose first or last card as anchor based on position
+          const anchorCard =
+            activeCenterY <= colCenterY ? colOrders[0] : colOrders[colOrders.length - 1]
+          const position: 'top' | 'bottom' = activeCenterY <= colCenterY ? 'top' : 'bottom'
+
+          setLastOverCardId(anchorCard.id)
+          setDropIndicatorById({ [anchorCard.id]: position })
         }
-      } else {
+      } else if (!overStatus) {
+        // Only clear indicators when not over anything meaningful
         setDropIndicatorById({})
       }
+      // Preserve lastOverCardId and indicators when over becomes a column
     },
     [localOrders],
   )
@@ -124,7 +152,6 @@ export function useKanbanDndHandlers({
       setDragOverStatus(null)
       setIsValidDrop(true)
       setValidationMessage('')
-      setDropIndicatorById({})
 
       if (!over) {
         return
@@ -150,7 +177,17 @@ export function useKanbanDndHandlers({
 
       const originalStatus = order.status
 
-      // If moving across statuses, validate before applying
+      // Same-position no-op: dropping card onto itself
+      if (
+        targetStatus === originalStatus &&
+        (overCard?.id === orderId || lastOverCardId === orderId)
+      ) {
+        setDropIndicatorById({})
+        setLastOverCardId(null)
+        return
+      }
+
+      // If moving across statuses, validate BEFORE modifying arrays
       if (targetStatus && targetStatus !== originalStatus) {
         const validation = canTransition(originalStatus, targetStatus, order)
         if (!validation.allowed) {
@@ -158,44 +195,54 @@ export function useKanbanDndHandlers({
             description: validation.reason || KANBAN_LABELS.TRANSITION_NOT_ALLOWED,
             duration: 3000,
           })
+          // Clear drop state before returning
+          setDropIndicatorById({})
+          setLastOverCardId(null)
           return
         }
       }
 
-      // Local reorder so the card stays where it's dropped
+      // Validation passed (or same-column move): proceed with reordering
       const next = [...localOrders]
       const fromIndex = next.findIndex((o) => o.id === orderId)
       if (fromIndex === -1) return
       const [moved] = next.splice(fromIndex, 1)
 
-      if (targetStatus) {
+      // Update status for cross-column moves
+      if (targetStatus && targetStatus !== originalStatus) {
         moved.status = targetStatus
       }
 
-      let insertIndex = fromIndex
-      if (overCard) {
-        const overIndex = next.findIndex((o) => o.id === overCard.id)
-        const pos = dropIndicatorById[overCard.id] || 'bottom'
+      // Determine anchor card: prefer overCard, fallback to lastOverCardId
+      // For cross-column, verify anchor belongs to target status
+      const anchorCardId =
+        overCard?.id ??
+        (lastOverCardId &&
+        next.some((o) => o.id === lastOverCardId && o.status === (targetStatus ?? originalStatus))
+          ? lastOverCardId
+          : null)
+
+      let insertIndex = next.length
+      if (anchorCardId) {
+        const anchorIndex = next.findIndex((o) => o.id === anchorCardId)
+        const pos = dropIndicatorById[anchorCardId] || 'bottom'
         insertIndex =
-          overIndex === -1 ? next.length : overIndex + (pos === 'bottom' ? 1 : 0)
-      } else if (overStatus && targetStatus) {
-        // Insert at end of the target status group
-        let lastIndex = -1
-        for (let i = 0; i < next.length; i += 1) {
-          if (next[i].status === targetStatus) lastIndex = i
-        }
-        insertIndex = lastIndex === -1 ? next.length : lastIndex + 1
+          anchorIndex === -1 ? next.length : anchorIndex + (pos === 'bottom' ? 1 : 0)
       }
 
       next.splice(insertIndex, 0, moved)
       setLocalOrders(next)
 
-      // Persist status change if applicable
+      // Clear drop state
+      setDropIndicatorById({})
+      setLastOverCardId(null)
+
+      // Persist cross-column status change
       if (targetStatus && targetStatus !== originalStatus) {
         onStatusChange(orderId, targetStatus)
       }
     },
-    [localOrders, dropIndicatorById, onStatusChange],
+    [localOrders, dropIndicatorById, onStatusChange, lastOverCardId],
   )
 
   return {

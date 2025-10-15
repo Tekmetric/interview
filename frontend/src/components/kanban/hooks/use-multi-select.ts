@@ -12,7 +12,7 @@ export function useMultiSelect() {
 
 /**
  * Hook to enable keyboard shortcuts for multi-select
- * - Cmd/Ctrl+A: Select all (disabled when sidebar is open)
+ * - Cmd/Ctrl+A: Select all (disabled when sidebar is open or input is focused)
  * - Escape: Clear selection
  */
 export function useMultiSelectKeyboard(orderIds: string[]) {
@@ -23,8 +23,11 @@ export function useMultiSelectKeyboard(orderIds: string[]) {
     const handleKeyDown = (e: KeyboardEvent) => {
       const searchParams = new URLSearchParams(search)
       const isSidebarOpen = searchParams.has('roId') || searchParams.has('createRO')
+      const isInputFocused =
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA'
 
-      if ((e.metaKey || e.ctrlKey) && e.key === 'a' && !isSidebarOpen) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'a' && !isSidebarOpen && !isInputFocused) {
         e.preventDefault()
         selectAll(orderIds)
       }

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { SelectionProvider } from '@/contexts/selection-context'
-import { useMultiSelect } from '@/hooks/use-multi-select'
+import { useMultiSelect } from '@/components/kanban/hooks/use-multi-select'
 import type { ReactNode } from 'react'
 import { createElement } from 'react'
 

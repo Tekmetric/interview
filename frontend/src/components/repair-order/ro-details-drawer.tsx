@@ -20,7 +20,7 @@ import {
 import { STATUS_CONFIG } from './ro-constants'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { ErrorBoundary } from '@/components/error-boundary'
 import { updateRepairOrderSchema } from '@shared/validation'
 import type { z } from 'zod'
 import { REPAIR_ORDER_LABELS, COMMON_LABELS } from '@shared/constants'
@@ -58,7 +58,10 @@ function RODetailsContent({
   const deleteMutation = useDeleteRepairOrder()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
-  const handleSubmit = (data: z.input<typeof updateRepairOrderSchema>, wasInEditMode: boolean) => {
+  const handleSubmit = (
+    data: z.input<typeof updateRepairOrderSchema>,
+    wasInEditMode: boolean,
+  ) => {
     // Parse and transform the data using the schema
     const parsedData = updateRepairOrderSchema.parse(data)
 

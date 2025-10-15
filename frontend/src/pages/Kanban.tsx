@@ -3,21 +3,23 @@ import { useLocation } from 'wouter'
 import { AppLayout } from '@/components/layout/app-layout'
 import { KanbanBoard } from '@/components/kanban/kanban-board'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { ErrorBoundary } from '@/components/error-boundary'
 import { useRepairOrders } from '@/components/repair-order/hooks/useRepairOrders'
 import { RODetailsDrawer } from '@/components/repair-order/ro-details-drawer'
 import { ROCreateDrawer } from '@/components/repair-order/ro-create-drawer'
 import { REPAIR_ORDER_LABELS, NAV_LABELS, KANBAN_LABELS } from '@shared/constants'
 import { SelectionProvider } from '@/contexts/selection-context'
-import { useMultiSelectKeyboard } from '@/hooks/use-multi-select'
 import { BulkActionsBar } from '@/components/kanban/bulk-actions-bar'
 import { SettingsPopover } from '@/components/settings/settings-popover'
 import { Button } from '@/components/ui/button'
 import { Plus, Settings } from 'lucide-react'
-import { useKanbanFilters } from '@/hooks/use-kanban-filters'
-import { useKanbanUrlState } from '@/hooks/use-kanban-url-state'
-import { useOrderMutation } from '@/hooks/use-order-mutation'
-import { useSyncSearchToUrl } from '@/hooks/use-kanban-url-state'
+import {
+  useKanbanFilters,
+  useKanbanUrlState,
+  useOrderMutation,
+  useSyncSearchToUrl,
+  useMultiSelectKeyboard,
+} from '@/components/kanban/hooks'
 
 function KanbanLoading() {
   return (

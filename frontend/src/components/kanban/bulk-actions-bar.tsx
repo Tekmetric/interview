@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { useMultiSelect } from '@/hooks/use-multi-select'
+import { useMultiSelect } from '@/components/kanban/hooks/use-multi-select'
 import { X, UserPlus, ArrowRight, Flag, Trash2 } from 'lucide-react'
 import { AssignTechDialog } from './batch-dialogs/assign-tech-dialog'
 import { ChangeStatusDialog } from './batch-dialogs/change-status-dialog'

@@ -27,7 +27,12 @@ export function useMultiSelectKeyboard(orderIds: string[]) {
         document.activeElement?.tagName === 'INPUT' ||
         document.activeElement?.tagName === 'TEXTAREA'
 
-      if ((e.metaKey || e.ctrlKey) && e.key === 'a' && !isSidebarOpen && !isInputFocused) {
+      if (
+        (e.metaKey || e.ctrlKey) &&
+        e.key === 'a' &&
+        !isSidebarOpen &&
+        !isInputFocused
+      ) {
         e.preventDefault()
         selectAll(orderIds)
       }

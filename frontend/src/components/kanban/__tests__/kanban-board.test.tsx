@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { KanbanBoard } from '../kanban-board'
+import { KanbanBoard } from '../board'
 import { RO_STATUS } from '@shared/constants'
 import { PreferencesContext } from '@/contexts/preferences-context'
 import { DEFAULT_PREFERENCES } from '@/types/preferences'
@@ -16,7 +16,13 @@ describe('KanbanBoard', () => {
       vehicle: { year: 2020, make: 'Toyota', model: 'Camry' },
       services: [],
       approvedByCustomer: true,
-      assignedTech: { id: 'tech-1', name: 'Tech 1', initials: 'T1', specialties: [], active: true },
+      assignedTech: {
+        id: 'tech-1',
+        name: 'Tech 1',
+        initials: 'T1',
+        specialties: [],
+        active: true,
+      },
       priority: 'NORMAL' as const,
       notes: '',
       createdAt: '2024-01-01T00:00:00Z',

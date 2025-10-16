@@ -1,7 +1,6 @@
- 
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { KanbanFilters } from '../kanban-filters'
+import { KanbanFilters } from '../filters'
 import { FilterType } from '@/components/ui/filters'
 
 describe('KanbanFilters', () => {
@@ -18,8 +17,6 @@ describe('KanbanFilters', () => {
         searchQuery=''
         onSearchChange={vi.fn()}
         technicians={mockTechnicians}
-        sortBy='default'
-        onSortChange={vi.fn()}
       />,
     )
 
@@ -38,8 +35,6 @@ describe('KanbanFilters', () => {
         searchQuery=''
         onSearchChange={onSearchChange}
         technicians={mockTechnicians}
-        sortBy='default'
-        onSortChange={vi.fn()}
       />,
     )
 
@@ -60,8 +55,6 @@ describe('KanbanFilters', () => {
         searchQuery=''
         onSearchChange={vi.fn()}
         technicians={mockTechnicians}
-        sortBy='default'
-        onSortChange={vi.fn()}
       />,
     )
 

@@ -318,9 +318,11 @@ describe('Repair Order Routes', () => {
 
       // Simulate bulk operation: concurrent PATCH requests
       const requests = orderIds.map((orderId) =>
-        request(app).patch(`/api/repairOrders/${orderId}`).send({
-          assignedTech: { id: techId },
-        }),
+        request(app)
+          .patch(`/api/repairOrders/${orderId}`)
+          .send({
+            assignedTech: { id: techId },
+          }),
       )
 
       const responses = await Promise.all(requests)
@@ -365,5 +367,4 @@ describe('Repair Order Routes', () => {
       }
     })
   })
-
 })

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { KanbanBoard } from '../kanban-board'
+import { KanbanBoard } from '../board'
 import { RO_STATUS } from '@shared/constants'
 import { PreferencesContext } from '@/contexts/preferences-context'
 import { DEFAULT_PREFERENCES } from '@/types/preferences'
@@ -58,9 +58,9 @@ describe('KanbanBoard - Drag and Drop Transitions', () => {
     const order = createMockOrder({ status: RO_STATUS.NEW })
     customRender(<KanbanBoard orders={[order]} onStatusChange={mockOnStatusChange} />)
 
-    // Simulate drag end with invalid transition
-    const board = screen.getByText('Created').closest('div')
-    expect(board).toBeInTheDocument()
+    // Verify the column is rendered
+    const column = screen.getByLabelText(/Created column/i)
+    expect(column).toBeInTheDocument()
 
     // In a real test, we'd simulate the drag event
     // For now, verify the transition validation logic would catch this

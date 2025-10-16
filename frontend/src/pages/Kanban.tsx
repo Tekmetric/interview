@@ -1,7 +1,6 @@
 import { Suspense, useMemo, useState, useEffect } from 'react'
 import { useLocation } from 'wouter'
 import { AppLayout } from '@/components/layout/app-layout'
-import { KanbanBoard } from '@/components/kanban/kanban-board'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { useRepairOrders } from '@/components/repair-order/hooks/useRepairOrders'
@@ -20,6 +19,8 @@ import {
   useSyncSearchToUrl,
   useMultiSelectKeyboard,
 } from '@/components/kanban/hooks'
+
+import { KanbanBoard } from '@/components/kanban/board'
 
 function KanbanLoading() {
   return (

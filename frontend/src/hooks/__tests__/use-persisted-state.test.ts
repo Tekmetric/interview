@@ -60,9 +60,7 @@ describe('usePersistedState', () => {
   })
 
   it('should persist on subsequent updates', () => {
-    const { result } = renderHook(() =>
-      usePersistedState('test-key', 'initial'),
-    )
+    const { result } = renderHook(() => usePersistedState('test-key', 'initial'))
 
     expect(storage.setItem).not.toHaveBeenCalled()
 

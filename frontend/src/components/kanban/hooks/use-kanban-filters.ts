@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { RepairOrder, RepairOrderStatus } from '@shared/types'
 import { Filter, FilterType } from '@/components/ui/filters'
-import { RO_STATUS, KANBAN_LABELS, COMMON_LABELS } from '@shared/constants'
+import { RO_STATUS, KANBAN_LABELS, COMMON_LABELS, FILTER_LABELS } from '@shared/constants'
 
 export type SortOption =
   | 'default'
@@ -43,6 +43,11 @@ export function useKanbanFilters(orders: RepairOrder[]): UseKanbanFiltersReturn 
       [KANBAN_LABELS.STATUS.COMPLETED]: RO_STATUS.COMPLETED,
     }
 
+    const localPriorityMapping: Record<string, string> = {
+      [FILTER_LABELS.HIGH_PRIORITY]: 'HIGH',
+      [FILTER_LABELS.NORMAL_PRIORITY]: 'NORMAL',
+    }
+
     return orders.filter((order) => {
       // Search matching: order ID, customer name, vehicle details
       const searchLower = searchQuery.toLowerCase()
@@ -64,7 +69,7 @@ export function useKanbanFilters(orders: RepairOrder[]): UseKanbanFiltersReturn 
             return statusValues.includes(order.status)
           }
           case FilterType.PRIORITY: {
-            const priorityValues = filter.value.map((v) => v.toUpperCase())
+            const priorityValues = filter.value.map((v) => localPriorityMapping[v])
             return priorityValues.includes(order.priority)
           }
           case FilterType.TECHNICIAN: {

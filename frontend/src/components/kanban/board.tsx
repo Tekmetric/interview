@@ -1,9 +1,10 @@
 'use client'
 
-import { closestCenter, DndContext } from '@dnd-kit/core'
-import { useMemo, useState } from 'react'
+import { closestCenter, DndContext, type DragOverEvent } from '@dnd-kit/core'
+import { useEffect, useState } from 'react'
 
 import { KANBAN_COLUMNS } from '@shared/constants'
+import { canTransition } from '@shared/transitions'
 
 import { useKanban } from './hooks/use-kanban'
 
@@ -31,19 +32,17 @@ type KanbanBoardProps = {
 type KanbanColumn = (typeof KANBAN_COLUMNS)[number]
 
 export const KanbanBoard = ({ orders, onStatusChange }: KanbanBoardProps) => {
-  // Initialize board data with column field mapped from status
   const [boardData, setBoardData] = useState<KanbanRepairOrder[]>(() =>
     orders.map((order) => ({ ...order, column: order.status, name: order.id })),
   )
+  const [hoveredColumnId, setHoveredColumnId] = useState<string | null>(null)
 
-  // Update board data when orders prop changes
-  useMemo(() => {
+  useEffect(() => {
     setBoardData(
       orders.map((order) => ({ ...order, column: order.status, name: order.id })),
     )
   }, [orders])
 
-  // Use KANBAN_COLUMNS directly - they already have the correct shape
   const columns = KANBAN_COLUMNS
 
   const handleDataChange = (newData: KanbanRepairOrder[]) => {
@@ -52,6 +51,9 @@ export const KanbanBoard = ({ orders, onStatusChange }: KanbanBoardProps) => {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
+
+    // Clear hover state when drag ends
+    setHoveredColumnId(null)
 
     if (!over || !onStatusChange) return
 
@@ -84,11 +86,28 @@ export const KanbanBoard = ({ orders, onStatusChange }: KanbanBoardProps) => {
     onDragEnd: handleDragEnd,
   })
 
+  // Wrap handleDragOver to track which column is being hovered
+  const wrappedHandleDragOver = (event: DragOverEvent) => {
+    const overId = event.over?.id
+    if (overId) {
+      // Find which column is being hovered
+      const overColumn = columns.find(
+        (col) =>
+          col.status === overId ||
+          boardData.some((o) => o.id === overId && o.column === col.status),
+      )
+      setHoveredColumnId(overColumn?.status || null)
+    } else {
+      setHoveredColumnId(null)
+    }
+    handleDragOver(event)
+  }
+
   return (
     <DndContext
       collisionDetection={closestCenter}
       onDragEnd={onDragEnd}
-      onDragOver={handleDragOver}
+      onDragOver={wrappedHandleDragOver}
       onDragStart={handleDragStart}
       sensors={sensors}
     >
@@ -96,8 +115,23 @@ export const KanbanBoard = ({ orders, onStatusChange }: KanbanBoardProps) => {
         {columns.map((column) => {
           const columnOrders = boardData.filter((o) => o.column === column.status)
 
+          // Compute validation when a card is being dragged
+          const validation =
+            activeCard && activeCard.status !== column.status
+              ? canTransition(activeCard.status, column.status, activeCard)
+              : { allowed: true }
+
+          const isBeingHoveredDuringDrag =
+            hoveredColumnId === column.status && !!activeCard
+
           return (
-            <KanbanColumn column={column} key={column.status}>
+            <KanbanColumn
+              column={column}
+              key={column.status}
+              isValidDropZone={validation.allowed}
+              validationMessage={validation.reason}
+              isBeingHoveredDuringDrag={isBeingHoveredDuringDrag}
+            >
               <KanbanHeader>
                 <div
                   className={`flex items-center justify-between px-3 py-2.5 ${column.color} rounded-lg border-b border-gray-200/50`}
@@ -122,7 +156,11 @@ export const KanbanBoard = ({ orders, onStatusChange }: KanbanBoardProps) => {
                     name={order.id}
                   >
                     {({ isDragging }) => (
-                      <KanbanCardContent order={order} isDragging={isDragging} />
+                      <KanbanCardContent
+                        order={order}
+                        isDragging={isDragging}
+                        showStatus={false}
+                      />
                     )}
                   </KanbanCard>
                 )}

@@ -16,7 +16,6 @@ export type { DragEndEvent } from '@dnd-kit/core'
 type KanbanItemProps = {
   id: string
   name: string
-  [key: string]: any
 }
 
 export type KanbanBoardProps = {
@@ -30,6 +29,10 @@ type KanbanColumnProps<TColumn extends { id: string }> = {
   column: TColumn
   isValidDropZone?: boolean
   validationMessage?: string
+  // When dragging over a child card inside the column, the column's own
+  // droppable may not report isOver. This derived flag enables column-level
+  // feedback in that case as well.
+  isBeingHoveredDuringDrag?: boolean
   dropIndicatorById?: Record<string, 'top' | 'bottom'>
 }
 
@@ -38,21 +41,24 @@ export function KanbanColumn<TColumn extends { id: string }>({
   column,
   isValidDropZone = true,
   validationMessage,
+  isBeingHoveredDuringDrag = false,
 }: KanbanColumnProps<TColumn>) {
   if (!column) return null
 
   const { id } = column
   const { isOver, setNodeRef } = useDroppable({ id })
+  const isColumnOver = isOver || isBeingHoveredDuringDrag
 
   return (
     <div
       ref={setNodeRef}
       className={`relative flex flex-col overflow-hidden rounded-lg transition-all ${
-        isOver && !isValidDropZone ? 'animate-pulse ring-2 ring-red-400' : ''
+        isColumnOver && !isValidDropZone ? 'animate-pulse ring-2 ring-red-400' : ''
       }`}
+      aria-label={`${(column as any).title ?? 'Column'} column`}
       role='region'
     >
-      {isOver && !isValidDropZone && validationMessage && (
+      {isColumnOver && !isValidDropZone && validationMessage && (
         <InvalidDropOverlay validationMessage={validationMessage} />
       )}
 
@@ -119,7 +125,9 @@ export const KanbanCardsList = <T extends KanbanItemProps = KanbanItemProps>({
   columnField = 'column',
   ...props
 }: KanbanCardsProps<T>) => {
-  const filteredData = data.filter((item) => (item as any)[columnField] === props.id)
+  const filteredData = data.filter(
+    (item) => (item as Record<string, unknown>)[columnField] === props.id,
+  )
   const items = filteredData.map((item) => item.id)
 
   return (
@@ -147,14 +155,7 @@ export type KanbanContainerProps = {
 
 export const KanbanContainer = ({ children, className }: KanbanContainerProps) => (
   <ScrollArea className='w-full'>
-    <div
-      className={cn(
-        'grid size-full auto-cols-fr grid-flow-col gap-2 lg:gap-4',
-        className,
-      )}
-    >
-      {children}
-    </div>
+    <div className={cn('flex gap-3 bg-gray-50/50 p-3', className)}>{children}</div>
     <ScrollBar orientation='horizontal' />
   </ScrollArea>
 )

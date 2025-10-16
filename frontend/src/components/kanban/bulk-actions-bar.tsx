@@ -7,11 +7,7 @@ import { ChangeStatusDialog } from './batch-dialogs/change-status-dialog'
 import { UpdatePriorityDialog } from './batch-dialogs/update-priority-dialog'
 import { DeleteOrdersDialog } from './batch-dialogs/delete-orders-dialog'
 
-type BulkActionsBarProps = {
-  orders: Array<{ id: string }>
-}
-
-export function BulkActionsBar(_props: BulkActionsBarProps) {
+export function BulkActionsBar() {
   const { selection, clearSelection } = useMultiSelect()
   const [assignTechOpen, setAssignTechOpen] = useState(false)
   const [changeStatusOpen, setChangeStatusOpen] = useState(false)

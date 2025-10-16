@@ -67,8 +67,14 @@ export const useKanban = <
   const [activeCardId, setActiveCardId] = useState<string | null>(null)
 
   const sensors = useSensors(
-    useSensor(MouseSensor),
-    useSensor(TouchSensor),
+    // Require slight movement before activating drag to allow normal clicks
+    useSensor(MouseSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+    // Small press delay on touch to avoid accidental drags on taps
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 150, tolerance: 5 },
+    }),
     useSensor(KeyboardSensor),
   )
 

@@ -1,6 +1,9 @@
 package com.interview.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="users")
@@ -10,8 +13,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Name cannot be null")
+    @NotBlank(message = "Name cannot be blank")
     private String name;
+    @NotNull(message = "Surname cannot be null")
+    @NotBlank(message = "Surname cannot be blank")
     private String surname;
+    @Email
+    @NotNull(message = "Email cannot be null")
+    @NotBlank(message = "Email cannot be blank")
     private String email;
 
     @Version

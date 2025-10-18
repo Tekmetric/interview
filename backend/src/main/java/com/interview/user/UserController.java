@@ -1,5 +1,6 @@
 package com.interview.user;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class UserController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public User createUser(@RequestBody User newUser) {
+    public User createUser(@Valid @RequestBody User newUser) {
         return repository.save(newUser);
     }
 
@@ -45,7 +46,7 @@ public class UserController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public User editUser(@PathVariable Long id, @RequestBody User editedUser) {
+    public User editUser(@PathVariable Long id, @Valid @RequestBody User editedUser) {
         editedUser.setId(id);
         return repository.save(editedUser);
     }

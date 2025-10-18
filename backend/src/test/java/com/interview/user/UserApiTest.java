@@ -140,4 +140,44 @@ public class UserApiTest {
         )
             .hasStatus(HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    void testEditWithBadData() {
+        String putBody = """
+            {
+                "name": "",
+                "surname": null,
+                "email": "bobsmithemail.com",
+                "version": 0
+            }
+            """;
+        assertThat(mvc.put().uri("/api/users/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(putBody)
+        )
+            .hasStatus(HttpStatus.BAD_REQUEST)
+            .bodyJson().isLenientlyEqualTo("""
+                {
+                    "message": "Invalid Request",
+                    "details": [
+                        {
+                            "field": "name",
+                            "message": "Name cannot be blank"
+                        },
+                        {
+                            "field": "surname",
+                            "message": "Surname cannot be null"
+                        },
+                        {
+                            "field": "surname",
+                            "message": "Surname cannot be blank"
+                        },
+                        {
+                            "field": "email",
+                            "message": "must be a well-formed email address"
+                        }
+                    ]
+                }
+                """);
+    }
 }

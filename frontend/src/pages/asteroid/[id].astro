@@ -1,0 +1,28 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import AsteroidDetail from '../../components/AsteroidDetail';
+import { SITE_TITLE } from '../../consts';
+
+// Get the asteroid ID from the route parameter
+const { id } = Astro.params;
+
+// Disable prerendering for dynamic routes
+export const prerender = false;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`Asteroid ${id} - ${SITE_TITLE}`}
+      description={`Detailed information about asteroid ${id}`}
+    />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <AsteroidDetail asteroidId={id!} client:load />
+    </main>
+  </body>
+</html>

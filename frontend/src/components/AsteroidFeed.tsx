@@ -214,12 +214,10 @@ export default function AsteroidFeed() {
                     </div>
 
                     <a
-                      href={asteroid.nasa_jpl_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={`/asteroid/${asteroid.id}`}
                       className={styles.detailsLink}
                     >
-                      View Details on NASA JPL
+                      View Details →
                     </a>
                   </div>
                 );

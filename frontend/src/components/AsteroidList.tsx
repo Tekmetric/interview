@@ -216,13 +216,8 @@ export default function AsteroidList() {
                 km
               </p>
             </div>
-            <a
-              href={asteroid.nasa_jpl_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.detailsLink}
-            >
-              View Details on NASA JPL
+            <a href={`/asteroid/${asteroid.id}`} className={styles.detailsLink}>
+              View Details →
             </a>
           </div>
         ))}

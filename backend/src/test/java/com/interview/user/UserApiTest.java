@@ -6,7 +6,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,6 +50,7 @@ public class UserApiTest {
     }
 
     @Test
+    @Transactional
     void testCreateUser() {
         String postBody = """
             {
@@ -84,6 +87,7 @@ public class UserApiTest {
     }
 
     @Test
+    @Transactional
     void testDeleteUser() {
         assertThat(mvc.delete().uri("/api/users/1"))
             .hasStatus(HttpStatus.OK);
@@ -99,7 +103,9 @@ public class UserApiTest {
             .isEqualTo("User not found: 1");
     }
 
+    // transaction needs to commit to trigger the version increment, so this test needs its own context
     @Test
+    @DirtiesContext
     void testEditUser() {
         String putBody = """
             {
@@ -113,6 +119,8 @@ public class UserApiTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(putBody)
         )
+            .hasStatus(HttpStatus.OK);
+        assertThat(mvc.get().uri("/api/users/1"))
             .hasStatus(HttpStatus.OK)
             .bodyJson()
             .isLenientlyEqualTo("""

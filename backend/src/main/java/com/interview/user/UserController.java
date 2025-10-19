@@ -1,6 +1,7 @@
 package com.interview.user;
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -11,34 +12,35 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserRepository repository;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private UserService userService;
 
-    UserController(UserRepository repository) {
-        this.repository = repository;
-    }
 
     @PostMapping(
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public User createUser(@Valid @RequestBody User newUser) {
-        return repository.save(newUser);
+    public UserDto createUser(@Valid @RequestBody User newUser) {
+        User u = userService.save(newUser);
+        return userMapper.userToUserDto(u);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User userById(@PathVariable Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+    public UserDto userById(@PathVariable Long id) {
+        User u = userService.findById(id);
+        return userMapper.userToUserDto(u);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<User> all() {
-        return repository.findAll();
+    public List<UserDto> all() {
+        return userService.findAll().stream().map(u -> userMapper.userToUserDto(u)).toList();
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-        repository.deleteById(id);
+        userService.deleteById(id);
     }
 
     @PutMapping(
@@ -46,9 +48,10 @@ public class UserController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public User editUser(@PathVariable Long id, @Valid @RequestBody User editedUser) {
-        editedUser.setId(id);
-        return repository.save(editedUser);
+    public UserDto editUser(@PathVariable Long id, @Valid @RequestBody UserDto editedUser) {
+        User u = userService.findById(id);
+        u = userMapper.updateFromDto(editedUser, u);
+        return userMapper.userToUserDto(userService.save(u));
     }
 
     @ExceptionHandler(UserNotFoundException.class)

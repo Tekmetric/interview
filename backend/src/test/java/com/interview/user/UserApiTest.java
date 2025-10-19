@@ -26,10 +26,10 @@ public class UserApiTest {
             .bodyJson()
             .isLenientlyEqualTo("""
                 [{
+                    "id": 1,
                     "name": "Bob",
                     "surname": "Smith",
-                    "email": "bsmith@email.com",
-                    "version": 0
+                    "email": "bsmith@email.com"
                 }]
                 """);
     }
@@ -41,10 +41,10 @@ public class UserApiTest {
             .bodyJson()
             .isLenientlyEqualTo("""
                 {
+                    "id": 1,
                     "name": "Bob",
                     "surname": "Smith",
-                    "email": "bsmith@email.com",
-                    "version": 0
+                    "email": "bsmith@email.com"
                 }
                 """);
     }
@@ -67,10 +67,10 @@ public class UserApiTest {
             .bodyJson()
             .isLenientlyEqualTo("""
                 {
+                    "id": 2,
                     "name": "John",
                     "surname": "Smith",
-                    "email": "jsmith@email.com",
-                    "version": 0
+                    "email": "jsmith@email.com"
                 }
                 """);
         assertThat(mvc.get().uri("/api/users/2"))
@@ -78,10 +78,10 @@ public class UserApiTest {
             .bodyJson()
             .isLenientlyEqualTo("""
                 {
+                    "id": 2,
                     "name": "John",
                     "surname": "Smith",
-                    "email": "jsmith@email.com",
-                    "version": 0
+                    "email": "jsmith@email.com"
                 }
                 """);
     }
@@ -103,7 +103,6 @@ public class UserApiTest {
             .isEqualTo("User not found: 1");
     }
 
-    // transaction needs to commit to trigger the version increment, so this test needs its own context
     @Test
     @DirtiesContext
     void testEditUser() {
@@ -111,8 +110,7 @@ public class UserApiTest {
             {
                 "name": "Bob",
                 "surname": "Smith",
-                "email": "bobsmith@email.com",
-                "version": 0
+                "email": "bobsmith@email.com"
             }
             """;
         assertThat(mvc.put().uri("/api/users/1")
@@ -127,26 +125,9 @@ public class UserApiTest {
                 {
                     "name": "Bob",
                     "surname": "Smith",
-                    "email": "bobsmith@email.com",
-                    "version": 1
+                    "email": "bobsmith@email.com"
                 }
                 """);
-    }
-
-    @Test
-    void testEditWithNoVersionFails() {
-        String putBody = """
-            {
-                "name": "Bob",
-                "surname": "Smith",
-                "email": "bobsmith@email.com",
-            }
-            """;
-        assertThat(mvc.put().uri("/api/users/1")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(putBody)
-        )
-            .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -155,8 +136,7 @@ public class UserApiTest {
             {
                 "name": "",
                 "surname": null,
-                "email": "bobsmithemail.com",
-                "version": 0
+                "email": "bobsmithemail.com"
             }
             """;
         assertThat(mvc.put().uri("/api/users/1")

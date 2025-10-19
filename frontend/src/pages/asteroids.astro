@@ -1,0 +1,24 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import AsteroidList from "../components/AsteroidList";
+import { SITE_TITLE } from "../consts";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`Asteroids - ${SITE_TITLE}`}
+      description="Browse NASA's catalog of Near Earth Objects (Asteroids)"
+    />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>Asteroids</h1>
+      <p>Browse the catalog of asteroids tracked by NASA</p>
+      <AsteroidList client:load />
+    </main>
+  </body>
+</html>

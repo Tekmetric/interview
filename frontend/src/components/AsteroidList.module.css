@@ -1,0 +1,156 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+}
+
+.error {
+  color: red;
+}
+
+.pageInfo {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.pageInfo p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.totalCount {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.pageButton,
+.pageNumber {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.pageButton:hover:not(:disabled),
+.pageNumber:hover {
+  background: #f0f0f0;
+  border-color: #0066cc;
+}
+
+.pageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageNumber.active {
+  background: #0066cc;
+  color: white;
+  border-color: #0066cc;
+}
+
+.ellipsis {
+  padding: 0.5rem;
+  color: #666;
+}
+
+.asteroidList {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.asteroidCard {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  background: white;
+  transition: box-shadow 0.2s;
+}
+
+.asteroidCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.asteroidHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.asteroidName {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.hazardBadge {
+  background: #ff6b6b;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.asteroidDetails {
+  margin: 0.75rem 0;
+  color: #555;
+}
+
+.asteroidDetails p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.asteroidDetails strong {
+  color: #333;
+}
+
+.detailsLink {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: #0066cc;
+  text-decoration: underline;
+  font-size: 0.9rem;
+}
+
+.detailsLink:hover {
+  color: #0052a3;
+}
+
+@media (max-width: 600px) {
+  .asteroidHeader {
+    flex-direction: column;
+  }
+
+  .pagination {
+    gap: 0.25rem;
+  }
+
+  .pageButton,
+  .pageNumber {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.9rem;
+  }
+}

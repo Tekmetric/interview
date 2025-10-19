@@ -1,0 +1,26 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import AsteroidFeed from '../components/AsteroidFeed';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`NEO Close Approaches - ${SITE_TITLE}`}
+      description="View Near Earth Objects approaching Earth by date"
+    />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>Near Earth Object Close Approaches</h1>
+      <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">
+        Select a date to view asteroids approaching Earth in a 7-day period
+      </p>
+      <AsteroidFeed client:load />
+    </main>
+  </body>
+</html>

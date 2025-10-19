@@ -1,6 +1,9 @@
 import type { APIRoute } from 'astro';
 
-export const GET: APIRoute = async ({ locals, url }) => {
+// Disable prerendering for API routes https://docs.astro.build/en/guides/on-demand-rendering/
+export const prerender = false;
+
+export const GET: APIRoute = async ({ locals, url, request, params }) => {
   try {
     // Access the Cloudflare runtime environment
     const runtime = locals.runtime as any;

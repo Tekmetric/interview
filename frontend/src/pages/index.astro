@@ -13,10 +13,9 @@ function formatDate(date: Date): string {
   return date.toISOString().split('T')[0];
 }
 
-// Get date parameters from URL, default to today
+// Get date parameter from URL, default to today
 const today = new Date();
-const startDateParam = Astro.url.searchParams.get("start_date") || formatDate(today);
-const endDateParam = Astro.url.searchParams.get("end_date") || startDateParam;
+const selectedDate = Astro.url.searchParams.get("date") || formatDate(today);
 
 // Fetch data server-side
 const runtime = Astro.locals.runtime as any;
@@ -26,8 +25,8 @@ if (!apiKey) {
   throw new Error('NASA_API_KEY not configured');
 }
 
-// Fetch from NASA NeoWs Feed API
-const nasaUrl = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDateParam}&end_date=${endDateParam}&api_key=${apiKey}`;
+// Fetch from NASA NeoWs Feed API (use same date for start and end to get single day)
+const nasaUrl = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${selectedDate}&end_date=${selectedDate}&api_key=${apiKey}`;
 const response = await fetch(nasaUrl);
 
 if (!response.ok) {
@@ -50,8 +49,7 @@ const data = NeoWsFeedResponseSchema.parse(rawData);
     <main>
       <AsteroidFeed
         data={data}
-        initialStartDate={startDateParam}
-        initialEndDate={endDateParam}
+        selectedDate={selectedDate}
         client:load
       />
     </main>

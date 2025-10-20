@@ -1,110 +1,45 @@
-import { useState } from 'react';
 import { navigate } from 'astro:transitions/client';
-import { DayPicker, type DateRange } from 'react-day-picker';
-import 'react-day-picker/style.css';
 import styles from './AsteroidFeed.module.css';
 import type { NeoWsFeedResponse } from '../schemas/nasa';
 
 interface AsteroidFeedProps {
   data: NeoWsFeedResponse;
-  initialStartDate: string;
-  initialEndDate: string;
+  selectedDate: string;
 }
 
-export default function AsteroidFeed({ data, initialStartDate, initialEndDate }: AsteroidFeedProps) {
-  // Parse initial dates from props
-  const parseInitialDates = (): DateRange => {
-    const from = new Date(initialStartDate);
-    const to = initialStartDate === initialEndDate ? undefined : new Date(initialEndDate);
-    return { from, to };
-  };
-
-  const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(parseInitialDates());
-
-  // Convert Date to YYYY-MM-DD string
-  const dateToString = (date: Date): string => {
-    return date.toISOString().split('T')[0];
-  };
-
-  // Calculate disabled dates (beyond 7 days from selected start)
-  const getDisabledDates = () => {
-    if (!selectedRange?.from) return undefined;
-
-    const maxDate = new Date(selectedRange.from);
-    maxDate.setDate(maxDate.getDate() + 6); // 7 days total
-
-    return [
-      { after: maxDate }
-    ];
-  };
-
-  const handleRangeSelect = (range: DateRange | undefined) => {
-    if (range?.from) {
-      let finalRange = range;
-
-      // If selecting a range beyond 7 days, cap it
-      if (range.to) {
-        const daysDiff = Math.ceil(
-          (range.to.getTime() - range.from.getTime()) / (1000 * 60 * 60 * 24)
-        );
-
-        if (daysDiff > 6) {
-          // Cap at 7 days
-          const maxTo = new Date(range.from);
-          maxTo.setDate(maxTo.getDate() + 6);
-          finalRange = { from: range.from, to: maxTo };
-        }
-      }
-
-      // Update local state for immediate UI feedback
-      setSelectedRange(finalRange);
-
-      // Navigate to new URL to fetch new data
-      const startDate = dateToString(finalRange.from);
-      const endDate = finalRange.to ? dateToString(finalRange.to) : startDate;
-      navigate(`/?start_date=${startDate}&end_date=${endDate}`);
+export default function AsteroidFeed({ data, selectedDate }: AsteroidFeedProps) {
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newDate = event.target.value;
+    if (newDate) {
+      navigate(`/?date=${newDate}`);
     }
   };
 
-  // Get sorted dates
+  // Get sorted dates (should only be one date in the response)
   const dates = Object.keys(data.near_earth_objects).sort();
-
-  // Calculate display text
-  const getDisplayText = () => {
-    if (!selectedRange?.from) return '';
-
-    if (!selectedRange.to || selectedRange.from.getTime() === selectedRange.to.getTime()) {
-      return `in ${dateToString(selectedRange.from)}`;
-    }
-
-    return `between ${dateToString(selectedRange.from)} and ${dateToString(selectedRange.to)}`;
-  };
 
   return (
     <div className={styles.container}>
       <div className={styles.controls}>
-        <div className={styles.calendarWrapper}>
-          <DayPicker
-            mode="range"
-            selected={selectedRange}
-            onSelect={handleRangeSelect}
-            disabled={getDisabledDates()}
-            className={styles.calendar}
-            max={7}
+        <div className={styles.datePickerWrapper}>
+          <label htmlFor="date-picker" className={styles.dateLabel}>
+            Select a date to view asteroids approaching Earth:
+          </label>
+          <input
+            id="date-picker"
+            type="date"
+            value={selectedDate}
+            onChange={handleDateChange}
+            className={styles.datePicker}
           />
         </div>
         <div className={styles.infoPanel}>
-          <p className={styles.dateInfo}>
-            Select a date range (up to 7 days) to view asteroids approaching Earth
-          </p>
-          {data && (
-            <div className={styles.summary}>
-              <p>
-                <strong>{data.element_count}</strong> asteroid
-                {data.element_count !== 1 ? 's' : ''} approaching Earth {getDisplayText()}
-              </p>
-            </div>
-          )}
+          <div className={styles.summary}>
+            <p>
+              <strong>{data.element_count}</strong> asteroid
+              {data.element_count !== 1 ? 's' : ''} approaching Earth on {selectedDate}
+            </p>
+          </div>
         </div>
       </div>
 

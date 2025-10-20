@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import styles from './AsteroidList.module.css';
-import type { NeoWsBrowseResponse } from '../schemas/nasa';
+import { NeoWsBrowseResponseSchema } from '../schemas/nasa';
 
 export default function AsteroidList() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -23,7 +23,7 @@ export default function AsteroidList() {
   }, [currentPage]);
 
   // Fetch data with React Query
-  const { data, isLoading, error } = useQuery<NeoWsBrowseResponse, Error>({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['asteroids', 'browse', currentPage],
     queryFn: async () => {
       const response = await fetch(`/api/neows?page=${currentPage}`);
@@ -32,11 +32,8 @@ export default function AsteroidList() {
         throw new Error('Failed to fetch asteroid data');
       }
 
-      const responseData = await response.json();
-
-      if (responseData.error) {
-        throw new Error(responseData.error);
-      }
+      // Parse and validate response with Zod
+      const responseData = NeoWsBrowseResponseSchema.parse(await response.json());
 
       return responseData;
     },

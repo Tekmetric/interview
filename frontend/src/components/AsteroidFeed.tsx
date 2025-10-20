@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { DayPicker, type DateRange } from 'react-day-picker';
 import 'react-day-picker/style.css';
 import styles from './AsteroidFeed.module.css';
-import type { NeoWsFeedResponse } from '../schemas/nasa';
+import { NeoWsFeedResponseSchema } from '../schemas/nasa';
 
 export default function AsteroidFeed() {
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>({
@@ -33,7 +33,7 @@ export default function AsteroidFeed() {
   const endDate = selectedRange?.to ? dateToString(selectedRange.to) : startDate;
 
   // Fetch data with React Query
-  const { data, isLoading, error } = useQuery<NeoWsFeedResponse, Error>({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['asteroids', 'feed', startDate, endDate],
     queryFn: async () => {
       const response = await fetch(
@@ -44,11 +44,8 @@ export default function AsteroidFeed() {
         throw new Error('Failed to fetch asteroid data');
       }
 
-      const responseData = await response.json();
-
-      if (responseData.error) {
-        throw new Error(responseData.error);
-      }
+      // Parse and validate response with Zod
+      const responseData = NeoWsFeedResponseSchema.parse(await response.json());
 
       return responseData;
     },

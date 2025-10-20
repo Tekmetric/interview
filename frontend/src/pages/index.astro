@@ -1,7 +1,6 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
-import ImageGallery from "../components/ImageGallery";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 ---
 
@@ -12,6 +11,23 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
   </head>
   <body>
     <Header />
-    <ImageGallery client:load />
+    <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; text-align: center;">
+      <h1 style="font-size: 3rem; margin-bottom: 1rem;">NASA Data Visualizations</h1>
+      <p style="font-size: 1.25rem; color: #666; margin-bottom: 3rem;">
+        Explore Near Earth Objects and asteroid data from NASA's APIs
+      </p>
+
+      <div style="display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-top: 3rem;">
+        <a href="/asteroids" style="background: white; border: 2px solid #0066cc; border-radius: 12px; padding: 2rem; text-decoration: none; transition: all 0.2s; display: block;">
+          <h2 style="color: #0066cc; margin: 0 0 1rem 0; font-size: 1.5rem;">Browse Asteroids</h2>
+          <p style="color: #666; margin: 0;">Explore the catalog of Near Earth Objects tracked by NASA</p>
+        </a>
+
+        <a href="/neows" style="background: white; border: 2px solid #0066cc; border-radius: 12px; padding: 2rem; text-decoration: none; transition: all 0.2s; display: block;">
+          <h2 style="color: #0066cc; margin: 0 0 1rem 0; font-size: 1.5rem;">Close Approaches</h2>
+          <p style="color: #666; margin: 0;">View asteroids approaching Earth by date</p>
+        </a>
+      </div>
+    </main>
   </body>
 </html>

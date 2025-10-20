@@ -2,41 +2,7 @@ import { useState, useEffect } from 'react';
 import { DayPicker, type DateRange } from 'react-day-picker';
 import 'react-day-picker/style.css';
 import styles from './AsteroidFeed.module.css';
-
-interface CloseApproachData {
-  close_approach_date: string;
-  close_approach_date_full: string;
-  relative_velocity: {
-    kilometers_per_hour: string;
-  };
-  miss_distance: {
-    kilometers: string;
-    lunar: string;
-  };
-}
-
-interface Asteroid {
-  id: string;
-  name: string;
-  nasa_jpl_url: string;
-  absolute_magnitude_h: number;
-  is_potentially_hazardous_asteroid: boolean;
-  estimated_diameter: {
-    kilometers: {
-      estimated_diameter_min: number;
-      estimated_diameter_max: number;
-    };
-  };
-  close_approach_data: CloseApproachData[];
-}
-
-interface NeoWsFeedResponse {
-  element_count: number;
-  near_earth_objects: {
-    [date: string]: Asteroid[];
-  };
-  error?: string;
-}
+import type { NeoWsFeedResponse } from '../schemas/nasa';
 
 export default function AsteroidFeed() {
   const [data, setData] = useState<NeoWsFeedResponse | null>(null);

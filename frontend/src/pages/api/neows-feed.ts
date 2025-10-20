@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { NeoWsFeedResponseSchema } from '../../schemas/nasa';
 
 // Disable prerendering for API routes https://docs.astro.build/en/guides/on-demand-rendering/
 export const prerender = false;
@@ -66,7 +67,10 @@ export const GET: APIRoute = async ({ locals, url }) => {
 
     const data = await response.json();
 
-    return new Response(JSON.stringify(data), {
+    // Validate response with Zod
+    const validatedData = NeoWsFeedResponseSchema.parse(data);
+
+    return new Response(JSON.stringify(validatedData), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',

@@ -1,33 +1,9 @@
 import { useState, useEffect } from 'react';
 import styles from './AsteroidList.module.css';
-
-interface Asteroid {
-  id: string;
-  name: string;
-  nasa_jpl_url: string;
-  absolute_magnitude_h: number;
-  is_potentially_hazardous_asteroid: boolean;
-  estimated_diameter: {
-    kilometers: {
-      estimated_diameter_min: number;
-      estimated_diameter_max: number;
-    };
-  };
-}
-
-interface NeoWsResponse {
-  page: {
-    size: number;
-    total_elements: number;
-    total_pages: number;
-    number: number;
-  };
-  near_earth_objects: Asteroid[];
-  error?: string;
-}
+import type { NeoWsBrowseResponse } from '../schemas/nasa';
 
 export default function AsteroidList() {
-  const [data, setData] = useState<NeoWsResponse | null>(null);
+  const [data, setData] = useState<NeoWsBrowseResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);

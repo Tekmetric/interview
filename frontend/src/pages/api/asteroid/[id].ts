@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { AsteroidDetailSchema } from '../../../schemas/nasa';
 
 // Disable prerendering for API routes
 export const prerender = false;
@@ -58,7 +59,10 @@ export const GET: APIRoute = async ({ locals, params }) => {
 
     const data = await response.json();
 
-    return new Response(JSON.stringify(data), {
+    // Validate response with Zod
+    const validatedData = AsteroidDetailSchema.parse(data);
+
+    return new Response(JSON.stringify(validatedData), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',

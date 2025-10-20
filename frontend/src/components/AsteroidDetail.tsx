@@ -209,7 +209,6 @@ export default function AsteroidDetail({ data: asteroid }: AsteroidDetailProps) 
           href={asteroid.nasa_jpl_url}
           target="_blank"
           rel="noopener noreferrer"
-          className={styles.jplLink}
         >
           View Full Details on NASA JPL →
         </a>

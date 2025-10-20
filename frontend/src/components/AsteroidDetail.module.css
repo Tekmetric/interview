@@ -140,22 +140,6 @@
   border-top: 2px solid #e8f4f8;
 }
 
-.jplLink {
-  display: inline-block;
-  background: #0066cc;
-  color: white;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 1.1rem;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-
-.jplLink:hover {
-  background: #0052a3;
-}
-
 @media (max-width: 768px) {
   .title {
     font-size: 1.75rem;

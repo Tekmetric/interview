@@ -130,8 +130,8 @@ export default function AsteroidDetail({ asteroidId }: AsteroidDetailProps) {
     return (
       <div className={styles.error}>
         <p>Error: {error}</p>
-        <a href="/asteroids" className={styles.backLink}>
-          ← Back to Asteroids
+        <a href="/browse" className={styles.backLink}>
+          ← Back to Browse
         </a>
       </div>
     );
@@ -143,8 +143,8 @@ export default function AsteroidDetail({ asteroidId }: AsteroidDetailProps) {
 
   return (
     <div className={styles.container}>
-      <a href="/asteroids" className={styles.backLink}>
-        ← Back to Asteroids
+      <a href="/browse" className={styles.backLink}>
+        ← Back to Browse
       </a>
 
       <div className={styles.header}>

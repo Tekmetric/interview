@@ -1,54 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
 import styles from './AsteroidDetail.module.css';
-import { AsteroidDetailSchema } from '../schemas/nasa';
+import type { AsteroidDetail as AsteroidDetailType } from '../schemas/nasa';
 
 interface AsteroidDetailProps {
-  asteroidId: string;
+  data: AsteroidDetailType;
 }
 
-export default function AsteroidDetail({ asteroidId }: AsteroidDetailProps) {
-  // Fetch data with React Query
-  const { data: asteroid, isLoading, error } = useQuery({
-    queryKey: ['asteroid', asteroidId],
-    queryFn: async () => {
-      const response = await fetch(`/api/asteroid/${asteroidId}`);
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Asteroid not found');
-        }
-        throw new Error('Failed to fetch asteroid data');
-      }
-
-      // Parse and validate response with Zod
-      const data = AsteroidDetailSchema.parse(await response.json());
-
-      return data;
-    },
-  });
-
-  if (isLoading) {
-    return (
-      <div className={styles.loading}>
-        <p>Loading asteroid details...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.error}>
-        <p>Error: {error.message}</p>
-        <a href="/browse" className={styles.backLink}>
-          ← Back to List
-        </a>
-      </div>
-    );
-  }
-
-  if (!asteroid) {
-    return null;
-  }
+export default function AsteroidDetail({ data: asteroid }: AsteroidDetailProps) {
 
   return (
     <div className={styles.container}>

@@ -1,15 +1,25 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { navigate } from 'astro:transitions/client';
 import { DayPicker, type DateRange } from 'react-day-picker';
 import 'react-day-picker/style.css';
 import styles from './AsteroidFeed.module.css';
-import { NeoWsFeedResponseSchema } from '../schemas/nasa';
+import type { NeoWsFeedResponse } from '../schemas/nasa';
 
-export default function AsteroidFeed() {
-  const [selectedRange, setSelectedRange] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: undefined,
-  });
+interface AsteroidFeedProps {
+  data: NeoWsFeedResponse;
+  initialStartDate: string;
+  initialEndDate: string;
+}
+
+export default function AsteroidFeed({ data, initialStartDate, initialEndDate }: AsteroidFeedProps) {
+  // Parse initial dates from props
+  const parseInitialDates = (): DateRange => {
+    const from = new Date(initialStartDate);
+    const to = initialStartDate === initialEndDate ? undefined : new Date(initialEndDate);
+    return { from, to };
+  };
+
+  const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(parseInitialDates());
 
   // Convert Date to YYYY-MM-DD string
   const dateToString = (date: Date): string => {
@@ -28,32 +38,10 @@ export default function AsteroidFeed() {
     ];
   };
 
-  // Calculate date parameters
-  const startDate = selectedRange?.from ? dateToString(selectedRange.from) : '';
-  const endDate = selectedRange?.to ? dateToString(selectedRange.to) : startDate;
-
-  // Fetch data with React Query
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['asteroids', 'feed', startDate, endDate],
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/neows-feed?start_date=${startDate}&end_date=${endDate}`
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch asteroid data');
-      }
-
-      // Parse and validate response with Zod
-      const responseData = NeoWsFeedResponseSchema.parse(await response.json());
-
-      return responseData;
-    },
-    enabled: !!selectedRange?.from,
-  });
-
   const handleRangeSelect = (range: DateRange | undefined) => {
     if (range?.from) {
+      let finalRange = range;
+
       // If selecting a range beyond 7 days, cap it
       if (range.to) {
         const daysDiff = Math.ceil(
@@ -64,27 +52,22 @@ export default function AsteroidFeed() {
           // Cap at 7 days
           const maxTo = new Date(range.from);
           maxTo.setDate(maxTo.getDate() + 6);
-          setSelectedRange({ from: range.from, to: maxTo });
-          return;
+          finalRange = { from: range.from, to: maxTo };
         }
       }
 
-      setSelectedRange(range);
+      // Update local state for immediate UI feedback
+      setSelectedRange(finalRange);
+
+      // Navigate to new URL to fetch new data
+      const startDate = dateToString(finalRange.from);
+      const endDate = finalRange.to ? dateToString(finalRange.to) : startDate;
+      navigate(`/?start_date=${startDate}&end_date=${endDate}`);
     }
   };
 
-  if (isLoading && !data) {
-    return (
-      <div className={styles.loading}>
-        <p>Loading asteroids...</p>
-      </div>
-    );
-  }
-
   // Get sorted dates
-  const dates = data?.near_earth_objects
-    ? Object.keys(data.near_earth_objects).sort()
-    : [];
+  const dates = Object.keys(data.near_earth_objects).sort();
 
   // Calculate display text
   const getDisplayText = () => {
@@ -93,10 +76,6 @@ export default function AsteroidFeed() {
     if (!selectedRange.to || selectedRange.from.getTime() === selectedRange.to.getTime()) {
       return `in ${dateToString(selectedRange.from)}`;
     }
-
-    const daysDiff = Math.ceil(
-      (selectedRange.to.getTime() - selectedRange.from.getTime()) / (1000 * 60 * 60 * 24)
-    ) + 1;
 
     return `between ${dateToString(selectedRange.from)} and ${dateToString(selectedRange.to)}`;
   };
@@ -129,20 +108,8 @@ export default function AsteroidFeed() {
         </div>
       </div>
 
-      {isLoading && (
-        <div className={styles.loadingOverlay}>
-          <p>Updating...</p>
-        </div>
-      )}
-
-      {error && (
-        <div className={styles.error}>
-          <p>Error: {error.message}</p>
-        </div>
-      )}
-
       {dates.map((date) => {
-        const asteroids = data!.near_earth_objects[date];
+        const asteroids = data.near_earth_objects[date];
         return (
           <div key={date} className={styles.dateSection}>
             <h2 className={styles.dateHeader}>{date}</h2>

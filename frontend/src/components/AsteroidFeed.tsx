@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { DayPicker, type DateRange } from 'react-day-picker';
+import 'react-day-picker/style.css';
 import styles from './AsteroidFeed.module.css';
 
 interface CloseApproachData {
@@ -40,28 +42,41 @@ export default function AsteroidFeed() {
   const [data, setData] = useState<NeoWsFeedResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState('');
+  const [selectedRange, setSelectedRange] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: undefined,
+  });
 
-  // Initialize with today's date
-  useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    setStartDate(today);
-  }, []);
+  // Convert Date to YYYY-MM-DD string
+  const dateToString = (date: Date): string => {
+    return date.toISOString().split('T')[0];
+  };
 
-  // Fetch data when start date changes
+  // Calculate disabled dates (beyond 7 days from selected start)
+  const getDisabledDates = () => {
+    if (!selectedRange?.from) return undefined;
+
+    const maxDate = new Date(selectedRange.from);
+    maxDate.setDate(maxDate.getDate() + 6); // 7 days total
+
+    return [
+      { after: maxDate }
+    ];
+  };
+
+  // Fetch data when selected range changes
   useEffect(() => {
-    if (!startDate) return;
+    if (!selectedRange?.from) return;
 
     const fetchAsteroids = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        // Calculate end date (7 days later for max range)
-        const start = new Date(startDate);
-        const end = new Date(start);
-        end.setDate(end.getDate() + 6); // 7 days total (including start)
-        const endDate = end.toISOString().split('T')[0];
+        const startDate = dateToString(selectedRange.from);
+        const endDate = selectedRange.to
+          ? dateToString(selectedRange.to)
+          : startDate; // If no end date, use same as start
 
         const response = await fetch(
           `/api/neows-feed?start_date=${startDate}&end_date=${endDate}`
@@ -86,10 +101,27 @@ export default function AsteroidFeed() {
     };
 
     fetchAsteroids();
-  }, [startDate]);
+  }, [selectedRange]);
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStartDate(e.target.value);
+  const handleRangeSelect = (range: DateRange | undefined) => {
+    if (range?.from) {
+      // If selecting a range beyond 7 days, cap it
+      if (range.to) {
+        const daysDiff = Math.ceil(
+          (range.to.getTime() - range.from.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (daysDiff > 6) {
+          // Cap at 7 days
+          const maxTo = new Date(range.from);
+          maxTo.setDate(maxTo.getDate() + 6);
+          setSelectedRange({ from: range.from, to: maxTo });
+          return;
+        }
+      }
+
+      setSelectedRange(range);
+    }
   };
 
   if (loading && !data) {
@@ -105,23 +137,47 @@ export default function AsteroidFeed() {
     ? Object.keys(data.near_earth_objects).sort()
     : [];
 
+  // Calculate display text
+  const getDisplayText = () => {
+    if (!selectedRange?.from) return '';
+
+    if (!selectedRange.to || selectedRange.from.getTime() === selectedRange.to.getTime()) {
+      return `in ${dateToString(selectedRange.from)}`;
+    }
+
+    const daysDiff = Math.ceil(
+      (selectedRange.to.getTime() - selectedRange.from.getTime()) / (1000 * 60 * 60 * 24)
+    ) + 1;
+
+    return `between ${dateToString(selectedRange.from)} and ${dateToString(selectedRange.to)}`;
+  };
+
   return (
     <div className={styles.container}>
-      <p>Select a date to view asteroids approaching Earth in a 7-day period</p>
       <div className={styles.controls}>
-        <label htmlFor="start-date" className={styles.dateLabel}>
-          Select Start Date:
-        </label>
-        <input
-          id="start-date"
-          type="date"
-          value={startDate}
-          onChange={handleDateChange}
-          className={styles.dateInput}
-        />
-        <p className={styles.dateInfo}>
-          Showing 7-day period from {startDate}
-        </p>
+        <div className={styles.calendarWrapper}>
+          <DayPicker
+            mode="range"
+            selected={selectedRange}
+            onSelect={handleRangeSelect}
+            disabled={getDisabledDates()}
+            className={styles.calendar}
+            max={7}
+          />
+        </div>
+        <div className={styles.infoPanel}>
+          <p className={styles.dateInfo}>
+            Select a date range (up to 7 days) to view asteroids approaching Earth
+          </p>
+          {data && (
+            <div className={styles.summary}>
+              <p>
+                <strong>{data.element_count}</strong> asteroid
+                {data.element_count !== 1 ? 's' : ''} approaching Earth {getDisplayText()}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {loading && (
@@ -133,16 +189,6 @@ export default function AsteroidFeed() {
       {error && (
         <div className={styles.error}>
           <p>Error: {error}</p>
-        </div>
-      )}
-
-      {data && (
-        <div className={styles.summary}>
-          <p>
-            <strong>{data.element_count}</strong> asteroid
-            {data.element_count !== 1 ? 's' : ''} approaching Earth in this
-            period
-          </p>
         </div>
       )}
 

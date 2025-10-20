@@ -16,4 +16,8 @@ export default defineConfig({
       enabled: true,
     },
   }),
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'hover'
+  },
 });

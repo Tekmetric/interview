@@ -9,9 +9,12 @@ export default function AsteroidDetail({ data: asteroid }: AsteroidDetailProps) 
 
   return (
     <div className={styles.container}>
-      <a href="/browse" className={styles.backLink}>
-        ← Back to List
-      </a>
+      <button
+        onClick={() => window.history.back()}
+        className={styles.backLink}
+      >
+        ← Back
+      </button>
 
       <div className={styles.header}>
         <h1 className={styles.title}>{asteroid.designation}</h1>

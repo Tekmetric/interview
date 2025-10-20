@@ -1,7 +1,7 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
-import AsteroidList from "../components/AsteroidList";
+import AsteroidListWithQuery from "../components/AsteroidListWithQuery";
 import { SITE_TITLE } from "../consts";
 ---
 
@@ -16,7 +16,7 @@ import { SITE_TITLE } from "../consts";
   <body>
     <Header />
     <main>
-      <AsteroidList client:load />
+      <AsteroidListWithQuery client:load />
     </main>
   </body>
 </html>

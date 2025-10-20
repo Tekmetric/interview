@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import styles from './AsteroidList.module.css';
 import type { NeoWsBrowseResponse } from '../schemas/nasa';
 
 export default function AsteroidList() {
-  const [data, setData] = useState<NeoWsBrowseResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
 
   // Initialize page from URL on mount
@@ -17,40 +15,32 @@ export default function AsteroidList() {
     }
   }, []);
 
-  // Fetch data when page changes
+  // Update URL when page changes
   useEffect(() => {
-    const fetchAsteroids = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(`/api/neows?page=${currentPage}`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch asteroid data');
-        }
-
-        const responseData = await response.json();
-
-        if (responseData.error) {
-          throw new Error(responseData.error);
-        }
-
-        setData(responseData);
-        setLoading(false);
-
-        // Update URL without reload
-        const url = new URL(window.location.href);
-        url.searchParams.set('page', currentPage.toString());
-        window.history.pushState({}, '', url);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        setLoading(false);
-      }
-    };
-
-    fetchAsteroids();
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', currentPage.toString());
+    window.history.pushState({}, '', url);
   }, [currentPage]);
+
+  // Fetch data with React Query
+  const { data, isLoading, error } = useQuery<NeoWsBrowseResponse, Error>({
+    queryKey: ['asteroids', 'browse', currentPage],
+    queryFn: async () => {
+      const response = await fetch(`/api/neows?page=${currentPage}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch asteroid data');
+      }
+
+      const responseData = await response.json();
+
+      if (responseData.error) {
+        throw new Error(responseData.error);
+      }
+
+      return responseData;
+    },
+  });
 
   const handlePrevious = () => {
     if (currentPage > 0) {
@@ -68,7 +58,7 @@ export default function AsteroidList() {
     setCurrentPage(page);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className={styles.loading}>
         <p>Loading asteroids...</p>
@@ -79,7 +69,7 @@ export default function AsteroidList() {
   if (error) {
     return (
       <div className={styles.error}>
-        <p>Error: {error}</p>
+        <p>Error: {error.message}</p>
       </div>
     );
   }

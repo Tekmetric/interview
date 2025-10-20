@@ -1,7 +1,7 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
-import AsteroidFeed from "../components/AsteroidFeed";
+import AsteroidFeedWithQuery from "../components/AsteroidFeedWithQuery";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 ---
 
@@ -13,7 +13,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
   <body>
     <Header />
     <main>
-      <AsteroidFeed client:load />
+      <AsteroidFeedWithQuery client:load />
     </main>
   </body>
 </html>

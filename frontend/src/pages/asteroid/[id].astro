@@ -1,7 +1,7 @@
 ---
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
-import AsteroidDetail from '../../components/AsteroidDetail';
+import AsteroidDetailWithQuery from '../../components/AsteroidDetailWithQuery';
 import { SITE_TITLE } from '../../consts';
 
 // Get the asteroid ID from the route parameter
@@ -22,7 +22,7 @@ export const prerender = false;
   <body>
     <Header />
     <main>
-      <AsteroidDetail asteroidId={id!} client:load />
+      <AsteroidDetailWithQuery asteroidId={id!} client:load />
     </main>
   </body>
 </html>

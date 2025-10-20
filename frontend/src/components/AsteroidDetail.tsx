@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import styles from './AsteroidDetail.module.css';
 import type { AsteroidDetail as AsteroidData } from '../schemas/nasa';
 
@@ -7,40 +7,30 @@ interface AsteroidDetailProps {
 }
 
 export default function AsteroidDetail({ asteroidId }: AsteroidDetailProps) {
-  const [asteroid, setAsteroid] = useState<AsteroidData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Fetch data with React Query
+  const { data: asteroid, isLoading, error } = useQuery<AsteroidData, Error>({
+    queryKey: ['asteroid', asteroidId],
+    queryFn: async () => {
+      const response = await fetch(`/api/asteroid/${asteroidId}`);
 
-  useEffect(() => {
-    const fetchAsteroid = async () => {
-      try {
-        const response = await fetch(`/api/asteroid/${asteroidId}`);
-
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error('Asteroid not found');
-          }
-          throw new Error('Failed to fetch asteroid data');
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Asteroid not found');
         }
-
-        const data = await response.json();
-
-        if (data.error) {
-          throw new Error(data.error);
-        }
-
-        setAsteroid(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        setLoading(false);
+        throw new Error('Failed to fetch asteroid data');
       }
-    };
 
-    fetchAsteroid();
-  }, [asteroidId]);
+      const data = await response.json();
 
-  if (loading) {
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      return data;
+    },
+  });
+
+  if (isLoading) {
     return (
       <div className={styles.loading}>
         <p>Loading asteroid details...</p>
@@ -51,7 +41,7 @@ export default function AsteroidDetail({ asteroidId }: AsteroidDetailProps) {
   if (error) {
     return (
       <div className={styles.error}>
-        <p>Error: {error}</p>
+        <p>Error: {error.message}</p>
         <a href="/browse" className={styles.backLink}>
           ← Back to List
         </a>

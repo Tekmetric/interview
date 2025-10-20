@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { DayPicker, type DateRange } from 'react-day-picker';
 import 'react-day-picker/style.css';
 import styles from './AsteroidFeed.module.css';
 import type { NeoWsFeedResponse } from '../schemas/nasa';
 
 export default function AsteroidFeed() {
-  const [data, setData] = useState<NeoWsFeedResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>({
     from: new Date(),
     to: undefined,
@@ -30,44 +28,32 @@ export default function AsteroidFeed() {
     ];
   };
 
-  // Fetch data when selected range changes
-  useEffect(() => {
-    if (!selectedRange?.from) return;
+  // Calculate date parameters
+  const startDate = selectedRange?.from ? dateToString(selectedRange.from) : '';
+  const endDate = selectedRange?.to ? dateToString(selectedRange.to) : startDate;
 
-    const fetchAsteroids = async () => {
-      setLoading(true);
-      setError(null);
+  // Fetch data with React Query
+  const { data, isLoading, error } = useQuery<NeoWsFeedResponse, Error>({
+    queryKey: ['asteroids', 'feed', startDate, endDate],
+    queryFn: async () => {
+      const response = await fetch(
+        `/api/neows-feed?start_date=${startDate}&end_date=${endDate}`
+      );
 
-      try {
-        const startDate = dateToString(selectedRange.from);
-        const endDate = selectedRange.to
-          ? dateToString(selectedRange.to)
-          : startDate; // If no end date, use same as start
-
-        const response = await fetch(
-          `/api/neows-feed?start_date=${startDate}&end_date=${endDate}`
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch asteroid data');
-        }
-
-        const responseData = await response.json();
-
-        if (responseData.error) {
-          throw new Error(responseData.error);
-        }
-
-        setData(responseData);
-        setLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error('Failed to fetch asteroid data');
       }
-    };
 
-    fetchAsteroids();
-  }, [selectedRange]);
+      const responseData = await response.json();
+
+      if (responseData.error) {
+        throw new Error(responseData.error);
+      }
+
+      return responseData;
+    },
+    enabled: !!selectedRange?.from,
+  });
 
   const handleRangeSelect = (range: DateRange | undefined) => {
     if (range?.from) {
@@ -90,7 +76,7 @@ export default function AsteroidFeed() {
     }
   };
 
-  if (loading && !data) {
+  if (isLoading && !data) {
     return (
       <div className={styles.loading}>
         <p>Loading asteroids...</p>
@@ -146,7 +132,7 @@ export default function AsteroidFeed() {
         </div>
       </div>
 
-      {loading && (
+      {isLoading && (
         <div className={styles.loadingOverlay}>
           <p>Updating...</p>
         </div>
@@ -154,7 +140,7 @@ export default function AsteroidFeed() {
 
       {error && (
         <div className={styles.error}>
-          <p>Error: {error}</p>
+          <p>Error: {error.message}</p>
         </div>
       )}
 

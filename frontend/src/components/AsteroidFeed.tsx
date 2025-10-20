@@ -107,6 +107,7 @@ export default function AsteroidFeed() {
 
   return (
     <div className={styles.container}>
+      <p>Select a date to view asteroids approaching Earth in a 7-day period</p>
       <div className={styles.controls}>
         <label htmlFor="start-date" className={styles.dateLabel}>
           Select Start Date:

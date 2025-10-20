@@ -1,8 +1,24 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
-import AsteroidListWithQuery from "../components/AsteroidListWithQuery";
+import AsteroidList from "../components/AsteroidList";
 import { SITE_TITLE } from "../consts";
+
+// Disable prerendering to ensure server-side rendering
+export const prerender = false;
+
+// Read page parameter from URL
+const page = parseInt(Astro.url.searchParams.get("page") || "0", 10);
+
+// Fetch data server-side
+const runtime = Astro.locals.runtime as any;
+const apiKey = runtime?.env?.NASA_API_KEY;
+
+const response = await fetch(
+  `https://api.nasa.gov/neo/rest/v1/neo/browse?page=${page}&api_key=${apiKey}`
+);
+
+const data = await response.json();
 ---
 
 <!doctype html>
@@ -16,7 +32,7 @@ import { SITE_TITLE } from "../consts";
   <body>
     <Header />
     <main>
-      <AsteroidListWithQuery client:load />
+      <AsteroidList page={page} data={data} client:load />
     </main>
   </body>
 </html>

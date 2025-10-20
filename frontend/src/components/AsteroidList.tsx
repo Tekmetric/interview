@@ -1,75 +1,36 @@
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { navigate } from 'astro:transitions/client';
 import styles from './AsteroidList.module.css';
-import { NeoWsBrowseResponseSchema } from '../schemas/nasa';
+import type { NeoWsBrowseResponse } from '../schemas/nasa';
 
-export default function AsteroidList() {
-  const [currentPage, setCurrentPage] = useState(0);
+interface AsteroidListProps {
+  page: number;
+  data: NeoWsBrowseResponse;
+}
 
-  // Initialize page from URL on mount
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const pageParam = params.get('page');
-    if (pageParam) {
-      setCurrentPage(parseInt(pageParam, 10));
-    }
-  }, []);
+export default function AsteroidList({ page, data }: AsteroidListProps) {
 
-  // Update URL when page changes
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('page', currentPage.toString());
-    window.history.pushState({}, '', url);
-  }, [currentPage]);
+  console.log('AsteroidList data:', { page, data });
 
-  // Fetch data with React Query
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['asteroids', 'browse', currentPage],
-    queryFn: async () => {
-      const response = await fetch(`/api/neows?page=${currentPage}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch asteroid data');
-      }
-
-      // Parse and validate response with Zod
-      const responseData = NeoWsBrowseResponseSchema.parse(await response.json());
-
-      return responseData;
-    },
-  });
+  // Navigation helper - uses Astro View Transitions
+  const navigateToPage = (p: number) => {
+    navigate(`/browse?page=${p}`);
+  };
 
   const handlePrevious = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+    if (page > 0) {
+      navigateToPage(page - 1);
     }
   };
 
   const handleNext = () => {
-    if (data && currentPage < data.page.total_pages - 1) {
-      setCurrentPage(currentPage + 1);
+    if (data && page < data.page.total_pages - 1) {
+      navigateToPage(page + 1);
     }
   };
 
-  const handlePageClick = (page: number) => {
-    setCurrentPage(page);
+  const handlePageClick = (p: number) => {
+    navigateToPage(p);
   };
-
-  if (isLoading) {
-    return (
-      <div className={styles.loading}>
-        <p>Loading asteroids...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.error}>
-        <p>Error: {error.message}</p>
-      </div>
-    );
-  }
 
   if (!data || !data.near_earth_objects) {
     return null;
@@ -78,8 +39,8 @@ export default function AsteroidList() {
   // Generate page numbers to display (show current, +/- 2 pages)
   const pageNumbers: number[] = [];
   const totalPages = data.page.total_pages;
-  const startPage = Math.max(0, currentPage - 2);
-  const endPage = Math.min(totalPages - 1, currentPage + 2);
+  const startPage = Math.max(0, page - 2);
+  const endPage = Math.min(totalPages - 1, page + 2);
 
   for (let i = startPage; i <= endPage; i++) {
     pageNumbers.push(i);
@@ -89,7 +50,7 @@ export default function AsteroidList() {
     <div className={styles.container}>
       <div className={styles.pageInfo}>
         <p>
-          Page {currentPage + 1} of {data.page.total_pages}
+          Page {page + 1} of {data.page.total_pages}
         </p>
         <p className={styles.totalCount}>
           Total asteroids: {data.page.total_elements.toLocaleString()}
@@ -99,7 +60,7 @@ export default function AsteroidList() {
       <div className={styles.pagination}>
         <button
           onClick={handlePrevious}
-          disabled={currentPage === 0}
+          disabled={page === 0}
           className={styles.pageButton}
         >
           Previous
@@ -117,15 +78,15 @@ export default function AsteroidList() {
           </>
         )}
 
-        {pageNumbers.map((page) => (
+        {pageNumbers.map((p) => (
           <button
-            key={page}
-            onClick={() => handlePageClick(page)}
+            key={p}
+            onClick={() => handlePageClick(p)}
             className={`${styles.pageNumber} ${
-              page === currentPage ? styles.active : ''
+              p === page ? styles.active : ''
             }`}
           >
-            {page + 1}
+            {p + 1}
           </button>
         ))}
 
@@ -143,7 +104,7 @@ export default function AsteroidList() {
 
         <button
           onClick={handleNext}
-          disabled={currentPage >= data.page.total_pages - 1}
+          disabled={page >= data.page.total_pages - 1}
           className={styles.pageButton}
         >
           Next
@@ -189,7 +150,7 @@ export default function AsteroidList() {
       <div className={styles.pagination}>
         <button
           onClick={handlePrevious}
-          disabled={currentPage === 0}
+          disabled={page === 0}
           className={styles.pageButton}
         >
           Previous
@@ -207,15 +168,15 @@ export default function AsteroidList() {
           </>
         )}
 
-        {pageNumbers.map((page) => (
+        {pageNumbers.map((p) => (
           <button
-            key={page}
-            onClick={() => handlePageClick(page)}
+            key={p}
+            onClick={() => handlePageClick(p)}
             className={`${styles.pageNumber} ${
-              page === currentPage ? styles.active : ''
+              p === page ? styles.active : ''
             }`}
           >
-            {page + 1}
+            {p + 1}
           </button>
         ))}
 
@@ -233,7 +194,7 @@ export default function AsteroidList() {
 
         <button
           onClick={handleNext}
-          disabled={currentPage >= data.page.total_pages - 1}
+          disabled={page >= data.page.total_pages - 1}
           className={styles.pageButton}
         >
           Next

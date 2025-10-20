@@ -5,80 +5,79 @@
 }
 
 .controls {
-  background: #f5f5f5;
-  padding: 1rem;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
   align-items: center;
-}
-
-.calendarWrapper {
-  display: flex;
-  justify-content: center;
-}
-
-.calendar {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
   background: white;
   border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.infoPanel {
+.datePickerWrapper {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 1rem;
-  width: 100%;
 }
 
-.calendar :global(.rdp-day_button) {
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-
-.calendar :global(.rdp-day_button:hover:not(.rdp-day_selected)) {
-  background: #e8f4f8;
-}
-
-.calendar :global(.rdp-day_selected) {
-  background: #0066cc !important;
-  color: white !important;
-  font-weight: 600;
-}
-
-.calendar :global(.rdp-month_caption) {
-  font-size: 1.1rem;
+.dateLabel {
+  font-size: 1rem;
   font-weight: 600;
   color: #333;
-  margin-bottom: 1rem;
+  white-space: nowrap;
 }
 
-.calendar :global(.rdp-nav_button) {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 4px;
-  transition: background 0.2s;
+.datePicker {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+  cursor: pointer;
+  min-width: 160px;
 }
 
-.calendar :global(.rdp-nav_button:hover) {
-  background: #e8f4f8;
+.datePicker:hover {
+  border-color: #0066cc;
 }
 
-.calendar :global(.rdp-weekday) {
-  color: #666;
-  font-size: 0.85rem;
-  font-weight: 600;
+.datePicker:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
 }
 
-.dateInfo {
-  color: #666;
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  border-radius: 8px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.summaryCount {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.summaryText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   font-size: 0.95rem;
-  font-weight: 500;
-  text-align: center;
-  margin: 0;
+  line-height: 1.3;
+}
+
+.summaryDate {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
 }
 
 .loading,
@@ -101,18 +100,6 @@
   border-radius: 8px;
   margin: 1rem 0;
   color: #0066cc;
-}
-
-.summary {
-  text-align: center;
-  padding: 0.75rem;
-  background: #e8f4f8;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-.summary p {
-  margin: 0;
 }
 
 .dateSection {
@@ -207,24 +194,44 @@
 @media (min-width: 768px) {
   .controls {
     flex-direction: row;
-    align-items: flex-start;
-    gap: 1.5rem;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
   }
 
-  .infoPanel {
+  .summary {
     flex: 1;
-    justify-content: center;
+    max-width: 500px;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .controls {
-    padding: 0.75rem;
+    padding: 1rem;
   }
 
-  .dateInput {
+  .datePickerWrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .dateLabel {
+    text-align: center;
+  }
+
+  .datePicker {
     width: 100%;
-    max-width: 300px;
+  }
+
+  .summary {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .summaryCount {
+    font-size: 2.5rem;
   }
 
   .asteroidList {

@@ -15,6 +15,16 @@ export default function AsteroidFeed({ data, selectedDate }: AsteroidFeedProps) 
     }
   };
 
+  // Format date as human-readable (e.g., "October 20, 2025")
+  const formatDateReadable = (dateStr: string): string => {
+    const date = new Date(dateStr + 'T00:00:00'); // Add time to avoid timezone issues
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   // Get sorted dates (should only be one date in the response)
   const dates = Object.keys(data.near_earth_objects).sort();
 
@@ -23,7 +33,7 @@ export default function AsteroidFeed({ data, selectedDate }: AsteroidFeedProps) 
       <div className={styles.controls}>
         <div className={styles.datePickerWrapper}>
           <label htmlFor="date-picker" className={styles.dateLabel}>
-            Select a date to view asteroids approaching Earth:
+            Select Date:
           </label>
           <input
             id="date-picker"
@@ -33,12 +43,16 @@ export default function AsteroidFeed({ data, selectedDate }: AsteroidFeedProps) 
             className={styles.datePicker}
           />
         </div>
-        <div className={styles.infoPanel}>
-          <div className={styles.summary}>
-            <p>
-              <strong>{data.element_count}</strong> asteroid
-              {data.element_count !== 1 ? 's' : ''} approaching Earth on {selectedDate}
-            </p>
+
+        <div className={styles.summary}>
+          <div className={styles.summaryCount}>
+            {data.element_count}
+          </div>
+          <div className={styles.summaryText}>
+            asteroid{data.element_count !== 1 ? 's' : ''} approaching Earth on
+            <div className={styles.summaryDate}>
+              {formatDateReadable(selectedDate)}
+            </div>
           </div>
         </div>
       </div>

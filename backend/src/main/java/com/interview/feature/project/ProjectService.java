@@ -1,5 +1,6 @@
 package com.interview.feature.project;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,11 @@ public class ProjectService {
     }
 
     public ProjectDTO create(final ProjectDTO projectDTO) {
-        return ProjectDTO.toDTO(projectRepository.save(ProjectDTO.toEntity(projectDTO)));
+        final var project = new Project();
+        project.setName(projectDTO.name());
+        project.setDescription(projectDTO.description());
+        project.setStatus(ProjectStatus.PLANNED);
+        return ProjectDTO.toDTO(projectRepository.save(project));
     }
 
     public ProjectDTO save(final ProjectDTO projectDTO) {
@@ -30,13 +35,14 @@ public class ProjectService {
     }
 
     public Page<ProjectDTO> findAll(final Pageable page) {
-        return this.projectRepository
-            .findAll(page)
-            .map(ProjectDTO::toDTO);
+        return this.projectRepository.findAll(page).map(ProjectDTO::toDTO);
     }
 
-    public ProjectDTO findByUid(final String uid) {
-        return ProjectDTO.toDTO(projectRepository.findByUid(uid));
+    public ProjectDTO findByUid(final String projectUid) {
+        if (!projectRepository.existsByUid(projectUid)) {
+            throw new EntityNotFoundException("Project with uid: %s not found".formatted(projectUid));
+        }
+        return ProjectDTO.toDTO(projectRepository.findByUid(projectUid));
     }
 
     public ProjectDTO start(final String uid) {
@@ -52,6 +58,9 @@ public class ProjectService {
     }
 
     public void deleteByUid(final String projectUid) {
+        if (!projectRepository.existsByUid(projectUid)) {
+            throw new EntityNotFoundException("Project with uid: %s not found".formatted(projectUid));
+        }
         this.projectRepository.deleteByUid(projectUid);
     }
 }

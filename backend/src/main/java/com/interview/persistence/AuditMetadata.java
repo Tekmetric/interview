@@ -1,7 +1,8 @@
 package com.interview.persistence;
 
 import jakarta.persistence.*;
-import org.hibernate.envers.Audited;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -18,18 +19,24 @@ public class AuditMetadata {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Column(unique = true)
     private String uid;
 
     @CreatedBy
+    @NotBlank
     private String createdBy;
 
     @LastModifiedBy
+    @NotBlank
     private String lastModifiedBy;
 
     @CreatedDate
+    @NotNull
     private ZonedDateTime createdDate;
 
     @LastModifiedDate
+    @NotNull
     private ZonedDateTime lastModifiedDate;
 
     public AuditMetadata() {

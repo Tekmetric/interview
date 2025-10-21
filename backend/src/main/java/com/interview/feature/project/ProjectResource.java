@@ -1,10 +1,14 @@
 package com.interview.feature.project;
 
 import com.interview.util.Pages;
+import com.interview.web.validator.OnCreate;
+import com.interview.web.validator.OnUpdate;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/projects")
+@Validated
 public class ProjectResource {
 
     private final ProjectService projectService;
@@ -26,12 +31,14 @@ public class ProjectResource {
     }
 
     @PostMapping
-    public ProjectDTO createProject(@RequestBody final ProjectDTO projectDTO) {
+    @Validated(OnCreate.class)
+    public ProjectDTO createProject(@RequestBody @Valid final ProjectDTO projectDTO) {
         return this.projectService.create(projectDTO);
     }
 
     @PutMapping
-    public ProjectDTO saveProject(@RequestBody final ProjectDTO projectDTO) {
+    @Validated(OnUpdate.class)
+    public ProjectDTO saveProject(@RequestBody @Valid final ProjectDTO projectDTO) {
         return this.projectService.save(projectDTO);
     }
 

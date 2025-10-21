@@ -1,6 +1,6 @@
 package com.interview.feature.project;
 
-import com.interview.common.Pages;
+import com.interview.util.Pages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;

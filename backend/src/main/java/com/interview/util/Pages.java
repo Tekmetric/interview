@@ -1,4 +1,4 @@
-package com.interview.common;
+package com.interview.util;
 
 import org.springframework.data.domain.PageRequest;
 

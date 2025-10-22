@@ -9,6 +9,6 @@ public class WelcomeResource {
     @RequestMapping("/api/welcome")
     public String index() {
 
-        return "Welcome to the interview project!";
+        return "Welcome to the interview project!\n";
     }
 }

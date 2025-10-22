@@ -52,6 +52,23 @@ class ProjectAPITest_Create extends BaseTest {
         null    | 'Tekmetric'   | 'Car repair management service'   | ProjectStatus.ACTIVE  || HttpStatus.OK
     }
 
+    def 'Project API - Create - user role should be denied from accessing this API'() {
+        given: 'The system was started having Project API set'
+        def restClient = restClient('user')
+        def project = new ProjectDTO(null, 'Tekmetric', 'Car repair management service', null)
+
+        when: 'Project API - Create - is called with a user role'
+        def response = restClient.post()
+            .uri('/api/projects')
+            .body(project)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<ProjectDTO>() {})
+
+        then: 'The response will be successful, with a valid uid and status code 200'
+        def ex= thrown(HttpClientErrorException.Forbidden.class)
+        ex.statusCode == HttpStatus.FORBIDDEN
+    }
+
     def 'Project API - Create - inserting same entity twice should result in 2 different saved entities'() {
         given: 'The system was started having Project API set'
         def restClient = restClient()

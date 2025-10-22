@@ -27,10 +27,11 @@ class BaseTest extends Specification {
     def cleanup() {
     }
 
-    def restClient() {
+    def restClient(String role="admin") {
         RestClient.builder()
             .baseUrl("http://localhost:8083")
             .requestFactory(new SimpleClientHttpRequestFactory())
+            .defaultHeaders { headers -> headers.setBasicAuth(role, "password") }
             .build()
     }
 }

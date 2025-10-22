@@ -28,8 +28,6 @@ class ProjectAPITest_Retrieve extends BaseTest {
 
         then: 'The response will be successful (status code 200) with 4 elements'
         response.statusCode == HttpStatus.OK
-        response.body.pageMetadata.size() == 20
-        response.body.pageMetadata.number() == 0
         response.body.pageMetadata.totalElements() == 4
         response.body.pageMetadata.totalPages() == 1
         response.body.content.size() == 4

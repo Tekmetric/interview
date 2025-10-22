@@ -30,6 +30,25 @@ class ProjectAPITest_Save extends BaseTest {
         response.body.description() == 'Car repair management service'
     }
 
+    def 'Project API - Save - user role should be able to access this API'() {
+        given: 'The system was started having Project API set'
+        def restClient = restClient('user')
+        def project = new ProjectDTO('1', 'Tekmetric', 'Car repair management service', ProjectStatus.PLANNED)
+
+        when: 'Project API - Save - is called'
+        def response = restClient.put()
+            .uri('/api/projects')
+            .body(project)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<ProjectDTO>() {})
+
+        then: 'The response will be successful, with a valid uid and status code 200'
+        response.statusCode == HttpStatus.OK
+        response.body.uid() == '1'
+        response.body.name() == 'Tekmetric'
+        response.body.description() == 'Car repair management service'
+    }
+
     def 'Project API - Save - the system should validate input'() {
         given: 'The system was started having Project API set'
         def restClient = restClient()

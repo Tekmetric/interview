@@ -38,6 +38,7 @@ public class SecurityConfiguration {
             .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
             .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                 .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/api/projects/**").hasAnyRole("ADMIN", "USER")
                 .requestMatchers(HttpMethod.GET, "/api/welcome").permitAll()
                 .anyRequest().authenticated());

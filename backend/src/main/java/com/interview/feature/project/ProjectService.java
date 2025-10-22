@@ -25,7 +25,7 @@ public class ProjectService {
     }
 
     public ProjectDTO save(final ProjectDTO projectDTO) {
-        final var isNew = projectDTO.uid() == null || projectDTO.uid().isBlank() || !projectRepository.existsByUid(projectDTO.uid());
+        final var isNew = !projectRepository.existsByUid(projectDTO.uid());
         final var project = isNew ? new Project() : projectRepository.findByUid(projectDTO.uid());
         project.setUid(projectDTO.uid());
         project.setName(projectDTO.name());

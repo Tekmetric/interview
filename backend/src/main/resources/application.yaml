@@ -19,3 +19,8 @@ spring:
   h2:
     console:
       enabled: true
+  threads:
+    virtual:
+      enabled: true
+server:
+  port: 8080

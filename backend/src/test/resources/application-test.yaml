@@ -7,8 +7,20 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     open-in-view: false
+    properties:
+      org:
+        hibernate:
+          envers:
+            audit_table_suffix: _AUD
+            audit_table_prefix:
+            revision_field_name: REV_ID
+            revision_type_field_name: REV_TYPE
+            store_data_at_delete: true
   h2:
     console:
+      enabled: true
+  threads:
+    virtual:
       enabled: true
 server:
   port: 8083

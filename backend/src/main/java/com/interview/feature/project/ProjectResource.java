@@ -1,6 +1,8 @@
 package com.interview.feature.project;
 
 import com.interview.util.Pages;
+import com.interview.web.ratelimit.RateLimit;
+import com.interview.web.ratelimit.RateLimits;
 import com.interview.web.validator.OnCreate;
 import com.interview.web.validator.OnUpdate;
 import jakarta.validation.Valid;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.TimeUnit;
+
 @RestController
 @RequestMapping("/api/projects")
 @Validated
@@ -30,6 +34,10 @@ public class ProjectResource {
         this.projectService = projectService;
     }
 
+    @RateLimits({
+        @RateLimit(capacity = 1000, timeValue = 1, timeUnit = TimeUnit.MINUTES),
+        @RateLimit(capacity = 8, timeValue = 10, timeUnit = TimeUnit.SECONDS)
+    })
     @PostMapping
     @Validated(OnCreate.class)
     public ProjectDTO createProject(@RequestBody @Valid final ProjectDTO projectDTO) {

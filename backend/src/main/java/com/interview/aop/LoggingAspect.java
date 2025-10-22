@@ -42,8 +42,18 @@ public class LoggingAspect {
 
         logger.trace("Method call: {}, args: [ {} ]", methodSignature, argPairs);
         final var response = joinPoint.proceed();
+        if (shouldSkip(methodSignature)) {
+            logger.trace("Skipping method call response: {}", methodSignature);
+            return response;
+        }
         logger.trace("Method call: {}, response: {}", methodSignature, response);
 
         return response;
+    }
+
+    private boolean shouldSkip(final MethodSignature methodSignature) {
+        final var returnType = methodSignature.getReturnType();
+        final var componentType = returnType.getComponentType();
+        return returnType.equals(Byte[].class) || (componentType != null && componentType.equals(byte.class));
     }
 }

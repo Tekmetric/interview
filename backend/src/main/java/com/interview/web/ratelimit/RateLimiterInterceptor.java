@@ -1,6 +1,6 @@
 package com.interview.web.ratelimit;
 
-import io.github.bucket4j.distributed.proxy.ProxyManager;
+import com.interview.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -68,7 +68,9 @@ public class RateLimiterInterceptor implements HandlerInterceptor {
 
     private String resolveKey(final HttpServletRequest httpRequest, final HandlerMethod handlerMethod) {
         final var prefix = "ratelimit";
-        final var client = httpRequest.getRemoteAddr(); //should be authenticated user
+        final var client = SecurityUtil.isAuthenticated()
+            ? SecurityUtil.getAuthenticatedUser()
+            : httpRequest.getRemoteAddr();
         final var bucketConfigurationKey = createBucketConfigurationKey(handlerMethod);
         final var key = this.rateLimitService.existsBucketConfiguration(bucketConfigurationKey)
             ? bucketConfigurationKey

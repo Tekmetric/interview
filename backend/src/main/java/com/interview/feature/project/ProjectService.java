@@ -34,10 +34,12 @@ public class ProjectService {
         return ProjectDTO.toDTO(projectRepository.save(project));
     }
 
+    @Transactional(readOnly = true)
     public Page<ProjectDTO> findAll(final Pageable page) {
         return this.projectRepository.findAll(page).map(ProjectDTO::toDTO);
     }
 
+    @Transactional(readOnly = true)
     public ProjectDTO findByUid(final String projectUid) {
         if (!projectRepository.existsByUid(projectUid)) {
             throw new EntityNotFoundException("Project with uid: %s not found".formatted(projectUid));

@@ -10,8 +10,7 @@ import org.springframework.web.client.HttpClientErrorException
 import spock.lang.Stepwise
 
 @Stepwise
-class ProjectAPITest_Delete extends BaseTest {
-
+class ProjectAPIDeleteTest extends BaseTest {
 
     def 'Project API - Delete - simple delete should work properly'() {
         given: 'The system was started having Project API set'

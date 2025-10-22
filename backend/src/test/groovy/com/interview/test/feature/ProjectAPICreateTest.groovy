@@ -9,7 +9,7 @@ import org.springframework.web.client.HttpClientErrorException
 import spock.lang.Stepwise
 
 @Stepwise
-class ProjectAPITest_Create extends BaseTest {
+class ProjectAPICreateTest extends BaseTest {
 
     def 'Project API - Create - simple insert should work properly'() {
         given: 'The system was started having Project API set'

@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus
 import spock.lang.Stepwise
 
 @Stepwise
-class ProjectAPITest_Retrieve extends BaseTest {
+class ProjectAPIRetrieveTest extends BaseTest {
 
     def 'Project API - Retrieve all - simple fetch all should work properly'() {
         given: 'The system was started having Project API set'

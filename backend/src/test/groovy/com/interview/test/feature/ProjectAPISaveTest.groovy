@@ -9,7 +9,7 @@ import org.springframework.web.client.HttpClientErrorException
 import spock.lang.Stepwise
 
 @Stepwise
-class ProjectAPITest_Save extends BaseTest {
+class ProjectAPISaveTest extends BaseTest {
 
     def 'Project API - Save - simple save should work properly'() {
         given: 'The system was started having Project API set'

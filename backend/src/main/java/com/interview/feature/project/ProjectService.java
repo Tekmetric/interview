@@ -24,10 +24,8 @@ public class ProjectService {
         return ProjectDTO.toDTO(projectRepository.save(project));
     }
 
-    public ProjectDTO save(final ProjectDTO projectDTO) {
-        final var isNew = !projectRepository.existsByUid(projectDTO.uid());
-        final var project = isNew ? new Project() : projectRepository.findByUid(projectDTO.uid());
-        project.setUid(projectDTO.uid());
+    public ProjectDTO update(String projectUid, final ProjectDTO projectDTO) {
+        final var project = doFindByUid(projectUid);
         project.setName(projectDTO.name());
         project.setDescription(projectDTO.description());
         project.setStatus(projectDTO.status());
@@ -41,20 +39,17 @@ public class ProjectService {
 
     @Transactional(readOnly = true)
     public ProjectDTO findByUid(final String projectUid) {
-        if (!projectRepository.existsByUid(projectUid)) {
-            throw new EntityNotFoundException("Project with uid: %s not found".formatted(projectUid));
-        }
-        return ProjectDTO.toDTO(projectRepository.findByUid(projectUid));
+        return ProjectDTO.toDTO(doFindByUid(projectUid));
     }
 
-    public ProjectDTO start(final String uid) {
-        final var project = this.projectRepository.findByUid(uid);
+    public ProjectDTO start(final String projectUid) {
+        final var project = doFindByUid(projectUid);
         project.setStatus(ProjectStatus.ACTIVE);
         return ProjectDTO.toDTO(project);
     }
 
-    public ProjectDTO complete(final String uid) {
-        final var project = this.projectRepository.findByUid(uid);
+    public ProjectDTO complete(final String projectUid) {
+        final var project = doFindByUid(projectUid);
         project.setStatus(ProjectStatus.COMPLETED);
         return ProjectDTO.toDTO(project);
     }
@@ -64,5 +59,11 @@ public class ProjectService {
             throw new EntityNotFoundException("Project with uid: %s not found".formatted(projectUid));
         }
         this.projectRepository.deleteByUid(projectUid);
+    }
+
+    private Project doFindByUid(String projectUid) {
+        return this.projectRepository
+            .findByUid(projectUid)
+            .orElseThrow(() -> new EntityNotFoundException("Project with uid: %s not found".formatted(projectUid)));
     }
 }

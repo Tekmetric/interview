@@ -97,46 +97,4 @@ class ProjectAPICreateTest extends BaseTest {
         response2.body.name() == 'Tekmetric'
         response2.body.description() == 'Car repair management service'
     }
-
-    def 'Project API - Create - should work properly when requests count is below rate limit'() {
-        given: 'The system was started having Project API set'
-        def restClient = restClient()
-        def project = new ProjectDTO(null, 'Tekmetric', 'Car repair management service', null)
-
-        when: "Project API - Create - is called $simultaneousRequests times"
-        def responses = (1..simultaneousRequests).collect {
-            restClient.post()
-                .uri('/api/projects')
-                .body(project)
-                .retrieve()
-                .toEntity(new ParameterizedTypeReference<ProjectDTO>() {})
-        }
-
-        then: 'The response will be successful (status code 200)'
-        responses.every { it.statusCode == expectedStatus }
-
-        where:
-        simultaneousRequests || expectedStatus
-        1                    || HttpStatus.OK
-        2                    || HttpStatus.OK
-    }
-
-    def 'Project API - Create - should throw exception when requests count is above rate limit'() {
-        given: 'The system was started having Project API set'
-        def restClient = restClient()
-        def project = new ProjectDTO(null, 'Tekmetric', 'Car repair management service', null)
-
-        when: "Project API - Create - is called 100 times"
-        def responses = (1..100).collect {
-            def result = restClient.post()
-                .uri('/api/projects')
-                .body(project)
-                .retrieve()
-                .toEntity(new ParameterizedTypeReference<ProjectDTO>() {})
-        }
-
-        then: 'The server will send a Too Many Requests http status code'
-        def ex= thrown(HttpClientErrorException.TooManyRequests)
-        ex.statusCode == HttpStatus.TOO_MANY_REQUESTS
-    }
 }

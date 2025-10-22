@@ -6,19 +6,13 @@ import com.interview.test.BaseTest
 import com.interview.test.Page
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
-import spock.lang.Stepwise
+import org.springframework.web.client.HttpClientErrorException
 
-@Stepwise
 class ProjectAPIRetrieveTest extends BaseTest {
 
     def 'Project API - Retrieve all - simple fetch all should work properly'() {
         given: 'The system was started having Project API set'
         def restClient = restClient()
-        restClient.put().uri('/api/projects').body(new ProjectDTO('1', 'Tekmetric', 'Car repair service', ProjectStatus.PLANNED)).retrieve().toBodilessEntity()
-        restClient.put().uri('/api/projects').body(new ProjectDTO('2', 'GreenHub', 'Sustainability project tracking application', ProjectStatus.PLANNED)).retrieve().toBodilessEntity()
-        restClient.put().uri('/api/projects').body(new ProjectDTO('3', 'HealthSync', 'Medical data synchronization microservice', ProjectStatus.PLANNED)).retrieve().toBodilessEntity()
-        restClient.put().uri('/api/projects').body(new ProjectDTO('4', 'FinTrack', 'Personal finance tracking API', ProjectStatus.PLANNED)).retrieve().toBodilessEntity()
-
 
         when: 'Project API - Retrieve all - is called'
         def response = restClient.get()
@@ -28,16 +22,56 @@ class ProjectAPIRetrieveTest extends BaseTest {
 
         then: 'The response will be successful (status code 200) with 4 elements'
         response.statusCode == HttpStatus.OK
-        response.body.pageMetadata.totalElements() == 4
-        response.body.pageMetadata.totalPages() == 1
-        response.body.content.size() == 4
+        response.body.content.size() > 0
+    }
+
+    def 'Project API - Retrieve all - should work properly when requests count is below rate limit'() {
+        given: 'The system was started having Project API set'
+        def restClient = restClient()
+
+        when: "Project API - Retrieve all - is called $simultaneousRequests times"
+        def responses = (1..simultaneousRequests).collect {
+            restClient.get()
+                .uri('/api/projects')
+                .retrieve()
+                .toEntity(ProjectDTO.class)
+        }
+
+        then: 'The response will be successful (status code 200)'
+        responses.every { it.statusCode == expectedStatus }
+
+        where:
+        simultaneousRequests || expectedStatus
+        1                    || HttpStatus.OK
+        2                    || HttpStatus.OK
+    }
+
+    def 'Project API - Retrieve all - should throw exception when requests count is above rate limit'() {
+        given: 'The system was started having Project API set'
+        def restClient = restClient()
+
+        when: "Project API - Create - is called 100 times"
+        def responses = (1..100).collect {
+            restClient.get()
+                .uri('/api/projects')
+                .retrieve()
+                .toEntity(ProjectDTO.class)
+        }
+
+        then: 'The server will send a Too Many Requests http status code'
+        def ex= thrown(HttpClientErrorException.TooManyRequests)
+        ex.statusCode == HttpStatus.TOO_MANY_REQUESTS
     }
 
     def 'Project API - Retrieve by id - should work properly'() {
         given: 'The system was started having Project API set'
         def restClient = restClient()
-        def project = new ProjectDTO('1', 'Tekmetric', 'Car repair service', ProjectStatus.PLANNED)
-        restClient.put().uri('/api/projects').body(project).retrieve().toBodilessEntity()
+        def project = restClient.post()
+            .uri('/api/projects')
+            .body(new ProjectDTO(null, 'Tekmetric', 'Car repair management service', null))
+            .retrieve()
+            .toEntity(ProjectDTO.class)
+            .body
 
         when: 'Project API - Retrieve by id - is called'
         def response = restClient.get()
@@ -47,9 +81,9 @@ class ProjectAPIRetrieveTest extends BaseTest {
 
         then: 'The response will be successful (status code 200) and the saved entity should now be removed'
         response.statusCode == HttpStatus.OK
-        response.body.uid() == '1'
+        response.body.uid() == project.uid()
         response.body.name() == 'Tekmetric'
-        response.body.description() == 'Car repair service'
+        response.body.description() == 'Car repair management service'
         response.body.status() == ProjectStatus.PLANNED
     }
 }

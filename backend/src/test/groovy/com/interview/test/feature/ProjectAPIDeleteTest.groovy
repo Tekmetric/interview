@@ -1,36 +1,37 @@
 package com.interview.test.feature
 
 import com.interview.feature.project.ProjectDTO
-import com.interview.feature.project.ProjectStatus
 import com.interview.test.BaseTest
-import com.interview.test.Page
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpClientErrorException
-import spock.lang.Stepwise
 
-@Stepwise
 class ProjectAPIDeleteTest extends BaseTest {
 
     def 'Project API - Delete - simple delete should work properly'() {
-        given: 'The system was started having Project API set'
+        given: 'The system was started having one project already saved into the system'
         def restClient = restClient()
-        def project = new ProjectDTO('1', 'Tekmetric', 'Car repair management service', ProjectStatus.PLANNED)
-        restClient.put().uri('/api/projects').body(project).retrieve().toBodilessEntity()
+        def existingProject = restClient.get()
+            .uri("/api/projects/d1e2f3a4-b5c6-47d8-9e0f-445566778899")
+            .retrieve()
+            .toEntity(ProjectDTO.class)
+        assert existingProject.body.uid() != null
 
-        when: 'Project API - Delete is called'
+        when: 'The project is deleted'
         def response = restClient.delete()
-            .uri("/api/projects/${project.uid()}")
+            .uri("/api/projects/d1e2f3a4-b5c6-47d8-9e0f-445566778899")
             .retrieve()
             .toBodilessEntity()
-        def allProjects = restClient.get()
-            .uri('/api/projects')
-            .retrieve()
-            .toEntity(new ParameterizedTypeReference<Page<ProjectDTO>>() {})
+        assert response.statusCode == HttpStatus.NO_CONTENT
 
-        then: 'The response will be successful (status code 200) and the saved entity should now be removed'
-        response.statusCode == HttpStatus.NO_CONTENT
-        allProjects.body.content.isEmpty()
+        restClient.get()
+            .uri("/api/projects/d1e2f3a4-b5c6-47d8-9e0f-445566778899")
+            .retrieve()
+            .toEntity(ProjectDTO.class)
+
+        then: 'The project will be removed'
+        def ex= thrown(HttpClientErrorException.NotFound.class)
+        ex.statusCode == HttpStatus.NOT_FOUND
     }
 
     def 'Project API - Delete - the system should validate input'() {

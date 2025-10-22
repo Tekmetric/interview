@@ -37,22 +37,22 @@ public class ProjectResource {
     }
 
     @Secured({"ROLE_ADMIN"})
-    @RateLimits({
-        @RateLimit(capacity = 1000, timeValue = 1, timeUnit = TimeUnit.MINUTES),
-        @RateLimit(capacity = 10, timeValue = 10, timeUnit = TimeUnit.SECONDS)
-    })
     @PostMapping
     @Validated(OnCreate.class)
     public ProjectDTO createProject(@RequestBody @Valid final ProjectDTO projectDTO) {
         return this.projectService.create(projectDTO);
     }
 
-    @PutMapping
+    @PutMapping("/{uid}")
     @Validated(OnUpdate.class)
-    public ProjectDTO saveProject(@RequestBody @Valid final ProjectDTO projectDTO) {
-        return this.projectService.save(projectDTO);
+    public ProjectDTO update(@PathVariable("uid") final String projectUid, @RequestBody @Valid final ProjectDTO projectDTO) {
+        return this.projectService.update(projectUid, projectDTO);
     }
 
+    @RateLimits({
+        @RateLimit(capacity = 1000, timeValue = 1, timeUnit = TimeUnit.MINUTES),
+        @RateLimit(capacity = 5, timeValue = 10, timeUnit = TimeUnit.SECONDS)
+    })
     @GetMapping
     public Page<ProjectDTO> findALl(@PageableDefault(Pages.DEFAULT_SIZE) final Pageable page) {
         return projectService.findAll(page);

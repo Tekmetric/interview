@@ -4,9 +4,14 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password: password
+  flyway:
+    enabled: true
+    locations: classpath:database/migration
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     open-in-view: false
+    hibernate:
+      ddl-auto: none
     properties:
       org:
         hibernate:

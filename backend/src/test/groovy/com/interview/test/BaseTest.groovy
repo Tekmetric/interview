@@ -20,10 +20,11 @@ class BaseTest extends Specification {
 
     def cleanupSpec() {}
 
-    def setup() {}
+    def setup() {
+        projectRepository.deleteAll()
+    }
 
     def cleanup() {
-        projectRepository.deleteAll()
     }
 
     def restClient() {

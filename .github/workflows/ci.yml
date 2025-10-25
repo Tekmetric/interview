@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          architecture: x64
+          distribution: 'corretto'
+
+      - name: Install dependencies
+        run: mvn clean install
+
+      - name: Build
+        run: mvn compile
+
+      - name: Test
+        run: mvn test

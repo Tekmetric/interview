@@ -1,10 +1,10 @@
-package com.interview.resource;
+package com.interview.lucascombs.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class WelcomeResource {
+public class WelcomeRestController {
 
     @RequestMapping("/api/welcome")
     public String index() {

@@ -10,3 +10,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pre-commit/action@v3.0.1
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build code & Docker image
+        run: make backend-build
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+      - name: Build & Publish Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          push: github.ref == 'refs/heads/master'
+          tags: ${{ steps.meta.outputs.tags }}
+
+# deploy:
+#   if: github.ref == 'refs/heads/master'
+#   runs-on: ubuntu-latest
+#   steps:
+#     - uses: actions/checkout@v4

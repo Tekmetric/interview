@@ -14,3 +14,7 @@ backend-run: backend-build
 		--name interview-backend \
 		-p 8080:8080 \
 		interview-backend:latest
+
+.PHONY: backend-deploy
+backend-deploy:
+	kubectl apply -f backend/backend.yaml

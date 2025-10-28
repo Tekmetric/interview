@@ -18,6 +18,8 @@ This project demonstrates API CRUD operations on an H2 database for League and T
 - Maven
 
 ### Project Structure
+```
+project-root/
 ├── src
 │   ├── main
 │   │   ├── java
@@ -52,12 +54,13 @@ This project demonstrates API CRUD operations on an H2 database for League and T
 │                       └── ControllerTest.java    # Main test class.
 ├── pom.xml                                        # Maven project file with dependencies.
 └── README.md
+```
 
 ### Building the Project
 
 Navigate to the project's root directory in your terminal and execute the following command:
 
-```shell
+```
   mvn clean install
 ```
 
@@ -65,7 +68,7 @@ Navigate to the project's root directory in your terminal and execute the follow
 
 Navigate to the project's root directory in your terminal and execute the following command:
 
-```shell
+```
   mvn clean package && java -jar target/interview-1.0-SNAPSHOT.jar
 ```
 
@@ -81,11 +84,11 @@ these endpoints.
 
 Navigate to the project's root directory in your terminal and execute the following command:
 
-```shell
+```
   mvn clean test
 ```
 or to verify tests are successful
-```shell
+```
   mvn clean verify
 ```
 
@@ -99,3 +102,16 @@ or to verify tests are successful
 #### Open API
 - Swagger UI Doc: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 - OpenAPI JSON: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+
+#### Actuator Endpoints
+- [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health) - GET - Shows application health information.
+- [http://localhost:8080/actuator/info](http://localhost:8080/actuator/info) - GET - Displays arbitrary application information.
+- [http://localhost:8080/actuator/beans](http://localhost:8080/actuator/beans) - GET - Displays a list of all Spring beans.
+- [http://localhost:8080/actuator/conditions](http://localhost:8080/actuator/conditions) - GET - Shows auto-configuration conditions.
+- [http://localhost:8080/actuator/configprops](http://localhost:8080/actuator/configprops) - GET - Displays @ConfigurationProperties.
+- [http://localhost:8080/actuator/env](http://localhost:8080/actuator/env) - GET - Exposes properties from Spring's ConfigurableEnvironment.
+- [http://localhost:8080/actuator/loggers](http://localhost:8080/actuator/loggers) - GET/POST - Shows and modifies logger configuration.
+- [http://localhost:8080/actuator/metrics](http://localhost:8080/actuator/metrics) - GET - Shows metrics information.
+- [http://localhost:8080/actuator/mappings](http://localhost:8080/actuator/mappings) - GET - Displays @RequestMapping paths.
+- [http://localhost:8080/actuator/threaddump](http://localhost:8080/actuator/threaddump) - GET - Performs a thread dump.
+- [http://localhost:8080/actuator/shutdown](http://localhost:8080/actuator/shutdown) - POST - Allows graceful application shutdown (disabled by default).

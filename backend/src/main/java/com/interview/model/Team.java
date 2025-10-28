@@ -27,7 +27,7 @@ public class Team {
     private String name;
     @Schema(description = "Players of Team", example = "Kevin Hall, Ben Jones")
     private String players;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "league_id")
     @JsonBackReference
     @Schema(description = "LeagueId associated with Team", example = "3")

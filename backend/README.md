@@ -29,6 +29,8 @@ project-root/
 │   │   │           │   ├── LeagueController.java    # REST controller for handling HTTP requests.
 │   │   │           │   └── TeamController.java      # REST controller for handling HTTP requests.
 │   │   │           ├── model
+│   │   │           │   ├── dto    
+│   │   │           │   │   └── TeamDTO.java         # Data Transfer Object for Team          
 │   │   │           │   ├── League.java              # JPA entity for the League table.
 │   │   │           │   ├── NotFoundResponse.java
 │   │   │           │   └── Team.java                # JPA entity for the Team table.

@@ -82,7 +82,7 @@ public class LeagueController {
             content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class))})
     @Operation(summary = "Get single League by name",
             description = "Gets a single league from the League table by name")
-    public ResponseEntity<?> get(@PathVariable String name) {
+    public ResponseEntity<?> getByName(@PathVariable String name) {
         try {
             return ResponseEntity.ok(leagueService.getLeagueByName(name).orElseThrow(() -> new Exception("No League Found for name: " + name)));
         } catch (Exception e) {
@@ -134,11 +134,15 @@ public class LeagueController {
     @Operation(summary = "Update League",
             description = "Updates the league to the League table. If teams are included also update the teams in the Team table")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody League league) {
-        League result = leagueService.updateLeague(id, league).orElse(null);
-        if (result == null) {
-            return ResponseEntity.ok(notFoundResponse.getResponse(new Exception()));
+        try {
+            League result = leagueService.updateLeague(id, league).orElse(null);
+            if (result == null) {
+                return ResponseEntity.ok(notFoundResponse.getResponse(new Exception()));
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.ok(notFoundResponse.getResponse(e));
         }
-        return ResponseEntity.ok(result);
     }
 
     /**

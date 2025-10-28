@@ -1,5 +1,6 @@
 package com.interview.controller;
 
+import com.interview.model.dto.TeamDTO;
 import com.interview.model.NotFoundResponse;
 import com.interview.model.Team;
 import com.interview.service.TeamService;
@@ -41,14 +42,14 @@ public class TeamController {
     /**
      * Endpoint to get all rows in the {@link com.interview.repository.TeamRepository} throw the {@link TeamService}
      *
-     * @return a ResponseEntity with a list of {@link Team}s
+     * @return a ResponseEntity with a list of {@link TeamDTO}s
      */
     @GetMapping
     @ApiResponse(responseCode = "200", description = "Response is okay",
             content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Team.class)))})
     @Operation(summary = "Get all Teams",
             description = "Gets all Teams from the Teams table")
-    public ResponseEntity<List<Team>> getAll() {
+    public ResponseEntity<List<TeamDTO>> getAll() {
         return ResponseEntity.ok(teamService.getAllTeams());
     }
 
@@ -56,7 +57,7 @@ public class TeamController {
      * Endpoint to get a single row in the {@link com.interview.repository.TeamRepository} by id
      *
      * @param id the id of the {@link Team} to get
-     * @return a ResponseEntity with the corresponding {@link Team} or {@link NotFoundResponse}
+     * @return a ResponseEntity with the corresponding {@link TeamDTO} or {@link NotFoundResponse}
      */
     @GetMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Response is okay",
@@ -65,7 +66,7 @@ public class TeamController {
             description = "Gets a single team from the Team table by id")
     public ResponseEntity<?> get(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(teamService.getTeam(id).orElseThrow(() -> new Exception("No Team Found for id: " + id)));
+            return ResponseEntity.ok(teamService.getTeam(id));
         } catch (Exception e) {
             return ResponseEntity.ok(notFoundResponse.getResponse(e));
         }
@@ -75,7 +76,7 @@ public class TeamController {
      * Endpoint to get a single row in the {@link com.interview.repository.TeamRepository} by name
      *
      * @param name the name of the {@link Team} to get
-     * @return a ResponseEntity with the corresponding {@link Team} or {@link NotFoundResponse}
+     * @return a ResponseEntity with the corresponding {@link TeamDTO} or {@link NotFoundResponse}
      */
     @GetMapping("/byName/{name}")
     @ApiResponse(responseCode = "200", description = "Response is okay",
@@ -84,7 +85,7 @@ public class TeamController {
             description = "Gets a single team from the Team table by name")
     public ResponseEntity<?> get(@PathVariable String name) {
         try {
-            return ResponseEntity.ok(teamService.getTeamByName(name).orElseThrow(() -> new Exception("No Team Found for name: " + name)));
+            return ResponseEntity.ok(teamService.getTeamByName(name));
         } catch (Exception e) {
             return ResponseEntity.ok(notFoundResponse.getResponse(e));
         }
@@ -94,7 +95,7 @@ public class TeamController {
      * Endpoint to add a single row in the {@link com.interview.repository.TeamRepository}
      *
      * @param team the {@link Team} object to add to the Team table
-     * @return a ResponseEntity with newly created {@link Team} or an Error message
+     * @return a ResponseEntity with newly created {@link TeamDTO} or an Error message
      */
     @PostMapping()
     @ApiResponses(value = {
@@ -123,7 +124,7 @@ public class TeamController {
      *
      * @param id   the id of the {@link Team} object to update
      * @param team the new {@link Team} object to update the existing Team row
-     * @return a ResponseEntity with the newly updated {@link Team} or {@link NotFoundResponse}
+     * @return a ResponseEntity with the newly updated {@link TeamDTO} or {@link NotFoundResponse}
      */
     @PutMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Response is okay",
@@ -132,7 +133,7 @@ public class TeamController {
             description = "Updates the team to the Teams table.")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Team team) {
         try {
-            Team result = teamService.updateTeam(id, team);
+            TeamDTO result = teamService.updateTeam(id, team);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.ok(notFoundResponse.getResponse(e));
@@ -145,7 +146,7 @@ public class TeamController {
      * @param id   the id of the {@link Team} object to update
      * @param team the new {@link Team} object to update the existing Team row.
      *             This will have only partial data to update compared to the Update function
-     * @return a ResponseEntity with the newly updated {@link Team} or {@link NotFoundResponse}
+     * @return a ResponseEntity with the newly updated {@link TeamDTO} or {@link NotFoundResponse}
      */
     @PatchMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Response is okay",

@@ -1,5 +1,6 @@
 package com.interview.service;
 
+import com.interview.model.dto.TeamDTO;
 import com.interview.model.League;
 import com.interview.model.Team;
 import com.interview.repository.TeamRepository;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,8 +53,16 @@ public class TeamService {
      * @return a List of all the {@link Team} objects in the Team table
      */
     @Transactional(readOnly = true)
-    public List<Team> getAllTeams() {
-        return teamRepository.findAll();
+    public List<TeamDTO> getAllTeams() {
+        List<Team> teams = teamRepository.findAll();
+        if (teams.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<TeamDTO> teamDTOs = new ArrayList<>();
+        for (Team team : teams) {
+            teamDTOs.add(new TeamDTO(team));
+        }
+        return teamDTOs;
     }
 
     /**
@@ -63,10 +73,15 @@ public class TeamService {
      *
      * @param id the id of the {@link Team} to get
      * @return a the {@link Team} object that corresponds with the id
+     * @throws Exception if no {@link Team} is found for the id
      */
     @Transactional(readOnly = true)
-    public Optional<Team> getTeam(Long id) {
-        return teamRepository.findById(id);
+    public TeamDTO getTeam(Long id) throws Exception {
+        Optional<Team> team = teamRepository.findById(id);
+        if (team.isPresent())  {
+            return new TeamDTO(team.get());
+        }
+        throw new Exception("No Team Found for id: " + id);
     }
 
     /**
@@ -74,13 +89,22 @@ public class TeamService {
      * if successful. Transactional is set to readOnly = true here because we do not need
      * any operation other than READ
      * Function to get a single {@link Team} row in the Team table by name
-     *
+     * Looping through to return DTO.
      * @param name the name of the {@link Team} to get
      * @return a the {@link Team} object that corresponds with the name
      */
     @Transactional(readOnly = true)
-    public Optional<Team> getTeamByName(String name) {
-        return teamRepository.findByName(name);
+    public List<TeamDTO> getTeamByName(String name) {
+        List<Team> result = teamRepository.findByName(name);
+        if (result == null || result.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<TeamDTO> response = new ArrayList<>();
+        for (Team team : result) {
+            TeamDTO teamDTO = new TeamDTO(team);
+            response.add(teamDTO);
+        }
+        return response;
     }
 
     /**
@@ -103,7 +127,7 @@ public class TeamService {
      *              is a row with the same name and league in the database already
      */
     @Transactional
-    public Team addTeam(Team team) throws Exception {
+    public TeamDTO addTeam(Team team) throws Exception {
         if (sameRowExits(team)) {
             throw new Exception("Row already exists with same name and league");
         }
@@ -114,7 +138,8 @@ public class TeamService {
             League league = leagueService.getLeague(team.getLeague().getId()).orElseThrow(() -> new Exception("League is not available"));
             team.setLeague(league);
         }
-        return teamRepository.save(team);
+        Team createdTeam = teamRepository.save(team);
+        return new TeamDTO(createdTeam);
     }
 
     /**
@@ -135,7 +160,7 @@ public class TeamService {
      * have missing data. If the {@link League} or {@link Team} is missing we will throw an error.
      */
     @Transactional
-    public Team updateTeam(Long id, Team team) throws Exception {
+    public TeamDTO updateTeam(Long id, Team team) throws Exception {
         Team existingTeam = teamRepository.findById(id).orElseThrow(() -> new Exception("Team is not available"));
         existingTeam.setPlayers(team.getPlayers());
         existingTeam.setName(team.getName());
@@ -147,7 +172,8 @@ public class TeamService {
         } else {
             existingTeam.setLeague(team.getLeague());
         }
-        return teamRepository.save(existingTeam);
+        Team updatedTeam = teamRepository.save(existingTeam);
+        return new TeamDTO(updatedTeam);
     }
 
     /**
@@ -166,7 +192,7 @@ public class TeamService {
      *                   {@link Optional} object.
      */
     @Transactional
-    public Team partialUpdateTeam(Long id, Team team) throws Exception {
+    public TeamDTO partialUpdateTeam(Long id, Team team) throws Exception {
         Team existingTeam = teamRepository.findById(id)
                 .orElseThrow(() -> new Exception("Team not found when patching"));
         if (team.getPlayers() != null) {
@@ -178,7 +204,8 @@ public class TeamService {
         if (team.getLeague() != null) {
             existingTeam.setLeague(team.getLeague());
         }
-        return teamRepository.save(existingTeam);
+        Team updatedTeam = teamRepository.save(existingTeam);
+        return new TeamDTO(updatedTeam);
     }
 
     /**

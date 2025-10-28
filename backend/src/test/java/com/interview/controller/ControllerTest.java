@@ -1,7 +1,7 @@
 package com.interview.controller;
 
+import com.interview.model.dto.TeamDTO;
 import com.interview.model.League;
-import com.interview.model.Team;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +12,16 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ControllerTest {
     @Autowired
     private TestRestTemplate rest;
+    @Autowired
+    private LeagueController leagueController;
+    @Autowired
+    private TeamController teamController;
     @Test
     void leagueControllerTest() {
         League league = new League(null, "League1Test", "Location1", "Skill1", null);
@@ -66,9 +69,12 @@ public class ControllerTest {
         Assertions.assertEquals("Location1Update", leagueResponseUpdate.getLocation());
         Assertions.assertEquals("Skill1Update", leagueResponseUpdate.getSkillLevel());
 
-        ResponseEntity<List<Team>> allTeams = rest.exchange("/api/teams", HttpMethod.GET, null, new ParameterizedTypeReference<List<Team>>() {
+        ResponseEntity<List<TeamDTO>> allTeams = rest.exchange("/api/teams", HttpMethod.GET, null, new ParameterizedTypeReference<List<TeamDTO>>() {
         });
         Assertions.assertNotNull(allTeams);
+
+        ResponseEntity<?> responseEntityLeagueGet= leagueController.getByName("League1TestUpdate");
+        League leagueSingleGetAuto = (League) responseEntityLeagueGet.getBody();
 
         League leagueSingleGet = rest.getForObject("/api/leagues/{id}", League.class, 1);
         Assertions.assertNotNull(leagueSingleGet);

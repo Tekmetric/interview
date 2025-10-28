@@ -127,16 +127,17 @@ public class LeagueService {
      * @param league the new {@link League} object to use for updating the {@link League}
      *               retrieved from the id param
      * @return the {@link League} of the updated object if the row was found from the id param.
+     * @throws Exception when the {@link League} is updating the {@Link Team}s but the teams provided do not have id set.
      * Showcasing here and the {@link #partialUpdateLeague(Long, League)} method with different ways to deal with
      * Exceptions when trying to get the object to update. Returning a {@link Optional} object instead of
      * throwing error immediately
      */
     @Transactional
-    public Optional<League> updateLeague(Long id, League league) {
+    public Optional<League> updateLeague(Long id, League league) throws Exception {
         if (league.getTeams() != null && !league.getTeams().isEmpty()) {
             for (Team team : league.getTeams()) {
                 if (team.getId() == null) {
-                    return Optional.empty();
+                    throw new Exception("Team id is required for league to be updated");
                 }
             }
         }

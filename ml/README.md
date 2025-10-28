@@ -53,6 +53,6 @@ special label `unknown` if no label could be inferred.
 - The classifier is part of a production pipeline that processes up to 10 million items a day.
 - It is usual that 40% of this traffic is with items that have previously passed through
 the pipeline in the same day for various reason that are not related to our classifier.
-- We estimate that an incorrect classification may cost the company $0.0005 because of later manual labeling.  
+- We estimate that an incorrect classification may cost the company $0.0005 because of later manual labeling.
 - Parts taxonomy updated quarterly with 5-7% new additions
 - Repair titles formats might change from shop to shop

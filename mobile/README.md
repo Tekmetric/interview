@@ -3,12 +3,15 @@
 ## 🚀 Steps to Get Started
 
 ### 🔧 Prerequisites
+
 - Node.js (LTS version recommended)
-- Expo CLI  
-  Install if not already:  
+- Expo CLI
+  Install if not already:
+
   ```bash
   npm install -g expo-cli
   ```
+
 - A mobile device with the Expo Go app **or** an emulator (iOS Simulator/Android Emulator)
 
 ---
@@ -18,6 +21,7 @@
 - Repository: [https://github.com/Tekmetric/interview.git](https://github.com/Tekmetric/interview.git)
 - Fork the repository to your GitHub account
 - Clone your **forked** repository to your local machine:
+
   ```bash
   git clone https://github.com/YOUR-USERNAME/interview.git
   ```
@@ -25,12 +29,14 @@
 ---
 
 - Initialize a new Expo project in the mobile folder:
+
   ```bash
   npx create-expo-app react-native-interview --template blank-typescript
   cd react-native-interview
   ```
 
 - Start the project:
+
   ```bash
   npx expo start
   ```
@@ -50,7 +56,7 @@ Build a **simple React Native mobile app** using Expo that:
 
 ## 📡 Fetch Data
 
-- Pick **any public API** of your choice  
+- Pick **any public API** of your choice
 - Fetch a dataset that can be **displayed in a list**
 
 ---

@@ -4,6 +4,7 @@ import com.interview.model.League;
 import com.interview.model.Team;
 import com.interview.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,21 +18,30 @@ import java.util.Optional;
 public class TeamService {
 
     /**
-     * Autowired field by field injection
+     * Autowired field by constructor injection
      * This is included instead of setter injection to show different options for DI
      * Field for Team CRUD operations
      */
-    @Autowired
-    private TeamRepository teamRepository;
+    private final TeamRepository teamRepository;
 
     /**
-     * Autowired field by field injection
+     * Autowired field by constructor injection
      * This is included instead of setter injection to show different options for DI
      * Field for League CRUD operations
      */
-    @Autowired
-    private LeagueService leagueService;
+    private final LeagueService leagueService;
 
+    /**
+     * Constructor for {@link TeamService}
+     * Autowired field by construction injection. Lazy loading {@link LeagueService} due to circular dependencies.
+     * @param teamRepository the {@link TeamRepository} for Team CRUD operations
+     * @param leagueService Lazy loading due to constraints with circular dependencies.The {@link LeagueService} for League CRUD operations
+     */
+    @Autowired
+    public TeamService(TeamRepository teamRepository, @Lazy LeagueService leagueService) {
+        this.teamRepository = teamRepository;
+        this.leagueService = leagueService;
+    }
     /**
      * Transactional to make sure we are committing and flushing at the end of the function
      * if successful. Transactional is set to readOnly = true here because we do not need
@@ -78,7 +88,9 @@ public class TeamService {
      * if successful. This is necessary to ensure the league and teams are being created
      * successfully and if any of them fail, this will roll back all the changes.
      * Function to add the {@link Team} into the Team table from the add request.
-     * We are checking if the {@link Team} has an associated {@link League} id within the request.
+     * Checks to see if there is a row in the {@link Team} table with the same fields.
+     * Check that the {@link Team} has an associated {@link League} id within the request. If it does
+     * remove it due to creating new object.
      * If the {@link League} id is available, we will get that object and set the {@link League} for the {@link Team}
      * we are adding. If the {@link League} does not exist, an Exception is thrown.
      * If the {@link League} id is not available, we will create the row anyway with the foreign key as null.
@@ -87,10 +99,14 @@ public class TeamService {
      *
      * @param team the {@link Team} object to create
      * @return the {@link Team} object created (includes {@link League} if the League is available and included in request).
-     * @throws Exception if the {@link League} id is included but no {@link League} is associated with that id.
+     * @throws Exception if the {@link League} id is included but no {@link League} is associated with that id or if there
+     *              is a row with the same name and league in the database already
      */
     @Transactional
     public Team addTeam(Team team) throws Exception {
+        if (sameRowExits(team)) {
+            throw new Exception("Row already exists with same name and league");
+        }
         if (team.getId() != null) {
             team.setId(null);
         }
@@ -175,5 +191,14 @@ public class TeamService {
     @Transactional
     public void deleteTeam(Long id) {
         teamRepository.deleteById(id);
+    }
+
+    /**
+     * Function to check if a row with the same name and league.
+     * @param team The {@link Team} to search with
+     * @return true if a row exists with the same field values, false if the row does not exist already.
+     */
+    public boolean sameRowExits(Team team) {
+        return teamRepository.existsByNameAndLeague(team.getName(), team.getLeague());
     }
 }

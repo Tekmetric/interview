@@ -10,4 +10,5 @@ import java.util.Optional;
  */
 public interface LeagueRepository extends JpaRepository<League, Long> {
     Optional<League> findByName(String name);
+    boolean existsByNameAndLocationAndSkillLevel(String name, String location, String skillLevel);
 }

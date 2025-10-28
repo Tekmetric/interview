@@ -3,6 +3,13 @@ package com.interview.controller;
 import com.interview.model.League;
 import com.interview.model.NotFoundResponse;
 import com.interview.service.LeagueService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/leagues")
 @Getter
+@Tag(name = "Leagues", description = "League API for CRUD operations")
 public class LeagueController {
     private final NotFoundResponse notFoundResponse = new NotFoundResponse("League");
     private LeagueService leagueService;
@@ -36,6 +44,10 @@ public class LeagueController {
      * @return a ResponseEntity with a list of {@link League}s
      */
     @GetMapping
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = League.class)))})
+    @Operation(summary = "Get all Leagues",
+            description = "Gets all leagues from the League table")
     public ResponseEntity<List<League>> getAll() {
         return ResponseEntity.ok(leagueService.getAllLeagues());
     }
@@ -47,6 +59,10 @@ public class LeagueController {
      * @return a ResponseEntity with the corresponding {@link League} or {@link NotFoundResponse}
      */
     @GetMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class))})
+    @Operation(summary = "Get single League by id",
+            description = "Gets a single league from the League table by id")
     public ResponseEntity<?> get(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(leagueService.getLeague(id).orElseThrow(() -> new Exception("No League Found for id: " + id)));
@@ -62,6 +78,10 @@ public class LeagueController {
      * @return a ResponseEntity with the corresponding {@link League} or {@link NotFoundResponse}
      */
     @GetMapping("/byName/{name}")
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class))})
+    @Operation(summary = "Get single League by name",
+            description = "Gets a single league from the League table by name")
     public ResponseEntity<?> get(@PathVariable String name) {
         try {
             return ResponseEntity.ok(leagueService.getLeagueByName(name).orElseThrow(() -> new Exception("No League Found for name: " + name)));
@@ -77,6 +97,19 @@ public class LeagueController {
      * @return a ResponseEntity with newly created {@link League} or an Error message.
      */
     @PostMapping()
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Response is okay",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class) )}),
+            @ApiResponse(responseCode = "400", description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    description = "Invalid Request. Trying to create a new League with a conflicting row",
+                                    example = "Exception occurred while adding league. League: League 1. Error: Row already exists with same name, location, and skill level")
+                    ))
+    })
+    @Operation(summary = "Add League",
+            description = "Adds the league to the League table. If teams are included also add the teams to the Team table")
     public ResponseEntity<?> save(@RequestBody League league) {
         try {
             return ResponseEntity.ok(leagueService.addLeague(league));
@@ -96,6 +129,10 @@ public class LeagueController {
      * The option to use orElse() function vs isPresent()
      */
     @PutMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class) )})
+    @Operation(summary = "Update League",
+            description = "Updates the league to the League table. If teams are included also update the teams in the Team table")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody League league) {
         League result = leagueService.updateLeague(id, league).orElse(null);
         if (result == null) {
@@ -113,6 +150,10 @@ public class LeagueController {
      * @return a ResponseEntity with the newly updated {@link League} or {@link NotFoundResponse}
      */
     @PatchMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class) )})
+    @Operation(summary = "Partial Update League",
+            description = "Partially Updates the league to the League table. If teams are included also update the teams in the Team table")
     public ResponseEntity<?> partialUpdate(@PathVariable Long id, @RequestBody League league) {
         try {
             return ResponseEntity.ok(leagueService.partialUpdateLeague(id, league));
@@ -128,6 +169,10 @@ public class LeagueController {
      * @return a ResponseEntity with a body of Success or {@link NotFoundResponse}.
      */
     @DeleteMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class) )})
+    @Operation(summary = "Delete League",
+            description = "Deletes the league in the League table. Teams can be orphaned here.")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             leagueService.deleteLeague(id);

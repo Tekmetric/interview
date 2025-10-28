@@ -3,6 +3,13 @@ package com.interview.controller;
 import com.interview.model.NotFoundResponse;
 import com.interview.model.Team;
 import com.interview.service.TeamService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/teams")
 @Getter
+@Tag(name = "Teams", description = "Team API for CRUD operations")
 public class TeamController {
     private final NotFoundResponse notFoundResponse = new NotFoundResponse("Team");
     private TeamService teamService;
@@ -36,6 +44,10 @@ public class TeamController {
      * @return a ResponseEntity with a list of {@link Team}s
      */
     @GetMapping
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Team.class)))})
+    @Operation(summary = "Get all Teams",
+            description = "Gets all Teams from the Teams table")
     public ResponseEntity<List<Team>> getAll() {
         return ResponseEntity.ok(teamService.getAllTeams());
     }
@@ -47,6 +59,10 @@ public class TeamController {
      * @return a ResponseEntity with the corresponding {@link Team} or {@link NotFoundResponse}
      */
     @GetMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Team.class))})
+    @Operation(summary = "Get single Team by id",
+            description = "Gets a single team from the Team table by id")
     public ResponseEntity<?> get(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(teamService.getTeam(id).orElseThrow(() -> new Exception("No Team Found for id: " + id)));
@@ -62,6 +78,10 @@ public class TeamController {
      * @return a ResponseEntity with the corresponding {@link Team} or {@link NotFoundResponse}
      */
     @GetMapping("/byName/{name}")
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Team.class))})
+    @Operation(summary = "Get single Team by name",
+            description = "Gets a single team from the Team table by name")
     public ResponseEntity<?> get(@PathVariable String name) {
         try {
             return ResponseEntity.ok(teamService.getTeamByName(name).orElseThrow(() -> new Exception("No Team Found for name: " + name)));
@@ -77,6 +97,19 @@ public class TeamController {
      * @return a ResponseEntity with newly created {@link Team} or an Error message
      */
     @PostMapping()
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Response is okay",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Team.class) )}),
+            @ApiResponse(responseCode = "400", description = "Invalid request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    description = "Invalid Request. Trying to create a new Team with a conflicting row",
+                                    example = "Exception occurred while adding league. Team: Team 1. Error: Row already exists with same name and leagueId")
+                    ))
+    })
+    @Operation(summary = "Add Team",
+            description = "Adds the team to the Team table.")
     public ResponseEntity<?> save(@RequestBody Team team) {
         try {
             return ResponseEntity.ok(teamService.addTeam(team));
@@ -93,6 +126,10 @@ public class TeamController {
      * @return a ResponseEntity with the newly updated {@link Team} or {@link NotFoundResponse}
      */
     @PutMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Team.class) )})
+    @Operation(summary = "Update Team",
+            description = "Updates the team to the Teams table.")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Team team) {
         try {
             Team result = teamService.updateTeam(id, team);
@@ -111,6 +148,10 @@ public class TeamController {
      * @return a ResponseEntity with the newly updated {@link Team} or {@link NotFoundResponse}
      */
     @PatchMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Team.class) )})
+    @Operation(summary = "Partial Update Team",
+            description = "Partially Updates the team to the Team table.")
     public ResponseEntity<?> partialUpdate(@PathVariable Long id, @RequestBody Team team) {
         try {
             return ResponseEntity.ok(teamService.partialUpdateTeam(id, team));
@@ -126,6 +167,10 @@ public class TeamController {
      * @return a ResponseEntity with a body of Success or {@link NotFoundResponse}.
      */
     @DeleteMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Team.class) )})
+    @Operation(summary = "Delete Team",
+            description = "Deletes the team in the Team table.")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             teamService.deleteTeam(id);

@@ -26,35 +26,39 @@ project-root/
 │   │   │   └── com
 │   │   │       └── interview
 │   │   │           ├── controller
-│   │   │           │   ├── LeagueController.java    # REST controller for handling HTTP requests.
-│   │   │           │   └── TeamController.java      # REST controller for handling HTTP requests.
+│   │   │           │   ├── LeagueController.java           # REST controller for handling HTTP requests.
+│   │   │           │   └── TeamController.java             # REST controller for handling HTTP requests.
+│   │   │           ├── exception
+│   │   │           │   ├── ConflictException.java          # Exception class for Conflict.
+│   │   │           │   ├── GlobalExceptionHandler.java     # Global Exception Handler class.
+│   │   │           │   ├── MissingRequiredException.java   # Exception class for Missing Requirements.
+│   │   │           │   └── RowNotFoundException.java       # Exception class for Row Not Found.
 │   │   │           ├── model
 │   │   │           │   ├── dto    
-│   │   │           │   │   └── TeamDTO.java         # Data Transfer Object for Team          
-│   │   │           │   ├── League.java              # JPA entity for the League table.
-│   │   │           │   ├── NotFoundResponse.java
-│   │   │           │   └── Team.java                # JPA entity for the Team table.
+│   │   │           │   │   └── TeamDTO.java                # Data Transfer Object for Team          
+│   │   │           │   ├── League.java                     # JPA entity for the League table.
+│   │   │           │   └── Team.java                       # JPA entity for the Team table.
 │   │   │           ├── repository
-│   │   │           │   ├── LeagueRepository.java    # Spring Data JPA repository for data access.
-│   │   │           │   └── TeamRepository.java      # Spring Data JPA repository for data access.
+│   │   │           │   ├── LeagueRepository.java           # Spring Data JPA repository for data access.
+│   │   │           │   └── TeamRepository.java             # Spring Data JPA repository for data access.
 │   │   │           ├── service
-│   │   │           │   ├── LeagueService.java       # Business logic for League management.
-│   │   │           │   └── TeamService.java         # Business logic for Team management.
-│   │   │           └── DemoApplication.java         # Main Spring Boot application class.
+│   │   │           │   ├── LeagueService.java              # Business logic for League management.
+│   │   │           │   └── TeamService.java                # Business logic for Team management.
+│   │   │           └── DemoApplication.java                # Main Spring Boot application class.
 │   │   │           
 │   │   └── resources
-│   │       ├── application.properties               # Configuration for H2 database and other settings.
+│   │       ├── application.properties                      # Configuration for H2 database and other settings.
 │   │       ├── database                             
-│   │       │   └── database.sql                     # Script to pre-populate data on startup.
-│   │       ├── interview.postman_collection.json    # Json postman collection.
-│   │       └── apiCall.sh                           # Script for example curl commands.
+│   │       │   └── database.sql                            # Script to pre-populate data on startup.
+│   │       ├── interview.postman_collection.json           # Json postman collection.
+│   │       └── apiCall.sh                                  # Script for example curl commands.
 │   └── test
 │       └── java
 │           └── com
 │               └── interview
 │                   └── controller
-│                       └── ControllerTest.java    # Main test class.
-├── pom.xml                                        # Maven project file with dependencies.
+│                       └── ControllerTest.java             # Main test class.
+├── pom.xml                                                 # Maven project file with dependencies.
 └── README.md
 ```
 

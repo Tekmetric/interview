@@ -1,5 +1,7 @@
 package com.interview.service;
 
+import com.interview.exception.ConflictException;
+import com.interview.exception.RowNotFoundException;
 import com.interview.model.dto.TeamDTO;
 import com.interview.model.League;
 import com.interview.model.Team;
@@ -73,15 +75,15 @@ public class TeamService {
      *
      * @param id the id of the {@link Team} to get
      * @return a the {@link Team} object that corresponds with the id
-     * @throws Exception if no {@link Team} is found for the id
+     * @throws RowNotFoundException if no {@link Team} is found for the id
      */
     @Transactional(readOnly = true)
-    public TeamDTO getTeam(Long id) throws Exception {
+    public TeamDTO getTeam(Long id) {
         Optional<Team> team = teamRepository.findById(id);
         if (team.isPresent())  {
             return new TeamDTO(team.get());
         }
-        throw new Exception("No Team Found for id: " + id);
+        throw new RowNotFoundException("No Team Found for id: " + id);
     }
 
     /**
@@ -92,12 +94,13 @@ public class TeamService {
      * Looping through to return DTO.
      * @param name the name of the {@link Team} to get
      * @return a the {@link Team} object that corresponds with the name
+     * @throws RowNotFoundException if no {@link Team} is found for the name
      */
     @Transactional(readOnly = true)
     public List<TeamDTO> getTeamByName(String name) {
         List<Team> result = teamRepository.findByName(name);
         if (result == null || result.isEmpty()) {
-            return new ArrayList<>();
+            throw new RowNotFoundException("No Team Found for name: " + name);
         }
         List<TeamDTO> response = new ArrayList<>();
         for (Team team : result) {
@@ -123,19 +126,19 @@ public class TeamService {
      *
      * @param team the {@link Team} object to create
      * @return the {@link Team} object created (includes {@link League} if the League is available and included in request).
-     * @throws Exception if the {@link League} id is included but no {@link League} is associated with that id or if there
+     * @throws ConflictException if the {@link League} id is included but no {@link League} is associated with that id or {@link RowNotFoundException} if there
      *              is a row with the same name and league in the database already
      */
     @Transactional
-    public TeamDTO addTeam(Team team) throws Exception {
+    public TeamDTO addTeam(Team team) {
         if (sameRowExits(team)) {
-            throw new Exception("Row already exists with same name and league");
+            throw new ConflictException("Row already exists with same name and league while adding team.");
         }
         if (team.getId() != null) {
             team.setId(null);
         }
         if (team.getLeague() != null && team.getLeague().getId() != null) {
-            League league = leagueService.getLeague(team.getLeague().getId()).orElseThrow(() -> new Exception("League is not available"));
+            League league = leagueService.getLeague(team.getLeague().getId()).orElseThrow(() -> new RowNotFoundException("League is not available while adding team for id: " + team.getLeague().getId()));
             team.setLeague(league);
         }
         Team createdTeam = teamRepository.save(team);
@@ -154,18 +157,19 @@ public class TeamService {
      * @param team the new {@link Team} object to use for updating the {@link Team}
      *             retrieved from the id param
      * @return the {@link Team} of the updated object if the row was found from the id param.
+     * @throws RowNotFoundException if the {@link Team} is not found or if the {@link Team} is not found.
      * Showcasing here and the {@link #partialUpdateTeam(Long, Team)} different ways to deal with
-     * Exceptions when trying to get the object to update. Throwing immediately instead of returning
+     * RowNotFoundExceptions when trying to get the object to update. Throwing immediately instead of returning
      * {@link Optional} object. We are doing this here because we may have two different scenarios that
      * have missing data. If the {@link League} or {@link Team} is missing we will throw an error.
      */
     @Transactional
-    public TeamDTO updateTeam(Long id, Team team) throws Exception {
-        Team existingTeam = teamRepository.findById(id).orElseThrow(() -> new Exception("Team is not available"));
+    public TeamDTO updateTeam(Long id, Team team) {
+        Team existingTeam = teamRepository.findById(id).orElseThrow(() -> new RowNotFoundException("Team is not available while updating team for id: " + id));
         existingTeam.setPlayers(team.getPlayers());
         existingTeam.setName(team.getName());
         if (team.getLeague() != null && team.getLeague().getId() != null && team.getLeague().getName() == null) {
-            League league = leagueService.getLeague(team.getLeague().getId()).orElseThrow(() -> new Exception("League is not available"));
+            League league = leagueService.getLeague(team.getLeague().getId()).orElseThrow(() -> new RowNotFoundException("League is not available while updating team for id: " + team.getLeague().getId()));
             existingTeam.setLeague(league);
         } else if (team.getLeague() == null) {
             existingTeam.setLeague(null);
@@ -186,15 +190,15 @@ public class TeamService {
      *             retrieved from the id param. This object may have limited values so we check for null
      *             fields to make sure we are only updating for the data received.
      * @return the {@link Team} of the updated object if the row was found from the id param.
-     * @throws Exception if the {@link Team} does not exist in the Team table.
+     * @throws RowNotFoundException if the {@link Team} does not exist in the Team table.
      *                   Showcasing here and the {@link #updateTeam(Long, Team)} to deal with
      *                   Exceptions when trying to get the object to update. Throwing immediately instead of returning
      *                   {@link Optional} object.
      */
     @Transactional
-    public TeamDTO partialUpdateTeam(Long id, Team team) throws Exception {
+    public TeamDTO partialUpdateTeam(Long id, Team team) {
         Team existingTeam = teamRepository.findById(id)
-                .orElseThrow(() -> new Exception("Team not found when patching"));
+                .orElseThrow(() -> new RowNotFoundException("Team is not available while patching team for id: " + id));
         if (team.getPlayers() != null) {
             existingTeam.setPlayers(team.getPlayers());
         }

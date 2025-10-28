@@ -1,5 +1,8 @@
 package com.interview.service;
 
+import com.interview.exception.ConflictException;
+import com.interview.exception.MissingRequiredException;
+import com.interview.exception.RowNotFoundException;
 import com.interview.model.League;
 import com.interview.model.Team;
 import com.interview.repository.LeagueRepository;
@@ -97,13 +100,13 @@ public class LeagueService {
      *
      * @param league the {@link League} object to create (includes a list of {@link Team}s to add as well)
      * @return the {@link League} object created (includes teams that were created).
-     * @throws Exception if there is a row with the same  name, location, and skill level in the database
-     *          already or if an Exception is thrown from {@link TeamService#updateTeam(Long, Team)}
+     * @throws ConflictException if there is a row with the same  name, location, and skill level in the database
+     *          already or {@link com.interview.exception.RowNotFoundException} if an Exception is thrown from {@link TeamService#updateTeam(Long, Team)}
      */
     @Transactional
-    public League addLeague(League league) throws Exception {
+    public League addLeague(League league) {
         if (sameRowExist(league)) {
-            throw new Exception("Row already exists with same name, location, and skill level");
+            throw new ConflictException("Row already exists with same name, location, and skill level");
         }
         if (league.getId() != null) {
             league.setId(null);
@@ -127,17 +130,17 @@ public class LeagueService {
      * @param league the new {@link League} object to use for updating the {@link League}
      *               retrieved from the id param
      * @return the {@link League} of the updated object if the row was found from the id param.
-     * @throws Exception when the {@link League} is updating the {@Link Team}s but the teams provided do not have id set.
+     * @throws MissingRequiredException when the {@link League} is updating the {@link Team}s but the teams provided do not have id set.
      * Showcasing here and the {@link #partialUpdateLeague(Long, League)} method with different ways to deal with
      * Exceptions when trying to get the object to update. Returning a {@link Optional} object instead of
      * throwing error immediately
      */
     @Transactional
-    public Optional<League> updateLeague(Long id, League league) throws Exception {
+    public Optional<League> updateLeague(Long id, League league) {
         if (league.getTeams() != null && !league.getTeams().isEmpty()) {
             for (Team team : league.getTeams()) {
                 if (team.getId() == null) {
-                    throw new Exception("Team id is required for league to be updated");
+                    throw new MissingRequiredException("Team id is required for league to be updated");
                 }
             }
         }
@@ -160,15 +163,15 @@ public class LeagueService {
      *               retrieved from the id param. This object may have limited values so we check for null
      *               fields to make sure we are only updating for the data received.
      * @return the {@link League} of the updated object if the row was found from the id param.
-     * @throws Exception if the {@link League} does not exist in the League table.
+     * @throws RowNotFoundException if the {@link League} does not exist in the League table.
      *                   Showcasing here and the {@link #updateLeague(Long, League)} different ways to deal with
      *                   Exceptions when trying to get the object to update. Throwing immediately instead of returning
      *                   {@link Optional} object.
      */
     @Transactional
-    public League partialUpdateLeague(Long id, League league) throws Exception {
+    public League partialUpdateLeague(Long id, League league) {
         League existingLeague = leagueRepository.findById(id)
-                .orElseThrow(() -> new Exception("League not found when patching"));
+                .orElseThrow(() -> new RowNotFoundException("League not found when patching for id: " + id));
         if (league.getTeams() != null) {
             existingLeague.setTeams(league.getTeams());
         }
@@ -197,11 +200,11 @@ public class LeagueService {
      * This does leave some orphaned {@link Team}s but that is fine for this scenario.
      *
      * @param id the id of the {@link League} row to delete
-     * @throws Exception if the {@link League} retrieved with the id does not exist or {@link Team} associated with the league does not exist.
+     * @throws RowNotFoundException if the {@link League} retrieved with the id does not exist or {@link Team} associated with the league does not exist.
      */
     @Transactional
-    public void deleteLeague(Long id) throws Exception {
-        League league = leagueRepository.findById(id).orElseThrow(() -> new Exception("League does not exist to delete"));
+    public void deleteLeague(Long id) {
+        League league = leagueRepository.findById(id).orElseThrow(() -> new RowNotFoundException("League does not exist to delete for id: " + id));
         for (Team team : league.getTeams()) {
             team.setLeague(null);
             teamService.updateTeam(team.getId(), team);

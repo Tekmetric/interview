@@ -1,7 +1,9 @@
 package com.interview.controller;
 
+import com.interview.exception.ConflictException;
+import com.interview.exception.RowNotFoundException;
 import com.interview.model.League;
-import com.interview.model.NotFoundResponse;
+import com.interview.model.Team;
 import com.interview.service.LeagueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +28,6 @@ import java.util.List;
 @Getter
 @Tag(name = "Leagues", description = "League API for CRUD operations")
 public class LeagueController {
-    private final NotFoundResponse notFoundResponse = new NotFoundResponse("League");
     private LeagueService leagueService;
 
     /**
@@ -56,38 +58,40 @@ public class LeagueController {
      * Endpoint to get a single row in the {@link com.interview.repository.LeagueRepository} by id
      *
      * @param id the id of the {@link League} to get
-     * @return a ResponseEntity with the corresponding {@link League} or {@link NotFoundResponse}
+     * @return a ResponseEntity with the corresponding {@link League}.
      */
     @GetMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Response is okay",
             content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class))})
+    @ApiResponse(responseCode = "404", description = "Row not found for league", content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(
+                    description = "Row not found for league",
+                    example = "Row not found: No League Found for id: 2")))
     @Operation(summary = "Get single League by id",
             description = "Gets a single league from the League table by id")
     public ResponseEntity<?> get(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(leagueService.getLeague(id).orElseThrow(() -> new Exception("No League Found for id: " + id)));
-        } catch (Exception e) {
-            return ResponseEntity.ok(notFoundResponse.getResponse(e));
-        }
+        return ResponseEntity.ok(leagueService.getLeague(id).orElseThrow(() -> new RowNotFoundException("No League Found for id: " + id)));
     }
 
     /**
      * Endpoint to get a single row in the {@link com.interview.repository.LeagueRepository} by name
      *
      * @param name the name of the {@link League} to get
-     * @return a ResponseEntity with the corresponding {@link League} or {@link NotFoundResponse}
+     * @return a ResponseEntity with the corresponding {@link League}.
      */
     @GetMapping("/byName/{name}")
     @ApiResponse(responseCode = "200", description = "Response is okay",
             content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class))})
+    @ApiResponse(responseCode = "404", description = "Row not found for league by name", content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(
+                    description = "Row not found for league by name",
+                    example = "Row not found: No League Found for name: League2")))
     @Operation(summary = "Get single League by name",
             description = "Gets a single league from the League table by name")
     public ResponseEntity<?> getByName(@PathVariable String name) {
-        try {
-            return ResponseEntity.ok(leagueService.getLeagueByName(name).orElseThrow(() -> new Exception("No League Found for name: " + name)));
-        } catch (Exception e) {
-            return ResponseEntity.ok(notFoundResponse.getResponse(e));
-        }
+        return ResponseEntity.ok(leagueService.getLeagueByName(name).orElseThrow(() -> new RowNotFoundException("No League Found for name: " + name)));
     }
 
     /**
@@ -98,24 +102,25 @@ public class LeagueController {
      */
     @PostMapping()
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Response is okay",
+            @ApiResponse(responseCode = "201", description = "League created successfully",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class) )}),
-            @ApiResponse(responseCode = "400", description = "Invalid request",
+            @ApiResponse(responseCode = "404", description = "Row not found for league or team", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            description = "Row not found for league or team",
+                            example = "Row not found: Team is not available while updating team for id: 2"))),
+            @ApiResponse(responseCode = "409", description = "Conflict",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
-                                    description = "Invalid Request. Trying to create a new League with a conflicting row",
-                                    example = "Exception occurred while adding league. League: League 1. Error: Row already exists with same name, location, and skill level")
+                                    description = "Conflict. Trying to create a new League with a conflicting row",
+                                    example = "A conflict has occurred in the database: Row already exists with same name, location, and skill level")
                     ))
     })
     @Operation(summary = "Add League",
             description = "Adds the league to the League table. If teams are included also add the teams to the Team table")
     public ResponseEntity<?> save(@RequestBody League league) {
-        try {
-            return ResponseEntity.ok(leagueService.addLeague(league));
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body("Exception occurred while adding league. League: " + league.toString() + ". Error: " + e.getMessage());
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(leagueService.addLeague(league));
     }
 
     /**
@@ -123,7 +128,7 @@ public class LeagueController {
      *
      * @param id     the id of the {@link League} object to update
      * @param league the new {@link League} object to update the existing League row
-     * @return a ResponseEntity with the newly updated {@link League} or {@link NotFoundResponse}
+     * @return a ResponseEntity with the newly updated {@link League}.
      * Showcasing here using {@link java.util.Optional} for updating the {@link League}.
      * This way does not require exception handling and if the returning object is not a valid {@link League}.
      * The option to use orElse() function vs isPresent()
@@ -131,18 +136,26 @@ public class LeagueController {
     @PutMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Response is okay",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class) )})
+    @ApiResponse(responseCode = "400", description = "Missing Required Data",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                            description = "Missing Required Data. Trying to update a League with teams but missing teams id.",
+                            example = "Missing required data: Team id is required for league to be updated")
+            ))
+    @ApiResponse(responseCode = "404", description = "Row not found for league", content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(
+                    description = "Row not found for league",
+                    example = "Row not found: No League found for id: 2")))
     @Operation(summary = "Update League",
             description = "Updates the league to the League table. If teams are included also update the teams in the Team table")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody League league) {
-        try {
             League result = leagueService.updateLeague(id, league).orElse(null);
             if (result == null) {
-                return ResponseEntity.ok(notFoundResponse.getResponse(new Exception()));
+                throw new RowNotFoundException("No League found for id: " + id);
             }
             return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.ok(notFoundResponse.getResponse(e));
-        }
     }
 
     /**
@@ -151,38 +164,40 @@ public class LeagueController {
      * @param id     the id of the {@link League} object to update
      * @param league the new {@link League} object to update the existing League row.
      *               This will have only partial data to update compared to the Update function
-     * @return a ResponseEntity with the newly updated {@link League} or {@link NotFoundResponse}
+     * @return a ResponseEntity with the newly updated {@link League}.
      */
     @PatchMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Response is okay",
             content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class) )})
+    @ApiResponse(responseCode = "404", description = "Row not found for league", content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(
+                    description = "Row not found for league",
+                    example = "Row not found: League not found when patching for id: 2")))
     @Operation(summary = "Partial Update League",
             description = "Partially Updates the league to the League table. If teams are included also update the teams in the Team table")
     public ResponseEntity<?> partialUpdate(@PathVariable Long id, @RequestBody League league) {
-        try {
-            return ResponseEntity.ok(leagueService.partialUpdateLeague(id, league));
-        } catch (Exception e) {
-            return ResponseEntity.ok(notFoundResponse.getResponse(e));
-        }
+        return ResponseEntity.ok(leagueService.partialUpdateLeague(id, league));
     }
 
     /**
      * Endpoint to remove a row in the {@link com.interview.repository.LeagueRepository}
      *
      * @param id the id of the {@link League} object to delete
-     * @return a ResponseEntity with a body of Success or {@link NotFoundResponse}.
+     * @return a ResponseEntity with a body of Success..
      */
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Response is okay",
             content = {@Content(mediaType = "application/json", schema = @Schema(implementation = League.class) )})
+    @ApiResponse(responseCode = "404", description = "Row not found for league or team", content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(
+                    description = "Row not found for league or team",
+                    example = "Row not found: League does not exist to delete for id: 2")))
     @Operation(summary = "Delete League",
             description = "Deletes the league in the League table. Teams can be orphaned here.")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        try {
-            leagueService.deleteLeague(id);
-            return ResponseEntity.ok("Successfully deleted row from League table.");
-        } catch (Exception e) {
-            return ResponseEntity.ok(notFoundResponse.getResponse(e));
-        }
+        leagueService.deleteLeague(id);
+        return ResponseEntity.ok("Successfully deleted row from League table.");
     }
 }

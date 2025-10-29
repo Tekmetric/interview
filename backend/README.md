@@ -41,6 +41,8 @@ project-root/
 │   │   │           ├── repository
 │   │   │           │   ├── LeagueRepository.java           # Spring Data JPA repository for data access.
 │   │   │           │   └── TeamRepository.java             # Spring Data JPA repository for data access.
+│   │   │           ├── security
+│   │   │           │   ├── SecurityConfig.java             # Configuration for authentication/security.
 │   │   │           ├── service
 │   │   │           │   ├── LeagueService.java              # Business logic for League management.
 │   │   │           │   └── TeamService.java                # Business logic for Team management.
@@ -56,8 +58,7 @@ project-root/
 │       └── java
 │           └── com
 │               └── interview
-│                   └── controller
-│                       └── ControllerTest.java             # Main test class.
+│                   └── ControllerTest.java                 # Main test class.
 ├── pom.xml                                                 # Maven project file with dependencies.
 └── README.md
 ```

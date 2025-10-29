@@ -13,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +30,17 @@ public class InterviewTest {
     @Autowired
     private TeamController teamController;
     @Test
+    @WithMockUser
     void leagueControllerTest() {
         League league = new League(null, "League1Test", "Location1", "Skill1", null);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth("user", "testPassword");
         RequestEntity<League> requestEntity = RequestEntity
                 .method(HttpMethod.POST, "/api/leagues")
+                .headers(headers)
                 .body(league);
         ResponseEntity<League> respPost = rest.exchange("/api/leagues", HttpMethod.POST, requestEntity, League.class);
+        System.out.println(respPost.toString());
         Assertions.assertTrue(respPost.getStatusCode().isSameCodeAs(HttpStatus.CREATED));
         Assertions.assertNotNull(respPost.getBody());
         League leagueResponse1 = respPost.getBody();
@@ -68,6 +71,7 @@ public class InterviewTest {
         League leagueUpdate = new League(null, "League1TestUpdate", "Location1Update", "Skill1Update", null);
         RequestEntity<League> requestEntityUpdate = RequestEntity
                 .method(HttpMethod.PUT, "/api/leagues/{id}")
+                .headers(headers)
                 .body(leagueUpdate);
         ResponseEntity<League> respUpdate = rest.exchange("/api/leagues/{id}", HttpMethod.PUT, requestEntityUpdate, new ParameterizedTypeReference<League>() {}, 1);
         System.out.println(respUpdate);
@@ -87,6 +91,7 @@ public class InterviewTest {
         League leagueUpdateAgain = new League(null, "League1TestUpdate", "Location1Update", "Skill1Update", teams);
         RequestEntity<League> requestEntityUpdateAgain = RequestEntity
                 .method(HttpMethod.PUT, "/api/leagues/{id}")
+                .headers(headers)
                 .body(leagueUpdateAgain);
 
         ResponseEntity<String> respUpdateAgain = rest.exchange("/api/leagues/{id}", HttpMethod.PUT, requestEntityUpdateAgain, new ParameterizedTypeReference<>() {}, 1);
@@ -104,6 +109,7 @@ public class InterviewTest {
         leaguePartialUpdate.setName("League1PartialUpdate");
         RequestEntity<League> requestEntityPartialUpdate = RequestEntity
                 .method(HttpMethod.PATCH, "/api/leagues/{id}")
+                .headers(headers)
                 .body(leaguePartialUpdate);
         ResponseEntity<League> respPartialUpdate = rest.exchange("/api/leagues/{id}", HttpMethod.PATCH, requestEntityPartialUpdate, new ParameterizedTypeReference<League>() {}, 1);
         System.out.println(respPartialUpdate);
@@ -114,7 +120,11 @@ public class InterviewTest {
         Assertions.assertEquals("League1PartialUpdate", leagueResponsePartialUpdate.getName());
         Assertions.assertEquals("Location1Update", leagueResponsePartialUpdate.getLocation());
 
-        rest.delete("/api/leagues/{id}", 1);
+        RequestEntity<Void> requestEntityDelete = RequestEntity
+                .method(HttpMethod.DELETE, "/api/leagues/{id}")
+                .headers(headers)
+                .build();
+        rest.exchange("/api/leagues/{id}", HttpMethod.DELETE, requestEntityDelete, Void.class, 1);
 
         ResponseEntity<List<League>> respGetAll2 = rest.exchange("/api/leagues", HttpMethod.GET, null, new ParameterizedTypeReference<List<League>>() {
         });
@@ -128,18 +138,31 @@ public class InterviewTest {
         League leagueUpdateNoRow = new League(null, "League1TestUpdate", "Location1Update", "Skill1Update", null);
         RequestEntity<League> requestEntityUpdateNoRow = RequestEntity
                 .method(HttpMethod.PUT, "/api/leagues/{id}")
+                .headers(headers)
                 .body(leagueUpdateNoRow);
 
         ResponseEntity<String> respUpdateNoRow = rest.exchange("/api/leagues/{id}", HttpMethod.PUT, requestEntityUpdateNoRow, new ParameterizedTypeReference<>() {}, 4);
         Assertions.assertTrue(respUpdateNoRow.getStatusCode().isSameCodeAs(HttpStatus.NOT_FOUND));
         Assertions.assertEquals("Row not found: No League found for id: 4", respUpdateNoRow.getBody());
+
+        RequestEntity<League> requestEntityUnauthorized = RequestEntity
+                .method(HttpMethod.PUT, "/api/leagues/{id}")
+                .body(leagueUpdateNoRow);
+
+        ResponseEntity<String> respUnauthorized = rest.exchange("/api/leagues/{id}", HttpMethod.PUT, requestEntityUnauthorized, new ParameterizedTypeReference<>() {}, 4);
+        Assertions.assertTrue(respUnauthorized.getStatusCode().isSameCodeAs(HttpStatus.UNAUTHORIZED));
+
     }
 
     @Test
+    @WithMockUser
     void teamControllerTest() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth("user", "testPassword");
         League league = new League(null, "League1Test", "Location1", "Skill1", null);
         RequestEntity<League> requestEntityLeague = RequestEntity
                 .method(HttpMethod.POST, "/api/leagues")
+                .headers(headers)
                 .body(league);
         ResponseEntity<League> respPostLeague = rest.exchange("/api/leagues", HttpMethod.POST, requestEntityLeague, League.class);
         Assertions.assertTrue(respPostLeague.getStatusCode().isSameCodeAs(HttpStatus.CREATED));
@@ -161,6 +184,7 @@ public class InterviewTest {
         team = new Team(null, "Team1", "Kevin Hall, Another Person", null);
         RequestEntity<Team> requestEntity = RequestEntity
                 .method(HttpMethod.POST, "/api/teams")
+                .headers(headers)
                 .body(team);
         ResponseEntity<TeamDTO> respPost = rest.exchange("/api/teams", HttpMethod.POST, requestEntity, TeamDTO.class);
         Assertions.assertTrue(respPost.getStatusCode().isSameCodeAs(HttpStatus.CREATED));
@@ -196,6 +220,7 @@ public class InterviewTest {
         Team teamUpdate = new Team(1L, "Team1Update", "Jake Hall, Allison Hall", null);
         RequestEntity<Team> requestEntityUpdate = RequestEntity
                 .method(HttpMethod.PUT, "/api/teams/{id}")
+                .headers(headers)
                 .body(teamUpdate);
         ResponseEntity<TeamDTO> respUpdate = rest.exchange("/api/teams/{id}", HttpMethod.PUT, requestEntityUpdate, new ParameterizedTypeReference<TeamDTO>() {}, 1);
         System.out.println(respUpdate);
@@ -219,6 +244,7 @@ public class InterviewTest {
         Team partialTeamUpdate = new Team(null, null, "Kevin Hall, Allison Hall", null);
         RequestEntity<Team> requestEntityPatch = RequestEntity
                 .method(HttpMethod.PATCH, "/api/teams/{id}")
+                .headers(headers)
                 .body(partialTeamUpdate);
         ResponseEntity<TeamDTO> respPatch = rest.exchange("/api/teams/{id}", HttpMethod.PATCH, requestEntityPatch, new ParameterizedTypeReference<TeamDTO>() {}, 2);
         Assertions.assertTrue(respPatch.getStatusCode().is2xxSuccessful());
@@ -236,7 +262,11 @@ public class InterviewTest {
         Assertions.assertEquals("Kevin Hall, Allison Hall", teamGetById.getPlayers());
         Assertions.assertEquals(1L, teamGetById.getLeagueId());
 
-        rest.delete("/api/teams/{id}", 1);
+        RequestEntity<Void> requestEntityDelete = RequestEntity
+                .method(HttpMethod.DELETE, "/api/teams/{id}")
+                .headers(headers)
+                .build();
+        rest.exchange("/api/teams/{id}", HttpMethod.DELETE, requestEntityDelete, Void.class, 1);
 
         String teamGetError = rest.getForObject("/api/teams/{id}", String.class, 1);
         Assertions.assertEquals("Row not found: No Team Found for id: 1", teamGetError);

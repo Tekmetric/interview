@@ -1,0 +1,74 @@
+databaseChangeLog:
+  - preConditions:
+      - runningAs:
+          username: sa
+  - changeSet:
+      id: 1
+      author: nick.caballero
+      comment: create base product table
+      changes:
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 2
+      author: nick.caballero
+      comment: add price column to product table using mixed change types
+      changes:
+        - addColumn:
+            tableName: product
+            columns:
+              - column:
+                  name: price
+                  type: bigint
+        - sql:
+            sql: UPDATE product SET price = 0;
+        - addNotNullConstraint:
+            tableName: product
+            columnName: price
+  - changeSet:
+      id: 3
+      author: nick.caballero
+      comment: add auditing columns to product table using only sql
+      changes:
+        - sql:
+            sql: >-
+              ALTER TABLE PUBLIC.product ADD created_date TIMESTAMP;
+              ALTER TABLE PUBLIC.product ADD modified_date TIMESTAMP;
+              UPDATE product SET created_date = NOW();
+              ALTER TABLE PUBLIC.product ALTER COLUMN created_date SET NOT NULL;
+  - changeSet:
+      id: 4
+      author: nick.caballero
+      comment: add soft-delete and version columns to product table
+      changes:
+        - addColumn:
+            tableName: product
+            columns:
+              - column:
+                  name: deleted_date
+                  type: timestamp
+              - column:
+                  name: version
+                  type: bigint
+        - sql:
+            sql: >-
+              UPDATE product SET version = 0;
+              ALTER TABLE PUBLIC.product ALTER COLUMN version SET NOT NULL;

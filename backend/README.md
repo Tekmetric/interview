@@ -12,28 +12,15 @@
 #### Import project into IDE
 - Project root is located in `backend` folder
 
-#### Build and run your app
-- `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
+#### Testing
 
-#### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
+The service can be started using `mvn spring-boot:run`. 
+Add `-Dspring-boot.run.profiles=local` to make the database persistent.
+To delete the database create by the `local` profile, use `rm -rf ./target/db`.
 
-#### After finishing the goals listed below create a PR
+Once started, the API documentation can be accessed at http://localhost:8080/swagger-ui/index.html.
+Example requests are also available [here](examples.rest) using IntelliJ's HTTP client. 
 
-### Goals
-1. Design a CRUD API with data store using Spring Boot and in memory H2 database (pre-configured, see below)
-2. API should include one object with create, read, update, and delete operations. Read should include fetching a single item and list of items.
-3. Provide SQL create scripts for your object(s) in resources/data.sql
-4. Demo API functionality using API client tool
-
-### Considerations
-This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
-
-#### H2 Configuration
-- Console: http://localhost:8080/h2-console 
-- JDBC URL: jdbc:h2:mem:testdb
-- Username: sa
-- Password: password
-
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+A [data.sql](./src/main/resources/data.sql) is provided with some example records. 
+Note that the H2 database only supports a single connection when used in memory/file mode. 
+The example script can be applied by using H2 file before running service, or by using the [H2 console](http://localhost:8080/h2-console).

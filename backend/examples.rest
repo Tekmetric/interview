@@ -1,0 +1,34 @@
+### get products
+
+GET http://localhost:8080/api/product?page=0&size=10&includeDeleted=true
+
+### create a product
+
+POST http://localhost:8080/api/product
+Content-Type: application/json
+
+{
+  "name": "my product name",
+  "description": "my special product",
+  "price": 12345
+}
+
+### update a product
+
+POST http://localhost:8080/api/product/1
+Content-Type: application/json
+
+{
+  "name": "my product name",
+  "description": "my special product, but better",
+  "price": 12345,
+  "version": 4
+}
+
+### get a product by id
+
+GET http://localhost:8080/api/product/1?includeDeleted=false
+
+### delete a product by id
+
+DELETE http://localhost:8080/api/product/1

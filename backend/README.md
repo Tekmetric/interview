@@ -4,7 +4,7 @@
 
 #### Prerequisites
 - Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
+- Java 21
 
 #### Fork the repository and clone it locally
 - https://github.com/Tekmetric/interview.git
@@ -12,11 +12,46 @@
 #### Import project into IDE
 - Project root is located in `backend` folder
 
-#### Build and run your app
-- `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
+#### Run the app
+- Option A — Run directly with Maven (from the `backend` folder):
+  - `mvn spring-boot:run`
+- Option B — Build a JAR and run (from the `backend` folder):
+  - `mvn clean package -DskipTests`
+  - `java -jar target/interview-1.0-SNAPSHOT.jar`
 
 #### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
+- `curl -X GET http://localhost:8080/api/welcome`
+
+#### API documentation (Swagger / OpenAPI)
+- Swagger UI: http://localhost:8080/swagger-ui/index.html
+  - Shortcut (redirects to the index page): http://localhost:8080/swagger-ui.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+- OpenAPI YAML: http://localhost:8080/v3/api-docs.yaml
+
+#### Running tests
+- From the `backend` folder:
+  - Run all tests: `mvn test`
+  - Run a single test class (example): `mvn -Dtest=com.interview.services.UserServiceTest test`
+  - Run a single test method (example): `mvn -Dtest=com.interview.services.UserServiceTest#shouldCreateUser test`
+- Test reports: `backend/target/surefire-reports/`
+  - Look for `.txt` and `.xml` reports for each test class.
+
+#### Local E2E / API smoke test (test-api.sh)
+- This repo includes a simple bash script to exercise the main API endpoints locally.
+- Prerequisite: Start the backend so it’s reachable at `http://localhost:8080` (see "Run the app" above).
+- Run (macOS/Linux):
+  - From the `backend` folder: `chmod +x test-api.sh && ./test-api.sh`
+- Run (Windows):
+  - Use Git Bash: `bash backend/test-api.sh`
+  - Or run inside WSL from the `backend` folder: `bash test-api.sh`
+- What the script does:
+  - Attempts an invalid create (expects HTTP 400) to show validation.
+  - Creates a user `johndoe` with password `SecurePass123$`.
+  - Reads and updates the user using Basic Auth.
+  - Creates, lists, updates, and soft-deletes a bank account via `/api/bank` endpoints.
+- Notes:
+  - Basic Auth credentials used by the script: `johndoe` / `SecurePass123$`.
+  - The script expects the same API shapes implemented in this project; adjust if you change endpoints.
 
 #### After finishing the goals listed below create a PR
 

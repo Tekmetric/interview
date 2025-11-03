@@ -37,3 +37,31 @@ This is an open ended exercise for you to showcase what you know! We encourage y
 
 ### Submitting your coding exercise
 Once you have finished the coding exercise please create a PR into Tekmetric/interview
+
+## Submission Notes
+
+I created a toy CRUD api for creating a shopping list. The entities are:
+
+```mermaid
+    ---
+title: Shopping List
+---
+erDiagram
+    USER ||--o{ SHOPPING_LIST : contains
+    SHOPPING_LIST ||--o{ LIST_ITEM : contains
+```
+
+### Prerequisites:
+- [Docker Desktop](https://docs.docker.com/) (or other docker-compose compatible host) running locally
+- Java 17 JVM installed and on your path
+- Maven
+
+### Running the application
+```bash
+docker-compose up -d
+mvn package && java -jar target/interview-1.0-SNAPSHOT.jar
+```
+
+### Using the application
+
+Navigate to the [swagger api ui](http://localhost:8080/swagger-ui/index.html) and have fun!!!

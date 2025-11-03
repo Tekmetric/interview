@@ -1,9 +1,7 @@
 package com.interview.controller;
 
-import com.interview.exception.ConflictException;
 import com.interview.exception.RowNotFoundException;
 import com.interview.model.League;
-import com.interview.model.Team;
 import com.interview.service.LeagueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -54,6 +52,14 @@ public class LeagueController {
         return ResponseEntity.ok(leagueService.getAllLeagues());
     }
 
+    @ApiResponse(responseCode = "200", description = "Response is okay",
+            content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = League.class)))})
+    @Operation(summary = "Get 3 Leagues within page. Query param as page number",
+            description = "Gets 3 leagues from the League table dependent on page number sent in as query param.")
+    @GetMapping(params = "page")
+    public ResponseEntity<List<League>> getAllPageable(@RequestParam Integer page) {
+        return ResponseEntity.ok(leagueService.getAllLeaguesPageable(page));
+    }
     /**
      * Endpoint to get a single row in the {@link com.interview.repository.LeagueRepository} by id
      *
@@ -88,8 +94,8 @@ public class LeagueController {
             schema = @Schema(
                     description = "Row not found for league by name",
                     example = "Row not found: No League Found for name: League2")))
-    @Operation(summary = "Get single League by name",
-            description = "Gets a single league from the League table by name")
+    @Operation(summary = "Get multiple League by name",
+            description = "Gets a multiple league from the League table by name")
     public ResponseEntity<?> getByName(@PathVariable String name) {
         return ResponseEntity.ok(leagueService.getLeagueByName(name).orElseThrow(() -> new RowNotFoundException("No League Found for name: " + name)));
     }

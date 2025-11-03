@@ -2,9 +2,9 @@ package com.interview.service;
 
 import com.interview.exception.ConflictException;
 import com.interview.exception.RowNotFoundException;
-import com.interview.model.dto.TeamDTO;
 import com.interview.model.League;
 import com.interview.model.Team;
+import com.interview.model.dto.TeamDTO;
 import com.interview.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

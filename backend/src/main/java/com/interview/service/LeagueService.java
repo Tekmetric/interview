@@ -8,6 +8,8 @@ import com.interview.model.Team;
 import com.interview.repository.LeagueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +65,21 @@ public class LeagueService {
      * Transactional to make sure we are committing and flushing at the end of the function
      * if successful. Transactional is set to readOnly = true here because we do not need
      * any operation other than READ
+     * Function to get all the {@link League} rows in the League table by pageable. This will return up to 3 at a time
+     * dependent on the @param pageNumber sent in.
+     *
+     * @param pageNumber the number of the page for pagination in get all request.
+     * @return a List of 3 of the {@link League} objects in the League table dependent on pageNumber
+     */
+    @Transactional(readOnly = true)
+    public List<League> getAllLeaguesPageable(int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, 3);
+        return leagueRepository.findAll(pageable).getContent();
+    }
+    /**
+     * Transactional to make sure we are committing and flushing at the end of the function
+     * if successful. Transactional is set to readOnly = true here because we do not need
+     * any operation other than READ
      * Function to get a single {@link League} row in the League table by id
      *
      * @param id the id of the {@link League} to get
@@ -110,6 +127,13 @@ public class LeagueService {
         }
         if (league.getId() != null) {
             league.setId(null);
+        }
+        if (league.getTeams() != null) {
+            for (Team team : league.getTeams()) {
+                if (team.getId() != null) {
+                    throw new IllegalArgumentException("Cannot include a current team in League creation.");
+                }
+            }
         }
         League newLeague = leagueRepository.save(league);
         if (league.getTeams() != null) {
@@ -173,6 +197,11 @@ public class LeagueService {
         League existingLeague = leagueRepository.findById(id)
                 .orElseThrow(() -> new RowNotFoundException("League not found when patching for id: " + id));
         if (league.getTeams() != null) {
+            for (Team team : league.getTeams()) {
+                if (team.getId() == null) {
+                    throw new MissingRequiredException("Team id is required for league to be updated");
+                }
+            }
             existingLeague.setTeams(league.getTeams());
         }
         if (league.getName() != null) {

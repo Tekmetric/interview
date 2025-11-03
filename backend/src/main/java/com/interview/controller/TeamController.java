@@ -1,7 +1,7 @@
 package com.interview.controller;
 
-import com.interview.model.dto.TeamDTO;
 import com.interview.model.Team;
+import com.interview.model.dto.TeamDTO;
 import com.interview.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

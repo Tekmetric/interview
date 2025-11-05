@@ -12,11 +12,12 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class PartEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
     @Setter(AccessLevel.NONE)
     @Column(nullable = false)
-    private int inventory = 0;}
+    private int inventory;
+}

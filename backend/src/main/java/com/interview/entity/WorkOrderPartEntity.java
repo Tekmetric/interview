@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class WorkOrderPartEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

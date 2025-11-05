@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class WorkOrderEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -4,6 +4,7 @@ import com.interview.exception.BadRequestException;
 import com.interview.exception.ResourceNotFoundException;
 import com.interview.model.Part;
 import com.interview.repository.PartRepository;
+import com.interview.repository.WorkOrderPartRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class PartService {
     private final PartRepository partRepository;
+    private final WorkOrderPartRepository workOrderPartRepository;
 
     public Optional<Part> get(Long partId) {
         return partRepository.findById(partId).map(Part::fromEntity);
@@ -69,6 +71,9 @@ public class PartService {
 
     @Transactional
     public void delete(Long partId) {
+        if (!workOrderPartRepository.findWorkOrdersByPartId(partId).isEmpty()) {
+            throw new BadRequestException("Unable to delete Part with id " + partId + ". Part is still in use.");
+        }
         partRepository.deleteById(partId);
     }
 }

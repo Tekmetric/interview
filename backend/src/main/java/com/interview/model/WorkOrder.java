@@ -60,7 +60,7 @@ public class WorkOrder {
         return model;
     }
 
-    private static boolean isReadyToStart(WorkOrderEntity workOrder) {
+    protected static boolean isReadyToStart(WorkOrderEntity workOrder) {
         // Work order is "ready to start" if there is sufficient inventory for all required parts
         return workOrder.getParts().stream()
                 .allMatch(wop -> wop.getPart().getInventory() >= wop.getPartCount());

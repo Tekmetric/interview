@@ -1,0 +1,10 @@
+{
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-21",
+            "path": "/Users/abouch/.sdkman/candidates/java/21.0.5-tem",
+            "default": true
+        }
+    ],
+    "java.jdt.ls.java.home": "/Users/abouch/.sdkman/candidates/java/21.0.5-tem"
+}

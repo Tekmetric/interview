@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class Ingredient {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "Unique identifier of the ingredient", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 

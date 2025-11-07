@@ -1,0 +1,140 @@
+# Container image configuration
+image:
+  repository: github.com/bryanwp/interview
+  pullPolicy: IfNotPresent  # Options: Always, IfNotPresent, Never
+  tag: "1.0.0"
+
+# Secrets for private container registries (e.g., ["regcred"])
+imagePullSecrets: []
+
+# Override Helm-generated resource names
+nameOverride: ""
+fullnameOverride: ""
+
+# ServiceAccount configuration
+serviceAccount:
+  create: true
+  annotations: {}  # e.g., eks.amazonaws.com/role-arn for AWS IAM
+  name: ""
+
+# Annotations added to all pods (e.g., prometheus.io/scrape: "true")
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3001"
+  prometheus.io/path: "/metrics"
+  
+# Pod-level security settings
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000  # Filesystem group for volumes
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container-level security settings
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+# Number of pod replicas (initial count if autoscaling enabled)
+replicaCount: 1
+
+# Pod Disruption Budget - ensures minimum availability during disruptions
+pdb:
+  enabled: true
+  minAvailable: 1  # Can be number or percentage (e.g., "50%")
+
+# Service configuration
+service:
+  type: ClusterIP  # Options: ClusterIP, NodePort, LoadBalancer, ExternalName
+  port: 443
+
+# Ingress configuration for HTTP/HTTPS routing
+ingress:
+  enabled: true
+  className: "nginx"  # Must match installed Ingress Controller
+  annotations: {}
+  hosts:
+    - host: interview.example.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific  # Options: Exact, Prefix, ImplementationSpecific
+  tls: 
+    - secretName: interview-tls
+      hosts:
+        - interview.example.com
+
+# Resource limits and requests (CPU: 500m = 0.5 cores, Memory: 512Mi = 512 Mebibytes)
+resources: 
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Horizontal Pod Autoscaling
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Secrets management - two options: Vault (external) or Kubernetes (native)
+secrets:
+  # Vault secrets integration (requires Vault secretoperator)
+  vault-secrets:
+    enabled: false
+    # secrets:
+    #   - name: interview-secrets
+    #     mount: secret
+    #     path: interview/secrets
+    #     type: kv-v2
+    #     data:
+    #       - secretKey: username
+    #         remoteKey: username
+    #       - secretKey: password
+    #         remoteKey: password
+    #     destination:
+    #       create: true
+    #       name: interview-secrets
+    #       type: Opaque
+    #       overwrite: false
+    #     refreshAfter: 5m
+    #     rolloutRestartTargets:
+    #       - kind: Deployment
+    #         name: interview
+
+  # Kubernetes secrets (native)  encrypt locally with sops or other tool
+  kubernetes-secrets:
+    enabled: false
+    # secrets:
+    #   - name: interview-kubernetes-secrets
+    #     mount: secret
+    #     path: interview/kubernetes-secrets
+    #     type: kv-v2
+    #     data:
+    #       - secretKey: username
+    #         remoteKey: username
+    #       - secretKey: password
+    #         remoteKey: password
+    #     destination:
+
+# Node selection - schedule pods on specific nodes (e.g., {"node-type": "compute"})
+nodeSelector: {}
+
+# Tolerations - allow scheduling on tainted nodes
+tolerations: []
+
+# Affinity rules - advanced pod placement (pod-to-pod, pod-to-node relationships)
+affinity: {}

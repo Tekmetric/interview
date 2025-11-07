@@ -1,0 +1,12 @@
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  {{- include "chart.metadata" . | nindent 2 }}
+spec:
+  {{- include "chart.hpaScaleTargetRef" . | nindent 2 }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+    {{- include "chart.hpaMetrics" . | nindent 4 }}
+{{- end }}

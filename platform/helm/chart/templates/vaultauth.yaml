@@ -1,0 +1,65 @@
+{{- if and .Values.secrets (index .Values.secrets "vault-secrets") (index .Values.secrets "vault-secrets").enabled }}
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: {{ .Values.vault.auth.name }}
+  namespace: {{ .Values.vault.auth.namespace }}
+spec:
+  method: {{ .Values.vault.auth.method }}
+  mount: {{ .Values.vault.auth.mount }}
+  kubernetes:
+    role: {{ .Values.vault.auth.role }}
+    serviceAccount: {{ .Values.vault.auth.serviceAccount }}
+{{- end }}
+
+---
+{{- if and .Values.secrets (index .Values.secrets "vault-secrets") (index .Values.secrets "vault-secrets").enabled }}
+{{- range .Values.vault.secrets }}
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: {{ .name }}
+  namespace: arrs
+spec:
+  vaultAuthRef: autobrr-vaultauth
+  mount: {{ .mount | default "secret" }}
+  path: {{ .path }}
+  type: {{ .type | default "kv-v2" }}
+  {{- if .data }}
+  data:
+  {{- range .data }}
+    - secretKey: {{ .secretKey }}
+      remoteKey: {{ .remoteKey }}
+  {{- end }}
+  {{- end }}
+  {{- if .destination }}
+  destination:
+    create: {{ .destination.create | default true }}
+    name: {{ .destination.name | default .name }}
+    type: {{ .destination.type | default "Opaque" }}
+    overwrite: {{ .destination.overwrite | default false }}
+    {{- if .destination.transformation }}
+    transformation:
+      {{- if .destination.transformation.templates }}
+      templates:
+        {{- range $key, $template := .destination.transformation.templates }}
+        {{ $key }}:
+          name: {{ $template.name }}
+          text: {{ $template.text | quote }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .refreshAfter }}
+  refreshAfter: {{ .refreshAfter }}
+  {{- end }}
+  {{- if .rolloutRestartTargets }}
+  rolloutRestartTargets:
+  {{- range .rolloutRestartTargets }}
+    - kind: {{ .kind }}
+      name: {{ .name }}
+  {{- end }}
+  {{- end }}
+---
+{{- end }}
+{{- end }} 

@@ -1,0 +1,18 @@
+grafana:
+  ingress:
+    enabled: true
+    hosts:
+    - grafana.app
+    ingressClassName: nginx
+  service:
+    port: 8000
+    type: LoadBalancer
+
+prometheus:
+  ingress:
+    enabled: true
+    hosts:
+      - prometheus.app
+    ingressClassName: nginx
+  service:
+    type: LoadBalancer

@@ -1,0 +1,32 @@
+---
+deployment:
+  containers:
+    containerPort: 8080
+    image:
+      repository: backend
+      tag: 0.0.1
+    livenessProbe:
+      path: actuator/health/liveness
+    readinessProbe:
+      path: actuator/health/readiness
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1024Mi
+    securityContext:
+      runAsGroup: 2000
+      runAsNonRoot: true
+      runAsUser: 1000
+  failureThreshold: 30
+  podSecurityContext:
+    allowPrivilegeEscalation: false
+  replicas: 1
+ingress:
+  enabled: true
+  hosts:
+  - host: backend.app
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
+service:
+  port: 8081

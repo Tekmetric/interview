@@ -1,0 +1,33 @@
+---
+deployment:
+  containers:
+    containerPort: 80
+    image:
+      repository: example
+      tag: latest
+    livenessProbe:
+      path: /
+    readinessProbe:
+      path: /
+    resources:
+      limits:
+        cpu: 100m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    securityContext: {}
+  failureThreshold: 30
+  podSecurityContext: {}
+  replicas: 1
+ingress:
+  className: nginx
+  enabled: false
+  hosts:
+  - host: example.app
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
+service:
+  type: LoadBalancer
+  port: 80

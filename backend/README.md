@@ -42,6 +42,8 @@ http://localhost:8080/h2-console
 - API rate limiting
 - Integration testing env, real db data, test endpoints without mocking
   - e2e tests
+- Cache for frequently accessed data and heavy calculation
+- Fetch result pagination when the returned result is large
 
 #### After finishing the goals listed below create a PR
 

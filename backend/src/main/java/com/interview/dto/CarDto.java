@@ -25,6 +25,7 @@ public class CarDto {
 
     private String color;
 
+    @NotBlank(message = "VIN is mandatory")
     @Size(min = 17, max = 17)
     private String vin;
 

@@ -1,5 +1,7 @@
 package com.interview.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -7,6 +9,9 @@ import java.util.Set;
 
 public class CarDto {
 
+    // When converting JSON into a DTO object, ignore the id field (DB handles PK / id generation).
+    // When converting a DTO object into JSON, include the id field.
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "Make is mandatory")

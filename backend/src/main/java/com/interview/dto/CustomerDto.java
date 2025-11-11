@@ -8,7 +8,9 @@ import java.util.Set;
 
 public class CustomerDto {
 
-//    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    // When converting JSON into a DTO object, ignore the id field (DB handles PK / id generation).
+    // When converting a DTO object into JSON, include the id field.
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "First name is mandatory")

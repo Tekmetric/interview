@@ -73,11 +73,23 @@ public class CarService {
             car.setVin(carDto.getVin());
 
             if (carDto.getCustomerIds() != null) {
-                Set<Customer> customers = new HashSet<>(customerRepository.findAllById(carDto.getCustomerIds()));
-                if (customers.size() != carDto.getCustomerIds().size()) {
-                    throw new CustomerNotFoundException("One or more customers not found");
+                // Clear existing associations from owning side
+                for (Customer customer : car.getCustomers()) {
+                    customer.getCars().remove(car);
                 }
-                car.setCustomers(customers);
+                car.getCustomers().clear(); // clear inverse side
+
+                // Add new associations
+                if (!carDto.getCustomerIds().isEmpty()) {
+                    Set<Customer> newCustomers = new HashSet<>(customerRepository.findAllById(carDto.getCustomerIds()));
+                    if (newCustomers.size() != carDto.getCustomerIds().size()) {
+                        throw new CustomerNotFoundException("One or more customers not found");
+                    }
+                    for (Customer customer : newCustomers) {
+                        car.getCustomers().add(customer);
+                        customer.getCars().add(car);
+                    }
+                }
             }
 
             Car updatedCar = carRepository.save(car);

@@ -15,8 +15,33 @@
 #### Build and run your app
 - `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
 
+#### Docker
+start docker daemon / docker desktop app in MacOS
+
+```bash
+docker build -t tekmetric-interview .                                                                                                 
+docker run -p 8080:8080 tekmetric-interview
+```
+
 #### Test that your app is running
 - `curl -X GET   http://localhost:8080/api/welcome`
+
+#### Test API in Swagger docs
+Launch server, visit:
+http://localhost:8080/swagger-ui/index.html
+
+API credential: "user" / "password"
+
+h2 db console:
+http://localhost:8080/h2-console
+- jdbc url: "jdbc:h2:mem:testdb"
+- credential: "sa" / "password"
+
+#### TODOs
+- Use db migration tool like flyway
+- API rate limiting
+- Integration testing env, real db data, test endpoints without mocking
+  - e2e tests
 
 #### After finishing the goals listed below create a PR
 

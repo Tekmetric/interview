@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,6 +48,7 @@ public class CustomerServiceTest {
         Customer customer = new Customer("John", "Doe", "john.doe@example.com");
         Car car = new Car();
         car.setId(1L);
+        car.setCustomers(new HashSet<>());
 
         when(customerMapper.toEntity(any(CustomerDto.class))).thenReturn(customer);
         when(carRepository.findAllById(any(Set.class))).thenReturn(Collections.singletonList(car));
@@ -57,8 +59,36 @@ public class CustomerServiceTest {
 
         assertNotNull(result);
         assertEquals("John", result.getFirstName());
+        assertTrue(car.getCustomers().contains(customer));
         verify(customerRepository, times(1)).save(any(Customer.class));
     }
+
+    @Test
+    void updateCustomer_shouldUpdateCustomer() {
+        long customerId = 1L;
+        CustomerDto customerDto = new CustomerDto(customerId, "John", "Doe", "john.doe@example.com", Collections.singleton(1L));
+        Customer customer = new Customer("John", "Doe", "john.doe@example.com");
+        customer.setId(customerId);
+        customer.setCars(new HashSet<>());
+
+        Car car = new Car();
+        car.setId(1L);
+        car.setCustomers(new HashSet<>());
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
+        when(carRepository.findAllById(any(Set.class))).thenReturn(Collections.singletonList(car));
+        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+        when(customerMapper.toDto(any(Customer.class))).thenReturn(customerDto);
+
+        CustomerDto result = customerService.updateCustomer(customerId, customerDto);
+
+        assertNotNull(result);
+        assertEquals("John", result.getFirstName());
+        assertTrue(customer.getCars().contains(car));
+        assertTrue(car.getCustomers().contains(customer));
+        verify(customerRepository, times(1)).save(any(Customer.class));
+    }
+
 
     @Test
     void getCustomerById_shouldReturnCustomer() {

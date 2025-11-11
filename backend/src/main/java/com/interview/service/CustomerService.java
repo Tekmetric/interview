@@ -38,12 +38,16 @@ public class CustomerService {
     @Transactional
     public CustomerDto createCustomer(CustomerDto customerDto) {
         Customer customer = customerMapper.toEntity(customerDto);
+
         if (customerDto.getCarIds() != null && !customerDto.getCarIds().isEmpty()) {
             Set<Car> cars = new HashSet<>(carRepository.findAllById(customerDto.getCarIds()));
-            if(cars.size() != customerDto.getCarIds().size()){
+            if (cars.size() != customerDto.getCarIds().size()) {
                 throw new CarNotFoundException("One or more cars not found");
             }
             customer.setCars(cars);
+            for (Car car : cars) {
+                car.getCustomers().add(customer);
+            }
         }
         Customer savedCustomer = customerRepository.save(customer);
         return customerMapper.toDto(savedCustomer);
@@ -71,11 +75,23 @@ public class CustomerService {
             customer.setEmail(customerDto.getEmail());
 
             if (customerDto.getCarIds() != null) {
-                Set<Car> cars = new HashSet<>(carRepository.findAllById(customerDto.getCarIds()));
-                if(cars.size() != customerDto.getCarIds().size()){
-                    throw new CarNotFoundException("One or more cars not found");
+                // Clear existing associations from owning side
+                for (Car car : customer.getCars()) {
+                    car.getCustomers().remove(customer);
                 }
-                customer.setCars(cars);
+                customer.getCars().clear(); // clear inverse side
+
+                // Add new associations
+                if (!customerDto.getCarIds().isEmpty()) {
+                    Set<Car> newCars = new HashSet<>(carRepository.findAllById(customerDto.getCarIds()));
+                    if (newCars.size() != customerDto.getCarIds().size()) {
+                        throw new CarNotFoundException("One or more cars not found");
+                    }
+                    for (Car car : newCars) {
+                        customer.getCars().add(car);
+                        car.getCustomers().add(customer);
+                    }
+                }
             }
             Customer updatedCustomer = customerRepository.save(customer);
             return customerMapper.toDto(updatedCustomer);

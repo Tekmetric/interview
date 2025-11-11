@@ -36,7 +36,6 @@ public class CustomerController {
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content)
     })
-//    FIXME, not working, cars (array) not added
     @PostMapping
     public ResponseEntity<CustomerDto> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
         CustomerDto createdCustomer = customerService.createCustomer(customerDto);

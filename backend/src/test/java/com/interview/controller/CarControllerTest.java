@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
@@ -20,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,11 +46,13 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(username="user", roles="USER")
     void createCar_shouldReturnCreated() throws Exception {
         CarDto inputDto = new CarDto(null, "Toyota", "Camry", 2022, "White", "12345678901234567", Collections.emptySet());
         when(carService.createCar(any(CarDto.class))).thenReturn(carDto);
 
         mockMvc.perform(post("/api/cars")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(inputDto)))
                 .andExpect(status().isCreated())
@@ -56,6 +60,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(username="user", roles="USER")
     void getAllCars_shouldReturnListOfCars() throws Exception {
         when(carService.getAllCars()).thenReturn(List.of(carDto));
 
@@ -65,6 +70,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(username="user", roles="USER")
     void getCarById_shouldReturnCar() throws Exception {
         when(carService.getCarById(1L)).thenReturn(carDto);
 
@@ -74,10 +80,12 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(username="user", roles="USER")
     void updateCar_shouldReturnUpdatedCar() throws Exception {
         when(carService.updateCar(eq(1L), any(CarDto.class))).thenReturn(carDto);
 
         mockMvc.perform(put("/api/cars/1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(carDto)))
                 .andExpect(status().isOk())
@@ -85,12 +93,15 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(username="user", roles="USER")
     void deleteCar_shouldReturnNoContent() throws Exception {
-        mockMvc.perform(delete("/api/cars/1"))
+        mockMvc.perform(delete("/api/cars/1")
+                        .with(csrf()))
                 .andExpect(status().isNoContent());
     }
 
     @Test
+    @WithMockUser(username="user", roles="USER")
     void getCarCustomers_shouldReturnCustomers() throws Exception {
         CustomerDto customerDto = new CustomerDto(1L, "John", "Doe", "john.doe@example.com", Collections.emptySet());
         when(carService.getCarOwners(1L)).thenReturn(Set.of(customerDto));
@@ -101,9 +112,11 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(username="user", roles="USER")
     void addCarCustomer_shouldReturnOk() throws Exception {
         doNothing().when(carService).addOwnerToCar(1L, 1L);
-        mockMvc.perform(post("/api/cars/1/customers/1"))
+        mockMvc.perform(post("/api/cars/1/customers/1")
+                        .with(csrf()))
                 .andExpect(status().isOk());
     }
 }

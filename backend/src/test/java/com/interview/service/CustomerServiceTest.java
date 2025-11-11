@@ -127,4 +127,30 @@ public class CustomerServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
     }
+
+    @Test
+    void getAllCustomers_shouldReturnAllCustomers() {
+        Customer customer = new Customer("John", "Doe", "john.doe@example.com");
+        CustomerDto customerDto = new CustomerDto(1L, "John", "Doe", "john.doe@example.com", Collections.emptySet());
+
+        when(customerRepository.findAll()).thenReturn(Collections.singletonList(customer));
+        when(customerMapper.toDto(any(Customer.class))).thenReturn(customerDto);
+
+        var result = customerService.getAllCustomers();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(customerRepository, times(1)).findAll();
+    }
+
+    @Test
+    void deleteCustomer_shouldDeleteCustomer() {
+        long customerId = 1L;
+        when(customerRepository.existsById(customerId)).thenReturn(true);
+        doNothing().when(customerRepository).deleteById(customerId);
+
+        customerService.deleteCustomer(customerId);
+
+        verify(customerRepository, times(1)).deleteById(customerId);
+    }
 }

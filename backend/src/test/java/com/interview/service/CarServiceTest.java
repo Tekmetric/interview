@@ -107,6 +107,51 @@ class CarServiceTest {
 
         carService.addOwnerToCar(1L, 1L);
 
+        assertTrue(car.getCustomers().contains(customer));
         verify(carRepository, times(1)).save(any(Car.class));
+    }
+
+    @Test
+    void getAllCars_shouldReturnAllCars() {
+        Car car = new Car("Toyota", "Camry", 2022, "White", "12345678901234567");
+        CarDto carDto = new CarDto(1L, "Toyota", "Camry", 2022, "White", "12345678901234567", Collections.emptySet());
+
+        when(carRepository.findAll()).thenReturn(Collections.singletonList(car));
+        when(carMapper.toDto(any(Car.class))).thenReturn(carDto);
+
+        var result = carService.getAllCars();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(carRepository, times(1)).findAll();
+    }
+
+    @Test
+    void updateCar_shouldUpdateCar() {
+        long carId = 1L;
+        CarDto carDto = new CarDto(carId, "Honda", "Accord", 2023, "Black", "12345678901234568", Collections.emptySet());
+        Car car = new Car("Toyota", "Camry", 2022, "White", "12345678901234567");
+        car.setId(carId);
+
+        when(carRepository.findById(carId)).thenReturn(Optional.of(car));
+        when(carRepository.save(any(Car.class))).thenReturn(car);
+        when(carMapper.toDto(any(Car.class))).thenReturn(carDto);
+
+        CarDto result = carService.updateCar(carId, carDto);
+
+        assertNotNull(result);
+        assertEquals("Honda", result.getMake());
+        verify(carRepository, times(1)).save(any(Car.class));
+    }
+
+    @Test
+    void deleteCar_shouldDeleteCar() {
+        long carId = 1L;
+        when(carRepository.existsById(carId)).thenReturn(true);
+        doNothing().when(carRepository).deleteById(carId);
+
+        carService.deleteCar(carId);
+
+        verify(carRepository, times(1)).deleteById(carId);
     }
 }

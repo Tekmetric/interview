@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: service
+  labels:
+    environment: local
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: interview-service
+  namespace: service
+  labels:
+    app: interview-service
+spec:
+  replicas:
+  selector:
+    matchLabels:
+      app: interview-service
+  template:
+    metadata:
+      labels:
+        app: interview-service
+    spec:
+      containers:
+        - image: localhost:62265/interview-svc
+          name: interview-service
+          ports:
+            - containerPort: 8080
+              name: http

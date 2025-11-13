@@ -1,0 +1,28 @@
+# Traefik values for kind cluster with sslip.io
+# Minimal configuration for local development
+
+# Use DaemonSet so Traefik runs on the control-plane node
+deployment:
+  kind: DaemonSet
+
+# Configure ports to use hostPort (binds to kind node ports)
+ports:
+  web:
+    hostPort: 80
+  websecure:
+    hostPort: 443
+#     port: 443
+#     hostPort: 4443
+
+# Use NodePort service (simpler for kind)
+service:
+  type: NodePort
+
+# Ensure Traefik can schedule on control-plane node
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+    effect: NoSchedule

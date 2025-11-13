@@ -1,0 +1,50 @@
+// Theme configuration for styled-components
+const theme = {
+  colors: {
+    primary: "#333",
+    secondary: "#666",
+    danger: "#e74c3c",
+    success: "#27ae60",
+    warning: "#856404",
+    successBg: "#d4edda",
+    successBorder: "#c3e6c3",
+    successText: "#155724",
+    warningBg: "#fff3cd",
+    warningBorder: "#ffc107",
+    lightGray: "#f8f9fa",
+    border: "#eee",
+    white: "#fff",
+  },
+  fontSizes: {
+    xs: "12px",
+    sm: "13px",
+    base: "14px",
+    md: "16px",
+    lg: "18px",
+    xl: "24px",
+  },
+  spacing: {
+    xs: "4px",
+    sm: "8px",
+    md: "12px",
+    lg: "15px",
+    xl: "20px",
+  },
+  typeColors: {
+    Grass: "#78C850",
+    Fire: "#F08030",
+    Water: "#6890F0",
+    Lightning: "#F8D030",
+    Psychic: "#F85888",
+    Fighting: "#C03028",
+    Darkness: "#705848",
+    Metal: "#B8B8D0",
+    Fairy: "#EE99AC",
+    Dragon: "#7038F8",
+    Colorless: "#A8A878",
+    Normal: "#A8A878",
+    default: "#68A090",
+  },
+};
+
+export default theme;

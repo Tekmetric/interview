@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import Button from "./Button";
 
 const PaginationContainer = styled.div`
   display: flex;
@@ -16,32 +17,6 @@ const PageInfo = styled.span`
   font-weight: 500;
 `;
 
-const PaginationButton = styled.button`
-  padding: ${(props) => props.theme.spacing.sm}
-    ${(props) => props.theme.spacing.lg};
-  background-color: ${(props) =>
-    props.disabled ? props.theme.colors.lightGray : props.theme.colors.primary};
-  color: ${(props) =>
-    props.disabled ? props.theme.colors.secondary : props.theme.colors.white};
-  border: 1px solid
-    ${(props) =>
-      props.disabled ? props.theme.colors.border : props.theme.colors.primary};
-  border-radius: ${(props) => props.theme.spacing.xs};
-  font-size: ${(props) => props.theme.fontSizes.base};
-  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: ${(props) =>
-      props.disabled ? props.theme.colors.lightGray : "#222"};
-    transform: ${(props) => (props.disabled ? "none" : "translateY(-1px)")};
-  }
-
-  &:active {
-    transform: ${(props) => (props.disabled ? "none" : "translateY(0)")};
-  }
-`;
-
 const Pagination = ({ currentPage, totalPages, onPrevious, onNext }) => {
   if (totalPages <= 1) {
     return null;
@@ -49,15 +24,15 @@ const Pagination = ({ currentPage, totalPages, onPrevious, onNext }) => {
 
   return (
     <PaginationContainer>
-      <PaginationButton onClick={onPrevious} disabled={currentPage === 1}>
+      <Button onClick={onPrevious} disabled={currentPage === 1}>
         Previous
-      </PaginationButton>
+      </Button>
       <PageInfo>
         Page {currentPage} of {totalPages}
       </PageInfo>
-      <PaginationButton onClick={onNext} disabled={currentPage === totalPages}>
+      <Button onClick={onNext} disabled={currentPage === totalPages}>
         Next
-      </PaginationButton>
+      </Button>
     </PaginationContainer>
   );
 };

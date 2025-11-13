@@ -3,7 +3,6 @@ import useApi from "./useApi";
 
 /**
  * Hook for fetching all Pokemon TCG sets from TCGdex API
- * Used for populating dropdown selectors
  * @returns {Object} { sets, loading, error, refetch }
  */
 const usePokemonSets = () => {
@@ -11,7 +10,6 @@ const usePokemonSets = () => {
 
   const { data, loading, error, refetch } = useApi(url);
 
-  // Process and return the data in a more convenient format
   // TCGdex returns an array directly, not wrapped in a data object
   const processedData = useMemo(
     () => {
@@ -21,7 +19,6 @@ const usePokemonSets = () => {
         };
       }
 
-      // Sort sets by name for better UX (TCGdex doesn't have releaseDate in list view)
       const sortedSets = [...data].sort((a, b) => a.name.localeCompare(b.name));
 
       return {

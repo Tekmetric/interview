@@ -7,7 +7,6 @@ import CardAbilities from "./CardAbilities";
 import CardWeaknessResistance from "./CardWeaknessResistance";
 import CardSetInfo from "./CardSetInfo";
 
-// Styled Components
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;

@@ -41,8 +41,7 @@ const CardSetInfo = ({ card }) => {
     },
     {
       label: "Pokédex #",
-      value:
-        card.dexId && card.dexId.length > 0 ? card.dexId.join(", ") : null,
+      value: card.dexId && card.dexId.length > 0 ? card.dexId.join(", ") : null,
       show: card.dexId && card.dexId.length > 0,
     },
   ];
@@ -62,4 +61,3 @@ const CardSetInfo = ({ card }) => {
 };
 
 export default CardSetInfo;
-

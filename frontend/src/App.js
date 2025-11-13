@@ -3,7 +3,6 @@ import styled, { ThemeProvider } from "styled-components";
 import PokemonCardsList from "./components/PokemonCardsList";
 import theme from "./theme";
 
-// Styled Components
 const AppContainer = styled.div`
   min-height: 100vh;
   display: flex;

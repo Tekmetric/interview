@@ -1,5 +1,6 @@
 import React from "react";
-import styled, { withTheme } from "styled-components";
+import styled from "styled-components";
+import TypeBadge from "./TypeBadge";
 
 const BasicInfo = styled.div`
   margin-bottom: ${(props) => props.theme.spacing.xl};
@@ -15,7 +16,7 @@ const InfoRow = styled.div`
 
 const InfoLabel = styled.span`
   font-weight: bold;
-  margin-right: ${(props) => props.theme.spacing.sm};
+  margin-right: ${(props) => props.theme.spacing.xs};
 `;
 
 const InfoValue = styled.span`
@@ -24,22 +25,7 @@ const InfoValue = styled.span`
   font-weight: ${(props) => props.fontWeight || "normal"};
 `;
 
-const TypeBadge = styled.span`
-  background-color: ${(props) => props.bgColor};
-  color: ${(props) => props.theme.colors.white};
-  padding: ${(props) => props.theme.spacing.xs}
-    ${(props) => props.theme.spacing.sm};
-  border-radius: ${(props) => props.theme.spacing.md};
-  font-size: ${(props) => props.theme.fontSizes.xs};
-  font-weight: bold;
-`;
-
-// Helper function to get type color from theme
-const getTypeColor = (type, theme) => {
-  return theme.typeColors[type] || theme.typeColors.default;
-};
-
-const CardBasicInfo = ({ card, theme }) => {
+const CardBasicInfo = ({ card }) => {
   const basicInfoFields = [
     {
       label: "Category",
@@ -59,17 +45,8 @@ const CardBasicInfo = ({ card, theme }) => {
     {
       label: "Type",
       render: () =>
-        card.types.map((type, index) => (
-          <TypeBadge key={index} bgColor={getTypeColor(type, theme)}>
-            {type}
-          </TypeBadge>
-        )),
+        card.types.map((type, index) => <TypeBadge key={index} type={type} />),
       show: card.types && card.types.length > 0,
-    },
-    {
-      label: "Evolves From",
-      render: () => <InfoValue>{card.evolveFrom}</InfoValue>,
-      show: !!card.evolveFrom,
     },
   ];
 
@@ -88,4 +65,4 @@ const CardBasicInfo = ({ card, theme }) => {
   );
 };
 
-export default withTheme(CardBasicInfo);
+export default CardBasicInfo;

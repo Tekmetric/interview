@@ -8,7 +8,7 @@ const WeaknessResistanceContainer = styled.div`
 `;
 
 const SubSectionTitle = styled.h4`
-  margin: 0 0 ${(props) => props.theme.spacing.sm} 0;
+  margin-bottom: ${(props) => props.theme.spacing.sm};
   font-size: ${(props) => props.theme.fontSizes.base};
   color: ${(props) => props.theme.colors.primary};
 `;

@@ -6,7 +6,7 @@ const Section = styled.div`
 `;
 
 const SectionTitle = styled.h3`
-  margin: 0 0 10px 0;
+  margin-bottom: 10px;
   font-size: ${(props) => props.theme.fontSizes.lg};
   color: ${(props) => props.theme.colors.primary};
 `;
@@ -66,4 +66,3 @@ const CardAbilities = ({ abilities }) => {
 };
 
 export default CardAbilities;
-

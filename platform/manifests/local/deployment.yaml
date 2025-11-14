@@ -15,7 +15,7 @@ metadata:
   labels:
     app: interview-service
 spec:
-  replicas:
+  replicas: 3
   selector:
     matchLabels:
       app: interview-service
@@ -25,8 +25,14 @@ spec:
         app: interview-service
     spec:
       containers:
-        - image: localhost:62265/interview-svc
+        - image: "registry.loosh.cloud/interview-svc"
           name: interview-service
           ports:
             - containerPort: 8080
               name: http
+          resources:
+            requests:
+              cpu: "1"
+              memory: "512Mi"
+            limits:
+              memory: "2Gi"

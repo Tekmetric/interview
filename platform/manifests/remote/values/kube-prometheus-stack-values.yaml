@@ -1,0 +1,25 @@
+# Minimal kube-prometheus-stack configuration for remote cluster
+
+# Grafana configuration
+grafana:
+  enabled: true
+  adminPassword: "admin"  # Change this!
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - grafana.itscoming.run
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: grafana.itscoming.run
+      external-dns.alpha.kubernetes.io/ttl: "300"
+
+# Prometheus configuration
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "2Gi"

@@ -1,0 +1,20 @@
+# Minimal external-dns configuration for DigitalOcean
+provider: digitalocean
+
+# DigitalOcean API token from secret
+env:
+  - name: DO_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: digitalocean-dns
+        key: token
+
+# Optional: restrict to specific domain(s)
+# domainFilters:
+#   - example.com
+
+# Sync policy
+policy: sync
+
+# Ownership (recommended for safety)
+txtOwnerId: "k8s-cluster"

@@ -1,0 +1,12 @@
+# Traefik values for kind cluster with sslip.io
+# Minimal configuration for local development
+
+deployment:
+  kind: Deployment
+
+# Configure ports to use hostPort (binds to kind node ports)
+ports:
+  web:
+    hostPort: 80
+  websecure:
+    hostPort: 443

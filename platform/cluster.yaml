@@ -1,0 +1,17 @@
+    # cluster.yaml
+apiVersion: ctlptl.dev/v1alpha1
+kind: Cluster
+product: kind
+name: kind-chaz
+registry: ctlptl-registry
+kindV1Alpha4Cluster:
+  name: kind-chaz
+  nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        listenAddress: "127.0.0.1"
+      - containerPort: 443
+        hostPort: 443
+        listenAddress: "127.0.0.1"

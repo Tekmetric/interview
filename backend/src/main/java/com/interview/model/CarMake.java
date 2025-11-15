@@ -3,24 +3,28 @@ package com.interview.model;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "car_make")
+@Table(name = "car_make", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "name")
+})
 public class CarMake {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @NotBlank
     private String name;
 
     @Column(length = 100)
     private String country;
 
-    @Column(name = "founded_year")
+    @Positive
     private Integer foundedYear;
 }

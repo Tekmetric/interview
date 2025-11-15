@@ -29,7 +29,7 @@ public class CarMakeServiceImpl implements CarMakeService {
             CarMake saved = repo.save(entity);
             return CarMakeMapper.toDto(saved);
         } catch (DataIntegrityViolationException ex) {
-            throw new IllegalArgumentException("Car make must be unique and valid.", ex);
+            throw new IllegalArgumentException(ex);
         }
     }
 
@@ -64,7 +64,7 @@ public class CarMakeServiceImpl implements CarMakeService {
             CarMake saved = repo.save(existing);
             return CarMakeMapper.toDto(saved);
         } catch (DataIntegrityViolationException ex) {
-            throw new IllegalArgumentException("Car make must be unique and valid.", ex);
+            throw new IllegalArgumentException(ex);
         }
     }
 

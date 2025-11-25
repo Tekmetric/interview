@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:h2:./target/db/test
+
+logging:
+  level:
+    com.interview: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+server:
+  error:
+    include-message: always
+    include-exception: true
+    include-stacktrace: always

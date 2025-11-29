@@ -1,0 +1,41 @@
+server:
+    port: 8080
+    error:
+        include-message: always
+
+management:
+    server:
+        port: 8081
+
+springdoc:
+    api-docs:
+        path: /docs/api
+
+spring:
+    application:
+        name: tekmetric-interview
+    datasource:
+        url: jdbc:h2:mem:testdb
+        driver-class-name: org.h2.Driver
+        username: sa
+        password: password
+    jpa:.database-platform: org.hibernate.dialect.H2Dialect
+    h2.console.enabled: true
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    public-key-location: classpath:jwt-key.pub
+
+logging:
+    level:
+        ROOT: INFO
+        com.interview.config.RequestLoggingFilter: DEBUG
+    request-filter:
+        excluded-paths:
+            - /h2-console
+
+---
+
+spring:
+    config.activate.on-profile: development

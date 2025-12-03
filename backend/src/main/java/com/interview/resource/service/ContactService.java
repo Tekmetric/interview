@@ -2,15 +2,16 @@ package com.interview.resource.service;
 
 import com.interview.resource.entity.Contact;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public interface ContactService {
-    Flux<Contact> getContacts();
-    Mono<Optional<Contact>> getContactById(UUID id);
-    Mono<Object> addContact(Contact contact);
+    List<Contact> getContacts();
+    Optional<Contact> getContactById(UUID id);
+    Contact addContact(Contact contact);
+    Contact updateContact(UUID uuid, Contact contact);
+    void deleteContact(UUID id);
 }

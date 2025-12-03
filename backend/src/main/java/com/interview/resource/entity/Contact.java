@@ -2,6 +2,9 @@ package com.interview.resource.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -19,13 +22,25 @@ public class Contact {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @NotBlank(message = "First name is required")
+    @Column(nullable = false)
     private String firstName;
+    private String middleName;
+    @NotBlank(message = "First name is required")
+    @Column(nullable = false)
     private String lastName;
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
+    @Column(nullable = false)
     private String email;
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^(\\d{1,3}[- ]?)?\\(?\\d{3}\\)?[- ]?\\d{3}[- ]?\\d{4}$",
+            message = "Invalid phone number format")
+    @Column(name = "phone_number", nullable = false)
+    private String phone;
+    @Column(name = "phone_type")
+    private PhoneTypeEnum phoneType;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "address_id")
-    private Address address;
 
     @Override
     public final boolean equals(Object o) {

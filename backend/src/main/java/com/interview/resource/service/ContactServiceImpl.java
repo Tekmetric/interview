@@ -4,11 +4,9 @@ import com.interview.resource.entity.Contact;
 import com.interview.resource.repository.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,26 +15,35 @@ public class ContactServiceImpl implements ContactService{
     @Autowired
     private ContactRepository contactRepository;
 
-    public Flux<Contact> getContacts(){
-        return Flux.fromIterable( contactRepository.findAll())
-                .subscribeOn(Schedulers.boundedElastic());
+    public List<Contact> getContacts(){
+        return contactRepository.findAll();
     }
 
-    public Mono<Optional<Contact>> getContactById(UUID id) {
-        Mono<Optional<Contact>> contact = Mono.fromCallable(() -> contactRepository.findById(id))
-                .subscribeOn(Schedulers.boundedElastic());
+    public Optional<Contact> getContactById(UUID id) {
 
-        return contact.flatMap(c -> {
-            if (c.isEmpty()) {
-                throw new ResponseStatusException(404, "id not found",null);
-            }
-            return Mono.just(c);
-        });
+        return contactRepository.findById(id);
 
     }
 
-    public Mono<Object> addContact(Contact contact){
-        contactRepository.save(contact);
-        return Mono.empty();
+    public Contact addContact(Contact contact){
+        return contactRepository.save(contact);
+    }
+
+    public Contact updateContact(UUID id, Contact employee) {
+        return contactRepository.findById(id)
+                .map(existing -> {
+                    existing.setFirstName(employee.getFirstName());
+
+                    existing.setLastName(employee.getLastName());
+                    existing.setEmail(employee.getEmail());
+                    existing.setPhone(employee.getPhone());
+                    existing.setPhoneType(employee.getPhoneType());
+                    return contactRepository.save(existing);
+                })
+                .orElseThrow(() -> new RuntimeException("Issue updating contact, with id: " + id));
+    }
+
+    public void deleteContact(UUID id) {
+        contactRepository.deleteById(id);
     }
 }

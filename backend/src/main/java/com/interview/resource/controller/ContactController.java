@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,13 +31,21 @@ public class ContactController {
     }
 
     @GetMapping(path = "/{id}")
-    public Optional<Contact> getContactById(@PathVariable UUID id) {
-        return contactService.getContactById(id);
+    public ResponseEntity<Contact> getContactById(@PathVariable UUID id) {
+        return contactService.getContactById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+
     }
 
     @PutMapping(path = "/{id}")
-    public Contact updateContact(@PathVariable UUID id, @Valid @RequestBody Contact contact) {
-        return contactService.updateContact(id, contact);
+    public ResponseEntity<Contact> updateContact(@PathVariable UUID id, @Valid @RequestBody Contact contact) {
+        try {
+            Contact updatedContact = contactService.updateContact(id, contact);
+            return ResponseEntity.ok(updatedContact);
+        }  catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping(path = "/{id}")

@@ -19,6 +19,7 @@ import java.io.IOException;
 @JsonSerialize(using = Email.Serializer.class)
 @JsonDeserialize(using = Email.Deserializer.class)
 public record Email(String value) {
+
     public Email {
         if (!value.matches(EMAIL_REGEX)) {
             throw new IllegalArgumentException("Invalid email: " + value);

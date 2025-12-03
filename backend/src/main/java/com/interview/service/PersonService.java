@@ -8,7 +8,6 @@ import com.interview.domain.dto.Person;
 import com.interview.domain.entity.PersonEntity;
 import com.interview.exceptions.EmailConflictException;
 import com.interview.repository.PersonRepository;
-import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -24,6 +23,7 @@ import java.util.logging.Logger;
  */
 @Service
 public class PersonService {
+
     @Autowired
     private PersonRepository repository;
 
@@ -55,13 +55,7 @@ public class PersonService {
         var existingPerson =
                 repository.findById(command.id())
                         .map(existing -> {
-                            logger.info(
-                                    String.format(
-                                            "model=person, operation=update, status=found_existing, " +
-                                                    "metadata={existing=%s}",
-                                            existing
-                                    )
-                            );
+                            logger.info(String.format("model=person, operation=update, status=found_existing, metadata={existing=%s}", existing));
                             if (command.firstName() != null) existing.setFirstName(command.firstName());
                             if (command.lastName() != null) existing.setLastName(command.lastName());
                             if (command.phoneNumber() != null) existing.setPhoneNumber(command.phoneNumber());
@@ -69,9 +63,7 @@ public class PersonService {
 
                             return existing;
                         });
-        logger.info(
-                String.format("model=person, operation=update, status=success, metadata={updated=%s}", existingPerson)
-        );
+        logger.info(String.format("model=person, operation=update, status=success, metadata={updated=%s}", existingPerson));
         return existingPerson.map(Person::fromEntity);
     }
 
@@ -80,13 +72,7 @@ public class PersonService {
         var existingOrNewPerson =
                 repository.findByEmail(command.email().value())
                         .map(existing -> {
-                            logger.info(
-                                    String.format(
-                                            "model=person, operation=upsert, status=found_existing, " +
-                                                    "metadata={existing=%s}",
-                                            existing
-                                    )
-                            );
+                            logger.info(String.format("model=person, operation=upsert, status=found_existing, metadata={existing=%s}", existing));
                             existing.setFirstName(command.firstName());
                             existing.setLastName(command.lastName());
                             existing.setPhoneNumber(command.phoneNumber());
@@ -98,12 +84,7 @@ public class PersonService {
                             return repository.save(PersonEntity.from(command));
                         });
 
-        logger.info(
-                String.format(
-                        "model=person, operation=upsert, status=success, metadata={updated=%s}",
-                        existingOrNewPerson
-                )
-        );
+        logger.info(String.format("model=person, operation=upsert, status=success, metadata={upserted=%s}", existingOrNewPerson));
         return Person.fromEntity(existingOrNewPerson);
     }
 

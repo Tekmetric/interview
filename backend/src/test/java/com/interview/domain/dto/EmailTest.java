@@ -11,6 +11,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EmailTest {
+
     @ParameterizedTest
     @FieldSource("VALID_EMAILS")
     void success(String validEmail) {
@@ -22,8 +23,7 @@ class EmailTest {
     @ParameterizedTest
     @FieldSource("INVALID_EMAILS")
     void badEmail(String invalidEmail) {
-        var exception =
-                assertThrows(IllegalArgumentException.class, () -> new Email(invalidEmail));
+        var exception = assertThrows(IllegalArgumentException.class, () -> new Email(invalidEmail));
 
         assertThat(exception.getMessage()).isEqualTo("Invalid email: " + invalidEmail);
     }

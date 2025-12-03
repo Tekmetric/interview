@@ -21,6 +21,7 @@ import java.util.UUID;
         indexes = @Index(columnList = "email")
 )
 public final class PersonEntity {
+
     @Id
     private UUID id;
 

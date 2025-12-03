@@ -104,14 +104,7 @@ public class PersonITest {
 
     // helper functions for `basicCrud`
     private Person createWithAssertions() {
-        var createPersonCommand =
-                new CreatePersonCommand(
-                        EMAIL,
-                        FIRST_NAME,
-                        LAST_NAME,
-                        PHONE_NUMBER,
-                        ADDRESS
-                );
+        var createPersonCommand = new CreatePersonCommand(EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
         var response = createPerson(createPersonCommand);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
@@ -144,22 +137,8 @@ public class PersonITest {
     }
 
     private void updateWithAssertions(UUID personId) {
-        var newAddress =
-                new Address(
-                        "US",
-                        "06901",
-                        "CT",
-                        "Stamford",
-                        List.of("888 Washington Blvd")
-                );
-        var updatePersonCommand =
-                new UpdatePersonCommand(
-                        personId,
-                        "Jesty",
-                        "Jesterson",
-                        "8329309401",
-                        newAddress
-                );
+        var newAddress = new Address("US", "06901", "CT", "Stamford", List.of("888 Washington Blvd"));
+        var updatePersonCommand = new UpdatePersonCommand(personId, "Jesty", "Jesterson", "8329309401", newAddress);
         var response = updatePerson(updatePersonCommand);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
@@ -226,16 +205,10 @@ public class PersonITest {
 
     @Nested
     class Create {
+
         @Test
         void duplicateEmail() {
-            var createPersonCommand =
-                    new CreatePersonCommand(
-                            EMAIL,
-                            FIRST_NAME,
-                            LAST_NAME,
-                            PHONE_NUMBER,
-                            ADDRESS
-                    );
+            var createPersonCommand = new CreatePersonCommand(EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
 
             // create person
             var response = createPerson(createPersonCommand);
@@ -250,19 +223,11 @@ public class PersonITest {
 
     @Nested
     class Update {
+
         @Test
         void doesNotExist() {
             var badId = UUID.randomUUID();
-            var response =
-                    updatePerson(
-                            new UpdatePersonCommand(
-                                    badId,
-                                    FIRST_NAME,
-                                    LAST_NAME,
-                                    PHONE_NUMBER,
-                                    ADDRESS
-                            )
-                    );
+            var response = updatePerson(new UpdatePersonCommand(badId, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS));
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
             assertThat(response.body().asString()).isEqualTo(String.format("Person of ID %s not found", badId));
         }
@@ -271,13 +236,7 @@ public class PersonITest {
         void noChangesRequired() {
             var existing = createWithAssertions();
             UpdatePersonCommand command =
-                    new UpdatePersonCommand(
-                            existing.id(),
-                            FIRST_NAME,
-                            LAST_NAME,
-                            PHONE_NUMBER,
-                            ADDRESS
-                    );
+                    new UpdatePersonCommand(existing.id(), FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
 
             var response = updatePerson(command);
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -289,14 +248,7 @@ public class PersonITest {
         @Test
         void nullValuesProvided() {
             var existing = createWithAssertions();
-            UpdatePersonCommand command =
-                    new UpdatePersonCommand(
-                            existing.id(),
-                            null,
-                            null,
-                            null,
-                            null
-                    );
+            UpdatePersonCommand command = new UpdatePersonCommand(existing.id(), null, null, null, null);
 
             var response = updatePerson(command);
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -308,14 +260,8 @@ public class PersonITest {
 
     @Nested
     class Upsert {
-        UpsertPersonCommand command =
-                new UpsertPersonCommand(
-                        EMAIL,
-                        FIRST_NAME,
-                        LAST_NAME,
-                        PHONE_NUMBER,
-                        ADDRESS
-                );
+
+        UpsertPersonCommand command = new UpsertPersonCommand(EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
 
         @Test
         void createAndUpdate() {
@@ -331,22 +277,8 @@ public class PersonITest {
             assertThat(personOnUpsert.address()).isEqualTo(ADDRESS);
 
             var personId = personOnUpsert.id();
-            var newAddress =
-                    new Address(
-                            "US",
-                            "06901",
-                            "CT",
-                            "Stamford",
-                            List.of("888 Washington Blvd")
-                    );
-            var updateCommand =
-                    new UpsertPersonCommand(
-                            EMAIL,
-                            "Jesty",
-                            "Jesterson",
-                            "8329309401",
-                            newAddress
-                    );
+            var newAddress = new Address("US", "06901", "CT", "Stamford", List.of("888 Washington Blvd"));
+            var updateCommand = new UpsertPersonCommand(EMAIL, "Jesty", "Jesterson", "8329309401", newAddress);
             response = upsertPerson(updateCommand);
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 

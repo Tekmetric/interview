@@ -10,6 +10,7 @@ import static com.interview.constant.PersonConstants.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PersonTest {
+
     private PersonEntity baseEntity;
 
     @BeforeEach

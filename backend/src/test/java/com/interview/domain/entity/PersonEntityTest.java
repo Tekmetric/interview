@@ -16,8 +16,7 @@ class PersonEntityTest {
 
     @Test
     void fromCommand() {
-        var command =
-                new CreatePersonCommand(EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
+        var command = new CreatePersonCommand(EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
 
         var person = PersonEntity.from(command);
 
@@ -30,8 +29,7 @@ class PersonEntityTest {
 
     @Test
     void stringify() {
-        var person =
-                new PersonEntity(ID, EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
+        var person = new PersonEntity(ID, EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
 
         assertThat(person.toString()).isEqualTo(
                 String.format(
@@ -48,6 +46,7 @@ class PersonEntityTest {
 
     @Nested
     class EqualsAndHashCode {
+
         private static final PersonEntity DEFAULT_PERSON =
                 new PersonEntity(ID, EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
 
@@ -61,8 +60,7 @@ class PersonEntityTest {
 
         @Test
         void equalsSame() {
-            var equivalentPerson =
-                    new PersonEntity(ID, EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
+            var equivalentPerson = new PersonEntity(ID, EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS);
 
             assertThat(DEFAULT_PERSON).isEqualTo(equivalentPerson);
             assertThat(DEFAULT_PERSON.equals(equivalentPerson)).isTrue();
@@ -118,14 +116,7 @@ class PersonEntityTest {
 
         @Test
         void differentAddress() {
-            var differentAddress =
-                    new Address(
-                            "US",
-                            "06901",
-                            "CT",
-                            "Stamford",
-                            List.of("888 Washington Blvd")
-                    );
+            var differentAddress = new Address("US", "06901", "CT", "Stamford", List.of("888 Washington Blvd"));
             var personWithDifferentAddress =
                     new PersonEntity(ID, EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER, differentAddress);
 

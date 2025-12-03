@@ -18,6 +18,7 @@ public record Address(
         String locality,
         List<String> addressLines
 ) {
+
     public Address {
         // address validations
         if (countryCode.length() != 2) {

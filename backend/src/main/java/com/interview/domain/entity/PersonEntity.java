@@ -27,24 +27,24 @@ public final class PersonEntity {
     @Column(nullable = false, unique = true, updatable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String firstName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String lastName;
 
-    @Column
+    @Column(nullable = false, length = 15)
     private String phoneNumber;
 
-    @Column
+    @Column(nullable = false, length = 2)
     private String addressCountryCode;
-    @Column
+    @Column(nullable = false, length = 10)
     private String addressPostalCode;
-    @Column
+    @Column(nullable = false, length = 100)
     private String addressAdministrativeArea;
-    @Column
+    @Column(nullable = false, length = 100)
     private String addressLocality;
-    @ElementCollection
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     private List<String> addressLines;
 
     PersonEntity(

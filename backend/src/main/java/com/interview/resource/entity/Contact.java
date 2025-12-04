@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 @ToString
 @RequiredArgsConstructor
 @Entity
+@Table(name = "contact")
 public class Contact {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,10 +25,12 @@ public class Contact {
     private UUID id;
 
     @NotBlank(message = "First name is required")
+    @Size(min = 3, message = "First name must be at least 3 characters long")
     @Column(nullable = false)
     private String firstName;
     private String middleName;
-    @NotBlank(message = "First name is required")
+    @NotBlank(message = "Last name is required")
+    @Size(min = 3, message = "Last name must be at least 3 characters long")
     @Column(nullable = false)
     private String lastName;
     @NotBlank(message = "Email is required")
@@ -36,8 +40,9 @@ public class Contact {
     @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "^(\\d{1,3}[- ]?)?\\(?\\d{3}\\)?[- ]?\\d{3}[- ]?\\d{4}$",
             message = "Invalid phone number format")
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone", nullable = false)
     private String phone;
+    @Enumerated(EnumType.STRING)
     @Column(name = "phone_type")
     private PhoneTypeEnum phoneType;
 

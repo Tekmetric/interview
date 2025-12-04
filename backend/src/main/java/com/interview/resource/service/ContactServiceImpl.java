@@ -29,15 +29,15 @@ public class ContactServiceImpl implements ContactService{
         return contactRepository.save(contact);
     }
 
-    public Contact updateContact(UUID id, Contact employee) {
+    public Contact updateContact(UUID id, Contact contact) {
         return contactRepository.findById(id)
                 .map(existing -> {
-                    existing.setFirstName(employee.getFirstName());
-
-                    existing.setLastName(employee.getLastName());
-                    existing.setEmail(employee.getEmail());
-                    existing.setPhone(employee.getPhone());
-                    existing.setPhoneType(employee.getPhoneType());
+                    existing.setFirstName(contact.getFirstName());
+                    existing.setMiddleName(contact.getMiddleName());
+                    existing.setLastName(contact.getLastName());
+                    existing.setEmail(contact.getEmail());
+                    existing.setPhone(contact.getPhone());
+                    existing.setPhoneType(contact.getPhoneType());
                     return contactRepository.save(existing);
                 })
                 .orElseThrow(() -> new RuntimeException("Issue updating contact, with id: " + id));

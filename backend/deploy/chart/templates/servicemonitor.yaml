@@ -1,0 +1,20 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "tekmetric-backend.fullname" . }}-monitor
+  labels:
+    app: {{ include "tekmetric-backend.name" . }}
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "tekmetric-backend.name" . }}
+  namespaceSelector:
+    any: true
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 15s
+      honorLabels: true
+{{- end }}

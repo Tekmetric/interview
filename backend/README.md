@@ -4,19 +4,7 @@
 
 #### Prerequisites
 - Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
-
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
-
-#### Import project into IDE
-- Project root is located in `backend` folder
-
-#### Build and run your app
-- `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
-
-#### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
+- Java 21
 
 #### After finishing the goals listed below create a PR
 
@@ -29,11 +17,19 @@
 ### Considerations
 This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
 
-#### H2 Configuration
-- Console: http://localhost:8080/h2-console 
-- JDBC URL: jdbc:h2:mem:testdb
-- Username: sa
-- Password: password
+### Description
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+The goal is to develop a simple Auto Repair Management System that manages vehicle repairs, tracks service orders, 
+and generates estimates and invoices in PDF format
+
+### Domain
+
+- RepairOrder: service request for a vehicle submitted to an auto repair shop (id, vin, created_at, updated_at, is_deleted, serviceItems, estimate_pdf)
+- ServiceItem: Individual repair or maintenance tasks requested or performed(id, name, description, quantity, price, repair_order_id, created_at, updated_at, is_deleted)
+
+### API
+Repair Order Management:
+CREATE, READ, UPDATE, DELETE
+
+Service Item Management
+CREATE, READ, UPDATE, DELETE of a service item which is part of the repair order

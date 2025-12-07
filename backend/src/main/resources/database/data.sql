@@ -6,19 +6,19 @@ CREATE TABLE IF NOT EXISTS purchase_orders (purchase_order_id bigint primary key
     placed_on date, expected_delivery date, actual_delivery date, total_cost decimal(10,2) not null, total_weight decimal(8,2),
     purchase_order_status varchar(20) not null);
 
-CREATE SEQUENCE IF NOT EXISTS purchase_order_id_seq;
+CREATE SEQUENCE IF NOT EXISTS purchase_order_id_seq START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE IF NOT EXISTS purchase_order_lines (purchase_order_line_id bigint primary key, purchase_order_id bigint not null,
     sku varchar(12) not null, description varchar(100), color varchar(50), quantity smallint not null, unit_cost decimal(10,2), unit_weight decimal(8,2));
 
 ALTER TABLE purchase_order_lines ADD FOREIGN KEY (purchase_order_id) REFERENCES purchase_orders(purchase_order_id);
 
-CREATE SEQUENCE IF NOT EXISTS purchase_order_line_id_seq;
+CREATE SEQUENCE IF NOT EXISTS purchase_order_line_id_seq START WITH 1 INCREMENT BY 1;
 
 INSERT INTO purchase_orders (purchase_order_id, supplier_name, placed_on, expected_delivery, actual_delivery,
                              total_cost, total_weight, purchase_order_status)
 VALUES ( NEXT VALUE FOR purchase_order_id_seq, 'TOYOTA OEM PARTS', '2025-11-15', '2025-12-3', '2025-12-3', 2571.23, 80.25, 'DELIVERED' ),
-       ( NEXT VALUE FOR purchase_order_id_seq, 'Car Parts International', '2025-11-23', '2025-12-15', null, 578.67, 154.50, 'IN TRANSIT' ),
+       ( NEXT VALUE FOR purchase_order_id_seq, 'Car Parts International', '2025-11-23', '2025-12-15', null, 578.67, 154.50, 'TRANSIT' ),
        ( NEXT VALUE FOR purchase_order_id_seq, 'USA Parts Supplier', '2025-12-5', '2025-12-20', null, 12547.00, 1241.75, 'CONFIRMED' );
 
 INSERT INTO purchase_order_lines (purchase_order_line_id, purchase_order_id, sku, description, color, quantity, unit_cost, unit_weight)

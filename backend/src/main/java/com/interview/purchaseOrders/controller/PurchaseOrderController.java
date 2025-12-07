@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/purchaseOrder")
+@RequestMapping("/api/v1/purchaseOrder")
 public class PurchaseOrderController {
 
     PurchaseOrderService purchaseOrderService;
@@ -27,7 +29,11 @@ public class PurchaseOrderController {
 
     @GetMapping("/{id}")
     PurchaseOrderDTO getPurchaseOrder(@PathVariable Long id) {
-        return purchaseOrderService.findById(id);
+        try {
+            return purchaseOrderService.findById(id);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Purchase Order Not Found");
+        }
     }
 
     @GetMapping()
@@ -42,7 +48,11 @@ public class PurchaseOrderController {
 
     @PutMapping("/update/{id}")
     PurchaseOrderDTO update(@PathVariable Long id, @RequestBody PurchaseOrderDTO purchaseOrderDTO) {
-        return purchaseOrderService.update(id, purchaseOrderDTO);
+        try {
+            return purchaseOrderService.update(id, purchaseOrderDTO);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Purchase Order Not Found");
+        }
     }
 
     @DeleteMapping("/{id}")

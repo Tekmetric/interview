@@ -9,9 +9,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
-public class PurchaseOrderServiceImpl  implements PurchaseOrderService {
+public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     PurchaseOrderRepository purchaseOrderRepository;
     PurchaseOrderMapper purchaseOrderMapper;
@@ -24,16 +25,16 @@ public class PurchaseOrderServiceImpl  implements PurchaseOrderService {
 
     @Override
     @Transactional
-    public PurchaseOrderDTO findById(Long id) {
-        PurchaseOrder purchaseOrder =  purchaseOrderRepository.findById(id).orElse(null);
+    public PurchaseOrderDTO findById(Long id) throws NoSuchElementException {
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(id).orElseThrow();
         return purchaseOrderMapper.toDto(purchaseOrder);
     }
 
     @Override
     @Transactional
     public List<PurchaseOrderDTO> findAll() {
-    List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findAll();
-    return purchaseOrders.stream().map(purchaseOrderMapper::toDto).toList();
+        List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findAll();
+        return purchaseOrders.stream().map(purchaseOrderMapper::toDto).toList();
     }
 
     @Override
@@ -46,8 +47,8 @@ public class PurchaseOrderServiceImpl  implements PurchaseOrderService {
 
     @Override
     @Transactional
-    public PurchaseOrderDTO update(Long id, PurchaseOrderDTO purchaseOrderDTO) {
-        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(id).orElse(null);
+    public PurchaseOrderDTO update(Long id, PurchaseOrderDTO purchaseOrderDTO) throws NoSuchElementException {
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(id).orElseThrow();
         purchaseOrderMapper.updateEntityFromDTO(purchaseOrderDTO, purchaseOrder);
         return purchaseOrderMapper.toDto(purchaseOrder);
     }

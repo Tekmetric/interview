@@ -13,7 +13,7 @@ public class PurchaseOrderLineDTO {
     private BigDecimal unitCost;
     private BigDecimal unitWeight;
 
-    public PurchaseOrderLineDTO(){
+    public PurchaseOrderLineDTO() {
 
     }
 

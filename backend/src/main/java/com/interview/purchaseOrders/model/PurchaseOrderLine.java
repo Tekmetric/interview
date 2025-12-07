@@ -10,10 +10,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.math.BigDecimal;
 
 @Entity
+@DynamicUpdate
 @Table(name = "purchase_order_lines")
 public class PurchaseOrderLine {
 
@@ -45,7 +47,7 @@ public class PurchaseOrderLine {
     @Column(name = "unit_weight", precision = 8, scale = 2)
     private BigDecimal unitWeight;
 
-    public PurchaseOrderLine(){
+    public PurchaseOrderLine() {
     }
 
     public Long getPurchaseOrderLineId() {

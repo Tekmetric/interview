@@ -35,7 +35,7 @@ class PurchaseOrderServiceTest {
     private PurchaseOrderServiceImpl purchaseOrderService;
 
     @Test
-    void testFindById(){
+    void testFindById() {
         //Note that this test is a bit contrived, but I wanted to demonstrate at least one test case setup. In a real
         //environment, I would test multiple scenarios on all the methods in the service class.
 
@@ -44,7 +44,7 @@ class PurchaseOrderServiceTest {
 
         when(purchaseOrderRepository.findById(1L)).thenReturn(Optional.of(purchaseOrder));
 
-        PurchaseOrderDTO purchaseOrderDTO = new PurchaseOrderDTO(1L, "TestSupplier", LocalDate.of(2025,12,1),
+        PurchaseOrderDTO purchaseOrderDTO = new PurchaseOrderDTO(1L, "TestSupplier", LocalDate.of(2025, 12, 1),
                 LocalDate.of(2025, 12, 8), LocalDate.of(2025, 12, 7),
                 BigDecimal.valueOf(123.00), BigDecimal.valueOf(10), PurchaseOrderStatus.DELIVERED, new ArrayList<>());
 
@@ -62,7 +62,7 @@ class PurchaseOrderServiceTest {
         assertEquals(purchaseOrderDTO, returnedDTO);
     }
 
-    private PurchaseOrder getTestPurchaseOrder(){
+    private PurchaseOrder getTestPurchaseOrder() {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         ReflectionTestUtils.setField(purchaseOrder, "purchaseOrderId", 1L);
         ReflectionTestUtils.setField(purchaseOrder, "supplierName", "Test Supplier");

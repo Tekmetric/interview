@@ -12,11 +12,15 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface PurchaseOrderMapper {
     PurchaseOrderDTO toDto(PurchaseOrder purchaseOrder);
+
     PurchaseOrder toEntity(PurchaseOrderDTO purchaseOrderDTO);
+
     @Mapping(target = "purchaseOrderLines", ignore = true)
     void updateEntityFromDTO(PurchaseOrderDTO purchaseOrderDTO, @MappingTarget PurchaseOrder purchaseOrder);
+
     @Mapping(target = "purchaseOrderId", source = "purchaseOrder.purchaseOrderId")
     PurchaseOrderLineDTO toDto(PurchaseOrderLine purchaseOrderLine);
+
     @Mapping(target = "purchaseOrder", source = "purchaseOrderId")
     PurchaseOrderLine toEntity(PurchaseOrderLineDTO purchaseOrderLineDTO);
 
@@ -31,8 +35,8 @@ public interface PurchaseOrderMapper {
     }
 
     @AfterMapping
-    default void linkPurchaseOrderLines(@MappingTarget PurchaseOrder purchaseOrder){
-        if(purchaseOrder.getPurchaseOrderLines() != null){
+    default void linkPurchaseOrderLines(@MappingTarget PurchaseOrder purchaseOrder) {
+        if (purchaseOrder.getPurchaseOrderLines() != null) {
             purchaseOrder.getPurchaseOrderLines().forEach(purchaseOrderLine -> purchaseOrderLine.setPurchaseOrder(purchaseOrder));
         }
     }

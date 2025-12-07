@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ProblemDetail;
@@ -42,7 +43,7 @@ public interface RepairOrderApi {
                     description = "Bad request",
                     content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
-    ResponseEntity<PagedModel<RepairOrderDto>> getAll(Pageable pageable);
+    ResponseEntity<PagedModel<RepairOrderDto>> getAll(@ParameterObject Pageable pageable);
 
     @Operation(summary = "Updates a repair order", responses = {
             @ApiResponse(responseCode = "200", description = "Repair order updated"),

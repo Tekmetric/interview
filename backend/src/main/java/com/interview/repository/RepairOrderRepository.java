@@ -13,6 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface RepairOrderRepository extends JpaRepository<RepairOrderEntity, Long> {
 
     @Modifying
-    @Query("DELETE FROM RepairOrderEntity WHERE id=:id")
+    @Query("DELETE FROM RepairOrderEntity WHERE id = :id")
     int deleteRepairOrderById(@Param("id") long id);
 }

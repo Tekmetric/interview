@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "repair_order")
@@ -43,6 +45,25 @@ public class RepairOrderEntity {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean deleted;
+
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "repairOrderEntity",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<WorkItemEntity> workItems = new ArrayList<>();
+
+    public void addWorkItem(WorkItemEntity workItem) {
+        workItem.setRepairOrderEntity(this);
+        workItems.add(workItem);
+    }
+
+    public void removeWorkItem(WorkItemEntity workItem) {
+        if (workItems.remove(workItem)) {
+            workItem.setRepairOrderEntity(null);
+        }
+    }
 
     @PrePersist
     public void prePersist() {

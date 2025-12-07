@@ -7,6 +7,9 @@ spring:
   h2:
     console:
       enabled: true
+  flyway:
+    enabled: true
+    locations: database/migrations
   jpa:
     database-platform.org:
       hibernate:

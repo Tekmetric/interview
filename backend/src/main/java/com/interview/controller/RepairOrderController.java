@@ -4,42 +4,56 @@ import com.interview.api.RepairOrderApi;
 import com.interview.dto.repairorder.CreateRepairOrderRequest;
 import com.interview.dto.repairorder.RepairOrderDto;
 import com.interview.dto.repairorder.UpdateRepairOrderRequest;
+import com.interview.service.RepairOrderService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/repair-orders")
+@RequiredArgsConstructor
 public class RepairOrderController implements RepairOrderApi {
+
+    private final RepairOrderService repairOrderService;
 
     @Override
     @PostMapping
-    public ResponseEntity<RepairOrderDto> create(CreateRepairOrderRequest createRepairOrderRequest) {
-        return null;
+    public ResponseEntity<RepairOrderDto> create(@Valid @RequestBody CreateRepairOrderRequest createRepairOrderRequest) {
+        RepairOrderDto repairOrder = repairOrderService.create(createRepairOrderRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(repairOrder);
     }
 
     @Override
     @GetMapping("/{repairOrderId}")
     public ResponseEntity<RepairOrderDto> getById(@PathVariable("repairOrderId") long repairOrderId) {
-        return null;
+        RepairOrderDto repairOrder = repairOrderService.findById(repairOrderId);
+        return ResponseEntity.ok(repairOrder);
     }
 
     @Override
     @GetMapping
-    public ResponseEntity<PagedModel<RepairOrderDto>> getAll(Pageable pageable) {
-        return null;
+    public ResponseEntity<PagedModel<RepairOrderDto>> getAll(@PageableDefault(size = 5, sort = "vin") Pageable pageable) {
+        Page<RepairOrderDto> page = repairOrderService.getAll(pageable);
+        return ResponseEntity.ok(new PagedModel<>(page));
     }
 
     @Override
     @PutMapping("/{repairOrderId}")
-    public ResponseEntity<RepairOrderDto> update(@PathVariable("repairOrderId") long repairOrderId, UpdateRepairOrderRequest updateRepairOrderRequest) {
-        return null;
+    public ResponseEntity<RepairOrderDto> update(@PathVariable("repairOrderId") long repairOrderId, @Valid @RequestBody UpdateRepairOrderRequest updateRepairOrderRequest) {
+        RepairOrderDto updatedRepairOrder = repairOrderService.update(repairOrderId, updateRepairOrderRequest);
+        return ResponseEntity.ok(updatedRepairOrder);
     }
 
     @Override
     @DeleteMapping("/{repairOrderId}")
-    public ResponseEntity<Void> deleteById(long repairOrderId) {
+    public ResponseEntity<Void> deleteById(@PathVariable("repairOrderId") long repairOrderId) {
+        repairOrderService.deleteById(repairOrderId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -3,13 +3,13 @@ package com.interview.service;
 import com.interview.dto.estimation.EstimationInfo;
 import com.interview.dto.estimation.EstimationPdfInfo;
 import com.interview.dto.workitem.WorkItemDto;
+import com.interview.mapper.WorkItemMapper;
 import com.interview.model.EstimationStatus;
 import com.interview.model.RepairOrderStatus;
-import com.interview.model.exception.ResourceNotFoundException;
 import com.interview.model.exception.EstimationStatusTransitionNotAllowedException;
+import com.interview.model.exception.ResourceNotFoundException;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.repository.model.RepairOrderEntity;
-import com.interview.repository.model.WorkItemEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,8 +26,7 @@ public class EstimationPersistenceService {
 
     @Transactional
     public void updateEstimationStatus(long repairOrderId, EstimationStatus estimationStatus) {
-        RepairOrderEntity repairOrderEntity = repairOrderRepository.findById(repairOrderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Repair order with id: " + repairOrderId + " not found"));
+        RepairOrderEntity repairOrderEntity = findRepairOrderOrThrow(repairOrderId);
 
         var status = repairOrderEntity.getEstimationStatus();
         if (status == EstimationStatus.IN_PROGRESS || status == EstimationStatus.COMPLETED) {
@@ -42,8 +41,7 @@ public class EstimationPersistenceService {
 
     @Transactional
     public void markEstimationAsCompleted(long repairOrderId, String pdfName) {
-        RepairOrderEntity repairOrderEntity = repairOrderRepository.findById(repairOrderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Repair order with id: " + repairOrderId + " not found"));
+        RepairOrderEntity repairOrderEntity = findRepairOrderOrThrow(repairOrderId);
 
         repairOrderEntity.setEstimationPdfObjectKey(pdfName);
         repairOrderEntity.setEstimationStatus(EstimationStatus.COMPLETED);
@@ -53,8 +51,7 @@ public class EstimationPersistenceService {
 
     @Transactional
     public void markEstimationAsFailed(long repairOrderId) {
-        RepairOrderEntity repairOrderEntity = repairOrderRepository.findById(repairOrderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Repair order with id: " + repairOrderId + " not found"));
+        RepairOrderEntity repairOrderEntity = findRepairOrderOrThrow(repairOrderId);
 
         repairOrderEntity.setEstimationPdfObjectKey(null);
         repairOrderEntity.setEstimationStatus(EstimationStatus.FAILED);
@@ -64,27 +61,23 @@ public class EstimationPersistenceService {
 
     @Transactional(readOnly = true)
     public EstimationInfo getEstimationInfo(long repairOrderId) {
-        RepairOrderEntity repairOrderRef = repairOrderRepository.getReferenceById(repairOrderId);
-        List<WorkItemDto> workItems = repairOrderRef.getWorkItems().stream().map(this::toDto).toList();
+        RepairOrderEntity repairOrder = findRepairOrderOrThrow(repairOrderId);
 
-        return new EstimationInfo(repairOrderRef.getVin(), workItems);
+        List<WorkItemDto> workItems = repairOrder.getWorkItems().stream().map(WorkItemMapper::toDto).toList();
+
+        return new EstimationInfo(repairOrder.getVin(), workItems);
     }
 
     @Transactional(readOnly = true)
     public EstimationPdfInfo getEstimationPdfStatus(long repairOrderId) {
-        RepairOrderEntity repairOrderEntity = repairOrderRepository.findById(repairOrderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Repair order with id: " + repairOrderId + " not found"));
+        RepairOrderEntity repairOrderEntity = findRepairOrderOrThrow(repairOrderId);
 
         return new EstimationPdfInfo(repairOrderEntity.getEstimationStatus(), repairOrderEntity.getEstimationPdfObjectKey());
     }
 
-    private WorkItemDto toDto(WorkItemEntity entity) {
-        return new WorkItemDto(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getPrice()
-        );
+    private RepairOrderEntity findRepairOrderOrThrow(long repairOrderId) {
+        return repairOrderRepository.findById(repairOrderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Repair order with id: " + repairOrderId + " not found"));
     }
 
 }

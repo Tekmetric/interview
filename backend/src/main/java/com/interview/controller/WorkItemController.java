@@ -5,6 +5,7 @@ import com.interview.dto.workitem.CreateWorkItemRequest;
 import com.interview.dto.workitem.UpdateWorkItemRequest;
 import com.interview.dto.workitem.WorkItemDto;
 import com.interview.service.WorkItemService;
+import com.interview.validator.PaginationValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +15,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/repair-orders/{repairOrderId}/items")
 public class WorkItemController implements WorkItemApi {
+
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "price");
+
 
     private final WorkItemService workItemService;
 
@@ -32,6 +38,9 @@ public class WorkItemController implements WorkItemApi {
     @GetMapping
     public ResponseEntity<PagedModel<WorkItemDto>> getAll(@PathVariable("repairOrderId") long repairOrderId,
                                                           @PageableDefault(sort = "id") Pageable pageable) {
+
+        PaginationValidator.validate(pageable, ALLOWED_SORT_FIELDS);
+
         return ResponseEntity.ok(new PagedModel<>(workItemService.getAll(repairOrderId, pageable)));
     }
 

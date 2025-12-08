@@ -1,5 +1,6 @@
 package com.interview.controller.advice;
 
+import com.interview.model.exception.FieldNotAllowedInSortException;
 import com.interview.model.exception.ResourceNotFoundException;
 import com.interview.model.exception.EstimationStatusTransitionNotAllowedException;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,17 @@ public class GlobalExceptionHandler {
                 .toList();
 
         problemDetail.setProperty("invalid-fields", fieldError);
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(FieldNotAllowedInSortException.class)
+    public ProblemDetail handleFieldNotAllowedInSortException(FieldNotAllowedInSortException ex) {
+        log.warn("Sort validation exception: ", ex);
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Cannot request another estimation");
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setProperty("timestamp", System.currentTimeMillis());
 
         return problemDetail;
     }

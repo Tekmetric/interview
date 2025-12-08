@@ -5,6 +5,7 @@ import com.interview.dto.repairorder.CreateRepairOrderRequest;
 import com.interview.dto.repairorder.RepairOrderDto;
 import com.interview.dto.repairorder.UpdateRepairOrderRequest;
 import com.interview.service.RepairOrderService;
+import com.interview.validator.PaginationValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,10 +16,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
 @RequestMapping("/api/v1/repair-orders")
 @RequiredArgsConstructor
 public class RepairOrderController implements RepairOrderApi {
+
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "vin");
 
     private final RepairOrderService repairOrderService;
 
@@ -38,7 +43,10 @@ public class RepairOrderController implements RepairOrderApi {
 
     @Override
     @GetMapping
-    public ResponseEntity<PagedModel<RepairOrderDto>> getAll(@PageableDefault(size = 5, sort = "vin") Pageable pageable) {
+    public ResponseEntity<PagedModel<RepairOrderDto>> getAll(@PageableDefault(size = 5, sort = "id") Pageable pageable) {
+
+        PaginationValidator.validate(pageable, ALLOWED_SORT_FIELDS);
+
         Page<RepairOrderDto> page = repairOrderService.getAll(pageable);
         return ResponseEntity.ok(new PagedModel<>(page));
     }

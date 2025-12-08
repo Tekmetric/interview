@@ -131,6 +131,13 @@ class RepairOrderControllerTest {
     }
 
     @Test
+    void givenInvalidSortField_whenGetAll_thenReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/v1/repair-orders?sort=status,asc")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void givenValidUpdateRepairOrderRequest_whenUpdateRepairOrder_thenSuccess() throws Exception {
         UpdateRepairOrderRequest request = new UpdateRepairOrderRequest("Updated issue", RepairOrderStatus.IN_PROGRESS);
         RepairOrderDto updatedDto = RepairOrderDto.builder()

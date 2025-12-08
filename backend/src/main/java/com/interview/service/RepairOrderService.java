@@ -3,7 +3,7 @@ package com.interview.service;
 import com.interview.dto.repairorder.CreateRepairOrderRequest;
 import com.interview.dto.repairorder.RepairOrderDto;
 import com.interview.dto.repairorder.UpdateRepairOrderRequest;
-import com.interview.model.RepairOrderStatus;
+import com.interview.mapper.RepairOrderMapper;
 import com.interview.model.exception.ResourceNotFoundException;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.repository.WorkItemRepository;
@@ -22,15 +22,15 @@ public class RepairOrderService {
     private final WorkItemRepository workItemRepository;
 
     public RepairOrderDto create(CreateRepairOrderRequest createRepairOrderRequest) {
-        RepairOrderEntity entity = toEntity(createRepairOrderRequest);
+        RepairOrderEntity entity = RepairOrderMapper.toEntity(createRepairOrderRequest);
 
         var saved = repairOrderRepository.save(entity);
-        return toDto(saved);
+        return RepairOrderMapper.toDto(saved);
     }
 
     public RepairOrderDto findById(long repairOrderId) {
         return repairOrderRepository.findById(repairOrderId)
-                .map(this::toDto)
+                .map(RepairOrderMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Repair order with id: " + repairOrderId + " not found"));
     }
 
@@ -49,30 +49,10 @@ public class RepairOrderService {
         entity.setIssueDescription(updateRepairOrderRequest.issueDescription());
         entity.setStatus(updateRepairOrderRequest.status());
 
-        return toDto(repairOrderRepository.save(entity));
-    }
-
-    private RepairOrderDto toDto(RepairOrderEntity saved) {
-        return RepairOrderDto.builder()
-                .id(saved.getId())
-                .vin(saved.getVin())
-                .carModel(saved.getCarModel())
-                .status(saved.getStatus())
-                .issueDescription(saved.getIssueDescription())
-                .build();
-    }
-
-    private RepairOrderEntity toEntity(CreateRepairOrderRequest createRepairOrderRequest) {
-        return RepairOrderEntity.builder()
-                .vin(createRepairOrderRequest.vin())
-                .carModel(createRepairOrderRequest.carModel())
-                .status(RepairOrderStatus.DRAFT)
-                .deleted(false)
-                .issueDescription(createRepairOrderRequest.issueDescription())
-                .build();
+        return RepairOrderMapper.toDto(repairOrderRepository.save(entity));
     }
 
     public Page<RepairOrderDto> getAll(Pageable pageable) {
-        return repairOrderRepository.findAll(pageable).map(this::toDto);
+        return repairOrderRepository.findAll(pageable).map(RepairOrderMapper::toDto);
     }
 }

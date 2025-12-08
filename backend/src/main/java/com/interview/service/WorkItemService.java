@@ -3,6 +3,7 @@ package com.interview.service;
 import com.interview.dto.workitem.CreateWorkItemRequest;
 import com.interview.dto.workitem.UpdateWorkItemRequest;
 import com.interview.dto.workitem.WorkItemDto;
+import com.interview.mapper.WorkItemMapper;
 import com.interview.model.exception.ResourceNotFoundException;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.repository.WorkItemRepository;
@@ -27,12 +28,12 @@ public class WorkItemService {
     public WorkItemDto create(long repairOrderId, CreateWorkItemRequest createRequest) {
         RepairOrderEntity repairOrder = findRepairOrderByIdOrThrowNotFound(repairOrderId);
 
-        WorkItemEntity workItem = toEntity(createRequest);
+        WorkItemEntity workItem = WorkItemMapper.toEntity(createRequest);
         repairOrder.addWorkItem(workItem);
 
         var savedItem = workItemRepository.save(workItem);
 
-        return toDto(savedItem);
+        return WorkItemMapper.toDto(savedItem);
     }
 
     @Transactional
@@ -52,11 +53,11 @@ public class WorkItemService {
         workItem.setPrice(updateRequest.price());
         var updatedWorkItem = workItemRepository.save(workItem);
 
-        return toDto(updatedWorkItem);
+        return WorkItemMapper.toDto(updatedWorkItem);
     }
 
     public Page<WorkItemDto> getAll(long repairOrderId, Pageable pageable) {
-        return workItemRepository.findByRepairOrderEntityIdAndDeletedFalse(repairOrderId, pageable).map(this::toDto);
+        return workItemRepository.findByRepairOrderEntityIdAndDeletedFalse(repairOrderId, pageable).map(WorkItemMapper::toDto);
     }
 
     private RepairOrderEntity findRepairOrderByIdOrThrowNotFound(long repairOrderId) {
@@ -67,23 +68,5 @@ public class WorkItemService {
     private WorkItemEntity findWorkItemByIdOrThrowNotFound(long workItemId) {
         return workItemRepository.findById(workItemId).orElseThrow(
                 () -> new ResourceNotFoundException("Work item with id: " + workItemId + " not found"));
-    }
-
-    private WorkItemEntity toEntity(CreateWorkItemRequest request) {
-        return WorkItemEntity.builder()
-                .name(request.name())
-                .description(request.description())
-                .price(request.price())
-                .deleted(false)
-                .build();
-    }
-
-    private WorkItemDto toDto(WorkItemEntity entity) {
-        return new WorkItemDto(
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getPrice()
-        );
     }
 }

@@ -41,7 +41,7 @@ public class EstimationPdfGenerator {
             table.addHeaderCell(new Cell().add(new Paragraph("Description")));
             table.addHeaderCell(new Cell().add(new Paragraph("Price")));
 
-            float total = 0f;
+            float total = 0;
             for (WorkItemDto item : estimationInfo.workItems()) {
                 table.addCell(String.valueOf(item.id()));
                 table.addCell(item.name());

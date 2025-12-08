@@ -2,6 +2,7 @@ package com.interview.controller.advice;
 
 import com.interview.model.exception.ResourceNotFoundException;
 import com.interview.model.exception.EstimationStatusTransitionNotAllowedException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ProblemDetail handleEntityNotFoundException(ResourceNotFoundException ex) {
+    public ProblemDetail handleResourceNotFoundException(ResourceNotFoundException ex) {
+        log.warn("Resource not found: ", ex);
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problemDetail.setTitle("Entity Not Found");
         problemDetail.setDetail(ex.getMessage());
@@ -28,6 +31,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EstimationStatusTransitionNotAllowedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ProblemDetail handleEstimationStatusTransitionException(EstimationStatusTransitionNotAllowedException ex) {
+        log.warn("Conflict exception: ", ex);
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problemDetail.setTitle("Cannot request another estimation");
         problemDetail.setDetail(ex.getMessage());
@@ -38,6 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        log.warn("Validation exception: ", ex);
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         var fieldError = ex.getFieldErrors().stream()
                 .map(fieldErr -> Map.of("name", fieldErr.getField(), "reason", StringUtils.isBlank(fieldErr.getDefaultMessage()) ? "Invalid value" : fieldErr.getDefaultMessage()))
@@ -50,6 +55,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGenericException(Exception ex) {
+        log.error("Generic exception: ", ex);
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         problemDetail.setDetail("Something went wrong");
 

@@ -22,4 +22,8 @@ public interface WorkItemRepository extends JpaRepository<WorkItemEntity, Long> 
     @Modifying
     @Query("UPDATE WorkItemEntity SET deleted = TRUE, updatedAt = :now WHERE id = :workItemId AND repairOrderEntity = :repairOrderEntity AND deleted = FALSE")
     int softDeleteByRepairOrderIdAndWorkItemId(@Param("repairOrderEntity") RepairOrderEntity repairOrderEntity, @Param("workItemId") long workItemId, @Param("now") Instant now);
+
+    @Modifying
+    @Query("DELETE WorkItemEntity WHERE repairOrderEntity.id = :repairOrderId")
+    int deleteAllByRepairOrderId(long repairOrderId);
 }

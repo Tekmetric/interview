@@ -1,11 +1,13 @@
 package com.interview.repository.model;
 
+import com.interview.model.EstimationStatus;
 import com.interview.model.RepairOrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -52,7 +54,15 @@ public class RepairOrderEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @SQLRestriction("is_deleted = false")
     private List<WorkItemEntity> workItems = new ArrayList<>();
+
+    @Column(name = "estimation_pdf_object_key")
+    private String estimationPdfObjectKey;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estimation_status")
+    private EstimationStatus estimationStatus;
 
     public void addWorkItem(WorkItemEntity workItem) {
         workItem.setRepairOrderEntity(this);

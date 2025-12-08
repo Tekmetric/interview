@@ -4,14 +4,13 @@ import com.interview.dto.repairorder.CreateRepairOrderRequest;
 import com.interview.dto.repairorder.RepairOrderDto;
 import com.interview.dto.repairorder.UpdateRepairOrderRequest;
 import com.interview.model.RepairOrderStatus;
-import com.interview.model.exception.EntityNotFoundException;
+import com.interview.model.exception.ResourceNotFoundException;
 import com.interview.repository.RepairOrderRepository;
+import com.interview.repository.WorkItemRepository;
 import com.interview.repository.model.RepairOrderEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedModel;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RepairOrderService {
 
     private final RepairOrderRepository repairOrderRepository;
+    private final WorkItemRepository workItemRepository;
 
     public RepairOrderDto create(CreateRepairOrderRequest createRepairOrderRequest) {
         RepairOrderEntity entity = toEntity(createRepairOrderRequest);
@@ -31,20 +31,21 @@ public class RepairOrderService {
     public RepairOrderDto findById(long repairOrderId) {
         return repairOrderRepository.findById(repairOrderId)
                 .map(this::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("Repair order with id: " + repairOrderId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Repair order with id: " + repairOrderId + " not found"));
     }
 
     @Transactional
     public void deleteById(long repairOrderId) {
-        int deletedCount = repairOrderRepository.deleteRepairOrderById(repairOrderId);
-        if (deletedCount == 0) {
-            throw new EntityNotFoundException("Repair order with id: " + repairOrderId + " not found");
-        }
+        RepairOrderEntity repairOrder = repairOrderRepository.findById(repairOrderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Repair order with id: " + repairOrderId + " not found"));
+
+        workItemRepository.deleteAllByRepairOrderId(repairOrderId);
+        repairOrderRepository.delete(repairOrder);
     }
 
     @Transactional
     public RepairOrderDto update(long repairOrderId, UpdateRepairOrderRequest updateRepairOrderRequest) {
-        RepairOrderEntity entity = repairOrderRepository.findById(repairOrderId).orElseThrow(() -> new EntityNotFoundException("Repair order with id: " + repairOrderId + " not found"));
+        RepairOrderEntity entity = repairOrderRepository.findById(repairOrderId).orElseThrow(() -> new ResourceNotFoundException("Repair order with id: " + repairOrderId + " not found"));
         entity.setIssueDescription(updateRepairOrderRequest.issueDescription());
         entity.setStatus(updateRepairOrderRequest.status());
 

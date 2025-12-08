@@ -5,7 +5,7 @@ import com.interview.dto.repairorder.CreateRepairOrderRequest;
 import com.interview.dto.repairorder.RepairOrderDto;
 import com.interview.dto.repairorder.UpdateRepairOrderRequest;
 import com.interview.model.RepairOrderStatus;
-import com.interview.model.exception.EntityNotFoundException;
+import com.interview.model.exception.ResourceNotFoundException;
 import com.interview.service.RepairOrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -112,7 +112,7 @@ class RepairOrderControllerTest {
     @Test
     void givenNonExistingId_whenGetRepairOrderById_shouldReturn404() throws Exception {
         Mockito.when(repairOrderService.findById(anyLong()))
-                .thenThrow(new EntityNotFoundException("Repair order not found"));
+                .thenThrow(new ResourceNotFoundException("Repair order not found"));
 
         mockMvc.perform(get("/api/v1/repair-orders/999"))
                 .andExpect(status().isNotFound());
@@ -192,7 +192,7 @@ class RepairOrderControllerTest {
 
     @Test
     void givenNonExistingId_whenDeleteRepairOrder_thenNotFound() throws Exception {
-        Mockito.doThrow(new com.interview.model.exception.EntityNotFoundException("Repair order not found"))
+        Mockito.doThrow(new ResourceNotFoundException("Repair order not found"))
                 .when(repairOrderService).deleteById(anyLong());
 
         mockMvc.perform(delete("/api/v1/repair-orders/999"))

@@ -3,7 +3,7 @@ package com.interview.service;
 import com.interview.dto.workitem.CreateWorkItemRequest;
 import com.interview.dto.workitem.UpdateWorkItemRequest;
 import com.interview.dto.workitem.WorkItemDto;
-import com.interview.model.exception.EntityNotFoundException;
+import com.interview.model.exception.ResourceNotFoundException;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.repository.WorkItemRepository;
 import com.interview.repository.model.RepairOrderEntity;
@@ -40,7 +40,7 @@ public class WorkItemService {
         RepairOrderEntity repairOrderRef = repairOrderRepository.getReferenceById(repairOrderId);
         int softDeletedCount = workItemRepository.softDeleteByRepairOrderIdAndWorkItemId(repairOrderRef, workItemId, Instant.now());
         if (softDeletedCount == 0) {
-            throw new EntityNotFoundException("Work item not found for id: " + workItemId + "within the repair order with id: " + repairOrderId);
+            throw new ResourceNotFoundException("Work item not found for id: " + workItemId + "within the repair order with id: " + repairOrderId);
         }
     }
 
@@ -61,12 +61,12 @@ public class WorkItemService {
 
     private RepairOrderEntity findRepairOrderByIdOrThrowNotFound(long repairOrderId) {
         return repairOrderRepository.findById(repairOrderId).orElseThrow(
-                () -> new EntityNotFoundException("Repair order with id: " + repairOrderId + " not found"));
+                () -> new ResourceNotFoundException("Repair order with id: " + repairOrderId + " not found"));
     }
 
     private WorkItemEntity findWorkItemByIdOrThrowNotFound(long workItemId) {
         return workItemRepository.findById(workItemId).orElseThrow(
-                () -> new EntityNotFoundException("Work item with id: " + workItemId + " not found"));
+                () -> new ResourceNotFoundException("Work item with id: " + workItemId + " not found"));
     }
 
     private WorkItemEntity toEntity(CreateWorkItemRequest request) {

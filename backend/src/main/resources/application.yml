@@ -27,3 +27,9 @@ spring:
     properties:
       hibernate:
         format-sql: true
+minio:
+  endpoint: http://localhost:9000
+  username: minioadmin
+  password: minioadmin
+  bucket: tek-bucket
+  presignedUrlExpireAfterMinutes: 10

@@ -33,6 +33,8 @@ public class RepairOrderSimulation extends Simulation {
     String[] issues = {"Car does not start", "Engine noise", "Brake failure", "Battery dead"};
 
     Iterator<Map<String, Object>> randomFeeder = new Iterator<>() {
+        private char[] vinChars = "ABCDEFGHJKLMNPRSTUVWXYZ0123456789".toCharArray();
+
         @Override
         public boolean hasNext() {
             return true;
@@ -40,8 +42,13 @@ public class RepairOrderSimulation extends Simulation {
 
         @Override
         public Map<String, Object> next() {
+            StringBuilder vin = new StringBuilder(17);
+            for (int i = 0; i < 17; i++) {
+                vin.append(vinChars[random.nextInt(vinChars.length)]);
+            }
+
             return Map.of(
-                    "vin", "WAUZZZ" + (1000 + random.nextInt(9000000)),
+                    "vin", vin.toString(),
                     "carModel", carModels[random.nextInt(carModels.length)],
                     "issueDescription", issues[random.nextInt(issues.length)]
             );

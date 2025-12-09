@@ -4,6 +4,7 @@ import com.interview.command.dto.UpdateWidgetCommand;
 import com.interview.command.mapper.WidgetCommandMapper;
 import com.interview.command.repository.WidgetCommandRepository;
 import com.interview.common.entity.Widget;
+import io.micrometer.core.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class UpdateWidgetHandler {
         @CacheEvict(value = "widgets", key = "#id"),
         @CacheEvict(value = "allWidgets", allEntries = true)
     })
+    @Timed(value = "widget.update", description = "Time taken to update a widget")
     public Optional<Widget> handle(Long id, UpdateWidgetCommand command) {
         log.debug("Handling update widget command for id: {}", id);
         return widgetCommandRepository.findById(id)

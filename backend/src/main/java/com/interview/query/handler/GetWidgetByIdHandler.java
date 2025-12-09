@@ -3,6 +3,7 @@ package com.interview.query.handler;
 import com.interview.query.dto.WidgetDto;
 import com.interview.query.mapper.WidgetQueryMapper;
 import com.interview.query.repository.WidgetQueryRepository;
+import io.micrometer.core.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class GetWidgetByIdHandler {
     }
 
     @Cacheable(value = "widgets", key = "#id")
+    @Timed(value = "widget.getById", description = "Time taken to retrieve a widget by ID")
     public Optional<WidgetDto> handle(Long id) {
         log.debug("Handling get widget by id query for id: {}", id);
         try {

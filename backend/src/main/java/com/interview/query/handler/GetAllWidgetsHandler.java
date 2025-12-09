@@ -3,6 +3,7 @@ package com.interview.query.handler;
 import com.interview.query.dto.WidgetDto;
 import com.interview.query.mapper.WidgetQueryMapper;
 import com.interview.query.repository.WidgetQueryRepository;
+import io.micrometer.core.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class GetAllWidgetsHandler {
     }
 
     @Cacheable("allWidgets")
+    @Timed(value = "widget.getAll", description = "Time taken to retrieve all widgets")
     public List<WidgetDto> handle() {
         log.debug("Handling get all widgets query");
         List<WidgetDto> widgets = widgetQueryRepository.findAll()

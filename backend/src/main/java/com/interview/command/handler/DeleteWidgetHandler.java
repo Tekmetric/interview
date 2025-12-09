@@ -2,6 +2,7 @@ package com.interview.command.handler;
 
 import com.interview.command.repository.WidgetCommandRepository;
 import com.interview.common.events.WidgetDeletedEvent;
+import io.micrometer.core.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ public class DeleteWidgetHandler {
         @CacheEvict(value = "widgets", key = "#id"),
         @CacheEvict(value = "allWidgets", allEntries = true)
     })
+    @Timed(value = "widget.delete", description = "Time taken to delete a widget")
     public boolean handle(Long id) {
         log.debug("Handling delete widget command for id: {}", id);
         return widgetCommandRepository.findById(id)

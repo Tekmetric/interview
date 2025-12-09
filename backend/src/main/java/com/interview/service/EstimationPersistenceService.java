@@ -26,6 +26,7 @@ public class EstimationPersistenceService {
 
     @Transactional
     public void updateEstimationStatus(long repairOrderId, EstimationStatus estimationStatus) {
+        log.info("Updating estimation status for repairOrderId: {} to status: {}", repairOrderId, estimationStatus);
         RepairOrderEntity repairOrderEntity = findRepairOrderOrThrow(repairOrderId);
 
         var status = repairOrderEntity.getEstimationStatus();
@@ -37,30 +38,36 @@ public class EstimationPersistenceService {
         repairOrderEntity.setStatus(RepairOrderStatus.AWAITING_CUSTOMER);
 
         repairOrderRepository.save(repairOrderEntity);
+        log.info("Successfully updated estimation status for repairOrderId: {} to status: {}", repairOrderId, estimationStatus);
     }
 
     @Transactional
     public void markEstimationAsCompleted(long repairOrderId, String pdfName) {
+        log.info("Marking estimation status to COMPLETED for repairOrderId: {}", repairOrderId);
         RepairOrderEntity repairOrderEntity = findRepairOrderOrThrow(repairOrderId);
 
         repairOrderEntity.setEstimationPdfObjectKey(pdfName);
         repairOrderEntity.setEstimationStatus(EstimationStatus.COMPLETED);
 
         repairOrderRepository.save(repairOrderEntity);
+        log.info("Successfully marked estimation status to COMPLETED for repairOrderId: {}", repairOrderId);
     }
 
     @Transactional
     public void markEstimationAsFailed(long repairOrderId) {
+        log.info("Marking estimation status to FAILED for repairOrderId: {}", repairOrderId);
         RepairOrderEntity repairOrderEntity = findRepairOrderOrThrow(repairOrderId);
 
         repairOrderEntity.setEstimationPdfObjectKey(null);
         repairOrderEntity.setEstimationStatus(EstimationStatus.FAILED);
 
         repairOrderRepository.save(repairOrderEntity);
+        log.info("Successfully marked estimation status to FAILED for repairOrderId: {}", repairOrderId);
     }
 
     @Transactional(readOnly = true)
     public EstimationInfo getEstimationInfo(long repairOrderId) {
+        log.info("Searching for the estimation for repairOrderId: {}", repairOrderId);
         RepairOrderEntity repairOrder = findRepairOrderOrThrow(repairOrderId);
 
         List<WorkItemDto> workItems = repairOrder.getWorkItems().stream().map(WorkItemMapper::toDto).toList();

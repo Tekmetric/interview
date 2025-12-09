@@ -33,20 +33,27 @@ public class EstimationService {
     private final MinioProperties minioProperties;
 
     public EstimationDto submitEstimation(long repairOrderId) {
+        log.info("Submitting estimation for repairOrderId: {}", repairOrderId);
         estimationPersistenceService.updateEstimationStatus(repairOrderId, EstimationStatus.IN_PROGRESS);
 
         Thread.ofVirtual().start(() -> {
             try {
-                EstimationInfo estimationInfo = estimationPersistenceService.getEstimationInfo(repairOrderId);
-                InputStream pdf = estimationPdfGenerator.generateEstimatePdf(estimationInfo);
-                String pdfName = UUID.randomUUID().toString();
-                uploadPdf(pdf, pdfName);
-                estimationPersistenceService.markEstimationAsCompleted(repairOrderId, pdfName);
+                processEstimation(repairOrderId);
             } catch (Exception e) {
+                log.error("Failed to process estimation for repairOrderId: {}", repairOrderId);
                 estimationPersistenceService.markEstimationAsFailed(repairOrderId);
             }
         });
         return new EstimationDto(EstimationStatus.IN_PROGRESS);
+    }
+
+    private void processEstimation(long repairOrderId) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        EstimationInfo estimationInfo = estimationPersistenceService.getEstimationInfo(repairOrderId);
+        try (InputStream pdf = estimationPdfGenerator.generateEstimatePdf(estimationInfo)) {
+            String pdfName = UUID.randomUUID().toString();
+            uploadPdf(pdf, pdfName);
+            estimationPersistenceService.markEstimationAsCompleted(repairOrderId, pdfName);
+        }
     }
 
     public EstimationDto getEstimation(long repairOrderId) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {

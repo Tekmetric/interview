@@ -1,5 +1,6 @@
 package com.interview.controller;
 
+import com.interview.api.LoginApi;
 import com.interview.dto.login.LoginRequest;
 import com.interview.dto.login.LoginResponse;
 import com.interview.service.LoginService;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/login")
-public class LoginController {
+public class LoginController implements LoginApi {
 
     private final LoginService loginService;
 

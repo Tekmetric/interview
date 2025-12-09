@@ -134,8 +134,7 @@ public class RepairControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("""
                         {
-                            "issueDescription": "Another issue",
-                            "status": "IN_PROGRESS"
+                            "issueDescription": "Another issue"
                         }
                         """);
 
@@ -147,7 +146,7 @@ public class RepairControllerIT {
 
         assertThat(repairOrderDto).isNotNull();
         assertThat(repairOrderDto.vin()).isEqualTo(entity.getVin());
-        assertThat(repairOrderDto.status()).isEqualTo(RepairOrderStatus.IN_PROGRESS);
+        assertThat(repairOrderDto.status()).isEqualTo(RepairOrderStatus.DRAFT);
         assertThat(repairOrderDto.issueDescription()).isEqualTo("Another issue");
 
         var optionalUpdatedEntity = repairOrderRepository.findById(entity.getId());
@@ -155,7 +154,7 @@ public class RepairControllerIT {
         RepairOrderEntity repairOrder = optionalUpdatedEntity.get();
         assertThat(repairOrder.getCreatedAt()).isBefore(repairOrder.getUpdatedAt());
         assertThat(repairOrder.getIssueDescription()).isEqualTo("Another issue");
-        assertThat(repairOrder.getStatus()).isEqualTo(RepairOrderStatus.IN_PROGRESS);
+        assertThat(repairOrder.getStatus()).isEqualTo(RepairOrderStatus.DRAFT);
     }
 
     @Test

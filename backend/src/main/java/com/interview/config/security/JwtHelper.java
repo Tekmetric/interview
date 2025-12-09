@@ -2,7 +2,6 @@ package com.interview.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +11,7 @@ import java.util.Map;
 
 @Component
 public class JwtHelper {
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final Key key = Keys.hmacShaKeyFor("my-super-secret-static-jwt-key-which!".getBytes());
     private final long expiration = 1000 * 60 * 60;
 
     public String generateToken(String username, Map<String, Object> claims) {

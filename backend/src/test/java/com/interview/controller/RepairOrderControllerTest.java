@@ -143,7 +143,7 @@ class RepairOrderControllerTest {
 
     @Test
     void givenValidUpdateRepairOrderRequest_whenUpdateRepairOrder_thenSuccess() throws Exception {
-        UpdateRepairOrderRequest request = new UpdateRepairOrderRequest("Updated issue", RepairOrderStatus.IN_PROGRESS);
+        UpdateRepairOrderRequest request = new UpdateRepairOrderRequest("Updated issue");
         RepairOrderDto updatedDto = RepairOrderDto.builder()
                 .id(1L)
                 .vin("WAUZZZ8V3JA123456")
@@ -165,32 +165,13 @@ class RepairOrderControllerTest {
     @Test
     void givenIssueDescriptionTooLong_whenUpdateRepairOrder_thenValidationErrorIsThrow() throws Exception {
         String longIssueDescription = "a".repeat(300);
-        UpdateRepairOrderRequest request = new UpdateRepairOrderRequest(
-                longIssueDescription,
-                com.interview.model.RepairOrderStatus.DRAFT
-        );
+        UpdateRepairOrderRequest request = new UpdateRepairOrderRequest(longIssueDescription);
 
         mockMvc.perform(put("/api/v1/repair-orders/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.invalid-fields[?(@.name=='issueDescription')]").exists());
-    }
-
-    @Test
-    void givenNullStatus_whenUpdateRepairOrder_thenValidationErrorIsThrow() throws Exception {
-        String json = """
-            {
-                "issueDescription": "Updated issue",
-                "status": null
-            }
-            """;
-
-        mockMvc.perform(put("/api/v1/repair-orders/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.invalid-fields[?(@.name=='status')]").exists());
     }
 
     @Test

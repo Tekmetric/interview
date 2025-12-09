@@ -1,5 +1,6 @@
 package com.interview.query.controller;
 
+import com.interview.common.exception.ResourceNotFoundException;
 import com.interview.query.dto.WidgetDto;
 import com.interview.query.handler.GetAllWidgetsHandler;
 import com.interview.query.handler.GetWidgetByIdHandler;
@@ -41,14 +42,9 @@ public class WidgetQueryController {
     @GetMapping("/{id}")
     public ResponseEntity<WidgetDto> getWidgetById(@PathVariable Long id) {
         log.info("Received request to get widget by id: {}", id);
-        return getWidgetByIdHandler.handle(id)
-                .map(widget -> {
-                    log.info("Widget found with id: {}", id);
-                    return ResponseEntity.ok(widget);
-                })
-                .orElseGet(() -> {
-                    log.warn("Widget not found with id: {}", id);
-                    return ResponseEntity.notFound().build();
-                });
+        WidgetDto widget = getWidgetByIdHandler.handle(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Widget", "id", id));
+        log.info("Widget found with id: {}", id);
+        return ResponseEntity.ok(widget);
     }
 }

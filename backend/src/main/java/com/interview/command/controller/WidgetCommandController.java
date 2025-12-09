@@ -6,6 +6,7 @@ import com.interview.command.handler.CreateWidgetHandler;
 import com.interview.command.handler.DeleteWidgetHandler;
 import com.interview.command.handler.UpdateWidgetHandler;
 import com.interview.common.entity.Widget;
+import com.interview.common.exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,25 +53,19 @@ public class WidgetCommandController {
     @PutMapping("/{id}")
     public ResponseEntity<Widget> updateWidget(@PathVariable Long id, @Valid @RequestBody UpdateWidgetCommand command) {
         log.info("Received request to update widget with id: {}", id);
-        return updateWidgetHandler.handle(id, command)
-                .map(widget -> {
-                    log.info("Widget updated successfully with id: {}", id);
-                    return ResponseEntity.ok(widget);
-                })
-                .orElseGet(() -> {
-                    log.warn("Widget not found for update with id: {}", id);
-                    return ResponseEntity.notFound().build();
-                });
+        Widget widget = updateWidgetHandler.handle(id, command)
+                .orElseThrow(() -> new ResourceNotFoundException("Widget", "id", id));
+        log.info("Widget updated successfully with id: {}", id);
+        return ResponseEntity.ok(widget);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWidget(@PathVariable Long id) {
         log.info("Received request to delete widget with id: {}", id);
-        if (deleteWidgetHandler.handle(id)) {
-            log.info("Widget deleted successfully with id: {}", id);
-            return ResponseEntity.noContent().build();
+        if (!deleteWidgetHandler.handle(id)) {
+            throw new ResourceNotFoundException("Widget", "id", id);
         }
-        log.warn("Widget not found for deletion with id: {}", id);
-        return ResponseEntity.notFound().build();
+        log.info("Widget deleted successfully with id: {}", id);
+        return ResponseEntity.noContent().build();
     }
 }

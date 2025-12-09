@@ -4,6 +4,7 @@ import com.interview.query.dto.WidgetDto;
 import com.interview.query.mapper.WidgetQueryMapper;
 import com.interview.query.repository.WidgetQueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class GetAllWidgetsHandler {
         this.mapper = mapper;
     }
 
+    @Cacheable("allWidgets")
     public List<WidgetDto> handle() {
         return widgetQueryRepository.findAll()
                 .stream()

@@ -5,6 +5,8 @@ import com.interview.command.mapper.WidgetCommandMapper;
 import com.interview.command.repository.WidgetCommandRepository;
 import com.interview.common.entity.Widget;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,10 @@ public class UpdateWidgetHandler {
     }
 
     @Transactional("commandTransactionManager")
+    @Caching(evict = {
+        @CacheEvict(value = "widgets", key = "#id"),
+        @CacheEvict(value = "allWidgets", allEntries = true)
+    })
     public Optional<Widget> handle(Long id, UpdateWidgetCommand command) {
         return widgetCommandRepository.findById(id)
                 .map(widget -> {

@@ -16,6 +16,9 @@ public class Widget {
     @Column
     private String description;
 
+    @Version // Facilitates optimistic locking in JPA.
+    private Long version;
+
     public Widget() {
     }
 
@@ -52,5 +55,13 @@ public class Widget {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }

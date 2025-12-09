@@ -14,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -29,6 +30,7 @@ public class RepairOrderController implements RepairOrderApi {
 
     @Override
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     public ResponseEntity<RepairOrderDto> create(@Valid @RequestBody CreateRepairOrderRequest createRepairOrderRequest) {
         RepairOrderDto repairOrder = repairOrderService.create(createRepairOrderRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(repairOrder);
@@ -36,6 +38,7 @@ public class RepairOrderController implements RepairOrderApi {
 
     @Override
     @GetMapping("/{repairOrderId}")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     public ResponseEntity<RepairOrderDto> getById(@PathVariable("repairOrderId") long repairOrderId) {
         RepairOrderDto repairOrder = repairOrderService.findById(repairOrderId);
         return ResponseEntity.ok(repairOrder);
@@ -43,6 +46,7 @@ public class RepairOrderController implements RepairOrderApi {
 
     @Override
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     public ResponseEntity<PagedModel<RepairOrderDto>> getAll(@PageableDefault(size = 5, sort = "id") Pageable pageable) {
 
         PaginationValidator.validate(pageable, ALLOWED_SORT_FIELDS);
@@ -53,6 +57,7 @@ public class RepairOrderController implements RepairOrderApi {
 
     @Override
     @PutMapping("/{repairOrderId}")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     public ResponseEntity<RepairOrderDto> update(@PathVariable("repairOrderId") long repairOrderId, @Valid @RequestBody UpdateRepairOrderRequest updateRepairOrderRequest) {
         RepairOrderDto updatedRepairOrder = repairOrderService.update(repairOrderId, updateRepairOrderRequest);
         return ResponseEntity.ok(updatedRepairOrder);
@@ -60,6 +65,7 @@ public class RepairOrderController implements RepairOrderApi {
 
     @Override
     @DeleteMapping("/{repairOrderId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteById(@PathVariable("repairOrderId") long repairOrderId) {
         repairOrderService.deleteById(repairOrderId);
         return ResponseEntity.noContent().build();

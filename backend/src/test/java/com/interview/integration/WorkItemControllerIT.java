@@ -1,5 +1,6 @@
 package com.interview.integration;
 
+import com.interview.dto.login.LoginResponse;
 import com.interview.dto.workitem.WorkItemDto;
 import com.interview.integration.dto.PagedResponse;
 import com.interview.model.RepairOrderStatus;
@@ -8,6 +9,7 @@ import com.interview.repository.WorkItemRepository;
 import com.interview.repository.model.RepairOrderEntity;
 import com.interview.repository.model.WorkItemEntity;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,15 +63,12 @@ public class WorkItemControllerIT {
         return BASE_URL + port + "/api/v1/repair-orders/" + roId + "/items";
     }
 
-    // =====================================================================================
-    // CREATE WORK ITEM
-    // =====================================================================================
-
     @Test
     void givenValidRequest_whenCreateWorkItem_thenShouldCreate() {
         var ro = createRepairOrder();
 
         var req = RequestEntity.post(itemsUrl(ro.getId()))
+                .header("Authorization", getToken("Staff"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("""
                         {
@@ -92,10 +91,6 @@ public class WorkItemControllerIT {
         assertThat(workItemRepository.count()).isEqualTo(1);
     }
 
-    // =====================================================================================
-    // GET ALL (PAGINATED)
-    // =====================================================================================
-
     @Test
     void givenItemsPersisted_whenGetAll_thenReturnPaginated() {
         var ro = createRepairOrder();
@@ -112,6 +107,7 @@ public class WorkItemControllerIT {
         );
 
         var req1 = RequestEntity.get(itemsUrl(ro.getId()) + "?page=0&size=2&sort=id")
+                .header("Authorization", getToken("Staff"))
                 .accept(MediaType.APPLICATION_JSON)
                 .build();
 
@@ -126,6 +122,7 @@ public class WorkItemControllerIT {
         assertThat(page1.content()).hasSize(2);
 
         var req2 = RequestEntity.get(itemsUrl(ro.getId()) + "?page=1&size=2&sort=id")
+                .header("Authorization", getToken("Staff"))
                 .accept(MediaType.APPLICATION_JSON)
                 .build();
 
@@ -139,10 +136,6 @@ public class WorkItemControllerIT {
         assertThat(page2).isNotNull();
         assertThat(page2.content()).hasSize(1);
     }
-
-    // =====================================================================================
-    // UPDATE WORK ITEM
-    // =====================================================================================
 
     @Test
     void givenItemPersisted_whenUpdate_thenShouldUpdate() {
@@ -158,6 +151,7 @@ public class WorkItemControllerIT {
         );
 
         var req = RequestEntity.put(itemsUrl(ro.getId()) + "/" + entity.getId())
+                .header("Authorization", getToken("Staff"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("""
                         {
@@ -181,10 +175,6 @@ public class WorkItemControllerIT {
         assertThat(updated.get().getPrice()).isEqualTo(123.45f);
     }
 
-    // =====================================================================================
-    // DELETE WORK ITEM
-    // =====================================================================================
-
     @Test
     void givenItemPersisted_whenDelete_thenShouldSoftDelete() {
         var ro = createRepairOrder();
@@ -198,7 +188,9 @@ public class WorkItemControllerIT {
                         .build()
         );
 
-        var req = RequestEntity.delete(itemsUrl(ro.getId()) + "/" + entity.getId()).build();
+        var req = RequestEntity.delete(itemsUrl(ro.getId()) + "/" + entity.getId())
+                .header("Authorization", getToken("Staff"))
+                .build();
         var response = restTemplate.exchange(req, Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -206,5 +198,24 @@ public class WorkItemControllerIT {
 
         assertThat(softDeletedEntity).isPresent();
         assertTrue(softDeletedEntity.get().isDeleted());
+    }
+
+    private String getToken(String role) {
+        var username = "John";
+        var password = "Test1234!";
+        if (role.equalsIgnoreCase("ADMIN")) {
+            username = "Admin";
+        }
+        var req = RequestEntity.post(BASE_URL + port + "/api/v1/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("""
+                        {
+                          "username": "%s",
+                          "password": "%s"
+                        }
+                        """.formatted(username, password));
+        var response = restTemplate.exchange(req, LoginResponse.class);
+        Assertions.assertNotNull(response.getBody());
+        return "Bearer " + response.getBody().token();
     }
 }

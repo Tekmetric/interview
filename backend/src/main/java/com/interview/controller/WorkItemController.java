@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -29,6 +30,7 @@ public class WorkItemController implements WorkItemApi {
 
     @Override
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     public ResponseEntity<WorkItemDto> create(@PathVariable("repairOrderId") long repairOrderId,
                                               @Valid @RequestBody CreateWorkItemRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(workItemService.create(repairOrderId, request));
@@ -36,6 +38,7 @@ public class WorkItemController implements WorkItemApi {
 
     @Override
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     public ResponseEntity<PagedModel<WorkItemDto>> getAll(@PathVariable("repairOrderId") long repairOrderId,
                                                           @PageableDefault(sort = "id") Pageable pageable) {
 
@@ -46,6 +49,7 @@ public class WorkItemController implements WorkItemApi {
 
     @Override
     @PutMapping("/{workItemId}")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     public ResponseEntity<WorkItemDto> update(@PathVariable("repairOrderId") long repairOrderId,
                                               @PathVariable("workItemId") long workItemId,
                                               @Valid @RequestBody UpdateWorkItemRequest updateRequest) {
@@ -55,6 +59,7 @@ public class WorkItemController implements WorkItemApi {
 
     @Override
     @DeleteMapping("/{workItemId}")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     public ResponseEntity<Void> deleteById(@PathVariable("repairOrderId") long repairOrderId,
                                            @PathVariable("workItemId") long workItemId) {
         workItemService.deleteByRepairOrderIdAndItemId(repairOrderId, workItemId);

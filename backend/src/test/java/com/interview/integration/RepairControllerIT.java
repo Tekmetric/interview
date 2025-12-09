@@ -1,11 +1,13 @@
 package com.interview.integration;
 
+import com.interview.dto.login.LoginResponse;
 import com.interview.dto.repairorder.RepairOrderDto;
 import com.interview.integration.dto.PagedResponse;
 import com.interview.model.RepairOrderStatus;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.repository.model.RepairOrderEntity;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,6 +43,7 @@ public class RepairControllerIT {
     void givenValidCreateRepairOrderRequest_whenCreateRepair_thenShouldCreateRepairOrder() {
         var reqEnt = RequestEntity.post(BASE_URL + port + "/api/v1/repair-orders")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", getToken("Staff"))
                 .body("""
                         {
                           "vin": "WAUZZZ8V3JA123456",
@@ -72,6 +75,7 @@ public class RepairControllerIT {
 
 
         var reqEntity = RequestEntity.get(BASE_URL + port + "/api/v1/repair-orders/" + entity.getId())
+                .header("Authorization", getToken("Staff"))
                 .accept(MediaType.APPLICATION_JSON).build();
         var response = restTemplate.exchange(reqEntity, RepairOrderDto.class);
 
@@ -95,6 +99,7 @@ public class RepairControllerIT {
         }
 
         var reqFirstPage = RequestEntity.get(BASE_URL + port + "/api/v1/repair-orders?page=0&size=2&sort=id")
+                .header("Authorization", getToken("Staff"))
                 .accept(MediaType.APPLICATION_JSON).build();
         var responsePage1 = restTemplate.exchange(reqFirstPage, new ParameterizedTypeReference<PagedResponse<RepairOrderDto>>() {
         });
@@ -105,6 +110,7 @@ public class RepairControllerIT {
         assertThat(firstPageBody.content()).hasSize(2);
 
         var reqSecondPage = RequestEntity.get(BASE_URL + port + "/api/v1/repair-orders?page=1&size=2&sort=id")
+                .header("Authorization", getToken("Staff"))
                 .accept(MediaType.APPLICATION_JSON).build();
         var responsePage2 = restTemplate.exchange(reqSecondPage, new ParameterizedTypeReference<PagedResponse<RepairOrderDto>>() {
         });
@@ -124,6 +130,7 @@ public class RepairControllerIT {
                 .issueDescription("Car broken")
                 .build());
         var reqEntity = RequestEntity.put(BASE_URL + port + "/api/v1/repair-orders/" + entity.getId())
+                .header("Authorization", getToken("Staff"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("""
                         {
@@ -161,11 +168,31 @@ public class RepairControllerIT {
                 .build());
 
 
-        var reqEntity = RequestEntity.delete(BASE_URL + port + "/api/v1/repair-orders/" + entity.getId()).build();
+        var reqEntity = RequestEntity.delete(BASE_URL + port + "/api/v1/repair-orders/" + entity.getId())
+                .header("Authorization", getToken("Admin")).build();
         var response = restTemplate.exchange(reqEntity, Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
         assertThat(repairOrderRepository.findById(entity.getId())).isEmpty();
+    }
+
+    private String getToken(String role) {
+        var username = "John";
+        var password = "Test1234!";
+        if (role.equalsIgnoreCase("ADMIN")) {
+            username = "Admin";
+        }
+        var req = RequestEntity.post(BASE_URL + port + "/api/v1/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("""
+                        {
+                          "username": "%s",
+                          "password": "%s"
+                        }
+                        """.formatted(username, password));
+        var response = restTemplate.exchange(req, LoginResponse.class);
+        Assertions.assertNotNull(response.getBody());
+        return "Bearer " + response.getBody().token();
     }
 }

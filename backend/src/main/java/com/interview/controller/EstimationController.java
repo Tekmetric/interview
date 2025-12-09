@@ -4,6 +4,7 @@ import com.interview.api.EstimationApi;
 import com.interview.dto.estimation.EstimationDto;
 import com.interview.service.EstimationService;
 import io.minio.errors.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

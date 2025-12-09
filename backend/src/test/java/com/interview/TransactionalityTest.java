@@ -7,7 +7,6 @@ import com.interview.command.handler.UpdateWidgetHandler;
 import com.interview.command.repository.WidgetCommandRepository;
 import com.interview.common.entity.Widget;
 import com.interview.query.repository.WidgetQueryRepository;
-import jakarta.persistence.OptimisticLockException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 

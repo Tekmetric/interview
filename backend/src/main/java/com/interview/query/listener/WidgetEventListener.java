@@ -1,6 +1,5 @@
 package com.interview.query.listener;
 
-import com.interview.common.entity.Widget;
 import com.interview.common.events.WidgetCreatedEvent;
 import com.interview.common.events.WidgetDeletedEvent;
 import com.interview.common.events.WidgetUpdatedEvent;
@@ -10,7 +9,6 @@ import jakarta.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.modulith.events.ApplicationModuleListener;

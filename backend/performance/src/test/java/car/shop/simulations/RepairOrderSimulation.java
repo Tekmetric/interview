@@ -4,6 +4,7 @@ package car.shop.simulations;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import io.gatling.javaapi.core.Simulation;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
+import io.gatling.javaapi.http.HttpRequestActionBuilder;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -55,10 +56,24 @@ public class RepairOrderSimulation extends Simulation {
         }
     };
 
+    HttpRequestActionBuilder authRequest = http("Authenticate")
+            .post("/api/v1/login")
+            .body(StringBody("""
+                {
+                  "username": "John",
+                  "password": "Test1234!"
+                }
+                """))
+            .check(status().is(200))
+            .check(jsonPath("$.token").saveAs("authToken"));
+
+
     ScenarioBuilder scn = scenario("Create Repair Order Scenario")
+            .exec(authRequest)
             .feed(randomFeeder)
             .exec(http("Create Repair Order")
                     .post("/api/v1/repair-orders")
+                    .header("Authorization", session -> "Bearer " + session.getString("authToken"))
                     .body(StringBody(session -> carRepairOrderBody
                             .formatted(
                                     session.getString("vin"),
@@ -71,8 +86,8 @@ public class RepairOrderSimulation extends Simulation {
     {
         setUp(
                 scn.injectOpen(
-                        atOnceUsers(60),
-                        rampUsers(500).during(10)
+                        atOnceUsers(30),
+                        rampUsers(500).during(20)
                 )
         ).protocols(httpProtocol);
     }

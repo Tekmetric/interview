@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -32,6 +34,7 @@ public class WidgetEventListener {
 
     @ApplicationModuleListener
     @Transactional(value = "queryTransactionManager", propagation = Propagation.REQUIRES_NEW)
+    @CacheEvict(value = "allWidgets", allEntries = true)
     public void on(WidgetCreatedEvent event) {
         log.info("Synchronizing created widget to query database: id={}", event.getId());
 
@@ -46,6 +49,11 @@ public class WidgetEventListener {
     }
 
     @ApplicationModuleListener
+    @Transactional(value = "queryTransactionManager", propagation = Propagation.REQUIRES_NEW)
+    @Caching(evict = {
+        @CacheEvict(value = "widgets", key = "#event.id"),
+        @CacheEvict(value = "allWidgets", allEntries = true)
+    })
     public void on(WidgetUpdatedEvent event) {
         log.info("Synchronizing updated widget to query database: id={}", event.getId());
 
@@ -58,6 +66,11 @@ public class WidgetEventListener {
     }
 
     @ApplicationModuleListener
+    @Transactional(value = "queryTransactionManager", propagation = Propagation.REQUIRES_NEW)
+    @Caching(evict = {
+        @CacheEvict(value = "widgets", key = "#event.id"),
+        @CacheEvict(value = "allWidgets", allEntries = true)
+    })
     public void on(WidgetDeletedEvent event) {
         log.info("Synchronizing deleted widget to query database: id={}", event.getId());
 

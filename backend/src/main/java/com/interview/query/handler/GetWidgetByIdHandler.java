@@ -32,6 +32,7 @@ public class GetWidgetByIdHandler {
     public Optional<WidgetDto> handle(Long id) {
         log.debug("Handling get widget by id query for id: {}", id);
         try {
+            // Thread sleep here to simulate DB latency so the cache performance can be obvious.
             Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();

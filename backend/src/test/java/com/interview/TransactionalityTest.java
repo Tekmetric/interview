@@ -6,11 +6,14 @@ import com.interview.command.handler.CreateWidgetHandler;
 import com.interview.command.handler.UpdateWidgetHandler;
 import com.interview.command.repository.WidgetCommandRepository;
 import com.interview.common.entity.Widget;
+import com.interview.query.repository.WidgetQueryRepository;
 import jakarta.persistence.OptimisticLockException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +21,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class TransactionalityTest {
 
     @Autowired
     private WidgetCommandRepository widgetCommandRepository;
+
+    @Autowired
+    private WidgetQueryRepository widgetQueryRepository;
 
     @Autowired
     private CreateWidgetHandler createWidgetHandler;
@@ -31,6 +38,13 @@ public class TransactionalityTest {
 
     @Autowired
     private FailingTransactionService failingTransactionService;
+
+    @BeforeEach
+    void setUp() {
+        // Clean up databases before each test
+        widgetCommandRepository.deleteAll();
+        widgetQueryRepository.deleteAll();
+    }
 
     /**
      * Test 1: Transaction Rollback on Exception

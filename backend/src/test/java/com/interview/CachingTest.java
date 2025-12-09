@@ -1,10 +1,15 @@
 package com.interview;
 
+import com.interview.command.repository.WidgetCommandRepository;
+import com.interview.common.entity.Widget;
 import com.interview.query.dto.WidgetDto;
 import com.interview.query.handler.GetWidgetByIdHandler;
+import com.interview.query.repository.WidgetQueryRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -13,14 +18,38 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class CachingTest {
 
     @Autowired
     private GetWidgetByIdHandler getWidgetByIdHandler;
 
+    @Autowired
+    private WidgetQueryRepository widgetQueryRepository;
+
+    @Autowired
+    private WidgetCommandRepository widgetCommandRepository;
+
+    private Long testWidgetId;
+
+    @BeforeEach
+    void setUp() throws InterruptedException {
+        // Clean up both databases before each test
+        widgetCommandRepository.deleteAll();
+        widgetQueryRepository.deleteAll();
+
+        // Wait for any pending events to be processed
+        Thread.sleep(200);
+
+        // Create test data
+        Widget widget = new Widget("Widget A", "This is the first widget");
+        Widget savedWidget = widgetQueryRepository.save(widget);
+        testWidgetId = savedWidget.getId();
+    }
+
     @Test
     public void testCachingPerformance() {
-        Long widgetId = 1L;
+        Long widgetId = testWidgetId;
 
         // First request - should take at least 500ms due to Thread.sleep()
         long startTime1 = System.currentTimeMillis();

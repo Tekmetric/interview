@@ -25,18 +25,20 @@ The application will start on port 8080 with Prometheus metrics enabled at:
 ```bash
 ./start-observability.sh
 ```
-Generate some load to see metrics in action:
+When this script completes, the URL to Grafana (with dynamic port) should appear on the console.
+
+### 3.  Generate some load to see metrics in action:
 
 ```bash
 ./run-gatling.sh
 ```
 This script will run for approximately 4 minutes, generating traffic on the application at 8080.
 
-### 3. Access the Monitoring Tools
+When complete, there will be a link to the Gatling report. please enjoy this report, it makes a fantastic partner to consider alongside the server-side metrics.
 
-URLs to the tools (with dynamic ports) should be output at the end of the script execution.
+## Access the Server-Side Metrics
 
-## Available Metrics
+### Available Metrics
 
 In addition to the full set of auto-instrumentation metrics, the application exposes the following custom metrics:
 

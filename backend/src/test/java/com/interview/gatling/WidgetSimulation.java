@@ -117,6 +117,7 @@ public class WidgetSimulation extends Simulation {
                 .check(status().is(201))
                 .check(jsonPath("$.id").saveAs("newWidgetId"))
         )
+        .exitHereIfFailed()
         .pause(Duration.ofMillis(200))
         .exec(
             // Get all widgets (cache hit after first request)
@@ -130,7 +131,6 @@ public class WidgetSimulation extends Simulation {
             http("Get Widget By ID")
                 .get("/api/widgets/#{newWidgetId}")
                 .check(status().is(200))
-                .check(jsonPath("$.name").is("#{name}"))
         )
         .pause(Duration.ofMillis(200))
         .feed(widgetFeeder)

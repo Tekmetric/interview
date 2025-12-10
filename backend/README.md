@@ -2,6 +2,10 @@
 ### Submission By: Jason Norman
 Welcome to my TekMetric interview branch! Here I will discuss the various decisions and techniques applied to this PR.
 
+The functionality demo is done in several ways. Through unit tests, some scripts, and interactively via [example_requests.http](example_requests.http), which can be executed within IntelliJ with the following results.
+
+![http client results](./img/fullApiResult.png "Image of test http script against API")
+
 # Database Transactionality 
 This was identified as an important topic during my TekMetric conversation. In response to this I have implemented a transactional service layer with optimistic locking and rollback verification. This offers an alternative to the "last-write-wins" problem and ensures write errors rollback correctly. There are [tests](src/test/java/com/interview/TransactionalityTest.java) to prove these mechanisms are working.
 

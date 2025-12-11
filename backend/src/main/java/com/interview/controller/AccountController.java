@@ -137,8 +137,11 @@ public class AccountController {
             @ApiResponse(responseCode = "400", description = "Invalid filter parameters")
     })
     @GetMapping(CommonConstants.ACCOUNT_LIST_API_ENDPOINT)
-    public ResponseEntity<AccountListResponseDTO> getAccounts(@Valid AccountListRequestDTO requestDTO) {
-        AccountListResponseDTO response = accountService.getAccounts(requestDTO);
+    public ResponseEntity<AccountListResponseDTO> getAccounts(
+            @Parameter(description = "Optional filter and pagination parameters", required = false) @Valid AccountListRequestDTO requestDTO) {
+        // Create default requestDTO if null to handle optional query parameters
+        AccountListRequestDTO request = requestDTO != null ? requestDTO : AccountListRequestDTO.builder().build();
+        AccountListResponseDTO response = accountService.getAccounts(request);
         return ResponseEntity.ok(response);
     }
     

@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidCurrencyCode {
     
-    String message() default "{validation.account.currencyCode.invalid}";
+    String message() default "{account.currencyCode.invalid}";
     
     Class<?>[] groups() default {};
     

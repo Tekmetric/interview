@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidCountryCode {
     
-    String message() default "{validation.account.countryCode.invalid}";
+    String message() default "{account.countryCode.invalid}";
     
     Class<?>[] groups() default {};
     

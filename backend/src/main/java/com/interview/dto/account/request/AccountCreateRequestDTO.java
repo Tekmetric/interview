@@ -20,13 +20,13 @@ import jakarta.validation.constraints.Size;
 @AllArgsConstructor
 public class AccountCreateRequestDTO {
 
-    @NotBlank(message = "{validation.account.name.required}")
-    @Size(min = 1, max = 255, message = "{validation.account.name.size}")
+    @NotBlank(message = "{account.name.notblank}")
+    @Size(min = 1, max = 255, message = "{account.name.size}")
     private String accountName;
 
-    @NotBlank(message = "{validation.account.email.required}")
-    @Email(message = "{validation.account.email.invalid}")
-    @Size(min = 5, max = 100, message = "{validation.account.email.size}")
+    @NotBlank(message = "{account.email.notblank}")
+    @Email(message = "{account.email.email}")
+    @Size(min = 5, max = 100, message = "{account.email.size}")
     private String email;
 
     @ValidCountryCode
@@ -35,25 +35,25 @@ public class AccountCreateRequestDTO {
     @ValidCurrencyCode
     private String currencyCode;
 
-    @Size(max = 255, message = "{validation.account.website.size}")
+    @Size(max = 255, message = "{account.website.size}")
     private String website;
 
-    @Size(max = 100, message = "{validation.account.country.size}")
+    @Size(max = 100, message = "{account.country.size}")
     private String country;
 
-    @Size(max = 255, message = "{validation.account.addressLine1.size}")
+    @Size(max = 255, message = "{account.addressLine1.size}")
     private String addressLine1;
 
-    @Size(max = 255, message = "{validation.account.addressLine2.size}")
+    @Size(max = 255, message = "{account.addressLine2.size}")
     private String addressLine2;
 
-    @Size(max = 100, message = "{validation.account.city.size}")
+    @Size(max = 100, message = "{account.city.size}")
     private String city;
 
-    @Size(max = 50, message = "{validation.account.state.size}")
+    @Size(max = 50, message = "{account.state.size}")
     private String state;
 
-    @Size(max = 20, message = "{validation.account.zipcode.size}")
+    @Size(max = 20, message = "{account.zipcode.size}")
     private String zipcode;
 }
 

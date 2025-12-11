@@ -55,3 +55,4 @@ INSERT INTO accounts (account_reference_id, account_name, email, website, countr
 ('ACC-000006', 'Goodyear Auto Service', 'support@goodyear.com', 'https://www.goodyearautoservice.com', 'United States', 'US', 'USD', '987 Cedar Lane', 'San Antonio', 'TX', '78201', 'PENDING', CURRENT_TIMESTAMP),
 ('ACC-000007', 'NTB Tire & Service', 'contact@ntb.com', 'https://www.ntb.com', 'United States', 'US', 'USD', '147 Birch Boulevard', 'San Diego', 'CA', '92101', 'ACTIVE', CURRENT_TIMESTAMP),
 ('ACC-000008', 'Big O Tires', 'info@bigotires.com', 'https://www.bigotires.com', 'United States', 'US', 'USD', '258 Spruce Court', 'Dallas', 'TX', '75201', 'ACTIVE', CURRENT_TIMESTAMP);
+

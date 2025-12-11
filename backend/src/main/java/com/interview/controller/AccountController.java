@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -138,7 +139,7 @@ public class AccountController {
     })
     @GetMapping(CommonConstants.ACCOUNT_LIST_API_ENDPOINT)
     public ResponseEntity<AccountListResponseDTO> getAccounts(
-            @Parameter(description = "Optional filter and pagination parameters", required = false) @Valid AccountListRequestDTO requestDTO) {
+            @ParameterObject @Valid AccountListRequestDTO requestDTO) {
         // Create default requestDTO if null to handle optional query parameters
         AccountListRequestDTO request = requestDTO != null ? requestDTO : AccountListRequestDTO.builder().build();
         AccountListResponseDTO response = accountService.getAccounts(request);

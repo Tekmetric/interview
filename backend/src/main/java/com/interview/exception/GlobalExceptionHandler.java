@@ -1,6 +1,5 @@
 package com.interview.exception;
 
-import com.google.gson.JsonObject;
 import com.interview.dto.error.ApiErrorResponseDTO;
 import com.interview.i18n.Translator;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Global exception handler for the application with i18n support.
@@ -39,16 +40,41 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponseDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
         log.warn("Validation error: {}", ex.getMessage());
-        JsonObject errors = new JsonObject();
+        Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            // Try to resolve message from i18n if it's a key
-            if (errorMessage != null && errorMessage.startsWith("{") && errorMessage.endsWith("}")) {
-                String key = errorMessage.substring(1, errorMessage.length() - 1);
-                errorMessage = Translator.getMessage(key);
+            String errorMessage = null;
+            
+            // Get the default message which might be a message key like {validation.account.pageNumber.min}
+            String defaultMessage = error.getDefaultMessage();
+            
+            // Check if default message is a message key (wrapped in {})
+            if (defaultMessage != null && defaultMessage.startsWith("{") && defaultMessage.endsWith("}")) {
+                // Extract key from {validation.account.pageNumber.min}
+                String key = defaultMessage.substring(1, defaultMessage.length() - 1);
+                errorMessage = Translator.getMessage(key, error.getArguments());
+            } else {
+                // Default message is already resolved, but try to resolve using error codes
+                // Spring generates codes like: Min.accountListRequestDTO.pageNumber, Min.pageNumber, Min
+                // Try to construct message key from field name and constraint
+                String[] codes = error.getCodes();
+                if (codes != null && codes.length > 0) {
+                    // Extract constraint name (e.g., "Min" from "Min.accountListRequestDTO.pageNumber")
+                    String constraintName = codes[0].split("\\.")[0];
+                    // Construct message key: validation.account.{fieldName}.{constraintName.toLowerCase()}
+                    String key = "validation.account." + fieldName + "." + constraintName.toLowerCase();
+                    try {
+                        errorMessage = Translator.getMessage(key, error.getArguments());
+                    } catch (Exception e) {
+                        // If key not found, use default message
+                        errorMessage = defaultMessage;
+                    }
+                } else {
+                    errorMessage = defaultMessage;
+                }
             }
-            errors.addProperty(fieldName, errorMessage != null ? errorMessage : "");
+            
+            errors.put(fieldName, errorMessage != null ? errorMessage : "");
         });
         
         String message = Translator.getMessage("error.validation.failed");

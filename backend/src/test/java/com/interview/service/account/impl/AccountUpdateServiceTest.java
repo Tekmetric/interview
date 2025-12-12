@@ -60,7 +60,7 @@ class AccountUpdateServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(TEST_ACCOUNT_ID, result.getAccountReferenceId());
+        assertEquals(TEST_ACCOUNT_ID, result.getAccountId());
         verify(accountRepository).findByAccountId(TEST_ACCOUNT_ID);
         verify(accountRepository).save(any(AccountEntity.class));
     }
@@ -108,7 +108,7 @@ class AccountUpdateServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(TEST_ACCOUNT_ID, result.getAccountReferenceId());
+        assertEquals(TEST_ACCOUNT_ID, result.getAccountId());
         verify(accountRepository).save(any(AccountEntity.class));
     }
 

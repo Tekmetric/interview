@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountDeleteResponseDTO {
-    private Long id;
-    private String accountReferenceId;
+    private String accountId;
     private String message;
     private boolean deleted;
 }

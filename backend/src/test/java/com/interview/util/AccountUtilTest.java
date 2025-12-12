@@ -19,9 +19,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class AccountUtilTest {
 
     @Test
-    void testGenerateAccountReferenceId_Format() {
+    void testGenerateAccountId_Format() {
         // Act
-        String accountId = AccountUtil.generateAccountReferenceId();
+        String accountId = AccountUtil.generateAccountId();
 
         // Assert
         assertNotNull(accountId);
@@ -30,11 +30,11 @@ class AccountUtilTest {
     }
 
     @Test
-    void testGenerateAccountReferenceId_Uniqueness() {
+    void testGenerateAccountId_Uniqueness() {
         // Act
         Set<String> ids = new HashSet<>();
         for (int i = 0; i < 100; i++) {
-            ids.add(AccountUtil.generateAccountReferenceId());
+            ids.add(AccountUtil.generateAccountId());
         }
 
         // Assert
@@ -52,7 +52,7 @@ class AccountUtilTest {
     }
 
     @Test
-    void testGenerateAccountReferenceId_ThreadSafety() throws InterruptedException {
+    void testGenerateAccountId_ThreadSafety() throws InterruptedException {
         // Arrange
         int threadCount = 10;
         int idsPerThread = 100;
@@ -67,7 +67,7 @@ class AccountUtilTest {
                 try {
                     Set<String> threadIds = new HashSet<>();
                     for (int j = 0; j < idsPerThread; j++) {
-                        threadIds.add(AccountUtil.generateAccountReferenceId());
+                        threadIds.add(AccountUtil.generateAccountId());
                     }
                     synchronized (lock) {
                         allIds.addAll(threadIds);
@@ -87,9 +87,9 @@ class AccountUtilTest {
     }
 
     @Test
-    void testGenerateAccountReferenceId_NotNull() {
+    void testGenerateAccountId_NotNull() {
         // Act
-        String accountId = AccountUtil.generateAccountReferenceId();
+        String accountId = AccountUtil.generateAccountId();
 
         // Assert
         assertNotNull(accountId);

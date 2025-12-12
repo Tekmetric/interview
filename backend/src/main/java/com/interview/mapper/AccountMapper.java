@@ -16,12 +16,11 @@ public interface AccountMapper {
 
     /**
      * Convert AccountEntity to AccountDetailsResponseDTO.
-     * Maps accountId field to accountReferenceId in DTO.
+     * Maps accountId field directly (no mapping needed as field names match).
      * 
      * @param entity Account entity
      * @return AccountDetailsResponseDTO
      */
-    @Mapping(source = "accountId", target = "accountReferenceId")
     AccountDetailsResponseDTO toDetailsDTO(AccountEntity entity);
 }
 

@@ -67,7 +67,7 @@ class AccountControllerIntegrationTest {
                         .header(CommonConstants.IDEMPOTENCY_KEY_HEADER, TEST_IDEMPOTENCY_KEY)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.accountReferenceId").exists())
+                .andExpect(jsonPath("$.accountId").exists())
                 .andExpect(jsonPath("$.accountName").value("Test Account"))
                 .andExpect(jsonPath("$.status").value("PENDING"));
 
@@ -190,7 +190,7 @@ class AccountControllerIntegrationTest {
         mockMvc.perform(get(CommonConstants.API_V1_PREFIX + CommonConstants.ACCOUNT_API_ENDPOINT 
                         + "/ACC-000001"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accountReferenceId").value("ACC-000001"))
+                .andExpect(jsonPath("$.accountId").value("ACC-000001"))
                 .andExpect(jsonPath("$.accountName").value("Test Account"));
     }
 
@@ -265,7 +265,7 @@ class AccountControllerIntegrationTest {
                         .header(CommonConstants.IDEMPOTENCY_KEY_HEADER, TEST_IDEMPOTENCY_KEY)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accountReferenceId").value("ACC-000001"))
+                .andExpect(jsonPath("$.accountId").value("ACC-000001"))
                 .andExpect(jsonPath("$.accountName").value("Updated Account"));
     }
 
@@ -284,7 +284,7 @@ class AccountControllerIntegrationTest {
         mockMvc.perform(delete(CommonConstants.API_V1_PREFIX + CommonConstants.ACCOUNT_API_ENDPOINT 
                         + "/ACC-000001"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accountReferenceId").value("ACC-000001"))
+                .andExpect(jsonPath("$.accountId").value("ACC-000001"))
                 .andExpect(jsonPath("$.deleted").value(true));
 
         // Verify deleted from database

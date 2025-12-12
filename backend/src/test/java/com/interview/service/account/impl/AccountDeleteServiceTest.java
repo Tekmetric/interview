@@ -48,8 +48,7 @@ class AccountDeleteServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(TEST_ACCOUNT_ID, result.getAccountReferenceId());
-        assertEquals(1L, result.getId());
+        assertEquals(TEST_ACCOUNT_ID, result.getAccountId());
         assertTrue(result.isDeleted());
         verify(accountRepository).findByAccountId(TEST_ACCOUNT_ID);
         verify(accountRepository).delete(accountEntity);

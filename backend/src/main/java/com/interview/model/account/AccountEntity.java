@@ -23,7 +23,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "accounts")
 public class AccountEntity extends BaseEntity {
 
-    @Column(name = AccountDbFieldConstants.ACCOUNT_REFERENCE_ID_COLUMN_NAME, unique = true, nullable = false, length = 100)
+    @Column(name = AccountDbFieldConstants.ACCOUNT_ID_COLUMN_NAME, unique = true, nullable = false, length = 100)
     private String accountId;
 
     @Column(name = AccountDbFieldConstants.ACCOUNT_NAME_COLUMN_NAME, nullable = false, length = 255)

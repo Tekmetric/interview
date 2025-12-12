@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountCreateResponseDTO {
-    private String accountReferenceId;
+    private String accountId;
     private String accountName;
     private String status;
 }

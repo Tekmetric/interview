@@ -60,7 +60,7 @@ class CreateAccountServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals("ACC-1234567890123", result.getAccountReferenceId());
+        assertEquals("ACC-1234567890123", result.getAccountId());
         assertEquals("Test Account", result.getAccountName());
         assertEquals(AccountStatusEnum.PENDING.getValue(), result.getStatus());
         
@@ -110,7 +110,7 @@ class CreateAccountServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals("ACC-1234567890123", result.getAccountReferenceId());
+        assertEquals("ACC-1234567890123", result.getAccountId());
         verify(accountRepository).save(any(AccountEntity.class));
     }
 

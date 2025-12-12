@@ -79,8 +79,8 @@ class AccountOrchestrationServiceIntegrationTest extends BaseIntegrationTest {
 
         // Assert
         assertNotNull(response, "Response should not be null");
-        assertNotNull(response.getAccountReferenceId(), "Account reference ID should be generated");
-        assertTrue(response.getAccountReferenceId().startsWith("ACC-"), 
+        assertNotNull(response.getAccountId(), "Account reference ID should be generated");
+        assertTrue(response.getAccountId().startsWith("ACC-"), 
                 "Account reference ID should start with 'ACC-'");
         assertEquals(TEST_ACCOUNT_NAME, response.getAccountName(), 
                 "Account name should match");
@@ -88,7 +88,7 @@ class AccountOrchestrationServiceIntegrationTest extends BaseIntegrationTest {
         assertEquals("PENDING", response.getStatus(), "Initial status should be PENDING");
 
         // Verify account was saved in database
-        AccountEntity savedAccount = accountRepository.findByAccountId(response.getAccountReferenceId())
+        AccountEntity savedAccount = accountRepository.findByAccountId(response.getAccountId())
                 .orElseThrow(() -> new AssertionError("Account should be saved in database"));
         assertEquals(TEST_ACCOUNT_NAME, savedAccount.getAccountName());
         assertEquals(TEST_EMAIL, savedAccount.getEmail());
@@ -109,7 +109,7 @@ class AccountOrchestrationServiceIntegrationTest extends BaseIntegrationTest {
 
         // Assert
         assertNotNull(response);
-        assertNotNull(response.getAccountReferenceId());
+        assertNotNull(response.getAccountId());
         assertEquals(TEST_ACCOUNT_NAME, response.getAccountName());
     }
 
@@ -135,10 +135,10 @@ class AccountOrchestrationServiceIntegrationTest extends BaseIntegrationTest {
 
         // Assert
         assertNotNull(response);
-        assertNotNull(response.getAccountReferenceId());
+        assertNotNull(response.getAccountId());
         
         // Verify optional fields are null in database
-        AccountEntity savedAccount = accountRepository.findByAccountId(response.getAccountReferenceId())
+        AccountEntity savedAccount = accountRepository.findByAccountId(response.getAccountId())
                 .orElseThrow();
         assertNull(savedAccount.getCountryCode());
         assertNull(savedAccount.getCurrency());
@@ -158,7 +158,7 @@ class AccountOrchestrationServiceIntegrationTest extends BaseIntegrationTest {
 
         // Assert
         assertNotNull(response, "Response should not be null");
-        assertEquals(createdAccountId, response.getAccountReferenceId(), 
+        assertEquals(createdAccountId, response.getAccountId(), 
                 "Account reference ID should match");
         assertEquals(TEST_ACCOUNT_NAME, response.getAccountName(), 
                 "Account name should match");
@@ -458,7 +458,7 @@ class AccountOrchestrationServiceIntegrationTest extends BaseIntegrationTest {
 
         // Assert
         assertNotNull(response, "Response should not be null");
-        assertEquals(createdAccountId, response.getAccountReferenceId(), 
+        assertEquals(createdAccountId, response.getAccountId(), 
                 "Account reference ID should match");
         assertEquals("Updated Account Name", response.getAccountName(), 
                 "Account name should be updated");
@@ -539,7 +539,7 @@ class AccountOrchestrationServiceIntegrationTest extends BaseIntegrationTest {
 
         // Assert
         assertNotNull(response, "Response should not be null");
-        assertEquals(createdAccountId, response.getAccountReferenceId(), 
+        assertEquals(createdAccountId, response.getAccountId(), 
                 "Account reference ID should match");
         assertEquals("Patched Account Name", response.getAccountName(), 
                 "Account name should be patched");
@@ -675,14 +675,13 @@ class AccountOrchestrationServiceIntegrationTest extends BaseIntegrationTest {
 
         // Assert
         assertNotNull(response, "Response should not be null");
-        assertEquals(createdAccountId, response.getAccountReferenceId(), 
+        assertEquals(createdAccountId, response.getAccountId(), 
                 "Account reference ID should match");
         assertTrue(response.isDeleted(), "Deleted flag should be true");
         assertNotNull(response.getMessage(), "Message should not be null");
         assertTrue(response.getMessage().contains("deleted") || 
                    response.getMessage().contains("success"),
                 "Message should indicate successful deletion");
-        assertNotNull(response.getId(), "ID should not be null");
 
         // Verify account was deleted from database
         assertFalse(accountRepository.findByAccountId(createdAccountId).isPresent(),
@@ -724,7 +723,7 @@ class AccountOrchestrationServiceIntegrationTest extends BaseIntegrationTest {
      */
     private AccountEntity createTestAccount(String accountName, String email, String countryCode, String currencyCode) {
         AccountEntity account = AccountEntity.builder()
-                .accountId(com.interview.util.AccountUtil.generateAccountReferenceId())
+                .accountId(com.interview.util.AccountUtil.generateAccountId())
                 .accountName(accountName)
                 .email(email)
                 .countryCode(countryCode)

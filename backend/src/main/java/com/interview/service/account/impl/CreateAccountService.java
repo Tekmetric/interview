@@ -34,7 +34,7 @@ public class CreateAccountService implements ICreateAccountService {
         accountValidator.validateCreateAccount(request);
         
         // Generate unique account ID
-        String accountId = AccountUtil.generateAccountReferenceId();
+        String accountId = AccountUtil.generateAccountId();
         
         // Build entity
         AccountEntity accountEntity = AccountEntity.builder()
@@ -60,7 +60,7 @@ public class CreateAccountService implements ICreateAccountService {
         log.info("Account created successfully with ID: {}", accountId);
         
         return AccountCreateResponseDTO.builder()
-                .accountReferenceId(savedAccount.getAccountId())
+                .accountId(savedAccount.getAccountId())
                 .accountName(savedAccount.getAccountName())
                 .status(savedAccount.getStatus())
                 .build();

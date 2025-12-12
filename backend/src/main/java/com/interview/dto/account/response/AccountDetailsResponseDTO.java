@@ -15,8 +15,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountDetailsResponseDTO {
-    private Long id;
-    private String accountReferenceId;
+    private String accountId;
     private String accountName;
     private String email;
     private String website;

@@ -184,18 +184,18 @@ class ExceptionUtilsIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testExtractAccountIdentifier_WithAccountId() {
+    void testExtractAccountIdentifier_WithAccountIdString() {
         com.interview.exception.AccountNotFoundException ex = 
-                new com.interview.exception.AccountNotFoundException(123L);
+                new com.interview.exception.AccountNotFoundException("123");
 
         String identifier = ExceptionUtils.extractAccountIdentifier(ex);
         assertEquals("123", identifier, "Should extract account ID");
     }
 
     @Test
-    void testExtractAccountIdentifier_WithAccountReferenceId() {
+    void testExtractAccountIdentifier_WithAccountId() {
         com.interview.exception.AccountNotFoundException ex = 
-                new com.interview.exception.AccountNotFoundException("ACC-000001", true);
+                new com.interview.exception.AccountNotFoundException("ACC-000001");
 
         String identifier = ExceptionUtils.extractAccountIdentifier(ex);
         assertEquals("ACC-000001", identifier, "Should extract account reference ID");

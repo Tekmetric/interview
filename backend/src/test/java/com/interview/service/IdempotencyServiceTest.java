@@ -44,7 +44,7 @@ class IdempotencyServiceTest {
                 .requestMethod(TEST_METHOD.name())
                 .requestPath(TEST_REQUEST_PATH)
                 .responseStatus(201)
-                .responseBody("{\"accountReferenceId\":\"ACC-001\"}")
+                .responseBody("{\"accountId\":\"ACC-001\"}")
                 .createdAt(OffsetDateTime.now())
                 .build();
 
@@ -167,7 +167,7 @@ class IdempotencyServiceTest {
     void testStoreResponse_Success() {
         // Arrange
         ResponseEntity<String> response = ResponseEntity.status(HttpStatus.CREATED)
-                .body("{\"accountReferenceId\":\"ACC-001\"}");
+                .body("{\"accountId\":\"ACC-001\"}");
 
         when(idempotencyKeyRepository.save(any(IdempotencyKey.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));

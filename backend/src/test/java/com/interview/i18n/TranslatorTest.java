@@ -178,5 +178,152 @@ class TranslatorTest {
         // Assert
         assertEquals("Resolved from default", result);
     }
+
+    @Test
+    void testGetMessage_WithArgs_NotFound_NoFallback() {
+        // Arrange
+        String messageCode = "nonexistent.message";
+        Object[] args = new Object[]{"arg1", "arg2"};
+        when(messageSource.getMessage(eq(messageCode), eq(args), any(Locale.class)))
+                .thenThrow(new NoSuchMessageException(messageCode));
+
+        // Act
+        String result = Translator.getMessage(messageCode, args);
+
+        // Assert
+        assertEquals(messageCode, result);
+        verify(messageSource, times(2)).getMessage(eq(messageCode), eq(args), any(Locale.class));
+    }
+
+    @Test
+    void testGetMessage_WithArgs_NotFound_FallbackToUS() {
+        // Arrange
+        String messageCode = "nonexistent.message";
+        Object[] args = new Object[]{"arg1", "arg2"};
+        String fallbackMessage = "Fallback Message with args";
+        when(messageSource.getMessage(eq(messageCode), eq(args), any(Locale.class)))
+                .thenThrow(new NoSuchMessageException(messageCode))
+                .thenReturn(fallbackMessage);
+
+        // Act
+        String result = Translator.getMessage(messageCode, args);
+
+        // Assert
+        assertEquals(fallbackMessage, result);
+        verify(messageSource, times(2)).getMessage(eq(messageCode), eq(args), any(Locale.class));
+    }
+
+    @Test
+    void testResolveMessage_NotFound_DefaultMessageNull() {
+        // Arrange
+        MessageSourceResolvable resolvable = mock(MessageSourceResolvable.class);
+        String[] codes = new String[]{"code1", "code2"};
+        
+        when(resolvable.getDefaultMessage()).thenReturn(null);
+        lenient().when(resolvable.getCodes()).thenReturn(codes);
+        
+        // First try with current locale - fails
+        lenient().when(messageSource.getMessage(eq(resolvable), any(Locale.class)))
+                .thenThrow(new NoSuchMessageException("code"));
+        // Second try with US locale - also fails
+        lenient().when(messageSource.getMessage(eq(resolvable), eq(US)))
+                .thenThrow(new NoSuchMessageException("code"));
+
+        // Act
+        String result = Translator.resolveMessage(resolvable);
+
+        // Assert
+        assertEquals("", result); // Should return empty string when defaultMessage is null
+        verify(resolvable).getDefaultMessage();
+    }
+
+    @Test
+    void testResolveMessage_NotFound_DefaultMessageEmpty() {
+        // Arrange
+        MessageSourceResolvable resolvable = mock(MessageSourceResolvable.class);
+        String[] codes = new String[]{"code1", "code2"};
+        
+        when(resolvable.getDefaultMessage()).thenReturn("");
+        lenient().when(resolvable.getCodes()).thenReturn(codes);
+        
+        // First try with current locale - fails
+        lenient().when(messageSource.getMessage(eq(resolvable), any(Locale.class)))
+                .thenThrow(new NoSuchMessageException("code"));
+        // Second try with US locale - also fails
+        lenient().when(messageSource.getMessage(eq(resolvable), eq(US)))
+                .thenThrow(new NoSuchMessageException("code"));
+
+        // Act
+        String result = Translator.resolveMessage(resolvable);
+
+        // Assert
+        assertEquals("", result); // Should return empty string when defaultMessage is empty
+        verify(resolvable).getDefaultMessage();
+    }
+
+    @Test
+    void testResolveMessage_NotFound_DefaultMessageAsKey_FailsBothLocales() {
+        // Arrange
+        MessageSourceResolvable resolvable = mock(MessageSourceResolvable.class);
+        String defaultMessage = "default.message.key";
+        String[] codes = new String[]{"code1", "code2"};
+        Object[] args = new Object[]{"arg1"};
+        
+        when(resolvable.getDefaultMessage()).thenReturn(defaultMessage);
+        lenient().when(resolvable.getCodes()).thenReturn(codes);
+        when(resolvable.getArguments()).thenReturn(args);
+        
+        // First try with current locale - fails
+        lenient().when(messageSource.getMessage(eq(resolvable), any(Locale.class)))
+                .thenThrow(new NoSuchMessageException("code"));
+        // Second try with US locale - also fails
+        lenient().when(messageSource.getMessage(eq(resolvable), eq(US)))
+                .thenThrow(new NoSuchMessageException("code"));
+        // Third try: default message with current locale - fails
+        lenient().when(messageSource.getMessage(eq(defaultMessage), eq(args), any(Locale.class)))
+                .thenThrow(new NoSuchMessageException("code"));
+        // Fourth try: default message with US locale - also fails
+        lenient().when(messageSource.getMessage(eq(defaultMessage), eq(args), eq(US)))
+                .thenThrow(new NoSuchMessageException("code"));
+
+        // Act
+        String result = Translator.resolveMessage(resolvable);
+
+        // Assert
+        assertEquals(defaultMessage, result); // Should return defaultMessage as final fallback
+        verify(resolvable, atLeastOnce()).getCodes(); // Should log warning with codes
+    }
+
+    @Test
+    void testResolveMessage_NotFound_DefaultMessageAsKey_FailsCurrentLocale_SucceedsUS() {
+        // Arrange
+        MessageSourceResolvable resolvable = mock(MessageSourceResolvable.class);
+        String defaultMessage = "default.message.key";
+        String[] codes = new String[]{"code1", "code2"};
+        Object[] args = new Object[]{"arg1"};
+        
+        when(resolvable.getDefaultMessage()).thenReturn(defaultMessage);
+        lenient().when(resolvable.getCodes()).thenReturn(codes);
+        when(resolvable.getArguments()).thenReturn(args);
+        
+        // First try with current locale - fails
+        lenient().when(messageSource.getMessage(eq(resolvable), any(Locale.class)))
+                .thenThrow(new NoSuchMessageException("code"));
+        // Second try with US locale - also fails
+        lenient().when(messageSource.getMessage(eq(resolvable), eq(US)))
+                .thenThrow(new NoSuchMessageException("code"));
+        // Third try: default message with current locale - fails
+        lenient().when(messageSource.getMessage(eq(defaultMessage), eq(args), any(Locale.class)))
+                .thenThrow(new NoSuchMessageException("code"));
+        // Fourth try: default message with US locale - succeeds
+        when(messageSource.getMessage(eq(defaultMessage), eq(args), eq(US)))
+                .thenReturn("Resolved from default key");
+
+        // Act
+        String result = Translator.resolveMessage(resolvable);
+
+        // Assert
+        assertEquals("Resolved from default key", result);
+    }
 }
 

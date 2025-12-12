@@ -38,7 +38,7 @@ public class AccountRetrievalService implements IAccountRetrievalService {
         log.debug("Retrieving account with ID: {}", accountId);
         
         AccountEntity accountEntity = accountRepository.findByAccountId(accountId)
-                .orElseThrow(() -> new AccountNotFoundException(accountId, true));
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
         
         return accountMapper.toDetailsDTO(accountEntity);
     }

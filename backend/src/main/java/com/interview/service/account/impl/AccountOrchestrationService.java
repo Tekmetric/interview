@@ -35,7 +35,7 @@ public class AccountOrchestrationService implements IAccountOrchestrationService
     public AccountCreateResponseDTO createAccount(AccountCreateRequestDTO request) {
         log.info("Orchestrating account creation for account: {}", request.getAccountName());
         AccountCreateResponseDTO response = createAccountService.createAccount(request);
-        log.info("Account creation completed with reference ID: {}", response.getAccountReferenceId());
+        log.info("Account creation completed with account ID: {}", response.getAccountId());
         return response;
     }
     

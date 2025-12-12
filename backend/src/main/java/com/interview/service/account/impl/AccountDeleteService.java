@@ -28,15 +28,14 @@ public class AccountDeleteService implements IAccountDeleteService {
         
         // Get account before deletion to return reference ID in response
         AccountEntity accountEntity = accountRepository.findByAccountId(accountId)
-                .orElseThrow(() -> new AccountNotFoundException(accountId, true));
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
         
         // Delete account
         accountRepository.delete(accountEntity);
         log.info("Account deleted successfully with ID: {}", accountId);
         
         return AccountDeleteResponseDTO.builder()
-                .id(accountEntity.getId())
-                .accountReferenceId(accountEntity.getAccountId())
+                .accountId(accountEntity.getAccountId())
                 .message("Account deleted successfully")
                 .deleted(true)
                 .build();

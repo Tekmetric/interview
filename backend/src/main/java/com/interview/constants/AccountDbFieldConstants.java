@@ -11,7 +11,7 @@ public final class AccountDbFieldConstants extends BaseDbFieldConstants {
     }
 
     // Account-specific fields
-    public static final String ACCOUNT_REFERENCE_ID_COLUMN_NAME = "account_reference_id";
+    public static final String ACCOUNT_ID_COLUMN_NAME = "account_id";
     public static final String ACCOUNT_NAME_COLUMN_NAME = "account_name";
     public static final String EMAIL_COLUMN_NAME = "email";
     public static final String WEBSITE_COLUMN_NAME = "website";

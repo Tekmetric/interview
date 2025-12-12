@@ -57,7 +57,7 @@ class AccountRetrievalServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(TEST_ACCOUNT_ID, result.getAccountReferenceId());
+        assertEquals(TEST_ACCOUNT_ID, result.getAccountId());
         assertEquals("Test Account", result.getAccountName());
         verify(accountRepository).findByAccountId(TEST_ACCOUNT_ID);
     }

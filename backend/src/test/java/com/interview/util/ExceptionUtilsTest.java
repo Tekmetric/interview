@@ -152,9 +152,9 @@ class ExceptionUtilsTest {
     }
 
     @Test
-    void testExtractAccountIdentifier_WithAccountId() {
+    void testExtractAccountIdentifier_WithAccountIdString() {
         // Arrange
-        AccountNotFoundException ex = new AccountNotFoundException(1L);
+        AccountNotFoundException ex = new AccountNotFoundException("1");
 
         // Act
         String result = ExceptionUtils.extractAccountIdentifier(ex);
@@ -164,9 +164,9 @@ class ExceptionUtilsTest {
     }
 
     @Test
-    void testExtractAccountIdentifier_WithAccountReferenceId() {
+    void testExtractAccountIdentifier_WithAccountId() {
         // Arrange
-        AccountNotFoundException ex = new AccountNotFoundException("ACC-000001", true);
+        AccountNotFoundException ex = new AccountNotFoundException("ACC-000001");
 
         // Act
         String result = ExceptionUtils.extractAccountIdentifier(ex);

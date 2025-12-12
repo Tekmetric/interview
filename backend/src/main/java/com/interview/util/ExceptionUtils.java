@@ -1,6 +1,7 @@
 package com.interview.util;
 
 import com.interview.dto.error.ApiErrorResponseDTO;
+import com.interview.exception.AccountNotFoundException;
 import com.interview.i18n.Translator;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -156,11 +157,9 @@ public final class ExceptionUtils {
      * @param ex The AccountNotFoundException
      * @return Account identifier as string
      */
-    public static String extractAccountIdentifier(com.interview.exception.AccountNotFoundException ex) {
+    public static String extractAccountIdentifier(AccountNotFoundException ex) {
         if (ex.getAccountId() != null) {
-            return String.valueOf(ex.getAccountId());
-        } else if (ex.getAccountReferenceId() != null) {
-            return ex.getAccountReferenceId();
+            return ex.getAccountId();
         } else {
             return ex.getMessage();
         }

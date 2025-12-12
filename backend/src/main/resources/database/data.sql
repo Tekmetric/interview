@@ -3,7 +3,7 @@
 -- Create accounts table
 CREATE TABLE IF NOT EXISTS accounts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    account_reference_id VARCHAR(100) NOT NULL UNIQUE,
+    account_id VARCHAR(100) NOT NULL UNIQUE,
     account_name VARCHAR(255) NOT NULL,
     email VARCHAR(100),
     website VARCHAR(255),
@@ -19,11 +19,11 @@ CREATE TABLE IF NOT EXISTS accounts (
     previous_status VARCHAR(50),
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,
-    CONSTRAINT uk_account_reference_id UNIQUE (account_reference_id)
+    CONSTRAINT uk_account_id UNIQUE (account_id)
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_account_reference_id ON accounts(account_reference_id);
+CREATE INDEX IF NOT EXISTS idx_account_id ON accounts(account_id);
 CREATE INDEX IF NOT EXISTS idx_status ON accounts(status);
 -- Address search indexes for fast lookups
 CREATE INDEX IF NOT EXISTS idx_zipcode ON accounts(zipcode);
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS idempotency_keys (
 CREATE INDEX IF NOT EXISTS idx_idempotency_key ON idempotency_keys(idempotency_key);
 
 -- Insert sample auto shop accounts
-INSERT INTO accounts (account_reference_id, account_name, email, website, country, country_code, currency, address_line1, city, state, zipcode, status, created_at) VALUES
+INSERT INTO accounts (account_id, account_name, email, website, country, country_code, currency, address_line1, city, state, zipcode, status, created_at) VALUES
 ('ACC-000001', 'Midas Auto Service', 'contact@midas.com', 'https://www.midas.com', 'United States', 'US', 'USD', '123 Main Street', 'Chicago', 'IL', '60601', 'ACTIVE', CURRENT_TIMESTAMP),
 ('ACC-000002', 'Jiffy Lube', 'info@jiffylube.com', 'https://www.jiffylube.com', 'United States', 'US', 'USD', '456 Oak Avenue', 'Los Angeles', 'CA', '90001', 'ACTIVE', CURRENT_TIMESTAMP),
 ('ACC-000003', 'Firestone Complete Auto Care', 'support@firestone.com', 'https://www.firestonecompleteautocare.com', 'United States', 'US', 'USD', '789 Pine Road', 'Houston', 'TX', '77001', 'ACTIVE', CURRENT_TIMESTAMP),

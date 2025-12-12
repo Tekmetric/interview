@@ -44,11 +44,11 @@ public class AccountUtil {
     }
 
     /**
-     * Generate a unique account reference ID.
+     * Generate a unique account ID.
      * 
-     * @return Unique account reference ID (e.g., "ACC-1234567890123")
+     * @return Unique account ID (e.g., "ACC-1234567890123")
      */
-    public static String generateAccountReferenceId() {
+    public static String generateAccountId() {
         return generateUniqueReferenceId(TransactionPrefixEnum.ACCOUNT.getValue());
     }
 

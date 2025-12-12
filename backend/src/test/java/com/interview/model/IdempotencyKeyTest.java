@@ -20,7 +20,7 @@ class IdempotencyKeyTest {
                 .requestMethod("POST")
                 .requestPath("/api/v1/accounts")
                 .responseStatus(201)
-                .responseBody("{\"accountReferenceId\":\"ACC-001\"}")
+                .responseBody("{\"accountId\":\"ACC-001\"}")
                 .createdAt(OffsetDateTime.now())
                 .build();
 

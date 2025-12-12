@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +54,7 @@ class GlobalExceptionHandlerTest {
     @Test
     void testHandleAccountNotFoundException() {
         // Arrange
-        AccountNotFoundException ex = new AccountNotFoundException("ACC-000001", true);
+        AccountNotFoundException ex = new AccountNotFoundException("ACC-000001");
         String accountIdentifier = "ACC-000001";
         String errorMessage = "Account not found with ID: ACC-000001";
         
@@ -137,6 +138,41 @@ class GlobalExceptionHandlerTest {
         
         mockedExceptionUtils.verify(() -> ExceptionUtils.processValidationErrors(any()));
         mockedTranslator.verify(() -> Translator.getMessage("error.validation.failed"));
+    }
+
+    @Test
+    void testHandleNoResourceFoundException() {
+        // Arrange
+        NoResourceFoundException ex = mock(NoResourceFoundException.class);
+        String resourcePath = "/api/v1/api/v1/accounts";
+        when(ex.getResourcePath()).thenReturn(resourcePath);
+        
+        String errorMessage = "The requested resource '/api/v1/api/v1/accounts' was not found. Please check the URL and try again.";
+        
+        ApiErrorResponseDTO errorResponse = ApiErrorResponseDTO.builder()
+                .status(404)
+                .message(errorMessage)
+                .timestamp("2024-01-01T00:00:00Z")
+                .build();
+
+        mockedTranslator.when(() -> Translator.getMessage(eq("error.resource.notFound"), any(Object[].class)))
+                .thenReturn(errorMessage);
+        mockedExceptionUtils.when(() -> ExceptionUtils.buildErrorResponse(eq(HttpStatus.NOT_FOUND), 
+                eq(errorMessage), isNull()))
+                .thenReturn(errorResponse);
+
+        // Act
+        ResponseEntity<ApiErrorResponseDTO> result = globalExceptionHandler.handleNoResourceFoundException(ex);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        assertEquals(404, result.getBody().getStatus());
+        assertEquals(errorMessage, result.getBody().getMessage());
+        
+        mockedTranslator.verify(() -> Translator.getMessage(eq("error.resource.notFound"), any(Object[].class)));
+        mockedExceptionUtils.verify(() -> ExceptionUtils.buildErrorResponse(eq(HttpStatus.NOT_FOUND), 
+                eq(errorMessage), isNull()));
     }
 
     @Test

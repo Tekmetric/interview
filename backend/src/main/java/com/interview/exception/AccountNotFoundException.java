@@ -5,33 +5,15 @@ package com.interview.exception;
  */
 public class AccountNotFoundException extends RuntimeException {
     
-    private final Long accountId;
-    private final String accountReferenceId;
+    private final String accountId;
     
-    public AccountNotFoundException(String message) {
-        super(message);
-        this.accountId = null;
-        this.accountReferenceId = null;
-    }
-    
-    public AccountNotFoundException(Long accountId) {
-        super(String.valueOf(accountId));
+    public AccountNotFoundException(String accountId) {
+        super(accountId);
         this.accountId = accountId;
-        this.accountReferenceId = null;
     }
     
-    public AccountNotFoundException(String accountReferenceId, boolean isReferenceId) {
-        super(accountReferenceId);
-        this.accountId = null;
-        this.accountReferenceId = accountReferenceId;
-    }
-    
-    public Long getAccountId() {
+    public String getAccountId() {
         return accountId;
-    }
-    
-    public String getAccountReferenceId() {
-        return accountReferenceId;
     }
 }
 

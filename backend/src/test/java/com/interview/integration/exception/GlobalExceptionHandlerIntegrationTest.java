@@ -290,5 +290,32 @@ class GlobalExceptionHandlerIntegrationTest extends BaseIntegrationTest {
                     "Message should be resolved, not be a simple key: " + message);
         });
     }
+
+    @Test
+    void testHandleNoResourceFoundException() throws Exception {
+        // Test with a non-existent endpoint path (will be treated as static resource)
+        String invalidPath = "/api/v1/api/v1/accounts";
+        
+        mockMvc.perform(get(invalidPath))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message", 
+                        anyOf(containsString(invalidPath), containsString("not found"), containsString("resource"))))
+                .andExpect(jsonPath("$.errors").doesNotExist());
+    }
+
+    @Test
+    void testHandleNoResourceFoundException_InvalidEndpoint() throws Exception {
+        // Test with another invalid endpoint
+        String invalidPath = "/api/v1/nonexistent";
+        
+        mockMvc.perform(get(invalidPath))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message", 
+                        anyOf(containsString(invalidPath), containsString("not found"), containsString("resource"))));
+    }
 }
 

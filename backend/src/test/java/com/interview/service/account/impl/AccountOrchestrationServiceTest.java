@@ -51,7 +51,7 @@ class AccountOrchestrationServiceTest {
                 .build();
 
         AccountCreateResponseDTO response = AccountCreateResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Test Account")
                 .status("PENDING")
                 .build();
@@ -63,7 +63,7 @@ class AccountOrchestrationServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(TEST_ACCOUNT_ID, result.getAccountReferenceId());
+        assertEquals(TEST_ACCOUNT_ID, result.getAccountId());
         verify(createAccountService).createAccount(request);
     }
 
@@ -75,7 +75,7 @@ class AccountOrchestrationServiceTest {
                 .build();
 
         AccountUpdateResponseDTO response = AccountUpdateResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Updated Account")
                 .status("ACTIVE")
                 .build();
@@ -88,7 +88,7 @@ class AccountOrchestrationServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(TEST_ACCOUNT_ID, result.getAccountReferenceId());
+        assertEquals(TEST_ACCOUNT_ID, result.getAccountId());
         verify(accountUpdateService).updateAccount(TEST_ACCOUNT_ID, request);
     }
 
@@ -96,7 +96,7 @@ class AccountOrchestrationServiceTest {
     void testGetAccount() {
         // Arrange
         AccountDetailsResponseDTO response = AccountDetailsResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Test Account")
                 .build();
 
@@ -107,7 +107,7 @@ class AccountOrchestrationServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(TEST_ACCOUNT_ID, result.getAccountReferenceId());
+        assertEquals(TEST_ACCOUNT_ID, result.getAccountId());
         verify(accountRetrievalService).getAccount(TEST_ACCOUNT_ID);
     }
 
@@ -146,7 +146,7 @@ class AccountOrchestrationServiceTest {
                 .build();
 
         AccountUpdateResponseDTO response = AccountUpdateResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Patched Account")
                 .status("ACTIVE")
                 .build();
@@ -159,7 +159,7 @@ class AccountOrchestrationServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(TEST_ACCOUNT_ID, result.getAccountReferenceId());
+        assertEquals(TEST_ACCOUNT_ID, result.getAccountId());
         verify(accountUpdateService).patchAccount(TEST_ACCOUNT_ID, request);
     }
 
@@ -167,7 +167,7 @@ class AccountOrchestrationServiceTest {
     void testDeleteAccount() {
         // Arrange
         AccountDeleteResponseDTO response = AccountDeleteResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .message("Account deleted successfully")
                 .deleted(true)
                 .build();
@@ -179,7 +179,7 @@ class AccountOrchestrationServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(TEST_ACCOUNT_ID, result.getAccountReferenceId());
+        assertEquals(TEST_ACCOUNT_ID, result.getAccountId());
         assertTrue(result.isDeleted());
         verify(accountDeleteService).deleteAccount(TEST_ACCOUNT_ID);
     }

@@ -35,7 +35,7 @@ public class AccountUpdateService implements IAccountUpdateService {
         
         // Find existing account
         AccountEntity existingAccount = accountRepository.findByAccountId(accountId)
-                .orElseThrow(() -> new AccountNotFoundException(accountId, true));
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
         
         // Update fields (PUT - full update)
         existingAccount.setAccountName(StringUtils.isNotBlank(request.getAccountName()) ? request.getAccountName() : existingAccount.getAccountName());
@@ -59,7 +59,7 @@ public class AccountUpdateService implements IAccountUpdateService {
         log.info("Account updated successfully with ID: {}", accountId);
         
         return AccountUpdateResponseDTO.builder()
-                .accountReferenceId(savedAccount.getAccountId())
+                .accountId(savedAccount.getAccountId())
                 .accountName(savedAccount.getAccountName())
                 .status(savedAccount.getStatus())
                 .build();
@@ -75,7 +75,7 @@ public class AccountUpdateService implements IAccountUpdateService {
         
         // Find existing account
         AccountEntity existingAccount = accountRepository.findByAccountId(accountId)
-                .orElseThrow(() -> new AccountNotFoundException(accountId, true));
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
         
         // Update only non-null fields (PATCH - partial update)
         if (StringUtils.isNotBlank(request.getAccountName())) {
@@ -123,7 +123,7 @@ public class AccountUpdateService implements IAccountUpdateService {
         log.info("Account patched successfully with ID: {}", accountId);
         
         return AccountUpdateResponseDTO.builder()
-                .accountReferenceId(savedAccount.getAccountId())
+                .accountId(savedAccount.getAccountId())
                 .accountName(savedAccount.getAccountName())
                 .status(savedAccount.getStatus())
                 .build();

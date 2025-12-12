@@ -114,7 +114,7 @@ class AccountControllerTest {
         // Arrange
         AccountCreateRequestDTO request = createValidAccountCreateRequest();
         AccountCreateResponseDTO response = AccountCreateResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Test Account")
                 .status("PENDING")
                 .build();
@@ -131,7 +131,7 @@ class AccountControllerTest {
                         .header(CommonConstants.IDEMPOTENCY_KEY_HEADER, TEST_IDEMPOTENCY_KEY)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.accountReferenceId").value(TEST_ACCOUNT_ID))
+                .andExpect(jsonPath("$.accountId").value(TEST_ACCOUNT_ID))
                 .andExpect(jsonPath("$.accountName").value("Test Account"))
                 .andExpect(jsonPath("$.status").value("PENDING"));
 
@@ -227,7 +227,7 @@ class AccountControllerTest {
         // Arrange
         AccountCreateRequestDTO request = createValidAccountCreateRequest();
         AccountCreateResponseDTO cachedResponse = AccountCreateResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Test Account")
                 .status("PENDING")
                 .build();
@@ -244,7 +244,7 @@ class AccountControllerTest {
                         .header(CommonConstants.IDEMPOTENCY_KEY_HEADER, TEST_IDEMPOTENCY_KEY)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.accountReferenceId").value(TEST_ACCOUNT_ID));
+                .andExpect(jsonPath("$.accountId").value(TEST_ACCOUNT_ID));
 
         verify(accountService, never()).createAccount(any(AccountCreateRequestDTO.class));
     }
@@ -253,7 +253,7 @@ class AccountControllerTest {
     void testGetAccount_Success() throws Exception {
         // Arrange
         AccountDetailsResponseDTO response = AccountDetailsResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Test Account")
                 .email("test@example.com")
                 .build();
@@ -264,7 +264,7 @@ class AccountControllerTest {
         mockMvc.perform(get(CommonConstants.API_V1_PREFIX + CommonConstants.ACCOUNT_API_ENDPOINT 
                         + "/" + TEST_ACCOUNT_ID))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accountReferenceId").value(TEST_ACCOUNT_ID))
+                .andExpect(jsonPath("$.accountId").value(TEST_ACCOUNT_ID))
                 .andExpect(jsonPath("$.accountName").value("Test Account"));
 
         verify(accountService).getAccount(TEST_ACCOUNT_ID);
@@ -274,7 +274,7 @@ class AccountControllerTest {
     void testGetAccount_NotFound() throws Exception {
         // Arrange
         when(accountService.getAccount(TEST_ACCOUNT_ID))
-                .thenThrow(new AccountNotFoundException(TEST_ACCOUNT_ID, true));
+                .thenThrow(new AccountNotFoundException(TEST_ACCOUNT_ID));
 
         mockedTranslator.when(() -> Translator.getMessage(eq("error.account.notFound"), any(Object[].class)))
                 .thenReturn("Account not found with ID: " + TEST_ACCOUNT_ID);
@@ -338,7 +338,7 @@ class AccountControllerTest {
                 .build();
 
         AccountUpdateResponseDTO response = AccountUpdateResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Updated Account")
                 .status("ACTIVE")
                 .build();
@@ -357,7 +357,7 @@ class AccountControllerTest {
                         .header(CommonConstants.IDEMPOTENCY_KEY_HEADER, TEST_IDEMPOTENCY_KEY)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accountReferenceId").value(TEST_ACCOUNT_ID))
+                .andExpect(jsonPath("$.accountId").value(TEST_ACCOUNT_ID))
                 .andExpect(jsonPath("$.accountName").value("Updated Account"));
 
         verify(accountService).updateAccount(eq(TEST_ACCOUNT_ID), any(AccountUpdateRequestDTO.class));
@@ -367,7 +367,7 @@ class AccountControllerTest {
     void testDeleteAccount_Success() throws Exception {
         // Arrange
         AccountDeleteResponseDTO response = AccountDeleteResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .message("Account deleted successfully")
                 .deleted(true)
                 .build();
@@ -378,7 +378,7 @@ class AccountControllerTest {
         mockMvc.perform(delete(CommonConstants.API_V1_PREFIX + CommonConstants.ACCOUNT_API_ENDPOINT 
                         + "/" + TEST_ACCOUNT_ID))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accountReferenceId").value(TEST_ACCOUNT_ID))
+                .andExpect(jsonPath("$.accountId").value(TEST_ACCOUNT_ID))
                 .andExpect(jsonPath("$.deleted").value(true));
 
         verify(accountService).deleteAccount(TEST_ACCOUNT_ID);
@@ -393,7 +393,7 @@ class AccountControllerTest {
                 .build();
 
         AccountUpdateResponseDTO response = AccountUpdateResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Patched Account")
                 .status("ACTIVE")
                 .build();
@@ -412,7 +412,7 @@ class AccountControllerTest {
                         .header(CommonConstants.IDEMPOTENCY_KEY_HEADER, TEST_IDEMPOTENCY_KEY)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accountReferenceId").value(TEST_ACCOUNT_ID))
+                .andExpect(jsonPath("$.accountId").value(TEST_ACCOUNT_ID))
                 .andExpect(jsonPath("$.accountName").value("Patched Account"));
 
         verify(accountService).patchAccount(eq(TEST_ACCOUNT_ID), any(AccountUpdateRequestDTO.class));
@@ -426,7 +426,7 @@ class AccountControllerTest {
                 .build();
 
         AccountUpdateResponseDTO cachedResponse = AccountUpdateResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Patched Account")
                 .status("ACTIVE")
                 .build();
@@ -443,7 +443,7 @@ class AccountControllerTest {
                         .header(CommonConstants.IDEMPOTENCY_KEY_HEADER, TEST_IDEMPOTENCY_KEY)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accountReferenceId").value(TEST_ACCOUNT_ID));
+                .andExpect(jsonPath("$.accountId").value(TEST_ACCOUNT_ID));
 
         verify(accountService, never()).patchAccount(anyString(), any(AccountUpdateRequestDTO.class));
     }
@@ -456,7 +456,7 @@ class AccountControllerTest {
                 .build();
 
         AccountUpdateResponseDTO cachedResponse = AccountUpdateResponseDTO.builder()
-                .accountReferenceId(TEST_ACCOUNT_ID)
+                .accountId(TEST_ACCOUNT_ID)
                 .accountName("Updated Account")
                 .status("ACTIVE")
                 .build();
@@ -473,7 +473,7 @@ class AccountControllerTest {
                         .header(CommonConstants.IDEMPOTENCY_KEY_HEADER, TEST_IDEMPOTENCY_KEY)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accountReferenceId").value(TEST_ACCOUNT_ID));
+                .andExpect(jsonPath("$.accountId").value(TEST_ACCOUNT_ID));
 
         verify(accountService, never()).updateAccount(anyString(), any(AccountUpdateRequestDTO.class));
     }

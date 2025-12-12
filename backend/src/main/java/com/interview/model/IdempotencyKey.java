@@ -1,5 +1,6 @@
 package com.interview.model;
 
+import com.interview.config.OffsetDateTimeConverter;
 import com.interview.constants.BaseDbFieldConstants;
 import com.interview.constants.IdempotencyDbFieldConstants;
 import jakarta.persistence.*;
@@ -44,6 +45,7 @@ public class IdempotencyKey {
     private String responseBody;
 
     @Column(name = BaseDbFieldConstants.CREATED_AT_COLUMN_NAME, nullable = false, updatable = false)
+    @Convert(converter = OffsetDateTimeConverter.class)
     private OffsetDateTime createdAt;
 
     @PrePersist

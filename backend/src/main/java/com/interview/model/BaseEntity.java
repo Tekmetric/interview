@@ -1,13 +1,12 @@
 package com.interview.model;
 
+import com.interview.config.OffsetDateTimeConverter;
 import com.interview.constants.BaseDbFieldConstants;
 import com.interview.enums.AccountStatusEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.experimental.SuperBuilder;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
@@ -15,12 +14,15 @@ import java.time.OffsetDateTime;
 /**
  * Base entity class with default fields for all entities.
  * All entities should extend this class.
+ * 
+ * Note: Date auditing is handled manually via @PrePersist and @PreUpdate
+ * instead of Spring Data JPA auditing to avoid conflicts with H2's LocalDateTime.
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
+@SuperBuilder
 public abstract class BaseEntity {
 
     @Id
@@ -28,11 +30,11 @@ public abstract class BaseEntity {
     private Long id;
 
     @Column(name = BaseDbFieldConstants.CREATED_AT_COLUMN_NAME, nullable = false, updatable = false)
-    @CreatedDate
+    @Convert(converter = OffsetDateTimeConverter.class)
     private OffsetDateTime createdAt;
 
     @Column(name = BaseDbFieldConstants.UPDATED_AT_COLUMN_NAME)
-    @LastModifiedDate
+    @Convert(converter = OffsetDateTimeConverter.class)
     private OffsetDateTime updatedAt;
 
     @Column(name = BaseDbFieldConstants.STATUS_COLUMN_NAME)

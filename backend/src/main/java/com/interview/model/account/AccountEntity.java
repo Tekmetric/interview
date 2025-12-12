@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Account entity for JPA/H2 database.
@@ -16,7 +17,7 @@ import jakarta.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "accounts")

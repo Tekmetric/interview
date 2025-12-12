@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * Utility class for exception handling and error response building.
- * Provides methods for processing validation errors and building error responses.
+ * Leverages Spring's built-in MessageSourceResolvable for i18n message resolution.
  */
 public final class ExceptionUtils {
 
@@ -21,53 +21,26 @@ public final class ExceptionUtils {
     }
 
     /**
-     * Resolves validation error message from a FieldError with i18n support.
-     * Uses Spring's built-in message code resolution mechanism via MessageSourceResolvable.
-     * Falls back to standard pattern: <module>.<field>.<constraint> (e.g., account.name.notblank)
-     * Handles message key resolution and includes rejected values in error messages.
+     * Resolves validation error message from a FieldError using Spring's built-in message resolution.
+     * FieldError implements MessageSourceResolvable, so Spring's MessageSource can resolve it directly.
+     * Includes rejected value in arguments to display invalid values in error messages.
      * 
      * @param fieldError The field error from validation (implements MessageSourceResolvable)
      * @return Resolved error message
      */
     public static String resolveValidationErrorMessage(FieldError fieldError) {
         Object rejectedValue = fieldError.getRejectedValue();
-        String fieldName = fieldError.getField();
-        String defaultMessage = fieldError.getDefaultMessage();
-        String[] codes = fieldError.getCodes();
+        Object[] originalArgs = fieldError.getArguments();
         
-        // Prepare arguments including rejected value
-        Object[] messageArgs = prepareMessageArguments(fieldError.getArguments(), rejectedValue);
+        // Prepare arguments including rejected value as first argument
+        Object[] messageArgs = prepareMessageArguments(originalArgs, rejectedValue);
         
-        // Check if default message is a message key (wrapped in {})
-        if (defaultMessage != null && defaultMessage.startsWith("{") && defaultMessage.endsWith("}")) {
-            // Extract key from {account.name.notblank}
-            String key = defaultMessage.substring(1, defaultMessage.length() - 1);
-            try {
-                return Translator.getMessage(key, messageArgs);
-            } catch (Exception e) {
-                // Fall through to try Spring's codes
-            }
-        }
-        
-        // Use Spring's MessageSourceResolvable mechanism
-        // FieldError implements MessageSourceResolvable, which provides getCodes() and getArguments()
+        // Create a MessageSourceResolvable wrapper that includes rejected value in arguments
         // Spring's MessageSource will automatically try each code in order until one resolves
-        
-        // Create a resolvable wrapper that includes rejected value in arguments
         MessageSourceResolvable resolvable = new MessageSourceResolvable() {
             @Override
             public String[] getCodes() {
-                // Add standard pattern codes: account.<field>.<constraint>
-                String[] standardCodes = constructStandardMessageCodes(codes, fieldName);
-                // Combine Spring's codes with standard pattern codes
-                String[] allCodes = new String[standardCodes.length + (codes != null ? codes.length : 0)];
-                int index = 0;
-                if (codes != null) {
-                    System.arraycopy(codes, 0, allCodes, index, codes.length);
-                    index += codes.length;
-                }
-                System.arraycopy(standardCodes, 0, allCodes, index, standardCodes.length);
-                return allCodes;
+                return fieldError.getCodes();
             }
             
             @Override
@@ -77,118 +50,18 @@ public final class ExceptionUtils {
             
             @Override
             public String getDefaultMessage() {
-                if (defaultMessage != null && defaultMessage.startsWith("{") && defaultMessage.endsWith("}")) {
-                    return defaultMessage.substring(1, defaultMessage.length() - 1);
+                String defaultMsg = fieldError.getDefaultMessage();
+                // If default message is a message key (wrapped in {}), extract it
+                if (defaultMsg != null && defaultMsg.startsWith("{") && defaultMsg.endsWith("}")) {
+                    return defaultMsg.substring(1, defaultMsg.length() - 1);
                 }
-                return defaultMessage;
+                return defaultMsg;
             }
         };
         
-        // Resolve using Translator's MessageSource
-        String resolved = Translator.resolveMessage(resolvable);
-        
-        // If resolution failed and we have a default message, try to construct standard pattern key
-        if (resolved == null || resolved.isEmpty() || resolved.equals(defaultMessage)) {
-            String standardKey = constructStandardMessageKey(codes, fieldName);
-            if (standardKey != null) {
-                try {
-                    return Translator.getMessage(standardKey, messageArgs);
-                } catch (Exception e) {
-                    // Fall through to return resolved or default
-                }
-            }
-        }
-        
-        return resolved != null && !resolved.isEmpty() ? resolved : (defaultMessage != null ? defaultMessage : "");
-    }
-    
-    /**
-     * Constructs standard message codes following pattern: <module>.<field>.<constraint>
-     * Example: account.name.notblank, account.email.email, account.countryCode.invalid
-     * 
-     * @param springCodes Spring's generated codes (e.g., NotBlank.accountCreateRequestDTO.accountName)
-     * @param fieldName The field name (e.g., accountName)
-     * @return Array of standard pattern message codes
-     */
-    private static String[] constructStandardMessageCodes(String[] springCodes, String fieldName) {
-        if (springCodes == null || springCodes.length == 0 || fieldName == null) {
-            return new String[0];
-        }
-        
-        // Extract constraint name from first code (e.g., "NotBlank" from "NotBlank.accountCreateRequestDTO.accountName")
-        String constraintName = springCodes[0].split("\\.")[0];
-        if (constraintName == null || constraintName.isEmpty()) {
-            return new String[0];
-        }
-        
-        // Normalize constraint name to lowercase (e.g., NotBlank -> notblank, Email -> email)
-        String normalizedConstraint = normalizeConstraintName(constraintName);
-        
-        // Construct standard pattern: account.<field>.<constraint>
-        // Handle field name variations (e.g., accountName -> name, currencyCode -> currencyCode)
-        String normalizedField = normalizeFieldName(fieldName);
-        String standardKey = "account." + normalizedField + "." + normalizedConstraint;
-        
-        return new String[]{standardKey};
-    }
-    
-    /**
-     * Constructs a standard message key following pattern: <module>.<field>.<constraint>
-     * 
-     * @param springCodes Spring's generated codes
-     * @param fieldName The field name
-     * @return Standard pattern message key or null
-     */
-    private static String constructStandardMessageKey(String[] springCodes, String fieldName) {
-        String[] codes = constructStandardMessageCodes(springCodes, fieldName);
-        return codes.length > 0 ? codes[0] : null;
-    }
-    
-    /**
-     * Normalizes constraint name to lowercase and handles special cases.
-     * Examples: NotBlank -> notblank, Email -> email, ValidCountryCode -> invalid
-     * 
-     * @param constraintName The constraint name
-     * @return Normalized constraint name
-     */
-    private static String normalizeConstraintName(String constraintName) {
-        if (constraintName == null || constraintName.isEmpty()) {
-            return "";
-        }
-        
-        // Handle custom validators (ValidCountryCode, ValidCurrencyCode) -> invalid
-        if (constraintName.startsWith("Valid")) {
-            return "invalid";
-        }
-        
-        // Convert to lowercase (NotBlank -> notblank, Email -> email, Size -> size, Min -> min)
-        return constraintName.toLowerCase();
-    }
-    
-    /**
-     * Normalizes field name for standard pattern.
-     * Examples: accountName -> name, currencyCode -> currencyCode, email -> email
-     * 
-     * @param fieldName The field name
-     * @return Normalized field name
-     */
-    private static String normalizeFieldName(String fieldName) {
-        if (fieldName == null || fieldName.isEmpty()) {
-            return "";
-        }
-        
-        // Remove "account" prefix if present (accountName -> name)
-        // Handle camelCase: accountName -> name, accountId -> id
-        if (fieldName.length() > 7 && fieldName.startsWith("account")) {
-            String remainder = fieldName.substring(7);
-            if (!remainder.isEmpty()) {
-                // Convert first letter to lowercase (accountName -> Name -> name)
-                return remainder.substring(0, 1).toLowerCase() + (remainder.length() > 1 ? remainder.substring(1) : "");
-            }
-        }
-        
-        // Return field name as-is (email -> email, currencyCode -> currencyCode)
-        return fieldName;
+        // Use Spring's MessageSource to resolve the message
+        // Spring will try each code in order: Constraint.DTO.field, Constraint.field, Constraint, defaultMessage
+        return Translator.resolveMessage(resolvable);
     }
 
     /**
@@ -212,23 +85,46 @@ public final class ExceptionUtils {
 
     /**
      * Prepares message arguments by including the rejected value as the first argument.
-     * This allows error messages to display the invalid value.
+     * Spring's validation framework passes arguments like: [fieldName (MessageSourceResolvable), value1, value2, ...]
+     * We extract the actual values (skipping MessageSourceResolvable) and prepend rejectedValue.
      * 
      * @param originalArgs Original arguments from the validation error
      * @param rejectedValue The rejected value that failed validation
-     * @return Array of arguments with rejected value as first element
+     * @return Array of arguments with rejected value as first element, followed by actual constraint values
      */
     private static Object[] prepareMessageArguments(Object[] originalArgs, Object rejectedValue) {
-        if (rejectedValue == null) {
-            return originalArgs != null ? originalArgs : new Object[0];
+        if (originalArgs == null || originalArgs.length == 0) {
+            // If no original args, just return rejected value if present
+            return rejectedValue != null ? new Object[]{rejectedValue} : new Object[0];
         }
         
-        // Create new array with rejected value as first argument
-        Object[] newArgs = new Object[(originalArgs != null ? originalArgs.length : 0) + 1];
-        newArgs[0] = rejectedValue;
-        if (originalArgs != null) {
-            System.arraycopy(originalArgs, 0, newArgs, 1, originalArgs.length);
+        // Spring's validation passes: [fieldName (MessageSourceResolvable), constraintValue1, constraintValue2, ...]
+        // We need to skip the first MessageSourceResolvable and extract actual values
+        int actualValueCount = 0;
+        for (int i = 0; i < originalArgs.length; i++) {
+            // Skip MessageSourceResolvable objects (field name) and extract actual constraint values
+            if (!(originalArgs[i] instanceof MessageSourceResolvable)) {
+                actualValueCount++;
+            }
         }
+        
+        // Build new array: [rejectedValue, actualValue1, actualValue2, ...]
+        int newLength = (rejectedValue != null ? 1 : 0) + actualValueCount;
+        Object[] newArgs = new Object[newLength];
+        int index = 0;
+        
+        // Add rejected value as first argument if present
+        if (rejectedValue != null) {
+            newArgs[index++] = rejectedValue;
+        }
+        
+        // Add actual constraint values (skip MessageSourceResolvable)
+        for (Object arg : originalArgs) {
+            if (!(arg instanceof MessageSourceResolvable)) {
+                newArgs[index++] = arg;
+            }
+        }
+        
         return newArgs;
     }
 

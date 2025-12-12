@@ -5,4 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 
-public record CreateBlogEntryRequest(@NotNull Instant creationTimestamp, @NotBlank(message = "Content cannot be empty or blank") String content) {}
+public record CreateBlogEntryRequest(
+        @NotNull(message = "Cannot be null") Instant creationTimestamp,
+        @NotBlank(message = "Cannot be empty or blank") String content) {}

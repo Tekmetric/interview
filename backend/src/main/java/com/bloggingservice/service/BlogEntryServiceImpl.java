@@ -1,12 +1,15 @@
 package com.bloggingservice.service;
 
+import com.bloggingservice.exception.ResourceNotFoundException;
 import com.bloggingservice.model.BlogEntryEntity;
 import com.bloggingservice.model.BlogEntryResponse;
 import com.bloggingservice.model.CreateBlogEntryRequest;
 import com.bloggingservice.model.mapper.BlogEntryMapper;
 import com.bloggingservice.repository.BlogEntryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.UUID;
 
@@ -25,9 +28,9 @@ public class BlogEntryServiceImpl implements BlogEntryService {
     }
 
     @Override
-    public BlogEntryResponse getBlogEntry(UUID id) {
+    public BlogEntryResponse getBlogEntry(UUID id) throws NoResourceFoundException {
         return blogEntryRepository.findById(id)
                 .map(blogEntryMapper::toBlogEntryResponse)
-                .orElseThrow();
+                .orElseThrow(() -> new NoResourceFoundException(HttpMethod.GET, "api/v1/blog-entry/{id}"));
     }
 }

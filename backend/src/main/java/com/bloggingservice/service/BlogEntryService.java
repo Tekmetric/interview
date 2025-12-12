@@ -1,8 +1,12 @@
 package com.bloggingservice.service;
 
 import com.bloggingservice.model.CreateBlogEntryRequest;
-import com.bloggingservice.model.CreateBlogEntryResponse;
+import com.bloggingservice.model.BlogEntryResponse;
+
+import java.util.UUID;
 
 public interface BlogEntryService {
-    CreateBlogEntryResponse createBlogEntry(CreateBlogEntryRequest request);
+    BlogEntryResponse createBlogEntry(CreateBlogEntryRequest request);
+
+    BlogEntryResponse getBlogEntry(UUID id);
 }

@@ -1,17 +1,21 @@
 package com.bloggingservice.controller;
 
+import com.bloggingservice.model.BlogEntryResponse;
 import com.bloggingservice.model.CreateBlogEntryRequest;
-import com.bloggingservice.model.CreateBlogEntryResponse;
 import com.bloggingservice.service.BlogEntryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/api/v1/blog-entry", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -22,7 +26,13 @@ public class BlogEntryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateBlogEntryResponse createBlogEntry(@Valid @RequestBody CreateBlogEntryRequest request) {
+    public BlogEntryResponse createBlogEntry(@Valid @RequestBody CreateBlogEntryRequest request) {
         return blogEntryService.createBlogEntry(request);
+    }
+
+    @GetMapping(path = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BlogEntryResponse getBlogEntry(@PathVariable UUID id) {
+        return blogEntryService.getBlogEntry(id);
     }
 }

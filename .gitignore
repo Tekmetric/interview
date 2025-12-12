@@ -10,5 +10,6 @@ qa/playwright-report/
 qa/blob-report/
 qa/playwright/.cache/
 
-# ignoring the .idea folder
+# ignoring the .idea folder and any maven wrapper jar
 .idea
+**/.mvn/wrapper/maven-wrapper.jar

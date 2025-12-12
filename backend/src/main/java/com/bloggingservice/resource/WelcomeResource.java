@@ -1,4 +1,4 @@
-package com.interview.resource;
+package com.bloggingservice.resource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "BlogEntry")
+@Table(name = "Blog_Entry")
 @Getter
 @Setter
 public class BlogEntryEntity {
@@ -27,4 +28,7 @@ public class BlogEntryEntity {
 
     @NotNull
     private String content;
+
+    @Version
+    private Long version;
 }

@@ -7,6 +7,8 @@ import com.bloggingservice.model.UpdateBlogEntryRequest;
 import com.bloggingservice.model.mapper.BlogEntryMapper;
 import com.bloggingservice.repository.BlogEntryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +34,13 @@ public class BlogEntryServiceImpl implements BlogEntryService {
     public BlogEntryResponse getBlogEntry(UUID id) throws NoResourceFoundException {
         return blogEntryRepository.findById(id)
                 .map(blogEntryMapper::toBlogEntryResponse)
-                .orElseThrow(() -> new NoResourceFoundException(HttpMethod.GET, "/api/v1/blog-entry/{id}"));
+                .orElseThrow(() -> getNoResourceFoundException(HttpMethod.GET));
+    }
+
+    @Override
+    public Page<BlogEntryResponse> getBlogEntries(Pageable page) {
+        return blogEntryRepository.findAll(page)
+                .map(blogEntryMapper::toBlogEntryResponse);
     }
 
     @Transactional
@@ -42,6 +50,15 @@ public class BlogEntryServiceImpl implements BlogEntryService {
                 .map(entity -> blogEntryMapper.fromUpdateRequest(entity, request))
                 .map(blogEntryRepository::save)
                 .map(blogEntryMapper::toBlogEntryResponse)
-                .orElseThrow(() -> new NoResourceFoundException(HttpMethod.PATCH, "/api/v1/blog-entry/{id}"));
+                .orElseThrow(() -> getNoResourceFoundException(HttpMethod.PATCH));
+    }
+
+    @Override
+    public void removeBlogEntry(UUID id) {
+        blogEntryRepository.deleteById(id);
+    }
+
+    private NoResourceFoundException getNoResourceFoundException(HttpMethod method) {
+                return new NoResourceFoundException(method, "/api/v1/blog-entry/{id}");
     }
 }

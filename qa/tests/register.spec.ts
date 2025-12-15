@@ -4,6 +4,7 @@ import { HomePage } from '../page/home_page'
 import { LoginPage } from '../page/login_page';
 import { RegisterHelper } from '../lib/register_helper';
 
+// Create an account via the UI.
 test('Account Creation', async ({ page }) => {
     const home_page = new HomePage(page);
     const login_page = new LoginPage(page);

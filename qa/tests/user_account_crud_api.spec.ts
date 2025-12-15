@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { RegisterHelper } from '../lib/register_helper';
 
-// 
-test('Register Account, Get Details, Update Details, and Delete Account via API', async ({ page }) => {
+// Creates an account, Gets account details, Updates account details, then Deletes the account via API
+test('User Account CRUD API', async ({ page }) => {
     const register_helper = new RegisterHelper();
 
     // Create an account via API. Assert success.

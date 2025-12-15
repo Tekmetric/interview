@@ -2,6 +2,7 @@ package com.bloggingservice.repository;
 
 import com.bloggingservice.model.BlogEntryEntity;
 import com.bloggingservice.model.BlogEntryId;
+import jakarta.annotation.Nonnull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -21,5 +22,5 @@ public interface BlogEntryRepository
 
     @Override
     @EntityGraph(value = "BlogEntryEntity.categories", type = EntityGraph.EntityGraphType.LOAD)
-    List<BlogEntryEntity> findAllById(Iterable<BlogEntryId> ids);
+    @Nonnull List<BlogEntryEntity> findAllById(@Nonnull Iterable<BlogEntryId> ids);
 }

@@ -2,26 +2,13 @@ import { test, expect } from '@playwright/test';
 import { RegistrationPage } from '../page/register_page'
 import { HomePage } from '../page/home_page'
 import { LoginPage } from '../page/login_page';
-
-// Randomize the name and email to avoid 'account already exists' prompt failing the tests.
-let randomNumber = Math.random().toString().slice(2)
-let name = `qatester${randomNumber}`
-let email = `qatest${randomNumber}@tester.com`
-
-let password = 'Testing12'
-let firstname = 'first'
-let lastname = 'last'
-let address = '370 Congress St'
-let country = 'United States'
-let state = 'Massachusetts'
-let city = 'Boston'
-let zipcode = '02210'
-let phone = '6174445555'
+import { RegisterHelper } from '../lib/register_helper';
 
 test('Account Creation', async ({ page }) => {
     const home_page = new HomePage(page);
     const login_page = new LoginPage(page);
     const registration_page = new RegistrationPage(page);
+    const register_helper = new RegisterHelper();
 
     // Go to automation exercise website.
     await home_page.goto();
@@ -30,8 +17,8 @@ test('Account Creation', async ({ page }) => {
     await home_page.signup_login.click();
 
     // Fill out the name and email field.
-    await login_page.signup_name.fill(name);
-    await login_page.signup_email_address.fill(email);
+    await login_page.signup_name.fill(register_helper.name);
+    await login_page.signup_email_address.fill(register_helper.email);
 
     // Click the 'Signup' button.
     await login_page.signup_button.click();
@@ -40,7 +27,7 @@ test('Account Creation', async ({ page }) => {
     await registration_page.select_gender();
 
     // Fill out the password field.
-    await registration_page.password.fill(password);
+    await registration_page.password.fill(register_helper.password);
 
     // Fill out the Date of Birth.
     await registration_page.dob_day.selectOption('1');
@@ -52,16 +39,16 @@ test('Account Creation', async ({ page }) => {
     await registration_page.optin.check();
 
     // Fill out first and last name.
-    await registration_page.firstname.fill(firstname);
-    await registration_page.lastname.fill(lastname);
+    await registration_page.firstname.fill(register_helper.firstname);
+    await registration_page.lastname.fill(register_helper.lastname);
 
     // Fill out address, country, state, city, zipcode, and phone number.
-    await registration_page.address.fill(address);
-    await registration_page.country.selectOption(country);
-    await registration_page.state.fill(state);
-    await registration_page.city.fill(city);
-    await registration_page.zipcode.fill(zipcode);
-    await registration_page.mobile_number.fill(phone);
+    await registration_page.address.fill(register_helper.address);
+    await registration_page.country.selectOption(register_helper.country);
+    await registration_page.state.fill(register_helper.state);
+    await registration_page.city.fill(register_helper.city);
+    await registration_page.zipcode.fill(register_helper.zipcode);
+    await registration_page.mobile_number.fill(register_helper.phone);
 
     // Click the 'Create Account' button.
     await registration_page.create_account_button.click();

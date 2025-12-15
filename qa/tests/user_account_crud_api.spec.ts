@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { RegisterHelper } from '../lib/register_helper';
-import { register } from 'node:module';
-import { get } from 'node:http';
 
 // 
 test('Register Account, Get Details, Update Details, and Delete Account via API', async ({ page }) => {

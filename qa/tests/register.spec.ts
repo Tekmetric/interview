@@ -1,11 +1,13 @@
 import { test, expect } from '@playwright/test';
+import { RegistrationPage } from '../page/register_page'
+import { HomePage } from '../page/home_page'
+import { LoginPage } from '../page/login_page';
 
-// Ideally randomize the name and email to avoid 'account already exists' prompt.
-
+// Randomize the name and email to avoid 'account already exists' prompt failing the tests.
 let randomNumber = Math.random().toString().slice(2)
-
 let name = `qatester${randomNumber}`
 let email = `qatest${randomNumber}@tester.com`
+
 let password = 'Testing12'
 let firstname = 'first'
 let lastname = 'last'
@@ -17,55 +19,60 @@ let zipcode = '02210'
 let phone = '6174445555'
 
 test('get started link', async ({ page }) => {
-    await page.goto('https://www.automationexercise.com/');
+    const home_page = new HomePage(page);
+    const login_page = new LoginPage(page);
+    const registration_page = new RegistrationPage(page);
+
+    // Go to automation exercise website.
+    await home_page.goto();
 
     // Click the 'Signup / Login' tab.
-    await page.getByRole('link', { name: ' Signup / Login' }).click();
+    await home_page.signup_login.click();
 
     // Fill out the name and email field.
-    await page.getByTestId('signup-name').fill(name);
-    await page.getByTestId('signup-email').fill(email);
+    await login_page.signup_name.fill(name);
+    await login_page.signup_email_address.fill(email);
 
     // Click the 'Signup' button.
-    await page.getByTestId('signup-button').click();
+    await login_page.signup_button.click();
 
-    // Click the 'Mr' title.
-    await page.locator('//*[@id="id_gender1"]').click();
+    // Click the 'Mr' or "Mrs" title.
+    await registration_page.select_gender();
 
     // Fill out the password field.
-    await page.getByTestId('password').fill(password);
+    await registration_page.password.fill(password);
 
     // Fill out the Date of Birth.
-    await page.getByTestId('days').selectOption('1');
-    await page.getByTestId('months').selectOption('January');
-    await page.getByTestId('years').selectOption('2000');
+    await registration_page.dob_day.selectOption('1');
+    await registration_page.dob_month.selectOption('January');
+    await registration_page.dob_year.selectOption('2000');
 
     // Sign up for newsletter and special offers.
-    await page.locator('//*[@id="newsletter"]').check();
-    await page.locator('//*[@id="optin"]').check();
+    await registration_page.newsletter.check();
+    await registration_page.optin.check();
 
     // Fill out first and last name.
-    await page.getByTestId('first_name').fill(firstname);
-    await page.getByTestId('last_name').fill(lastname);
+    await registration_page.firstname.fill(firstname);
+    await registration_page.lastname.fill(lastname);
 
     // Fill out address, country, state, city, zipcode, and phone number.
-    await page.getByTestId('address').fill(firstname);
-    await page.getByTestId('country').selectOption(country);
-    await page.getByTestId('state').fill(state);
-    await page.getByTestId('city').fill(city);
-    await page.getByTestId('zipcode').fill(zipcode);
-    await page.getByTestId('mobile_number').fill(phone);
+    await registration_page.address.fill(address);
+    await registration_page.country.selectOption(country);
+    await registration_page.state.fill(state);
+    await registration_page.city.fill(city);
+    await registration_page.zipcode.fill(zipcode);
+    await registration_page.mobile_number.fill(phone);
 
     // Click the 'Create Account' button.
-    await page.getByTestId('create-account').click();
+    await registration_page.create_account_button.click();
 
     // Assert 'Account Created!' text appears.
-    await expect(page.getByTestId('account-created')).toContainText('Account Created!');
+    await expect(registration_page.account_created_text).toContainText('Account Created!');
 
     // Click continue button.
-    await page.getByTestId('continue-button').click();
+    await registration_page.continue_button.click();
 
     // Assert Logout tab appears.
-    await expect(page.getByRole('link', { name: ' Logout' })).toBeVisible();
+    await expect(home_page.logout).toBeVisible();
 
 });

@@ -18,7 +18,7 @@ let city = 'Boston'
 let zipcode = '02210'
 let phone = '6174445555'
 
-test('get started link', async ({ page }) => {
+test('Account Creation', async ({ page }) => {
     const home_page = new HomePage(page);
     const login_page = new LoginPage(page);
     const registration_page = new RegistrationPage(page);

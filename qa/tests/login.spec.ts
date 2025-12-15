@@ -18,7 +18,7 @@ test('Account Login', async ({ page }) => {
     await login_page.login_email_address.fill("qatest@tester.com");
     await login_page.login_password.fill("Testing12");
 
-    // Click the 'Signup' button.
+    // Click the 'Login' button.
     await login_page.login_button.click();
 
     // Assert Logout tab appears.
@@ -45,7 +45,7 @@ test('Account Login with API registration', async ({ page }) => {
     await login_page.login_email_address.fill(register_helper.email);
     await login_page.login_password.fill(register_helper.password);
 
-    // Click the 'Signup' button.
+    // Click the 'Login' button.
     await login_page.login_button.click();
 
     // Assert Logout tab appears.

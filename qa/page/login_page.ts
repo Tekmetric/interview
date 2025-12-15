@@ -18,4 +18,13 @@ export class LoginPage {
         this.signup_email_address = page.getByTestId('signup-email');
         this.signup_button = page.getByTestId('signup-button');
     }
+
+    async login(email: string, password: string) {
+        // Fill out the email and password field.
+        await this.login_email_address.fill(email);
+        await this.login_password.fill(password);
+
+        // Click the 'Login' button.
+        await this.login_button.click();
+    }
 }

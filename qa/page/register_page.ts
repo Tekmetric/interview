@@ -21,7 +21,6 @@ export class RegistrationPage {
     readonly continue_button: Locator;
     readonly account_created_text: Locator;
 
-
     constructor(page: Page) {
         // Gender
         this.gender_male = page.locator('//*[@id="id_gender1"]');
@@ -36,7 +35,7 @@ export class RegistrationPage {
         this.newsletter = page.locator('//*[@id="newsletter"]');
         this.optin = page.locator('//*[@id="optin"]');
 
-        // Credentials
+        // Personal Information
         this.password = page.getByTestId('password');
         this.firstname = page.getByTestId('first_name');
         this.lastname = page.getByTestId('last_name');

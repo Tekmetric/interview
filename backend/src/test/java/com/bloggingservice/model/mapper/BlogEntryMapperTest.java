@@ -19,7 +19,7 @@ class BlogEntryMapperTest {
     BlogEntryEntity entity = new BlogEntryEntity();
     entity.setCategories(Set.of());
     UpdateBlogEntryRequest request =
-        new UpdateBlogEntryRequest("Test content", Set.of(CategoryType.SCIENCE));
+        new UpdateBlogEntryRequest("Test content", "Title", Set.of(CategoryType.SCIENCE));
 
     mapper.lastUpdatedTimestampCategorySync(entity, request);
     assertThat(entity.getLastUpdateTimestamp(), not(nullValue()));
@@ -29,7 +29,7 @@ class BlogEntryMapperTest {
   void shouldNotUpdateTimestampWhenCategoriesIsNotSpecified() {
     BlogEntryEntity entity = new BlogEntryEntity();
     entity.setCategories(Set.of());
-    UpdateBlogEntryRequest request = new UpdateBlogEntryRequest("Test content", null);
+    UpdateBlogEntryRequest request = new UpdateBlogEntryRequest("Test content", "Title", null);
 
     mapper.lastUpdatedTimestampCategorySync(entity, request);
     assertThat(entity.getLastUpdateTimestamp(), nullValue());
@@ -40,7 +40,8 @@ class BlogEntryMapperTest {
     Set<CategoryType> categories = Set.of(CategoryType.SCIENCE);
     BlogEntryEntity entity = new BlogEntryEntity();
     entity.setCategories(categories);
-    UpdateBlogEntryRequest request = new UpdateBlogEntryRequest("Test content", categories);
+    UpdateBlogEntryRequest request =
+        new UpdateBlogEntryRequest("Test content", "Title", categories);
 
     mapper.lastUpdatedTimestampCategorySync(entity, request);
     assertThat(entity.getLastUpdateTimestamp(), nullValue());

@@ -11,4 +11,5 @@ public record BlogEntryResponse(
     Instant creationTimestamp,
     Instant lastUpdateTimestamp,
     String content,
+    String title,
     Set<CategoryType> categories) {}

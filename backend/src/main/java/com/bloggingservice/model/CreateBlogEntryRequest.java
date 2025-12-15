@@ -8,4 +8,6 @@ import java.util.Set;
     name = "Create Blog Entry Request",
     description = "The request body used to create a blog entry")
 public record CreateBlogEntryRequest(
-    @NotBlank(message = "Cannot be empty or blank") String content, Set<CategoryType> categories) {}
+    @NotBlank(message = "Cannot be empty or blank") String content,
+    @NotBlank(message = "Cannot be empty or blank") String title,
+    Set<CategoryType> categories) {}

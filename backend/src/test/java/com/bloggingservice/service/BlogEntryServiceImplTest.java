@@ -54,7 +54,8 @@ class BlogEntryServiceImplTest {
     NoResourceFoundException ex =
         assertThrows(
             NoResourceFoundException.class,
-            () -> blogEntryService.updateBlogEntry(id, new UpdateBlogEntryRequest(null, null)));
+            () ->
+                blogEntryService.updateBlogEntry(id, new UpdateBlogEntryRequest(null, null, null)));
     assertThat(ex.getHttpMethod(), equalTo(HttpMethod.PATCH));
     assertThat(ex.getResourcePath(), equalTo("/api/v1/blog-entry/{id}"));
   }

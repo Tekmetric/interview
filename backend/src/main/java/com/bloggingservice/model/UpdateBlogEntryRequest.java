@@ -6,4 +6,4 @@ import java.util.Set;
 @Schema(
     name = "Update Blog Entry Request",
     description = "The request body used to update a blog entry")
-public record UpdateBlogEntryRequest(String content, Set<CategoryType> categories) {}
+public record UpdateBlogEntryRequest(String content, String title, Set<CategoryType> categories) {}

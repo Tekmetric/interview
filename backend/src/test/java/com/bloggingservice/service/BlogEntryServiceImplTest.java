@@ -1,8 +1,10 @@
 package com.bloggingservice.service;
 
+import com.bloggingservice.model.BlogEntryId;
 import com.bloggingservice.model.UpdateBlogEntryRequest;
 import com.bloggingservice.model.mapper.BlogEntryMapper;
 import com.bloggingservice.repository.BlogEntryRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.security.Principal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,18 +27,27 @@ import static org.mockito.Mockito.when;
 class BlogEntryServiceImplTest {
 
     @Mock
+    Principal principal;
+    @Mock
     private BlogEntryMapper blogEntryMapper;
     @Mock
     private BlogEntryRepository blogEntryRepository;
     @InjectMocks
     private BlogEntryServiceImpl blogEntryService;
 
+    private BlogEntryId id;
+
+    @BeforeEach
+    void setup() {
+        id = new BlogEntryId(UUID.randomUUID(), principal.getName());
+    }
+
     @Test
     void shouldExceptForUnfoundResourceOnGet() {
         when(blogEntryRepository.findById(any())).thenReturn(Optional.empty());
 
         NoResourceFoundException ex = assertThrows(NoResourceFoundException.class, () ->
-           blogEntryService.getBlogEntry(UUID.randomUUID()));
+           blogEntryService.getBlogEntry(id));
         assertThat(ex.getHttpMethod(), equalTo(HttpMethod.GET));
         assertThat(ex.getResourcePath(), equalTo("/api/v1/blog-entry/{id}"));
     }
@@ -45,7 +57,7 @@ class BlogEntryServiceImplTest {
         when(blogEntryRepository.findById(any())).thenReturn(Optional.empty());
 
         NoResourceFoundException ex = assertThrows(NoResourceFoundException.class, () ->
-                blogEntryService.updateBlogEntry(UUID.randomUUID(), new UpdateBlogEntryRequest(null, null)));
+                blogEntryService.updateBlogEntry(id, new UpdateBlogEntryRequest(null, null, null)));
         assertThat(ex.getHttpMethod(), equalTo(HttpMethod.PATCH));
         assertThat(ex.getResourcePath(), equalTo("/api/v1/blog-entry/{id}"));
     }

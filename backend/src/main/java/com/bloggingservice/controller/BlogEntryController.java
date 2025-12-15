@@ -1,5 +1,6 @@
 package com.bloggingservice.controller;
 
+import com.bloggingservice.model.BlogEntryId;
 import com.bloggingservice.model.BlogEntryResponse;
 import com.bloggingservice.model.CreateBlogEntryRequest;
 import com.bloggingservice.model.UpdateBlogEntryRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.security.Principal;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,38 +40,40 @@ public class BlogEntryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BlogEntryResponse createBlogEntry(@Valid @RequestBody CreateBlogEntryRequest request) {
-        return blogEntryService.createBlogEntry(request);
+    public BlogEntryResponse createBlogEntry(Principal principal, @Valid @RequestBody CreateBlogEntryRequest request) {
+        return blogEntryService.createBlogEntry(principal, request);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<BlogEntryResponse> getBlogEntries(Pageable pageable) {
+    public Page<BlogEntryResponse> getBlogEntries(Principal principal, Pageable pageable) {
         pageable.getSort().stream().forEach(order -> {
             if (!VALID_PAGE_SORT_FIELDS.contains(order.getProperty())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("%s is not an acceptable sort field from %s", order.getProperty(), VALID_PAGE_SORT_FIELDS));
             }
         });
-        return blogEntryService.getBlogEntries(pageable);
+        return blogEntryService.getBlogEntries(principal, pageable);
     }
 
 
     @GetMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public BlogEntryResponse getBlogEntry(@PathVariable UUID id) throws NoResourceFoundException {
-        return blogEntryService.getBlogEntry(id);
+    public BlogEntryResponse getBlogEntry(Principal principal, @PathVariable UUID id) throws NoResourceFoundException {
+        return blogEntryService.getBlogEntry(new BlogEntryId(id, principal.getName()));
     }
 
     @PatchMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public BlogEntryResponse updateBlogEntry(
-            @PathVariable UUID id, @Valid @RequestBody UpdateBlogEntryRequest request) throws NoResourceFoundException {
-        return blogEntryService.updateBlogEntry(id, request);
+            Principal principal,
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateBlogEntryRequest request) throws NoResourceFoundException {
+        return blogEntryService.updateBlogEntry(new BlogEntryId(id, principal.getName()), request);
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeBlogEntry(@PathVariable UUID id) {
-        blogEntryService.removeBlogEntry(id);
+    public void removeBlogEntry(Principal principal, @PathVariable UUID id) {
+        blogEntryService.removeBlogEntry(new BlogEntryId(id, principal.getName()));
     }
 }

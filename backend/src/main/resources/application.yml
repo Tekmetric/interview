@@ -8,10 +8,11 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
     mode: always
-    properties:
-      hibernate:
-        formate_sql: true
-    show-sql: true
   h2:
     console:
       enabled: true
+management:
+    endpoints:
+      web:
+        exposure:
+          include: "health,metrics"

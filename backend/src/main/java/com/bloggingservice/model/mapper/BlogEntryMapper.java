@@ -13,7 +13,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BlogEntryMapper {
 
-    BlogEntryEntity fromCreateRequest(CreateBlogEntryRequest request);
+    BlogEntryEntity fromCreateRequest(String author, CreateBlogEntryRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     BlogEntryEntity fromUpdateRequest(@MappingTarget BlogEntryEntity entity, UpdateBlogEntryRequest request);

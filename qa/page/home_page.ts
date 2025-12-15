@@ -1,5 +1,8 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+/**
+ * Represents the Home Page and stores its locators and functions.
+ */
 export class HomePage {
     readonly page: Page;
     readonly signup_login: Locator;
@@ -15,6 +18,9 @@ export class HomePage {
         this.cart = page.getByRole('link', { name: ' Cart' });
     }
 
+    /**
+     * Navigates to the home page URL.
+     */
     async goto() {
         await this.page.goto('https://www.automationexercise.com/');
     }

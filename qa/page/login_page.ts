@@ -1,5 +1,8 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+/**
+ * Represents the Login Page and stores its locators and functions.
+ */
 export class LoginPage {
     readonly login_email_address: Locator;
     readonly login_password: Locator;
@@ -19,6 +22,12 @@ export class LoginPage {
         this.signup_button = page.getByTestId('signup-button');
     }
 
+    /**
+     * Given an email and password, logs in to the account.
+     * 
+     * @param {string} email - The email of the account holder.
+     * @param {string} password - The password of the account holder.
+     */
     async login(email: string, password: string) {
         // Fill out the email and password field.
         await this.login_email_address.fill(email);

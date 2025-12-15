@@ -1,5 +1,8 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+/**
+ * Represents the Product Page and stores its locators and functions.
+ */
 export class ProductPage {
     readonly first_modal_add_to_cart_button: Locator;
     readonly first_modal_view_product: Locator

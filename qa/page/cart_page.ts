@@ -1,5 +1,8 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+/**
+ * Represents the Cart Page and stores its locators and functions.
+ */
 export class CartPage {
     readonly proceed_to_checkout_button: Locator;
     readonly modal_register_login_button: Locator;

@@ -4,14 +4,16 @@ import { LoginPage } from '../page/login_page';
 import { ProductPage } from '../page/product_page';
 import { CartPage } from '../page/cart_page';
 import { CheckoutPage } from '../page/checkout_page';
+import { RegisterHelper } from '../lib/register_helper';
 
-// Finds a valid product manually and adds it to cart then proceeds to checkout.
-test('Manual Checkout', async ({ page }) => {
+// Adds a product to cart, proceeds to checkout, logs in, and places an order.
+test('Checkout', async ({ page }) => {
     const home_page = new HomePage(page);
     const login_page = new LoginPage(page);
     const product_page = new ProductPage(page);
     const cart_page = new CartPage(page);
     const checkout_page = new CheckoutPage(page);
+    const register_helper = new RegisterHelper();
 
     // Go to automation exercise website.
     await home_page.goto();
@@ -35,8 +37,9 @@ test('Manual Checkout', async ({ page }) => {
     await expect(cart_page.modal_register_login_button).toBeVisible();
     await cart_page.modal_register_login_button.click();
 
-    // Log in with valid credentials.
-    await login_page.login("qatest@tester.com", "Testing12");
+    // Create an account via API and log in.
+    await register_helper.api_create_account();
+    await login_page.login(register_helper.email, register_helper.password);
 
     // Proceed to Cart Page and then to Checkout.
     await home_page.cart.click();
@@ -54,12 +57,6 @@ test('Manual Checkout', async ({ page }) => {
     // Assert that order is placed successfully.
     await expect(checkout_page.order_placed_text).toContainText('Order Placed!');
     await checkout_page.continue_button.click();
-    await expect(home_page.logout).toBeVisible();
+    await expect(home_page.logout).toBeVisible();  
     
-
 });
-
-// Finds a valid product via the API and adds it to cart then proceeds to checkout.
-//test('Checkout with API assistance', async ({ page }) => {
-//
-//});

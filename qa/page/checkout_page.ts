@@ -1,5 +1,8 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+/**
+ * Represents the Checkout Page and stores its locators and functions.
+ */
 export class CheckoutPage {
     readonly place_order_button: Locator;
     readonly card_name: Locator;

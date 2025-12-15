@@ -1,5 +1,8 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+/**
+ * Represents the Registration Page and stores its locators and functions.
+ */
 export class RegistrationPage {
     readonly gender_male: Locator;
     readonly gender_female: Locator;
@@ -54,7 +57,9 @@ export class RegistrationPage {
         this.account_created_text = page.getByTestId('account-created');
     }
 
-    // Randomly selects either "Mr" or "Mrs" during registation.
+    /**
+     * Randomly selects either "Mr" or "Mrs" during registation.
+     */
     async select_gender() {
         Math.random() > 0.5 ? this.gender_male.click() : this.gender_female.click();
     }

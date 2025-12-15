@@ -4,8 +4,5 @@ public enum CategoryType {
   ART,
   ENTERTAINMENT,
   SPORTS,
-  NEWS,
-  SCIENCE,
-  MATH,
-  RANDOM
+  SCIENCE
 }

@@ -4,7 +4,9 @@ import com.bloggingservice.model.BlogEntryEntity;
 import com.bloggingservice.model.BlogEntryResponse;
 import com.bloggingservice.model.CreateBlogEntryRequest;
 import com.bloggingservice.model.UpdateBlogEntryRequest;
+import java.time.Instant;
 import org.mapstruct.BeanMapping;
+import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -20,4 +22,17 @@ public interface BlogEntryMapper {
       @MappingTarget BlogEntryEntity entity, UpdateBlogEntryRequest request);
 
   BlogEntryResponse toBlogEntryResponse(BlogEntryEntity entity);
+
+  // Handle edge case where only the categories are modified in a request
+  @BeforeMapping
+  default void lastUpdatedTimestampCategorySync(
+      @MappingTarget BlogEntryEntity entity, UpdateBlogEntryRequest request) {
+    if (request.categories() == null) {
+      return;
+    }
+
+    if (!request.categories().equals(entity.getCategories())) {
+      entity.setLastUpdateTimestamp(Instant.now());
+    }
+  }
 }

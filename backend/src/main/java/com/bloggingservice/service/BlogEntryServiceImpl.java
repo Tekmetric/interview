@@ -7,6 +7,8 @@ import com.bloggingservice.model.CreateBlogEntryRequest;
 import com.bloggingservice.model.UpdateBlogEntryRequest;
 import com.bloggingservice.model.mapper.BlogEntryMapper;
 import com.bloggingservice.repository.BlogEntryRepository;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,9 +17,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
-import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service

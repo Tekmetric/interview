@@ -17,14 +17,15 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.SoftDelete;
-
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @IdClass(BlogEntryId.class)
@@ -42,7 +43,9 @@ public class BlogEntryEntity {
 
   @Id private String author;
 
-  @NotNull private Instant creationTimestamp;
+  @CreationTimestamp private Instant creationTimestamp;
+
+  @UpdateTimestamp private Instant lastUpdateTimestamp;
 
   @NotNull @Lob private String content;
 

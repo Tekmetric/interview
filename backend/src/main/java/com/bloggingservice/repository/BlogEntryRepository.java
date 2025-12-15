@@ -17,11 +17,11 @@ public interface BlogEntryRepository
     extends ListPagingAndSortingRepository<BlogEntryEntity, BlogEntryId>,
         CrudRepository<BlogEntryEntity, BlogEntryId> {
 
-  @Query("SELECT BE.id FROM BlogEntryEntity BE WHERE BE.author = :author")
+  @Query("SELECT BE.id.id FROM BlogEntryEntity BE WHERE BE.id.author = :author")
   Page<UUID> findAllIdsByAuthor(@Param("author") String author, Pageable page);
 
   @Override
-  @EntityGraph(value = "BlogEntryEntity.categories", type = EntityGraph.EntityGraphType.LOAD)
+  @EntityGraph(attributePaths = "categories")
   @Nonnull
   List<BlogEntryEntity> findAllById(@Nonnull Iterable<BlogEntryId> ids);
 }

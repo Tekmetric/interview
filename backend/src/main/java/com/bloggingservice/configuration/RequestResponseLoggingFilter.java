@@ -18,6 +18,11 @@ import java.time.Instant;
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
     @Override
+    protected boolean shouldNotFilter(@Nonnull HttpServletRequest request) {
+        return !request.getRequestURI().startsWith("/api");
+    }
+
+    @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             @Nonnull HttpServletResponse response,
@@ -28,7 +33,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
         } finally {
             long milliseconds = Duration.between(start, Instant.now()).toMillis();
             log.info("Request - {}ms {} {} {}",
-                    milliseconds, response.getStatus(), request.getMethod(), request.getRequestURL());
+                    milliseconds, response.getStatus(), request.getMethod(), request.getRequestURI());
         }
     }
 }

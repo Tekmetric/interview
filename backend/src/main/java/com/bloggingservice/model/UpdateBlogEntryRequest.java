@@ -1,12 +1,11 @@
 package com.bloggingservice.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.time.Instant;
 import java.util.Set;
 
-@Schema(name = "Update Blog Entry Request", description = "The request body used to update a blog entry")
+@Schema(
+    name = "Update Blog Entry Request",
+    description = "The request body used to update a blog entry")
 public record UpdateBlogEntryRequest(
-        Instant creationTimestamp,
-        String content,
-        Set<CategoryType> categories) {}
+    Instant creationTimestamp, String content, Set<CategoryType> categories) {}

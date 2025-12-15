@@ -13,15 +13,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(StaleObjectStateException.class)
-    public ProblemDetail handleStaleObjectException(StaleObjectStateException ex) {
-        log.info("Conflict updating resource: ", ex);
-        return ProblemDetail.forStatus(HttpStatus.CONFLICT);
-    }
+  @ExceptionHandler(StaleObjectStateException.class)
+  public ProblemDetail handleStaleObjectException(StaleObjectStateException ex) {
+    log.info("Conflict updating resource: ", ex);
+    return ProblemDetail.forStatus(HttpStatus.CONFLICT);
+  }
 
-    @ExceptionHandler(StaleStateException.class)
-    public ProblemDetail handleStaleStateException(StaleStateException ex) {
-        log.info("Conflict updating resource: ", ex);
-        return ProblemDetail.forStatus(HttpStatus.CONFLICT);
-    }
+  @ExceptionHandler(StaleStateException.class)
+  public ProblemDetail handleStaleStateException(StaleStateException ex) {
+    log.info("Conflict updating resource: ", ex);
+    return ProblemDetail.forStatus(HttpStatus.CONFLICT);
+  }
 }

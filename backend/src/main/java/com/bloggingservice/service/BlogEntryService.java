@@ -8,16 +8,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.security.Principal;
-
 public interface BlogEntryService {
-    BlogEntryResponse createBlogEntry(Principal principal, CreateBlogEntryRequest request);
+  BlogEntryResponse createBlogEntry(String author, CreateBlogEntryRequest request);
 
-    Page<BlogEntryResponse> getBlogEntries(Principal principal, Pageable pageable);
+  Page<BlogEntryResponse> getBlogEntries(String author, Pageable pageable);
 
-    BlogEntryResponse getBlogEntry(BlogEntryId id) throws NoResourceFoundException;
+  BlogEntryResponse getBlogEntry(BlogEntryId id) throws NoResourceFoundException;
 
-    BlogEntryResponse updateBlogEntry(BlogEntryId id, UpdateBlogEntryRequest request) throws NoResourceFoundException;
+  BlogEntryResponse updateBlogEntry(BlogEntryId id, UpdateBlogEntryRequest request)
+      throws NoResourceFoundException;
 
-    void removeBlogEntry(BlogEntryId Id);
+  void removeBlogEntry(BlogEntryId Id);
 }

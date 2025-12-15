@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,55 +23,59 @@ import java.util.UUID;
 @Service
 public class BlogEntryServiceImpl implements BlogEntryService {
 
-    private final BlogEntryMapper blogEntryMapper;
-    private final BlogEntryRepository blogEntryRepository;
+  private final BlogEntryMapper blogEntryMapper;
+  private final BlogEntryRepository blogEntryRepository;
 
-    @Override
-    public BlogEntryResponse createBlogEntry(Principal principal, CreateBlogEntryRequest request) {
-        final BlogEntryEntity blogEntry = blogEntryRepository.save(
-                blogEntryMapper.fromCreateRequest(principal.getName(), request));
+  @Override
+  public BlogEntryResponse createBlogEntry(String author, CreateBlogEntryRequest request) {
+    final BlogEntryEntity blogEntry =
+        blogEntryRepository.save(blogEntryMapper.fromCreateRequest(author, request));
 
-        return blogEntryMapper.toBlogEntryResponse(blogEntry);
-    }
+    return blogEntryMapper.toBlogEntryResponse(blogEntry);
+  }
 
-    @Override
-    public BlogEntryResponse getBlogEntry(BlogEntryId id) throws NoResourceFoundException {
-        return blogEntryRepository.findById(id)
-                .map(blogEntryMapper::toBlogEntryResponse)
-                .orElseThrow(() -> getNoResourceFoundException(HttpMethod.GET));
-    }
+  @Override
+  public BlogEntryResponse getBlogEntry(BlogEntryId id) throws NoResourceFoundException {
+    return blogEntryRepository
+        .findById(id)
+        .map(blogEntryMapper::toBlogEntryResponse)
+        .orElseThrow(() -> getNoResourceFoundException(HttpMethod.GET));
+  }
 
-    @Override
-    public Page<BlogEntryResponse> getBlogEntries(Principal principal, Pageable page) {
-        String author = principal.getName();
-        Page<UUID> pageIds = blogEntryRepository.findAllIdsByAuthor(author, page);
-        List<BlogEntryId> ids = pageIds.getContent().stream()
-                .map(id -> new BlogEntryId(id, author))
-                .toList();
+  @Override
+  public Page<BlogEntryResponse> getBlogEntries(String author, Pageable page) {
+    // Use two queries so we can still leverage the optimized SQL-paging queries without N+1
+    // performance.
+    Page<UUID> pageIds = blogEntryRepository.findAllIdsByAuthor(author, page);
+    List<BlogEntryId> ids =
+        pageIds.getContent().stream().map(id -> new BlogEntryId(id, author)).toList();
 
-        List<BlogEntryResponse> response = blogEntryRepository.findAllById(ids)
-                .stream().map(blogEntryMapper::toBlogEntryResponse)
-                .toList();
+    List<BlogEntryResponse> response =
+        blogEntryRepository.findAllById(ids).stream()
+            .map(blogEntryMapper::toBlogEntryResponse)
+            .toList();
 
-        return new PageImpl<>(response, page, pageIds.getTotalElements());
-    }
+    return new PageImpl<>(response, page, pageIds.getTotalElements());
+  }
 
-    @Transactional
-    @Override
-    public  BlogEntryResponse updateBlogEntry(BlogEntryId id, UpdateBlogEntryRequest request) throws  NoResourceFoundException {
-        return blogEntryRepository.findById(id)
-                .map(entity -> blogEntryMapper.fromUpdateRequest(entity, request))
-                .map(blogEntryRepository::save)
-                .map(blogEntryMapper::toBlogEntryResponse)
-                .orElseThrow(() -> getNoResourceFoundException(HttpMethod.PATCH));
-    }
+  @Transactional
+  @Override
+  public BlogEntryResponse updateBlogEntry(BlogEntryId id, UpdateBlogEntryRequest request)
+      throws NoResourceFoundException {
+    return blogEntryRepository
+        .findById(id)
+        .map(entity -> blogEntryMapper.fromUpdateRequest(entity, request))
+        .map(blogEntryRepository::save)
+        .map(blogEntryMapper::toBlogEntryResponse)
+        .orElseThrow(() -> getNoResourceFoundException(HttpMethod.PATCH));
+  }
 
-    @Override
-    public void removeBlogEntry(BlogEntryId id) {
-        blogEntryRepository.deleteById(id);
-    }
+  @Override
+  public void removeBlogEntry(BlogEntryId id) {
+    blogEntryRepository.deleteById(id);
+  }
 
-    private NoResourceFoundException getNoResourceFoundException(HttpMethod method) {
-                return new NoResourceFoundException(method, "/api/v1/blog-entry/{id}");
-    }
+  private NoResourceFoundException getNoResourceFoundException(HttpMethod method) {
+    return new NoResourceFoundException(method, "/api/v1/blog-entry/{id}");
+  }
 }

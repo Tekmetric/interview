@@ -47,6 +47,10 @@ public class BlogEntryEntity {
   @Column(nullable = false)
   private String content;
 
+  @NotNull
+  @Column(nullable = false)
+  private String title;
+
   // For now, we'll eager fetch given that the defined categories are limited.
   // This relationship should be modeled differently if it is unbounded
   @ElementCollection(targetClass = CategoryType.class, fetch = FetchType.EAGER)

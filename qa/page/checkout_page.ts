@@ -15,7 +15,6 @@ export class CheckoutPage {
     readonly continue_button: Locator;
     readonly download_invoice_button: Locator;
 
-
     constructor(page: Page) {
         // Credit Card Details
         this.card_name = page.getByTestId('name-on-card');

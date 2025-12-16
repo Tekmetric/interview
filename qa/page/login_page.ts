@@ -11,8 +11,6 @@ export class LoginPage {
     readonly signup_email_address: Locator;
     readonly signup_button: Locator;
 
-
-
     constructor(page: Page) {
         this.login_email_address = page.getByTestId('login-email');
         this.login_password = page.getByTestId('login-password');

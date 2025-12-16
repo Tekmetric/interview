@@ -122,7 +122,7 @@ export class RegisterHelper {
 
 
     /**
-     * Given an email, get the account details via API. Defaults to the constructor email.
+     * Given an email, get the account details via API.
      * 
      * @param {string} email - The email of the account holder.
      * @returns The user details and a 200 response code.
@@ -242,7 +242,7 @@ export class RegisterHelper {
 
 
     /**
-     * Given an email, delete the account via API. Defaults to the constructor email.
+     * Given an email, delete the account via API.
      * 
      * @param {string} email - The email of the account holder.
      * @param {string} password - The password of the account holder.

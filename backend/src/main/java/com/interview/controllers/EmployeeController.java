@@ -54,8 +54,8 @@ public class EmployeeController implements EmployeesApi {
     public ResponseEntity<EmployeePage> listEmployees(Integer page,
                                                       Integer size) {
         // Apply simple defaults if not provided
-        int pageNumber = (page != null) ? page : 0;
-        int pageSize = (size != null) ? size : 20;
+        final int pageNumber = (page != null) ? page : 0;
+        final int pageSize = (size != null) ? size : 20;
 
         final EmployeePage employeePage = employeeService.listEmployees(pageNumber, pageSize);
         return ResponseEntity.ok(employeePage);

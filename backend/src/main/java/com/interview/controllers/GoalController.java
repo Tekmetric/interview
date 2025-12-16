@@ -1,4 +1,4 @@
-package com.interview.resources;
+package com.interview.controllers;
 
 import com.interview.api.GoalsApi;
 import com.interview.model.Goal;
@@ -17,11 +17,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 @Validated
-public class GoalResource implements GoalsApi {
+public class GoalController implements GoalsApi {
 
     private final GoalService goalService;
 
-    public GoalResource(GoalService goalService) {
+    public GoalController(GoalService goalService) {
         this.goalService = goalService;
     }
 

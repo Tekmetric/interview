@@ -1,4 +1,4 @@
-package com.interview.resources;
+package com.interview.controllers;
 
 import com.interview.TestUtils;
 import com.interview.model.*;
@@ -17,13 +17,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class EmployeeResourceTest {
+class EmployeeControllerTest {
 
     @Mock
     private EmployeeService employeeService;
 
     @InjectMocks
-    private EmployeeResource employeeResource;
+    private EmployeeController employeeController;
 
     @Test
     void createEmployee_shouldReturnCreatedEmployeeWith201Status() {
@@ -43,7 +43,7 @@ class EmployeeResourceTest {
         when(employeeService.createEmployee(request)).thenReturn(created);
 
         // when
-        ResponseEntity<Employee> response = employeeResource.createEmployee(request);
+        ResponseEntity<Employee> response = employeeController.createEmployee(request);
 
         // then
         assertNotNull(response);
@@ -65,7 +65,7 @@ class EmployeeResourceTest {
         String employeeId = "emp-123";
 
         // when
-        ResponseEntity<Void> response = employeeResource.deleteEmployee(employeeId);
+        ResponseEntity<Void> response = employeeController.deleteEmployee(employeeId);
 
         // then
         assertNotNull(response);
@@ -85,7 +85,7 @@ class EmployeeResourceTest {
         when(employeeService.getEmployeeById(employeeId)).thenReturn(employee);
 
         // when
-        ResponseEntity<Employee> response = employeeResource.getEmployeeById(employeeId);
+        ResponseEntity<Employee> response = employeeController.getEmployeeById(employeeId);
 
         // then
         assertNotNull(response);
@@ -116,7 +116,7 @@ class EmployeeResourceTest {
         when(employeeService.updateEmployee(employeeId, request)).thenReturn(updated);
 
         // when
-        ResponseEntity<Employee> response = employeeResource.updateEmployee(employeeId, request);
+        ResponseEntity<Employee> response = employeeController.updateEmployee(employeeId, request);
 
         // then
         assertNotNull(response);
@@ -137,7 +137,7 @@ class EmployeeResourceTest {
         when(employeeService.listEmployees(page, size)).thenReturn(employeePage);
 
         // when
-        ResponseEntity<EmployeePage> response = employeeResource.listEmployees(page, size);
+        ResponseEntity<EmployeePage> response = employeeController.listEmployees(page, size);
 
         // then
         assertNotNull(response);
@@ -161,7 +161,7 @@ class EmployeeResourceTest {
         when(employeeService.listEmployees(expectedPage, expectedSize)).thenReturn(employeePage);
 
         // when
-        ResponseEntity<EmployeePage> response = employeeResource.listEmployees(page, size);
+        ResponseEntity<EmployeePage> response = employeeController.listEmployees(page, size);
 
         // then
         assertNotNull(response);

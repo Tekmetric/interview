@@ -1,4 +1,4 @@
-package com.interview.resources;
+package com.interview.controllers;
 
 import com.interview.api.EmployeesApi;
 import com.interview.model.Employee;
@@ -17,11 +17,11 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1")
 @Validated
-public class EmployeeResource implements EmployeesApi {
+public class EmployeeController implements EmployeesApi {
 
     private final EmployeeService employeeService;
 
-    public EmployeeResource(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 

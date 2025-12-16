@@ -1,4 +1,4 @@
-package com.interview.resources;
+package com.interview.controllers;
 
 import com.interview.TestUtils;
 import com.interview.model.Goal;
@@ -23,13 +23,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class GoalResourceTest {
+class GoalControllerTest {
 
     @Mock
     private GoalService goalService;
 
     @InjectMocks
-    private GoalResource goalResource;
+    private GoalController goalController;
 
     @Test
     void createEmployeeGoal_shouldReturnCreatedGoalWith201Status() {
@@ -51,7 +51,7 @@ class GoalResourceTest {
         when(goalService.createGoal(employeeId, request)).thenReturn(created);
 
         // when
-        ResponseEntity<Goal> response = goalResource.createEmployeeGoal(employeeId, request);
+        ResponseEntity<Goal> response = goalController.createEmployeeGoal(employeeId, request);
 
         // then
         assertNotNull(response);
@@ -74,7 +74,7 @@ class GoalResourceTest {
         String goalId = "goal-1";
 
         // when
-        ResponseEntity<Void> response = goalResource.deleteEmployeeGoal(employeeId, goalId);
+        ResponseEntity<Void> response = goalController.deleteEmployeeGoal(employeeId, goalId);
 
         // then
         assertNotNull(response);
@@ -96,7 +96,7 @@ class GoalResourceTest {
         when(goalService.getGoalById(employeeId, goalId)).thenReturn(goal);
 
         // when
-        ResponseEntity<Goal> response = goalResource.getEmployeeGoal(employeeId, goalId);
+        ResponseEntity<Goal> response = goalController.getEmployeeGoal(employeeId, goalId);
 
         // then
         assertNotNull(response);
@@ -128,7 +128,7 @@ class GoalResourceTest {
         when(goalService.updateGoal(employeeId, goalId, request)).thenReturn(updated);
 
         // when
-        ResponseEntity<Goal> response = goalResource.updateEmployeeGoal(employeeId, goalId, request);
+        ResponseEntity<Goal> response = goalController.updateEmployeeGoal(employeeId, goalId, request);
 
         // then
         assertNotNull(response);
@@ -153,7 +153,7 @@ class GoalResourceTest {
         when(goalService.listGoals(employeeId)).thenReturn(goals);
 
         // when
-        ResponseEntity<List<Goal>> response = goalResource.listEmployeeGoals(employeeId);
+        ResponseEntity<List<Goal>> response = goalController.listEmployeeGoals(employeeId);
 
         // then
         assertNotNull(response);

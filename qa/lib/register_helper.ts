@@ -249,18 +249,42 @@ export class RegisterHelper {
      * @returns - A response message from the API call and a 200 response code.
      */
     async api_delete_account(email: string, password: string) {
-            const params = new URLSearchParams();
-            params.append("email", email);
-            params.append("password", password);
+        const params = new URLSearchParams();
+        params.append("email", email);
+        params.append("password", password);
 
-            const response = await fetch("https://automationexercise.com/api/deleteAccount", {
-                method: 'DELETE',
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "Accept": "application/json"
-                },
-                body: params.toString()
-            });
+        const response = await fetch("https://automationexercise.com/api/deleteAccount", {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "application/json"
+            },
+            body: params.toString()
+        });
         return response
-    }   
+    }
+
+
+    /**
+     * Given an email and password, verify that the account can be logged in.
+     * @param {string} email - The email of the account holder.
+     * @param {string} password - The password of the account holder.
+     * @returns - A response message from the API call and a 200 response code.
+     */
+    async api_login_account(email: string, password: string) {
+        const params = new URLSearchParams();
+        params.append("email", email);
+        params.append("password", password);
+        
+        const response = await fetch("https://automationexercise.com/api/verifyLogin", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "application/json"
+            },
+            body: params.toString()
+        });
+        return response;
+    }
+
 }

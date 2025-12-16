@@ -35,6 +35,13 @@ test('Account Login with API registration', async ({ page }) => {
     // Create account via API.
     await register_helper.api_create_account();
 
+    // Verify that the account can log in via API.
+    const login_response = await register_helper.api_login_account(register_helper.email, register_helper.password);
+    expect(login_response.status).toBe(200);
+    const login_response_json = await login_response.json();
+    expect(login_response_json).toHaveProperty('responseCode', 200);
+    expect(login_response_json).toHaveProperty('message', 'User exists!');
+
     // Go to automation exercise website.
     await home_page.goto();
 

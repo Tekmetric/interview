@@ -20,7 +20,7 @@ test('User Account CRUD API', async ({ page }) => {
     expect(get_response_json).toHaveProperty('user.name', register_helper.name);
     expect(get_response_json).toHaveProperty('user.email', register_helper.email);
 
-    // Update account details via API.
+    // Update account details via API. Assert success.
     const new_name = register_helper.name + '_updated';
     const new_address = register_helper.address + ' Apt 2';
     const update_response = await register_helper.api_update_account_details(
@@ -41,7 +41,7 @@ test('User Account CRUD API', async ({ page }) => {
     expect(update_response_json).toHaveProperty('responseCode', 200);
     expect(update_response_json).toHaveProperty('message', 'User updated!');
 
-    // Get account details again via API. Assert updated details.
+    // Get account details again via API. Assert success and updated details.
     const get_updated_response = await register_helper.api_get_account_details(register_helper.email);
     expect(get_updated_response.status).toBe(200);
     const get_updated_response_json = await get_updated_response.json();

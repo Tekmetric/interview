@@ -1,14 +1,21 @@
 {
   "name": "qa",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright Test Automation Framework",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "CheckoutTest": "playwright test Checkout.spec.ts --headed --workers=1 --project=chromium --project=webkit --reporter=html",
+    "SignupTest": "playwright test Signup_login.spec.ts --headed --workers=1 --project=chromium --project=webkit --reporter=html",
+    "APITest": "playwright test API.spec.ts --reporter=html",
+    "AllTest": "playwright test --headed --workers=1 --project=chromium --project=webkit --reporter=html",
+    "report": "playwright show-report"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.49.1",
+    "@playwright/test": "^1.52.0",
     "@types/node": "^22.10.7"
   }
 }

@@ -5,15 +5,9 @@ import com.interview.model.RepairStatus;
 import com.interview.repository.RepairJobRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static com.interview.specification.RepairJobSpecifications.userIdEquals;
-import static com.interview.specification.RepairJobSpecifications.statusEquals;
-import static com.interview.specification.RepairJobSpecifications.licensePlate;
-import static org.springframework.data.jpa.domain.Specification.allOf;
 
 @Service
 public class RepairJobService {
@@ -52,24 +46,9 @@ public class RepairJobService {
 
     public Page<RepairJob> search(String userId,
                                   RepairStatus status,
-                                  String licencePlate,
+                                  String licensePlate,
                                   Pageable pageable) {
-
-        Specification<RepairJob> repairJobSpecification = allOf();
-
-        if (userId != null) {
-            repairJobSpecification = repairJobSpecification.and(userIdEquals(userId));
-        }
-
-        if (status != null) {
-            repairJobSpecification = repairJobSpecification.and(statusEquals(status));
-        }
-
-        if (licencePlate != null) {
-            repairJobSpecification = repairJobSpecification.and(licensePlate(licencePlate));
-        }
-
-        return repository.findAll(repairJobSpecification, pageable);
+        return repository.findRepairJob(userId, status, licensePlate, pageable);
     }
 
 

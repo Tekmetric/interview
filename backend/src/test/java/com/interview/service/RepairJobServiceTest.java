@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static com.interview.model.RepairStatus.*;
+import static com.interview.model.RepairStatus.IN_PROGRESS;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,7 +25,7 @@ public class RepairJobServiceTest {
     private RepairJobService service;
 
     @Test
-    void testAllJobs() {
+    void testGetAllJobs() {
         var userId = UUID.randomUUID().toString();
         var job = createRepairJob("First Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
         service.createJob(job);
@@ -43,44 +44,6 @@ public class RepairJobServiceTest {
         // now get the job and check the id
         var retrievedJob = service.getJobById(savedJob.getId());
         assertThat(savedJob.getId()).isEqualTo(retrievedJob.getId());
-    }
-
-    @Test
-    void testSearch() {
-        var licensePlate = RandomStringUtils.randomAlphabetic(7);
-        var licensePlate2 = RandomStringUtils.randomAlphabetic(7);
-        var userId = UUID.randomUUID().toString();
-
-        // create jobs
-        var job1 = createRepairJob("Need a Engine Diagnostic", userId, "Engine Diagnostic", licensePlate, "Toyota", "Corolla", CREATED);
-        var job2 = createRepairJob("Oil Changed Needed", userId, "Oil Change", licensePlate, "Toyota", "Corolla", CANCELLED);
-        var job3 = createRepairJob("Oil Changed Needed", userId, "Oil Change", licensePlate2, "Toyota", "Corolla", CANCELLED);
-        service.createJob(job1);
-        service.createJob(job2);
-        service.createJob(job3);
-
-        // search by status and licensePlate
-        var jobsByStatus = service.search(null, CREATED, licensePlate, unpaged());
-        assertThat(jobsByStatus.get().toList().size()).isEqualTo(1);
-        var jobsBy = service.search(null, CANCELLED, licensePlate, unpaged());
-        assertThat(jobsBy.get().toList().size()).isEqualTo(1);
-
-        // search by license plate
-        var allLicencePlateJobs = service.search(null, null, licensePlate, unpaged());
-        assertThat(allLicencePlateJobs.get().toList().size()).isEqualTo(2);
-
-        // search for all jobs by userid
-        var allJobs = service.search(userId, null, null, unpaged());
-        assertThat(allJobs.get().toList().size()).isEqualTo(3);
-    }
-
-    @Test
-    void getJobsByUserId() {
-        var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("First Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
-        service.createJob(job);
-        var jobs = service.search(userId, null, null, unpaged());
-        assertThat(jobs.get().toList().size()).isEqualTo(1);
     }
 
     @Test
@@ -124,6 +87,45 @@ public class RepairJobServiceTest {
         assertThat(id).isNotNull();
         service.deleteJob(id);
         assertThrows(RuntimeException.class, () -> service.getJobById(id));
+    }
+
+    @Test
+    void testSearch() {
+        var licensePlate = RandomStringUtils.randomAlphabetic(7);
+        var licensePlate2 = RandomStringUtils.randomAlphabetic(7);
+        var userId = UUID.randomUUID().toString();
+
+        // create jobs
+        var job1 = createRepairJob("Need a Engine Diagnostic", userId, "Engine Diagnostic", licensePlate, "Toyota", "Corolla", CREATED);
+        var job2 = createRepairJob("Oil Changed Needed", userId, "Oil Change", licensePlate, "Toyota", "Corolla", CANCELLED);
+        var job3 = createRepairJob("Oil Changed Needed", userId, "Oil Change", licensePlate2, "Toyota", "Corolla", CANCELLED);
+        service.createJob(job1);
+        service.createJob(job2);
+        service.createJob(job3);
+
+        // search by status and licensePlate
+        var jobsByStatus = service.search(null, CREATED, licensePlate, unpaged());
+        assertThat(jobsByStatus.get().toList().size()).isEqualTo(1);
+
+        var jobsBy = service.search(null, CANCELLED, licensePlate, unpaged());
+        assertThat(jobsBy.get().toList().size()).isEqualTo(1);
+
+        // search by license plate only
+        var allLicensePlateJobs = service.search(null, null, licensePlate, unpaged());
+        assertThat(allLicensePlateJobs.get().toList().size()).isEqualTo(2);
+
+        // search for all jobs by userid
+        var allJobs = service.search(userId, null, null, unpaged());
+        assertThat(allJobs.get().toList().size()).isEqualTo(3);
+    }
+
+    @Test
+    void testSearch_getJobsByUserId() {
+        var userId = UUID.randomUUID().toString();
+        var job = createRepairJob("First Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        service.createJob(job);
+        var jobs = service.search(userId, null, null, unpaged());
+        assertThat(jobs.get().toList().size()).isEqualTo(1);
     }
 
     private RepairJob createRepairJob() {

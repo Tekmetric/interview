@@ -31,7 +31,7 @@ public class RepairJobServiceTest {
     @Test
     void testGetAllJobs() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("First Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        var job = createRepairJob("First Repair Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
         service.createJob(job);
 
         var jobs = service.getAllJobs();
@@ -41,7 +41,7 @@ public class RepairJobServiceTest {
     @Test
     void getJobById() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("First Test Job", userId, "Engine Diagnostic",
+        var job = createRepairJob("First Repair Job", userId, "Engine Diagnostic",
                 "IT1234", "Toyota", "Corolla", CREATED);
 
         var savedJob = service.createJob(job);
@@ -56,7 +56,7 @@ public class RepairJobServiceTest {
     @Test
     void testCreateJob() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("First Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        var job = createRepairJob("First Repair Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
         var savedJob = service.createJob(job);
 
         assertThat(savedJob.getId()).isNotNull();
@@ -72,7 +72,6 @@ public class RepairJobServiceTest {
     @Test
     @Transactional
     void testUpdateJob() {
-
         var userId = UUID.randomUUID().toString();
         var job = createRepairJob("Update Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
 
@@ -158,7 +157,7 @@ public class RepairJobServiceTest {
     @Test
     void testSearch_getJobsByUserId() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("First Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        var job = createRepairJob("First Repair Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
 
         service.createJob(job);
 

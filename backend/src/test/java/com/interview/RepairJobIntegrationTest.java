@@ -31,10 +31,9 @@ class RepairJobIntegrationTest {
     @Test
     @SneakyThrows
     void testCreateRepairJob() {
-
         var requestJson = """
             {
-              "jobName": "First Test Job",
+              "jobName": "First Repair Job",
               "userId": "user-123",
               "licensePlate": "ABC1234",
               "repairDescription": "repair description",
@@ -55,9 +54,8 @@ class RepairJobIntegrationTest {
     @Test
     @SneakyThrows
     void testGetRepairJobById() {
-
         var job = new RepairJob();
-        job.setJobName("New Job");
+        job.setJobName("New Repair Job");
         job.setUserId("user-123");
         job.setLicensePlate("XYZ000");
         job.setMake("Honda");
@@ -76,7 +74,6 @@ class RepairJobIntegrationTest {
     @Test
     @SneakyThrows
     void testRepairJobMissing() {
-
         mockMvc.perform(get("/api/repair-jobs/999999"))
                 .andExpect(status().isNotFound());
     }
@@ -84,9 +81,8 @@ class RepairJobIntegrationTest {
     @Test
     @SneakyThrows
     void testUpdateRepairJob() {
-
         var job = new RepairJob();
-        job.setJobName("New Job");
+        job.setJobName("New Repair Job");
         job.setUserId("user-123");
         job.setLicensePlate("AAA111");
         job.setMake("Ford");
@@ -98,7 +94,7 @@ class RepairJobIntegrationTest {
 
         var updateJson = """
             {
-             "jobName": "First Test Job",
+             "jobName": "Updated Name",
               "userId": "user-123",
               "licensePlate": "BBB222",
               "repairDescription": "repair description",

@@ -38,8 +38,6 @@ public class RepairJobResourceTest {
     @Test
     @SneakyThrows
     void testPostSuccess() {
-
-        // mock the service result
         var saved = new RepairJob();
         saved.setId(15L);
         saved.setUserId("user-123");
@@ -52,7 +50,7 @@ public class RepairJobResourceTest {
 
         var requestJson = """
             {
-              "jobName": "First Test Job",
+              "jobName": "First Repair Job",
               "userId": "user-123",
               "licensePlate": "ABC1234",
               "repairDescription": "repair description",
@@ -71,7 +69,6 @@ public class RepairJobResourceTest {
     @Test
     @SneakyThrows
     void testGetSuccess() {
-
         var job = new RepairJob();
         job.setId(15L);
         job.setUserId("user-123");
@@ -89,7 +86,6 @@ public class RepairJobResourceTest {
     @Test
     @SneakyThrows
     void testPutSuccess() {
-
         var updated = new RepairJob();
         updated.setId(15L);
         updated.setUserId("user-123");
@@ -102,7 +98,7 @@ public class RepairJobResourceTest {
 
         var requestJson = """
         {
-          "jobName": "First Test Job",
+          "jobName": "First Repair Job",
               "userId": "user-123",
               "licensePlate": "ABC1234",
               "repairDescription": "repair description",

@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.time.LocalDateTime;
-
+import static java.time.LocalDateTime.now;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -22,7 +21,7 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         var error = new ApiError(
-                LocalDateTime.now(),
+                now(),
                 NOT_FOUND.value(),
                 "Not Found",
                 ex.getMessage(),
@@ -38,7 +37,7 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         var error = new ApiError(
-                LocalDateTime.now(),
+                now(),
                 INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
                 ex.getMessage(),

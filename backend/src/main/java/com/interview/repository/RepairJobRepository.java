@@ -13,7 +13,7 @@ import static com.interview.specification.RepairJobSpecifications.queryAll;
 @Repository
 public interface RepairJobRepository extends JpaRepository<RepairJob, Long>, JpaSpecificationExecutor<RepairJob> {
 
-    default Page<RepairJob> findRepairJob(String userId, RepairStatus status, String licensePlate, Pageable pageable) {
+    default Page<RepairJob> search(String userId, RepairStatus status, String licensePlate, Pageable pageable) {
         return findAll(queryAll(userId, status, licensePlate), pageable);
     }
 }

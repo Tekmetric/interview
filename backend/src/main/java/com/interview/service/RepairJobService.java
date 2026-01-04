@@ -51,7 +51,7 @@ public class RepairJobService {
                                   RepairStatus status,
                                   String licensePlate,
                                   Pageable pageable) {
-        return repository.findRepairJob(userId, status, licensePlate, pageable);
+        return repository.search(userId, status, licensePlate, pageable);
     }
 
 

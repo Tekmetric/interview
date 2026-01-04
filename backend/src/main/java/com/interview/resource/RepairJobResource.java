@@ -65,8 +65,7 @@ public class RepairJobResource {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a repair job")
-    public ResponseEntity<RepairJob> updateJob(@PathVariable Long id, @Valid @RequestBody RepairJob jobDetails
-    ) {
+    public ResponseEntity<RepairJob> updateJob(@PathVariable Long id, @Valid @RequestBody RepairJob jobDetails) {
         var updatedJob = service.updateJob(id, jobDetails);
         log.info("Updated repair job {} -> {}", id, updatedJob);
         return ResponseEntity.ok(updatedJob);
@@ -75,14 +74,8 @@ public class RepairJobResource {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a repair job")
     public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
-
-        // ensures 404 if missing
-        service.getJobById(id)
-                .orElseThrow(() -> new RepairJobNotFoundException(id)); //todo come back and see if i can push this in the service later
-
         service.deleteJob(id);
         log.info("Deleted repair job {}", id);
-
         return ResponseEntity.noContent().build();
     }
 }

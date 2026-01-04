@@ -21,6 +21,7 @@ import static org.springframework.data.domain.Pageable.unpaged;
 
 @SpringBootTest(classes = Application.class, webEnvironment = NONE)
 public class RepairJobServiceTest {
+
     @Autowired
     private RepairJobService service;
 
@@ -39,21 +40,17 @@ public class RepairJobServiceTest {
 
     @Test
     void getJobById() {
-        // create job
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("First Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        var job = createRepairJob("First Test Job", userId, "Engine Diagnostic",
+                "IT1234", "Toyota", "Corolla", CREATED);
+
         var savedJob = service.createJob(job);
-
-        // now get the job and check the id
-        var retrievedJobOptional = service.getJobById(savedJob.getId());
-
-        assertThat(retrievedJobOptional)
-                .as("Expected job to be present")
-                .isPresent();
-
-        var retrievedJob = retrievedJobOptional.get();
-
-        assertThat(retrievedJob.getId()).isEqualTo(savedJob.getId());
+        assertThat(service.getJobById(savedJob.getId()))
+                .as("Expected job lookup to return saved job")
+                .isPresent()
+                .get()
+                .extracting(RepairJob::getId)
+                .isEqualTo(savedJob.getId());
     }
 
     @Test
@@ -144,27 +141,29 @@ public class RepairJobServiceTest {
 
         // search by status and licensePlate
         var jobsByStatus = service.search(null, CREATED, licensePlate, unpaged());
-        assertThat(jobsByStatus.get().toList().size()).isEqualTo(1);
+        assertThat(jobsByStatus.getContent().size()).isEqualTo(1);
 
         var jobsBy = service.search(null, CANCELLED, licensePlate, unpaged());
-        assertThat(jobsBy.get().toList().size()).isEqualTo(1);
+        assertThat(jobsBy.getContent().size()).isEqualTo(1);
 
         // search by license plate only
         var allLicensePlateJobs = service.search(null, null, licensePlate, unpaged());
-        assertThat(allLicensePlateJobs.get().toList().size()).isEqualTo(2);
+        assertThat(allLicensePlateJobs.getContent().size()).isEqualTo(2);
 
         // search for all jobs by userid
         var allJobs = service.search(userId, null, null, unpaged());
-        assertThat(allJobs.get().toList().size()).isEqualTo(3);
+        assertThat(allJobs.getContent().size()).isEqualTo(3);
     }
 
     @Test
     void testSearch_getJobsByUserId() {
         var userId = UUID.randomUUID().toString();
         var job = createRepairJob("First Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+
         service.createJob(job);
+
         var jobs = service.search(userId, null, null, unpaged());
-        assertThat(jobs.get().toList().size()).isEqualTo(1);
+        assertThat(jobs.getContent().size()).isEqualTo(1);
     }
 
     private RepairJob createRepairJob() {

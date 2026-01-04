@@ -40,7 +40,7 @@ public class RepairJobRepositoryTest {
         repairJob2.setStatus(COMPLETED);
 
         repairJobRepository.saveAll(of(repairJob, repairJob2));
-        var jobs = repairJobRepository.findRepairJob(userId, null, null, unpaged());
+        var jobs = repairJobRepository.search(userId, null, null, unpaged());
         assertThat(jobs.getTotalElements()).isEqualTo(1);
     }
 
@@ -66,7 +66,7 @@ public class RepairJobRepositoryTest {
         job2.setStatus(CANCELLED);
 
         repairJobRepository.saveAll(of(job, job2));
-        var jobs = repairJobRepository.findRepairJob(null, COMPLETED, null, unpaged());
+        var jobs = repairJobRepository.search(null, COMPLETED, null, unpaged());
         assertThat(jobs.getTotalElements()).isEqualTo(1);
     }
 }

@@ -1,6 +1,6 @@
 package com.interview.service;
 
-import com.interview.BackendApp;
+import com.interview.Application;
 import com.interview.model.RepairJob;
 import com.interview.model.RepairStatus;
 import jakarta.persistence.EntityManager;
@@ -19,7 +19,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 import static org.springframework.data.domain.Pageable.unpaged;
 
-@SpringBootTest(classes = BackendApp.class, webEnvironment = NONE)
+@SpringBootTest(classes = Application.class, webEnvironment = NONE)
 public class RepairJobServiceTest {
     @Autowired
     private RepairJobService service;

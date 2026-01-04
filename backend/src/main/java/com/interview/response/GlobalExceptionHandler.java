@@ -6,17 +6,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.LocalDateTime;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RepairJobNotFoundException.class)
-    @ResponseStatus(NOT_FOUND)
     @ResponseBody
     public ResponseEntity<ApiError> handleRepairJobNotFound(
             RepairJobNotFoundException ex,
@@ -31,24 +30,6 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, NOT_FOUND);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(BAD_REQUEST)
-    @ResponseBody
-    public ResponseEntity<ApiError> handleBadRequest(
-            IllegalArgumentException ex,
-            HttpServletRequest request) {
-
-        var error = new ApiError(
-                LocalDateTime.now(),
-                BAD_REQUEST.value(),
-                "Bad Request",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-
-        return new ResponseEntity<>(error, BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

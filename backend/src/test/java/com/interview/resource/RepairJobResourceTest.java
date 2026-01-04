@@ -25,10 +25,17 @@ public class RepairJobResourceTest {
     @MockitoBean private RepairJobService service;
 
     @Test
-    void test_getJob_NotFound_Returns404() throws Exception {
+    void test_invalid_id() throws Exception {
         mockMvc.perform(get("/api/repair-jobs/99999"))
                 .andExpect(status().isNotFound())
                 .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void test_invalid_endpoint() throws Exception {
+        mockMvc.perform(get("/jobs/1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(status().is5xxServerError());
     }
 
 

@@ -1,5 +1,6 @@
 package com.interview.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -7,7 +8,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,9 +17,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
-import static jakarta.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Getter
@@ -30,11 +30,12 @@ public class RepairJob {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @JsonProperty(access = READ_ONLY)
     private Long id;
 
     // job name
     @NotBlank
-    @Column(name = "job_name", nullable = false, updatable = false)
+    @Column(name = "job_name", nullable = false)
     private String jobName;
 
     // who owns the vehicle
@@ -61,13 +62,13 @@ public class RepairJob {
     private String model;
 
     @CreatedDate
-    @Temporal(TIMESTAMP)
     @Column(nullable = false, updatable = false)
+    @JsonProperty(access = READ_ONLY)
     private LocalDateTime created;
 
     @LastModifiedDate
-    @Temporal(TIMESTAMP)
     @Column(nullable = false)
+    @JsonProperty(access = READ_ONLY)
     private LocalDateTime lastModified;
 
     @Enumerated(STRING)

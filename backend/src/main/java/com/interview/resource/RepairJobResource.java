@@ -5,7 +5,9 @@ import com.interview.model.RepairJob;
 import com.interview.model.RepairStatus;
 import com.interview.service.RepairJobService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -24,15 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Slf4j
+@Tag(name = "Repair Jobs", description = "Repair Job Operations")
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/repair-jobs")
 public class RepairJobResource {
 
     private final RepairJobService service;
-
-    public RepairJobResource(RepairJobService service) {
-        this.service = service;
-    }
 
     @GetMapping
     @Operation(summary = "Search repair jobs by userId, status, and license plate")
@@ -50,7 +50,7 @@ public class RepairJobResource {
     @Operation(summary = "Get a repair job by id")
     public ResponseEntity<RepairJob> getJobById(@PathVariable Long id) {
         var job = service.getJobById(id)
-                .orElseThrow(() -> new RepairJobNotFoundException(id));
+                .orElseThrow(() -> new RepairJobNotFoundException(id)); //todo come back and see if i can push this in the service later
 
         return ResponseEntity.ok(job);
     }
@@ -78,7 +78,7 @@ public class RepairJobResource {
 
         // ensures 404 if missing
         service.getJobById(id)
-                .orElseThrow(() -> new RepairJobNotFoundException(id));
+                .orElseThrow(() -> new RepairJobNotFoundException(id)); //todo come back and see if i can push this in the service later
 
         service.deleteJob(id);
         log.info("Deleted repair job {}", id);

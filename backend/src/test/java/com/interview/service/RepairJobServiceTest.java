@@ -4,11 +4,11 @@ import com.interview.BackendApp;
 import com.interview.model.RepairJob;
 import com.interview.model.RepairStatus;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -79,39 +79,43 @@ public class RepairJobServiceTest {
         var userId = UUID.randomUUID().toString();
         var job = createRepairJob("Update Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
 
-        var saved = service.createJob(job);
+        var savedJob = service.createJob(job);
 
-        var createdTime = saved.getCreated();
-        var originalLastModified = saved.getLastModified();
+        var createdTime = savedJob.getCreated();
+        var originalLastModified = savedJob.getLastModified();
 
-        em.flush();
-        em.clear();
+        // update request
+        var request = new RepairJob();
+        request.setJobName("New Job Name");
+        request.setUserId("123");
+        request.setRepairDescription("none");
+        request.setLicensePlate("none");
+        request.setMake("none");
+        request.setModel("none");
+        request.setStatus(IN_PROGRESS);
 
-        // ---- NEW VALUES ----
-        var update = new RepairJob();
-        update.setJobName(saved.getJobName());
-        update.setUserId("123");
-        update.setRepairDescription("none");
-        update.setLicensePlate("none");
-        update.setMake("none");
-        update.setModel("none");
-        update.setStatus(IN_PROGRESS);
-
-        service.updateJob(saved.getId(), update);
+        service.updateJob(savedJob.getId(), request);
 
         em.flush();
         em.clear();
 
-        // ---- RELOAD FROM DB ----
-        var reloaded = service.getJobById(saved.getId()).orElseThrow();
+        // now get the job again and check for updates
+        var reloaded = service.getJobById(savedJob.getId()).orElseThrow();
 
+        assertThat(reloaded.getJobName()).isEqualTo(request.getJobName());
+        assertThat(reloaded.getUserId()).isEqualTo(request.getUserId());
+        assertThat(reloaded.getRepairDescription()).isEqualTo(request.getRepairDescription());
+        assertThat(reloaded.getLicensePlate()).isEqualTo(request.getLicensePlate());
+        assertThat(reloaded.getMake()).isEqualTo(request.getModel());
+        assertThat(reloaded.getModel()).isEqualTo(request.getModel());
+
+        assertThat(reloaded.getStatus()).isEqualTo(request.getStatus());
+
+        //ensure created is the same
         assertThat(reloaded.getCreated()).isEqualTo(createdTime);
+        //ensure lastModified was updated
         assertThat(reloaded.getLastModified()).isAfter(originalLastModified);
-
-        assertThat(reloaded.getStatus()).isEqualTo(IN_PROGRESS);
-        assertThat(reloaded.getUserId()).isEqualTo("123");
     }
-
 
     @Test
     void testDeleteJob() {

@@ -3,19 +3,19 @@ package com.interview.service;
 import com.interview.BackendApp;
 import com.interview.model.RepairJob;
 import com.interview.model.RepairStatus;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import static com.interview.model.RepairStatus.*;
-import static com.interview.model.RepairStatus.IN_PROGRESS;
+import static java.util.Optional.empty;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 import static org.springframework.data.domain.Pageable.unpaged;
 
@@ -23,6 +23,9 @@ import static org.springframework.data.domain.Pageable.unpaged;
 public class RepairJobServiceTest {
     @Autowired
     private RepairJobService service;
+
+    @Autowired
+    private EntityManager em;
 
     @Test
     void testGetAllJobs() {
@@ -42,8 +45,15 @@ public class RepairJobServiceTest {
         var savedJob = service.createJob(job);
 
         // now get the job and check the id
-        var retrievedJob = service.getJobById(savedJob.getId());
-        assertThat(savedJob.getId()).isEqualTo(retrievedJob.getId());
+        var retrievedJobOptional = service.getJobById(savedJob.getId());
+
+        assertThat(retrievedJobOptional)
+                .as("Expected job to be present")
+                .isPresent();
+
+        var retrievedJob = retrievedJobOptional.get();
+
+        assertThat(retrievedJob.getId()).isEqualTo(savedJob.getId());
     }
 
     @Test
@@ -63,21 +73,45 @@ public class RepairJobServiceTest {
     }
 
     @Test
+    @Transactional
     void testUpdateJob() {
-        // create a job
+
         var userId = UUID.randomUUID().toString();
         var job = createRepairJob("Update Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
-        var savedJob = service.createJob(job);
-        assertThat(savedJob.getStatus()).isEqualTo(CREATED);
 
-        // update the job to be IN_PROGRESS
-        savedJob.setStatus(IN_PROGRESS);
-        service.updateJob(savedJob.getId(), savedJob);
+        var saved = service.createJob(job);
 
-        // now get the job and check status
-        var updatedJob = service.getJobById(savedJob.getId());
-        assertThat(updatedJob.getStatus()).isEqualTo(IN_PROGRESS);
+        var createdTime = saved.getCreated();
+        var originalLastModified = saved.getLastModified();
+
+        em.flush();
+        em.clear();
+
+        // ---- NEW VALUES ----
+        var update = new RepairJob();
+        update.setJobName(saved.getJobName());
+        update.setUserId("123");
+        update.setRepairDescription("none");
+        update.setLicensePlate("none");
+        update.setMake("none");
+        update.setModel("none");
+        update.setStatus(IN_PROGRESS);
+
+        service.updateJob(saved.getId(), update);
+
+        em.flush();
+        em.clear();
+
+        // ---- RELOAD FROM DB ----
+        var reloaded = service.getJobById(saved.getId()).orElseThrow();
+
+        assertThat(reloaded.getCreated()).isEqualTo(createdTime);
+        assertThat(reloaded.getLastModified()).isAfter(originalLastModified);
+
+        assertThat(reloaded.getStatus()).isEqualTo(IN_PROGRESS);
+        assertThat(reloaded.getUserId()).isEqualTo("123");
     }
+
 
     @Test
     void testDeleteJob() {
@@ -85,8 +119,9 @@ public class RepairJobServiceTest {
         var saved = service.createJob(job);
         var id = saved.getId();
         assertThat(id).isNotNull();
+
         service.deleteJob(id);
-        assertThrows(RuntimeException.class, () -> service.getJobById(id));
+        assertThat(service.getJobById(id)).isEqualTo(empty());
     }
 
     @Test
@@ -141,7 +176,6 @@ public class RepairJobServiceTest {
         var job = new RepairJob();
         job.setJobName(jobName);
         job.setUserId(userId);
-        job.setCreated(LocalDate.now());
         job.setRepairDescription(repairDescription);
         job.setLicensePlate(licensePlate);
         job.setMake(make);

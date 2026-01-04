@@ -1,5 +1,6 @@
 package com.interview.service;
 
+import com.interview.exception.RepairJobNotFoundException;
 import com.interview.model.RepairJob;
 import com.interview.model.RepairStatus;
 import com.interview.repository.RepairJobRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RepairJobService {
@@ -22,25 +24,25 @@ public class RepairJobService {
         return repository.findAll();
     }
 
-    public RepairJob getJobById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Repair job not found with id " + id));
+    public Optional<RepairJob> getJobById(Long id) {
+        return repository.findById(id);
     }
 
     public RepairJob createJob(RepairJob job) {
         return repository.save(job);
     }
 
-    public RepairJob updateJob(Long id, RepairJob jobDetails) {
-        var job = getJobById(id);
-        job.setUserId(jobDetails.getUserId());
-        job.setCreated(jobDetails.getCreated());
-        job.setRepairDescription(jobDetails.getRepairDescription());
-        job.setLicensePlate(jobDetails.getLicensePlate());
-        job.setMake(jobDetails.getMake());
-        job.setModel(jobDetails.getModel());
-        job.setStatus(jobDetails.getStatus());
-        return repository.save(job);
+    public RepairJob updateJob(Long id, RepairJob request) {
+        var job = getJobById(id)
+                .orElseThrow(() -> new RepairJobNotFoundException("Repair job not found with id " + id));
+
+        job.setUserId(request.getUserId());
+        job.setRepairDescription(request.getRepairDescription());
+        job.setLicensePlate(request.getLicensePlate());
+        job.setMake(request.getMake());
+        job.setModel(request.getModel());
+        job.setStatus(request.getStatus());
+        return job;
     }
 
 

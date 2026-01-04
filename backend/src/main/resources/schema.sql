@@ -9,8 +9,8 @@ CREATE TABLE repairjob (
   make VARCHAR(50),
   model VARCHAR(50),
   status VARCHAR(50),
-  created DATE,
-  last_modified DATE
+  created TIMESTAMP,
+  last_modified TIMESTAMP
 );
 
 CREATE INDEX idx_user_id ON repairjob(user_id);

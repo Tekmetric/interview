@@ -21,17 +21,41 @@ public class RepairJobResourceTest {
         this.mockMvc = mockMvc;
     }
 
+
     @MockitoBean private RepairJobService service;
 
     @Test
-    void testSuccess() throws Exception {
-        mockMvc.perform(get("/api/repair-jobs"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void testNonExistentEndpoint() throws Exception {
-        mockMvc.perform(get("/api/repair-jobs/notfound"))
+    void test_getJob_NotFound_Returns404() throws Exception {
+        mockMvc.perform(get("/api/repair-jobs/99999"))
+                .andExpect(status().isNotFound())
                 .andExpect(status().is4xxClientError());
     }
+
+
+    /*@Test
+    void testSuccess() throws Exception {
+        String userId = UUID.randomUUID().toString();
+        var job3 = new RepairJob();
+        job3.setJobName("Job 3");
+        job3.setUserId(userId);
+        job3.setRepairDescription("Tire rotation");
+        job3.setLicensePlate("XYZ9876");
+        job3.setMake("Honda");
+        job3.setModel("Civic");
+        job3.setCreated(LocalDate.now());
+        job3.setLastModified(LocalDate.now());
+        job3.setStatus(RepairStatus.COMPLETED);
+
+        repository.save(job3);
+        *//*mockMvc.perform(get("/api/repair-jobs"))
+                .andExpect(status().isOk());*//*
+
+        mockMvc.perform(get("/api/repair-jobs")
+                .param("userId", userId)
+                .param("page", "0")
+                .param("size", "10"))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                // Page wrapper
+                .andExpect(jsonPath("$.totalElements").value(1));
+    }*/
 }

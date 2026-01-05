@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS repairjob;
 
 CREATE TABLE repairjob (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  job_name VARCHAR(50),
+  name VARCHAR(50),
   user_id VARCHAR(36),
   repair_description VARCHAR(255),
   license_plate VARCHAR(7),

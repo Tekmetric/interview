@@ -41,8 +41,8 @@ public class RepairJob {
 
     // job name
     @NotBlank
-    @Column(name = "job_name", nullable = false)
-    private String jobName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     // who owns the vehicle
     @NotBlank

@@ -31,7 +31,7 @@ class RepairJobIntegrationTest {
     void testCreateRepairJob() {
         var requestJson = """
             {
-              "jobName": "First Repair Job",
+              "name": "First Repair Job",
               "userId": "user-123",
               "licensePlate": "ABC1234",
               "repairDescription": "repair description",
@@ -53,7 +53,7 @@ class RepairJobIntegrationTest {
     @SneakyThrows
     void testGetRepairJobById() {
         var job = RepairJob.builder()
-                .jobName("New Repair Job")
+                .name("New Repair Job")
                 .userId("user-123")
                 .licensePlate("XYZ000")
                 .make("Honda")
@@ -81,7 +81,7 @@ class RepairJobIntegrationTest {
     @SneakyThrows
     void testUpdateRepairJob() {
         var job = RepairJob.builder()
-                .jobName("New Repair Job")
+                .name("New Repair Job")
                 .userId("user-123")
                 .licensePlate("AAA111")
                 .make("Ford")
@@ -94,7 +94,7 @@ class RepairJobIntegrationTest {
 
         var updateJson = """
             {
-             "jobName": "Updated Name",
+              "name": "Updated Name",
               "userId": "user-123",
               "licensePlate": "BBB222",
               "repairDescription": "repair description",
@@ -122,7 +122,7 @@ class RepairJobIntegrationTest {
     void testDeleteRepairJob() {
 
         var job = RepairJob.builder()
-                .jobName("New Repair Job")
+                .name("New Repair Job")
                 .userId("user-123")
                 .licensePlate("ABC1234")
                 .make("Toyota")

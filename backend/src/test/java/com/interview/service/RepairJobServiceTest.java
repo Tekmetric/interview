@@ -60,7 +60,7 @@ public class RepairJobServiceTest {
         var savedJob = service.createJob(job);
 
         assertThat(savedJob.getId()).isNotNull();
-        assertThat(savedJob.getJobName()).isEqualTo(savedJob.getJobName());
+        assertThat(savedJob.getName()).isEqualTo(savedJob.getName());
         assertThat(savedJob.getUserId()).isEqualTo(savedJob.getUserId());
         assertThat(savedJob.getRepairDescription()).isEqualTo(savedJob.getRepairDescription());
         assertThat(savedJob.getLicensePlate()).isEqualTo(savedJob.getLicensePlate());
@@ -81,8 +81,8 @@ public class RepairJobServiceTest {
         var originalLastModified = savedJob.getLastModified();
 
         // update request
-        var request =  RepairJob.builder()
-                .jobName("New Job Name")
+        var request = RepairJob.builder()
+                .name("New Job Name")
                 .userId("123")
                 .repairDescription("none")
                 .licensePlate("none")
@@ -98,7 +98,7 @@ public class RepairJobServiceTest {
         // now get the job again and check for updates
         var reloaded = service.getJobById(savedJob.getId()).orElseThrow();
 
-        assertThat(reloaded.getJobName()).isEqualTo(request.getJobName());
+        assertThat(reloaded.getName()).isEqualTo(request.getName());
         assertThat(reloaded.getUserId()).isEqualTo(request.getUserId());
         assertThat(reloaded.getRepairDescription()).isEqualTo(request.getRepairDescription());
         assertThat(reloaded.getLicensePlate()).isEqualTo(request.getLicensePlate());
@@ -174,9 +174,9 @@ public class RepairJobServiceTest {
         return createRepairJob("Test Repair Job", userId, repairDescription, licensePlate, make, model, CREATED);
     }
 
-    private RepairJob createRepairJob(String jobName, String userId, String repairDescription, String licensePlate, String make, String model, RepairStatus status) {
+    private RepairJob createRepairJob(String name, String userId, String repairDescription, String licensePlate, String make, String model, RepairStatus status) {
         return RepairJob.builder()
-                .jobName(jobName)
+                .name(name)
                 .userId(userId)
                 .repairDescription(repairDescription)
                 .licensePlate(licensePlate)

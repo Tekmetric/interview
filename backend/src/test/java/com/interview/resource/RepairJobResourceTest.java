@@ -49,7 +49,7 @@ public class RepairJobResourceTest {
 
         var requestJson = """
             {
-              "jobName": "First Repair Job",
+              "name": "First Repair Job",
               "userId": "user-123",
               "licensePlate": "ABC1234",
               "repairDescription": "repair description",
@@ -101,7 +101,7 @@ public class RepairJobResourceTest {
 
         var requestJson = """
         {
-          "jobName": "First Repair Job",
+          "name": "First Repair Job",
           "userId": "user-123",
           "licensePlate": "ABC1234",
           "repairDescription": "repair description",

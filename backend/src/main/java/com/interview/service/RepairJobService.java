@@ -37,7 +37,7 @@ public class RepairJobService {
                 .orElseThrow(() -> new RepairJobNotFoundException("Repair job not found with id " + id));
 
         job.setUserId(request.getUserId());
-        job.setJobName(request.getJobName());
+        job.setName(request.getName());
         job.setRepairDescription(request.getRepairDescription());
         job.setLicensePlate(request.getLicensePlate());
         job.setMake(request.getMake());

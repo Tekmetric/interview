@@ -1,5 +1,5 @@
 INSERT INTO repairjob (
-    job_name, user_id, repair_description,
+    name, user_id, repair_description,
     license_plate, make, model, status,
     created, last_modified
 ) VALUES

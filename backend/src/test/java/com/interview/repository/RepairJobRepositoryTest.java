@@ -20,7 +20,7 @@ public class RepairJobRepositoryTest {
     public void testFindByUserId() {
         var userId = UUID.randomUUID().toString();
         var repairJob = RepairJob.builder()
-                .jobName("New Test Job")
+                .name("New Test Job")
                 .userId(userId)
                 .licensePlate("ABC1234")
                 .make("Toyota")
@@ -31,7 +31,7 @@ public class RepairJobRepositoryTest {
 
         var userId2 = UUID.randomUUID().toString();
         var repairJob2 = RepairJob.builder()
-                .jobName("New Test Job")
+                .name("New Test Job")
                 .userId(userId2)
                 .licensePlate("ABC1234")
                 .make("Toyota")
@@ -49,7 +49,7 @@ public class RepairJobRepositoryTest {
     public void testFindByStatus() {
         var userId = UUID.randomUUID().toString();
         var job = RepairJob.builder()
-                .jobName("New Test Job")
+                .name("New Test Job")
                 .userId(userId)
                 .licensePlate("ABC1234")
                 .make("Toyota")
@@ -59,7 +59,7 @@ public class RepairJobRepositoryTest {
                 .build();
 
         var job2 = RepairJob.builder()
-                .jobName("New Test Job")
+                .name("New Test Job")
                 .userId(userId)
                 .licensePlate("ABC1234")
                 .make("Toyota")

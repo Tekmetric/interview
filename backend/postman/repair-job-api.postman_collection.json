@@ -338,7 +338,7 @@
       ]
     },
     {
-      "name": "Search Repair Jobs by User Id",
+      "name": "Search Repair Jobs by User Id = 19dfa1e6-6970-45fc-bf62-1a5e50a16888",
       "request": {
         "method": "GET",
         "header": [

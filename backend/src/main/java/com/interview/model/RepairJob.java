@@ -39,22 +39,18 @@ public class RepairJob {
     @JsonProperty(access = READ_ONLY)
     private Long id;
 
-    // job name
     @NotBlank
     @Column(name = "name", nullable = false)
     private String name;
 
-    // who owns the vehicle
     @NotBlank
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    // what is being repaired
     @NotBlank
     @Column(name = "repair_description", nullable = false)
     private String repairDescription;
 
-    // vehicle details
     @NotBlank
     @Column(name = "license_plate", nullable = false)
     private String licensePlate;

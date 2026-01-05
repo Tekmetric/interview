@@ -28,7 +28,7 @@ public class RepairJobServiceTest {
     @Test
     void testGetAllRepairJobs() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("Repair Job #1", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        var job = createRepairJob("Engine Diagnostic", userId, "engine diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
         service.createRepairJob(job);
 
         var jobs = service.getAllRepairJobs();
@@ -38,7 +38,7 @@ public class RepairJobServiceTest {
     @Test
     void getRepairJobById() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("Repair Job #123", userId, "Engine Diagnostic",
+        var job = createRepairJob("Engine Diagnostic", userId, "engine diagnostic",
                 "IT1234", "Toyota", "Corolla", CREATED);
 
         var savedJob = service.createRepairJob(job);
@@ -53,7 +53,7 @@ public class RepairJobServiceTest {
     @Test
     void testCreateRepairJob() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("Repair Job #2", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        var job = createRepairJob("Engine Diagnostic", userId, "engine diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
         var savedJob = service.createRepairJob(job);
 
         assertThat(savedJob.getId()).isNotNull();
@@ -69,7 +69,7 @@ public class RepairJobServiceTest {
     @Test
     void testUpdateRepairJob() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("Repair Job #1", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        var job = createRepairJob("Engine Diagnostic", userId, "engine diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
 
         var savedJob = service.createRepairJob(job);
 
@@ -141,9 +141,9 @@ public class RepairJobServiceTest {
         var userId = UUID.randomUUID().toString();
 
         // create jobs
-        var job1 = createRepairJob("Need a Engine Diagnostic", userId, "Engine Diagnostic", licensePlate, "Toyota", "Corolla", CREATED);
-        var job2 = createRepairJob("Oil Changed Needed", userId, "Oil Change", licensePlate, "Toyota", "Corolla", CANCELLED);
-        var job3 = createRepairJob("Oil Changed Needed", userId, "Oil Change", licensePlate2, "Toyota", "Corolla", CANCELLED);
+        var job1 = createRepairJob("Engine Diagnostic", userId, "Engine Diagnostic", licensePlate, "Toyota", "Corolla", CREATED);
+        var job2 = createRepairJob("Oil Changed", userId, "Oil Change", licensePlate, "Toyota", "Corolla", CANCELLED);
+        var job3 = createRepairJob("Oil Changed", userId, "Oil Change", licensePlate2, "Toyota", "Corolla", CANCELLED);
 
         service.createRepairJob(job1);
         service.createRepairJob(job2);

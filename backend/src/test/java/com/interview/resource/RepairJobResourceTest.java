@@ -13,15 +13,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Optional;
 
 import static com.interview.model.RepairStatus.CREATED;
+import static com.interview.model.RepairStatus.IN_PROGRESS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
@@ -41,20 +40,21 @@ public class RepairJobResourceTest {
     void testPostSuccess() {
         var job = RepairJob.builder()
                 .id(15L)
+                .name("Engine Diagnostic")
                 .userId("user-123")
                 .licensePlate("ABC1234")
                 .make("Toyota")
                 .model("Corolla")
-                .repairDescription("repair")
+                .repairDescription("engine diagnostic")
                 .status(CREATED)
                 .build();
 
         var requestJson = """
             {
-              "name": "Repair Job #1",
+              "name": "Engine Diagnostic",
               "userId": "user-123",
               "licensePlate": "ABC1234",
-              "repairDescription": "repair description",
+              "repairDescription": "engine diagnostic",
               "make": "Toyota",
               "model": "Corolla",
               "status": "CREATED"
@@ -74,11 +74,12 @@ public class RepairJobResourceTest {
     void testGetSuccess() {
         var job = RepairJob.builder()
                 .id(15L)
+                .name("Engine Diagnostic")
                 .userId("user-123")
                 .licensePlate("ABC1234")
                 .make("Toyota")
                 .model("Corolla")
-                .repairDescription("repair")
+                .repairDescription("engine diagnostic")
                 .status(CREATED)
                 .build();
 
@@ -93,20 +94,21 @@ public class RepairJobResourceTest {
     void testPutSuccess() {
         var request = RepairJob.builder()
                 .id(15L)
+                .name("Engine Diagnostic")
                 .userId("user-123")
-                .licensePlate("ZZZ9999")
+                .licensePlate("ABC1234")
                 .make("Toyota")
                 .model("Corolla")
-                .repairDescription("repair")
-                .status(CREATED)
+                .repairDescription("engine diagnostic")
+                .status(IN_PROGRESS)
                 .build();
 
         var requestJson = """
         {
-          "name": "Repair Job Update",
+          "name": "Engine Diagnostic",
           "userId": "user-123",
           "licensePlate": "ABC1234",
-          "repairDescription": "repair description",
+          "repairDescription": "engine diagnostic",
           "make": "Toyota",
           "model": "Corolla",
           "status": "IN_PROGRESS"
@@ -117,18 +119,19 @@ public class RepairJobResourceTest {
         mockMvc.perform(put("/api/repair-jobs/15")
                         .contentType(APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
     }
 
     @Test
     @SneakyThrows
-    void testPutFailure() {
+    void testPutFailure_repairjobNotFound() {
         var requestJson = """
         {
-          "name": "Repair Job Update",
+          "name": "Engine Diagnostic",
           "userId": "user-123",
           "licensePlate": "ABC1234",
-          "repairDescription": "repair description",
+          "repairDescription": "engine diagnostic",
           "make": "Toyota",
           "model": "Corolla",
           "status": "IN_PROGRESS"
@@ -146,28 +149,17 @@ public class RepairJobResourceTest {
     @Test
     @SneakyThrows
     void testPutSuccess_invalid_status() {
-        var request = RepairJob.builder()
-                .id(15L)
-                .userId("user-123")
-                .licensePlate("ZZZ9999")
-                .make("Toyota")
-                .model("Corolla")
-                .repairDescription("repair")
-                .status(CREATED)
-                .build();
-
         var requestJson = """
         {
-          "name": "Repair Job Update",
+          "name": "Engine Diagnostic",
           "userId": "user-123",
           "licensePlate": "ABC1234",
-          "repairDescription": "repair description",
+          "repairDescription": "engine diagnostic",
           "make": "Toyota",
           "model": "Corolla",
           "status": "INVALID_STATUS"
         }
         """;
-        when(service.updateRepairJob(eq(15L), any())).thenReturn(request);
 
         mockMvc.perform(put("/api/repair-jobs/15")
                         .contentType(APPLICATION_JSON)

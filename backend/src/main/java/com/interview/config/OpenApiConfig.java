@@ -18,7 +18,8 @@ public class OpenApiConfig {
            .info(new Info()
                .title("Repair Job API")
                .version("1.0")
-               .summary("This API lets you do CRUD operations on Repair Jobs"))
+               .summary("This API lets you do CRUD operations on Repair Jobs")
+               .termsOfService("This API can only be used internally"))
            .servers(List.of(new Server().url("http://localhost:8080").description("Local Instance")));
    }
 }

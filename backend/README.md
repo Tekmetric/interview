@@ -50,14 +50,8 @@ A Spring Boot REST API for managing **automotive repair jobs**, featuring:
 
 ## ⚙️ Running the Application
 
-### Build
-```bash
-mvn clean package
-```
-
 ### Run
 ```bash
-
 mvn package && java -jar target/interview-1.0-SNAPSHOT.jar
 ```
 
@@ -173,9 +167,7 @@ curl -X GET http://localhost:8080/api/repair-jobs/999
 
 ### Example Request
 ```bash
-curl -X POST http://localhost:8080/api/repair-jobs \
-  -H "Content-Type: application/json" \
-  -d '{
+curl -X POST http://localhost:8080/api/repair-jobs   -H "Content-Type: application/json"   -d '{
     "name": "Brake Inspection",
     "userId": "user-123",
     "repairDescription": "Front brakes grinding",
@@ -210,9 +202,7 @@ curl -X POST http://localhost:8080/api/repair-jobs \
 
 ### Example Request
 ```bash
-curl -X PUT http://localhost:8080/api/repair-jobs/1 \
-  -H "Content-Type: application/json" \
-  -d '{
+curl -X PUT http://localhost:8080/api/repair-jobs/1   -H "Content-Type: application/json"   -d '{
     "name": "Brake Inspection Updated",
     "userId": "user-123",
     "repairDescription": "Replace pads + rotors",
@@ -259,9 +249,8 @@ curl -X DELETE http://localhost:8080/api/repair-jobs/1
 
 ## 🛡 Error Handling
 
-Centralized in `GlobalExceptionHandler`.
+All errors are handled centrally in `GlobalExceptionHandler` so the API always returns a **consistent JSON error format**:
 
-### Example — Not Found
 ```json
 {
   "timestamp": "2026-01-04T13:22:11.345",
@@ -271,6 +260,92 @@ Centralized in `GlobalExceptionHandler`.
   "path": "/api/repair-jobs/99"
 }
 ```
+
+The API currently supports **three structured error types**:
+
+---
+
+### 🔴 404 — Not Found (`RepairJobNotFoundException`)
+
+Returned when a repair job does not exist.
+
+#### Example Request
+```bash
+curl -X PUT http://localhost:8080/api/repair-jobs/999
+```
+
+#### Example Response
+```json
+{
+  "timestamp": "2026-01-04T13:22:11.345",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Repair job not found with id 999",
+  "path": "/api/repair-jobs/999"
+}
+```
+
+---
+
+### 🟡 400 — Bad Request (`HttpMessageNotReadableException`)
+
+Returned when the **request body is invalid JSON** or contains **invalid enum values**
+(for example, sending `status = "DONE"` which is not valid).
+
+#### Example Request
+```bash
+curl -X POST http://localhost:8080/api/repair-jobs   -H "Content-Type: application/json"   -d '{
+    "name": "Test",
+    "userId": "user-123",
+    "repairDescription": "desc",
+    "licensePlate": "ABC1234",
+    "make": "Toyota",
+    "model": "Camry",
+    "status": "DONE"
+  }'
+```
+
+#### Example Response
+```json
+{
+  "timestamp": "2026-01-04T13:40:22.551",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Invalid request body — check field formats and enum values",
+  "path": "/api/repair-jobs"
+}
+```
+
+---
+
+### ⚫ 500 — Internal Server Error (`Exception`)
+
+Returned for **unexpected or unhandled errors**.
+
+#### Example Response
+```json
+{
+  "timestamp": "2026-01-04T13:45:10.110",
+  "status": 500,
+  "error": "Internal Server Error",
+  "message": "No static resource jobs/1",
+  "path": "/api/repair-jobs"
+}
+```
+
+---
+
+### 📌 Error Response Format
+
+Every error follows this structure:
+
+| Field | Description |
+|------|-------------|
+| `timestamp` | Time the error occurred |
+| `status` | HTTP status code |
+| `error` | Status text |
+| `message` | Human-readable description |
+| `path` | The requested URI |
 
 ---
 

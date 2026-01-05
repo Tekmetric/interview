@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static java.time.LocalDateTime.now;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -15,6 +16,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RepairJobNotFoundException.class)
+    @ResponseStatus(NOT_FOUND)
     @ResponseBody
     public ResponseEntity<ApiError> handleRepairJobNotFound(
             RepairJobNotFoundException ex,
@@ -32,6 +34,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ResponseBody
     public ResponseEntity<ApiError> handleGeneralError(
             Exception ex,
             HttpServletRequest request) {

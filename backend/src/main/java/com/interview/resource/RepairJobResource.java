@@ -1,6 +1,5 @@
 package com.interview.resource;
 
-import com.interview.exception.RepairJobNotFoundException;
 import com.interview.model.RepairJob;
 import com.interview.model.RepairStatus;
 import com.interview.service.RepairJobService;
@@ -49,10 +48,10 @@ public class RepairJobResource {
     @GetMapping("/{id}")
     @Operation(summary = "Get a repair job by id")
     public ResponseEntity<RepairJob> getJobById(@PathVariable Long id) {
-        var job = service.getJobById(id)
-                .orElseThrow(() -> new RepairJobNotFoundException(id)); //todo come back and see if i can push this in the service later
-
-        return ResponseEntity.ok(job);
+        log.info("Get repair job by id: {}", id);
+        return service.getJobById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping

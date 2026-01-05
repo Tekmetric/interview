@@ -1,5 +1,6 @@
 package com.interview.resource;
 
+import com.interview.exception.RepairJobNotFoundException;
 import com.interview.model.RepairJob;
 import com.interview.service.RepairJobService;
 import lombok.SneakyThrows;
@@ -45,8 +46,6 @@ public class RepairJobResourceTest {
                 .status(CREATED)
                 .build();
 
-        when(service.createJob(any())).thenReturn(job);
-
         var requestJson = """
             {
               "name": "First Repair Job",
@@ -58,6 +57,8 @@ public class RepairJobResourceTest {
               "status": "CREATED"
             }
             """;
+
+        when(service.createJob(any())).thenReturn(job);
 
         mockMvc.perform(post("/api/repair-jobs")
                         .contentType(APPLICATION_JSON)
@@ -97,8 +98,6 @@ public class RepairJobResourceTest {
                 .status(CREATED)
                 .build();
 
-        when(service.updateJob(eq(15L), any())).thenReturn(request);
-
         var requestJson = """
         {
           "name": "First Repair Job",
@@ -110,10 +109,35 @@ public class RepairJobResourceTest {
           "status": "IN_PROGRESS"
         }
         """;
+        when(service.updateJob(eq(15L), any())).thenReturn(request);
+
         mockMvc.perform(put("/api/repair-jobs/15")
                         .contentType(APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void testPutFailure() {
+        var requestJson = """
+        {
+          "name": "First Repair Job",
+          "userId": "user-123",
+          "licensePlate": "ABC1234",
+          "repairDescription": "repair description",
+          "make": "Toyota",
+          "model": "Corolla",
+          "status": "IN_PROGRESS"
+        }
+        """;
+
+        when(service.updateJob(eq(15L), any())).thenThrow(RepairJobNotFoundException.class);
+
+        mockMvc.perform(put("/api/repair-jobs/15")
+                        .contentType(APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isNotFound());
     }
 
     @Test

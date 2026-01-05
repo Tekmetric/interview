@@ -3,14 +3,14 @@ package com.interview.response;
 import com.interview.exception.RepairJobNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static java.time.LocalDateTime.now;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,6 +31,24 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(error, NOT_FOUND);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(BAD_REQUEST)
+    @ResponseBody
+    public ResponseEntity<ApiError> handleJsonParseError(
+            HttpMessageNotReadableException ex,
+            HttpServletRequest request) {
+
+        var error = new ApiError(
+                now(),
+                BAD_REQUEST.value(),
+                "Bad Request",
+                "Invalid request body — check field formats and enum values",
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

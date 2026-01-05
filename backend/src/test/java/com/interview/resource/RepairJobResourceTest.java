@@ -145,6 +145,38 @@ public class RepairJobResourceTest {
 
     @Test
     @SneakyThrows
+    void testPutSuccess_invalid_status() {
+        var request = RepairJob.builder()
+                .id(15L)
+                .userId("user-123")
+                .licensePlate("ZZZ9999")
+                .make("Toyota")
+                .model("Corolla")
+                .repairDescription("repair")
+                .status(CREATED)
+                .build();
+
+        var requestJson = """
+        {
+          "name": "Repair Job Update",
+          "userId": "user-123",
+          "licensePlate": "ABC1234",
+          "repairDescription": "repair description",
+          "make": "Toyota",
+          "model": "Corolla",
+          "status": "INVALID_STATUS"
+        }
+        """;
+        when(service.updateRepairJob(eq(15L), any())).thenReturn(request);
+
+        mockMvc.perform(put("/api/repair-jobs/15")
+                        .contentType(APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @SneakyThrows
     void testDeleteSuccess() {
         mockMvc.perform(delete("/api/repair-jobs/100"))
                 .andExpect(status().isNoContent());

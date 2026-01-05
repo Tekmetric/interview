@@ -18,7 +18,7 @@ public class RepairJobRepositoryTest {
     @Autowired private RepairJobRepository repairJobRepository;
 
     @Test
-    public void testFindByUserId() {
+    void testFindByUserId() {
         var userId = UUID.randomUUID().toString();
         var repairJob = RepairJob.builder()
                 .name("Oil Change")
@@ -47,7 +47,7 @@ public class RepairJobRepositoryTest {
     }
 
     @Test
-    public void testFindByStatus() {
+    void testFindByStatus() {
         var userId = UUID.randomUUID().toString();
         var job = RepairJob.builder()
                 .name("WindowShield Repair")

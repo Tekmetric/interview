@@ -26,17 +26,17 @@ public class RepairJobSpecifications {
         return repairJobSpecification;
     }
 
-    public static Specification<RepairJob> userIdEquals(String userId) {
+    private static Specification<RepairJob> userIdEquals(String userId) {
         return (root, query, cb) ->
                 cb.equal(cb.lower(root.get("userId")), userId.toLowerCase());
     }
 
-    public static Specification<RepairJob> statusEquals(com.interview.model.RepairStatus status) {
+    private static Specification<RepairJob> statusEquals(com.interview.model.RepairStatus status) {
         return (root, query, cb) ->
                 cb.equal(root.get("status"), status);
     }
 
-    public static Specification<RepairJob> licensePlate(String make) {
+    private static Specification<RepairJob> licensePlate(String make) {
         return (root, query, cb) ->
                 cb.equal(cb.lower(root.get("licensePlate")), make.toLowerCase());
     }

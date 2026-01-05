@@ -27,6 +27,21 @@ A Spring Boot REST API for managing **automotive repair jobs**, featuring:
 
 ---
 
+## 📁 Project Structure
+
+```
+src/main/java/com/interview
+ ├── model
+ ├── resource
+ ├── service
+ ├── repository
+ ├── specification
+ ├── exception
+ ├── response
+ ├── config
+```
+
+---
 ## 📦 Domain Model
 
 ### `RepairJob`
@@ -57,6 +72,16 @@ mvn package && java -jar target/interview-1.0-SNAPSHOT.jar
 
 ---
 
+## 🧪 Testing
+
+Run tests locally:
+
+```bash
+mvn test
+```
+or try the included postman tests
+
+
 ## 📄 API Documentation (Swagger)
 
 👉 http://localhost:8080/swagger-ui/index.html
@@ -72,6 +97,17 @@ JDBC URL: jdbc:h2:mem:testdb
 Username: sa
 Password: password
 ```
+
+---
+
+## ⏱ JPA Auditing
+
+Automatically sets:
+
+| Field | Behavior |
+|-------|---------|
+| created | Set once on insert |
+| lastModified | Updated every save |
 
 ---
 
@@ -251,6 +287,18 @@ curl -X DELETE http://localhost:8080/api/repair-jobs/1
 
 All errors are handled centrally in `GlobalExceptionHandler` so the API always returns a **consistent JSON error format**:
 
+### 📌 Error Response Format
+
+Every error follows this structure:
+
+| Field | Description |
+|------|-------------|
+| `timestamp` | Time the error occurred |
+| `status` | HTTP status code |
+| `error` | Status text |
+| `message` | Human-readable description |
+| `path` | The requested URI |
+
 ```json
 {
   "timestamp": "2026-01-04T13:22:11.345",
@@ -332,67 +380,3 @@ Returned for **unexpected or unhandled errors**.
   "path": "/api/repair-jobs"
 }
 ```
-
----
-
-### 📌 Error Response Format
-
-Every error follows this structure:
-
-| Field | Description |
-|------|-------------|
-| `timestamp` | Time the error occurred |
-| `status` | HTTP status code |
-| `error` | Status text |
-| `message` | Human-readable description |
-| `path` | The requested URI |
-
----
-
-## ⏱ JPA Auditing
-
-Automatically sets:
-
-| Field | Behavior |
-|-------|---------|
-| created | Set once on insert |
-| lastModified | Updated every save |
-
----
-
-## 🧪 Testing
-
-Run:
-
-```bash
-mvn test
-```
-
----
-
-## 📁 Project Structure
-
-```
-src/main/java/com/interview
- ├── model
- ├── resource
- ├── service
- ├── repository
- ├── specification
- ├── exception
- ├── response
- ├── config
-```
-
----
-
-## 🎯 Learning Goals Demonstrated
-
-✔ REST API design  
-✔ Pageable filtering  
-✔ Specifications  
-✔ Validation  
-✔ Global exception handling  
-✔ OpenAPI docs  
-✔ Auditing  
-✔ Integration testing  

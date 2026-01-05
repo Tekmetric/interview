@@ -96,7 +96,7 @@ public class RepairJobServiceTest {
                 .as("Expected repair job to exist after update")
                 .isPresent();
 
-        // unwrap
+        // check all fields
         var updated = updatedOptional.get();
         assertThat(updated)
                 .extracting(

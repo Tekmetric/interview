@@ -12,7 +12,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import static com.interview.model.RepairStatus.CREATED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,7 +34,7 @@ class RepairJobIntegrationTest {
     void testCreateRepairJob() {
         var requestJson = """
             {
-              "name": "First Repair Job",
+              "name": "Repair Job #1",
               "userId": "user-123",
               "licensePlate": "ABC1234",
               "repairDescription": "repair description",
@@ -53,7 +56,7 @@ class RepairJobIntegrationTest {
     @SneakyThrows
     void testGetRepairJobById() {
         var job = RepairJob.builder()
-                .name("New Repair Job")
+                .name("Repair Job #1")
                 .userId("user-123")
                 .licensePlate("XYZ000")
                 .make("Honda")
@@ -81,7 +84,7 @@ class RepairJobIntegrationTest {
     @SneakyThrows
     void testUpdateRepairJob() {
         var job = RepairJob.builder()
-                .name("New Repair Job")
+                .name("Repair Job #1")
                 .userId("user-123")
                 .licensePlate("AAA111")
                 .make("Ford")
@@ -94,7 +97,7 @@ class RepairJobIntegrationTest {
 
         var updateJson = """
             {
-              "name": "Updated Name",
+              "name": "Updated Repair Job Name",
               "userId": "user-123",
               "licensePlate": "BBB222",
               "repairDescription": "repair description",
@@ -120,9 +123,8 @@ class RepairJobIntegrationTest {
     @Test
     @SneakyThrows
     void testDeleteRepairJob() {
-
         var job = RepairJob.builder()
-                .name("New Repair Job")
+                .name("Repair Job #1")
                 .userId("user-123")
                 .licensePlate("ABC1234")
                 .make("Toyota")

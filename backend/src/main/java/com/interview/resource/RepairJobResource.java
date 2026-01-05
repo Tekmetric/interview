@@ -35,45 +35,45 @@ public class RepairJobResource {
 
     @GetMapping
     @Operation(summary = "Search repair jobs by userId, status, and license plate")
-    public Page<RepairJob> search(
+    public Page<RepairJob> searchRepairJobs(
             @RequestParam(required = false) String userId,
             @RequestParam(required = false) RepairStatus status,
             @RequestParam(required = false) String licensePlate,
             @ParameterObject Pageable pageable
     ) {
-        log.info("Searching repair jobs: userId={}, status={}, plate={}", userId, status, licensePlate);
-        return service.search(userId, status, licensePlate, pageable);
+        log.info("Searching repair jobs by userId: {}, status: {}, plate: {}", userId, status, licensePlate);
+        return service.searchRepairJobs(userId, status, licensePlate, pageable);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a repair job by id")
-    public ResponseEntity<RepairJob> getJobById(@PathVariable Long id) {
+    public ResponseEntity<RepairJob> getRepairJobById(@PathVariable Long id) {
         log.info("Get repair job by id: {}", id);
-        return service.getJobById(id)
+        return service.getRepairJobById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
     @Operation(summary = "Create a repair job")
-    public ResponseEntity<RepairJob> createJob(@Valid @RequestBody RepairJob repairJob) {
-        var job = service.createJob(repairJob);
-        log.info("Saved repair job {}", job);
+    public ResponseEntity<RepairJob> createRepairJob(@Valid @RequestBody RepairJob repairJob) {
+        var job = service.createRepairJob(repairJob);
+        log.info("Saved repair job: {}", job);
         return new ResponseEntity<>(job, CREATED);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a repair job")
-    public ResponseEntity<RepairJob> updateJob(@PathVariable Long id, @Valid @RequestBody RepairJob jobDetails) {
-        var updatedJob = service.updateJob(id, jobDetails);
-        log.info("Updated repair job {} -> {}", id, updatedJob);
+    public ResponseEntity<RepairJob> updateRepairJob(@PathVariable Long id, @Valid @RequestBody RepairJob jobDetails) {
+        var updatedJob = service.updateRepairJob(id, jobDetails);
+        log.info("Updated repair job with id {} for job: {}", id, updatedJob);
         return ResponseEntity.ok(updatedJob);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a repair job")
-    public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
-        service.deleteJob(id);
+    public ResponseEntity<Void> deleteRepairJob(@PathVariable Long id) {
+        service.deleteRepairJob(id);
         log.info("Deleted repair job {}", id);
         return ResponseEntity.noContent().build();
     }

@@ -18,7 +18,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
@@ -48,7 +51,7 @@ public class RepairJobResourceTest {
 
         var requestJson = """
             {
-              "name": "First Repair Job",
+              "name": "Repair Job #1",
               "userId": "user-123",
               "licensePlate": "ABC1234",
               "repairDescription": "repair description",
@@ -58,7 +61,7 @@ public class RepairJobResourceTest {
             }
             """;
 
-        when(service.createJob(any())).thenReturn(job);
+        when(service.createRepairJob(any())).thenReturn(job);
 
         mockMvc.perform(post("/api/repair-jobs")
                         .contentType(APPLICATION_JSON)
@@ -79,7 +82,7 @@ public class RepairJobResourceTest {
                 .status(CREATED)
                 .build();
 
-        when(service.getJobById(15L)).thenReturn(Optional.of(job));
+        when(service.getRepairJobById(15L)).thenReturn(Optional.of(job));
 
         mockMvc.perform(get("/api/repair-jobs/15"))
                 .andExpect(status().isOk());
@@ -100,7 +103,7 @@ public class RepairJobResourceTest {
 
         var requestJson = """
         {
-          "name": "First Repair Job",
+          "name": "Repair Job Update",
           "userId": "user-123",
           "licensePlate": "ABC1234",
           "repairDescription": "repair description",
@@ -109,7 +112,7 @@ public class RepairJobResourceTest {
           "status": "IN_PROGRESS"
         }
         """;
-        when(service.updateJob(eq(15L), any())).thenReturn(request);
+        when(service.updateRepairJob(eq(15L), any())).thenReturn(request);
 
         mockMvc.perform(put("/api/repair-jobs/15")
                         .contentType(APPLICATION_JSON)
@@ -122,7 +125,7 @@ public class RepairJobResourceTest {
     void testPutFailure() {
         var requestJson = """
         {
-          "name": "First Repair Job",
+          "name": "Repair Job Update",
           "userId": "user-123",
           "licensePlate": "ABC1234",
           "repairDescription": "repair description",
@@ -132,7 +135,7 @@ public class RepairJobResourceTest {
         }
         """;
 
-        when(service.updateJob(eq(15L), any())).thenThrow(RepairJobNotFoundException.class);
+        when(service.updateRepairJob(eq(15L), any())).thenThrow(RepairJobNotFoundException.class);
 
         mockMvc.perform(put("/api/repair-jobs/15")
                         .contentType(APPLICATION_JSON)
@@ -145,7 +148,7 @@ public class RepairJobResourceTest {
     void testDeleteSuccess() {
         mockMvc.perform(delete("/api/repair-jobs/100"))
                 .andExpect(status().isNoContent());
-        verify(service).deleteJob(any());
+        verify(service).deleteRepairJob(any());
     }
 
     @Test

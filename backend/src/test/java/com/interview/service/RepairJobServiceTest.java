@@ -3,8 +3,6 @@ package com.interview.service;
 import com.interview.Application;
 import com.interview.model.RepairJob;
 import com.interview.model.RepairStatus;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.UUID;
 
-import static com.interview.model.RepairStatus.*;
+import static com.interview.model.RepairStatus.CANCELLED;
+import static com.interview.model.RepairStatus.CREATED;
+import static com.interview.model.RepairStatus.IN_PROGRESS;
 import static java.util.Optional.empty;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -25,103 +25,113 @@ public class RepairJobServiceTest {
     @Autowired
     private RepairJobService service;
 
-    @Autowired
-    private EntityManager em;
-
     @Test
-    void testGetAllJobs() {
+    void testGetAllRepairJobs() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("First Repair Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
-        service.createJob(job);
+        var job = createRepairJob("Repair Job #1", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        service.createRepairJob(job);
 
-        var jobs = service.getAllJobs();
+        var jobs = service.getAllRepairJobs();
         assertThat(jobs.size()).isGreaterThan(1);
     }
 
     @Test
-    void getJobById() {
+    void getRepairJobById() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("First Repair Job", userId, "Engine Diagnostic",
+        var job = createRepairJob("Repair Job #123", userId, "Engine Diagnostic",
                 "IT1234", "Toyota", "Corolla", CREATED);
 
-        var savedJob = service.createJob(job);
-        assertThat(service.getJobById(savedJob.getId()))
+        var savedJob = service.createRepairJob(job);
+        assertThat(service.getRepairJobById(savedJob.getId()))
                 .as("Expected job lookup to return saved job")
                 .isPresent()
                 .get()
-                .extracting(RepairJob::getId)
-                .isEqualTo(savedJob.getId());
+                .extracting(RepairJob::getName)
+                .isEqualTo(savedJob.getName());
     }
 
     @Test
-    void testCreateJob() {
+    void testCreateRepairJob() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("First Repair Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
-        var savedJob = service.createJob(job);
+        var job = createRepairJob("Repair Job #2", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        var savedJob = service.createRepairJob(job);
 
         assertThat(savedJob.getId()).isNotNull();
-        assertThat(savedJob.getName()).isEqualTo(savedJob.getName());
-        assertThat(savedJob.getUserId()).isEqualTo(savedJob.getUserId());
-        assertThat(savedJob.getRepairDescription()).isEqualTo(savedJob.getRepairDescription());
-        assertThat(savedJob.getLicensePlate()).isEqualTo(savedJob.getLicensePlate());
-        assertThat(savedJob.getMake()).isEqualTo(savedJob.getMake());
-        assertThat(savedJob.getModel()).isEqualTo(savedJob.getModel());
+        assertThat(savedJob.getName()).isEqualTo(job.getName());
+        assertThat(savedJob.getUserId()).isEqualTo(job.getUserId());
+        assertThat(savedJob.getRepairDescription()).isEqualTo(job.getRepairDescription());
+        assertThat(savedJob.getLicensePlate()).isEqualTo(job.getLicensePlate());
+        assertThat(savedJob.getMake()).isEqualTo(job.getMake());
+        assertThat(savedJob.getModel()).isEqualTo(job.getModel());
         assertThat(savedJob.getStatus()).isEqualTo(CREATED);
     }
 
     @Test
-    @Transactional
-    void testUpdateJob() {
+    void testUpdateRepairJob() {
         var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("Update Test Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
+        var job = createRepairJob("Repair Job #1", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
 
-        var savedJob = service.createJob(job);
+        var savedJob = service.createRepairJob(job);
 
         var createdTime = savedJob.getCreated();
         var originalLastModified = savedJob.getLastModified();
 
         // update request
         var request = RepairJob.builder()
-                .name("New Job Name")
+                .name("Repair Job Update")
                 .userId("123")
-                .repairDescription("none")
-                .licensePlate("none")
-                .make("none")
-                .model("none")
+                .repairDescription("my repair should actually have been...")
+                .licensePlate("D12345")
+                .make("Chevy")
+                .model("Camaro")
                 .status(IN_PROGRESS).build();
 
-        service.updateJob(savedJob.getId(), request);
-
-        em.flush();
-        em.clear();
+        service.updateRepairJob(savedJob.getId(), request);
 
         // now get the job again and check for updates
-        var reloaded = service.getJobById(savedJob.getId()).orElseThrow();
+        var updatedOptional = service.getRepairJobById(savedJob.getId());
 
-        assertThat(reloaded.getName()).isEqualTo(request.getName());
-        assertThat(reloaded.getUserId()).isEqualTo(request.getUserId());
-        assertThat(reloaded.getRepairDescription()).isEqualTo(request.getRepairDescription());
-        assertThat(reloaded.getLicensePlate()).isEqualTo(request.getLicensePlate());
-        assertThat(reloaded.getMake()).isEqualTo(request.getModel());
-        assertThat(reloaded.getModel()).isEqualTo(request.getModel());
+        // verify record exists
+        assertThat(updatedOptional)
+                .as("Expected repair job to exist after update")
+                .isPresent();
 
-        assertThat(reloaded.getStatus()).isEqualTo(request.getStatus());
+        // unwrap
+        var updated = updatedOptional.get();
+        assertThat(updated)
+                .extracting(
+                        RepairJob::getName,
+                        RepairJob::getUserId,
+                        RepairJob::getRepairDescription,
+                        RepairJob::getLicensePlate,
+                        RepairJob::getMake,
+                        RepairJob::getModel,
+                        RepairJob::getStatus
+                )
+                .containsExactly(
+                        request.getName(),
+                        request.getUserId(),
+                        request.getRepairDescription(),
+                        request.getLicensePlate(),
+                        request.getMake(),
+                        request.getModel(),
+                        request.getStatus()
+                );
 
-        //ensure created is the same
-        assertThat(reloaded.getCreated()).isEqualTo(createdTime);
-        //ensure lastModified was updated
-        assertThat(reloaded.getLastModified()).isAfter(originalLastModified);
+        // ensure created is unchanged
+        assertThat(updated.getCreated()).isEqualTo(createdTime);
+        // ensure lastModified was updated
+        assertThat(updated.getLastModified()).isAfter(originalLastModified);
     }
 
     @Test
     void testDeleteJob() {
-        var job = createRepairJob();
-        var saved = service.createJob(job);
-        var id = saved.getId();
+        var savedRepairJob = service.createRepairJob(createRepairJob());
+        var id = savedRepairJob.getId();
         assertThat(id).isNotNull();
 
-        service.deleteJob(id);
-        assertThat(service.getJobById(id)).isEqualTo(empty());
+        service.deleteRepairJob(id);
+        assertThat(service.getRepairJobById(id)).isEqualTo(empty());
     }
 
     @Test
@@ -134,35 +144,26 @@ public class RepairJobServiceTest {
         var job1 = createRepairJob("Need a Engine Diagnostic", userId, "Engine Diagnostic", licensePlate, "Toyota", "Corolla", CREATED);
         var job2 = createRepairJob("Oil Changed Needed", userId, "Oil Change", licensePlate, "Toyota", "Corolla", CANCELLED);
         var job3 = createRepairJob("Oil Changed Needed", userId, "Oil Change", licensePlate2, "Toyota", "Corolla", CANCELLED);
-        service.createJob(job1);
-        service.createJob(job2);
-        service.createJob(job3);
 
-        // search by status and licensePlate
-        var jobsByStatus = service.search(null, CREATED, licensePlate, unpaged());
-        assertThat(jobsByStatus.getContent().size()).isEqualTo(1);
+        service.createRepairJob(job1);
+        service.createRepairJob(job2);
+        service.createRepairJob(job3);
 
-        var jobsBy = service.search(null, CANCELLED, licensePlate, unpaged());
-        assertThat(jobsBy.getContent().size()).isEqualTo(1);
+        // search by Created and licensePlate
+        var jobsByCreatedAndLicensePlate = service.searchRepairJobs(null, CREATED, licensePlate, unpaged());
+        assertThat(jobsByCreatedAndLicensePlate.getContent().size()).isEqualTo(1);
+
+        // search by Cancelled and licensePlate
+        var jobsByCancelledAndLicensePlate = service.searchRepairJobs(null, CANCELLED, licensePlate, unpaged());
+        assertThat(jobsByCancelledAndLicensePlate.getContent().size()).isEqualTo(1);
 
         // search by license plate only
-        var allLicensePlateJobs = service.search(null, null, licensePlate, unpaged());
+        var allLicensePlateJobs = service.searchRepairJobs(null, null, licensePlate, unpaged());
         assertThat(allLicensePlateJobs.getContent().size()).isEqualTo(2);
 
-        // search for all jobs by userid
-        var allJobs = service.search(userId, null, null, unpaged());
+        // search for all jobs by userid only
+        var allJobs = service.searchRepairJobs(userId, null, null, unpaged());
         assertThat(allJobs.getContent().size()).isEqualTo(3);
-    }
-
-    @Test
-    void testSearch_getJobsByUserId() {
-        var userId = UUID.randomUUID().toString();
-        var job = createRepairJob("First Repair Job", userId, "Engine Diagnostic", "IT1234", "Toyota", "Corolla", CREATED);
-
-        service.createJob(job);
-
-        var jobs = service.search(userId, null, null, unpaged());
-        assertThat(jobs.getContent().size()).isEqualTo(1);
     }
 
     private RepairJob createRepairJob() {

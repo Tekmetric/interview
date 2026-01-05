@@ -20,20 +20,20 @@ public class RepairJobService {
         this.repository = repository;
     }
 
-    public List<RepairJob> getAllJobs() {
+    public List<RepairJob> getAllRepairJobs() {
         return repository.findAll();
     }
 
-    public Optional<RepairJob> getJobById(Long id) {
+    public Optional<RepairJob> getRepairJobById(Long id) {
         return repository.findById(id);
     }
 
-    public RepairJob createJob(RepairJob job) {
+    public RepairJob createRepairJob(RepairJob job) {
         return repository.save(job);
     }
 
-    public RepairJob updateJob(Long id, RepairJob request) {
-        var job = getJobById(id)
+    public RepairJob updateRepairJob(Long id, RepairJob request) {
+        var job = getRepairJobById(id)
                 .orElseThrow(() -> new RepairJobNotFoundException("Repair job not found with id " + id));
 
         job.setUserId(request.getUserId());
@@ -47,15 +47,15 @@ public class RepairJobService {
     }
 
 
-    public Page<RepairJob> search(String userId,
-                                  RepairStatus status,
-                                  String licensePlate,
-                                  Pageable pageable) {
+    public Page<RepairJob> searchRepairJobs(String userId,
+                                            RepairStatus status,
+                                            String licensePlate,
+                                            Pageable pageable) {
         return repository.search(userId, status, licensePlate, pageable);
     }
 
 
-    public void deleteJob(Long id) {
+    public void deleteRepairJob(Long id) {
         repository.deleteById(id);
     }
 }

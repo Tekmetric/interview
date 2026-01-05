@@ -7,7 +7,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.UUID;
 
-import static com.interview.model.RepairStatus.*;
+import static com.interview.model.RepairStatus.COMPLETED;
+import static com.interview.model.RepairStatus.CANCELLED;
 import static java.util.List.of;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.data.domain.Pageable.unpaged;

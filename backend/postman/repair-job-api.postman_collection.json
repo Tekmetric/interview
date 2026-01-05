@@ -1,0 +1,384 @@
+{
+  "info": {
+    "name": "Repair Job API",
+    "_postman_id": "b1f4f9b0-aaaa-bbbb-cccc-ddddeeeeffff",
+    "description": "Postman collection for testing the Repair Job Spring Boot REST API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "repairJobId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Create Repair Job",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Brake Inspection\",\n  \"userId\": \"user-123\",\n  \"repairDescription\": \"Front brakes grinding\",\n  \"licensePlate\": \"ABC1234\",\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"status\": \"CREATED\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/repair-jobs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "repair-jobs"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Response has id and fields\", function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json).to.have.property('id');",
+              "    pm.expect(json.name).to.eql('Brake Inspection');",
+              "    pm.expect(json.userId).to.eql('user-123');",
+              "});",
+              "",
+              "// Store id for use in later requests",
+              "var created = pm.response.json();",
+              "pm.collectionVariables.set('repairJobId', created.id);",
+              "pm.test(\"Stored repairJobId variable\", function () {",
+              "    pm.expect(pm.collectionVariables.get('repairJobId')).to.exist;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Repair Job",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/repair-jobs/{{repairJobId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "repair-jobs",
+            "{{repairJobId}}"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (!pm.collectionVariables.get('repairJobId')) {",
+              "    console.warn('repairJobId is not set. Run \"Create Repair Job\" first.');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response has expected id\", function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json).to.have.property('id');",
+              "    pm.expect(String(json.id)).to.eql(String(pm.collectionVariables.get('repairJobId')));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update Repair Job",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Brake Inspection Updated\",\n  \"userId\": \"user-123\",\n  \"repairDescription\": \"Replace pads + rotors\",\n  \"licensePlate\": \"ABC1234\",\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"status\": \"IN_PROGRESS\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/repair-jobs/{{repairJobId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "repair-jobs",
+            "{{repairJobId}}"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (!pm.collectionVariables.get('repairJobId')) {",
+              "    console.warn('repairJobId is not set. Run \"Create Repair Job\" first.');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Job was updated\", function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.status).to.eql('IN_PROGRESS');",
+              "    pm.expect(json.name).to.eql('Brake Inspection Updated');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete Repair Job",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "*/*"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/repair-jobs/{{repairJobId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "repair-jobs",
+            "{{repairJobId}}"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (!pm.collectionVariables.get('repairJobId')) {",
+              "    console.warn('repairJobId is not set. Run \"Create Repair Job\" first.');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204\", function () {",
+              "    pm.response.to.have.status(204);",
+              "});",
+              "",
+              "// Optional: Confirm that subsequent GET returns 404",
+              "pm.sendRequest({",
+              "  url: pm.collectionVariables.get('baseUrl') + '/api/repair-jobs/' + pm.collectionVariables.get('repairJobId'),",
+              "  method: 'GET'",
+              "}, function (err, res) {",
+              "  if (err) {",
+              "    console.log('Follow-up GET failed:', err);",
+              "    return;",
+              "  }",
+              "  pm.test('Deleted job now returns 404', function () {",
+              "    pm.expect(res.code).to.eql(404);",
+              "  });",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search ALL Repair Jobs",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/repair-jobs?page=0&size=10&sort=created,asc",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","repair-jobs"],
+          "query": [
+            { "key": "page", "value": "0" },
+            { "key": "size", "value": "10" },
+            { "key": "sort", "value": "created,asc" }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"All returned statuses are CREATED\", function () {",
+              "    var json = pm.response.json();",
+              "    json.content.forEach(j => pm.expect(j.status).to.eql('CREATED'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Repair Jobs by Status = CREATED",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/repair-jobs?status=CREATED&page=0&size=10&sort=created,asc",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","repair-jobs"],
+          "query": [
+            { "key": "status", "value": "CREATED" },
+            { "key": "page", "value": "0" },
+            { "key": "size", "value": "10" },
+            { "key": "sort", "value": "created,asc" }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"All returned statuses are CREATED\", function () {",
+              "    var json = pm.response.json();",
+              "    json.content.forEach(j => pm.expect(j.status).to.eql('CREATED'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Repair Jobs by Status = CREATED AND LicensePlate=ABC1234",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/repair-jobs?status=CREATED&licensePlate=ABC1234&page=0&size=10&sort=created,asc",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","repair-jobs"],
+          "query": [
+            { "key": "status", "value": "CREATED" },
+            { "key": "licensePlate", "value": "ABC1234" },
+            { "key": "page", "value": "0" },
+            { "key": "size", "value": "10" },
+            { "key": "sort", "value": "created,asc" }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"All returned statuses are CREATED\", function () {",
+              "    var json = pm.response.json();",
+              "    json.content.forEach(j => pm.expect(j.status).to.eql('CREATED'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

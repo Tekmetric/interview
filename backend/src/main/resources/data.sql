@@ -3,14 +3,15 @@ INSERT INTO repairjob (
     license_plate, make, model, status,
     created, last_modified
 ) VALUES
-      ('Job #1','19dfa1e6-6970-45fc-bf62-1a5e50a16888',
-       'Brake Pad Replacement','ABC1234','Toyota','Camry','CREATED',
+      ('Brake Pad Replacement','19dfa1e6-6970-45fc-bf62-1a5e50a16888',
+       'replace brake pads','ABC1234','Toyota','Camry','CREATED',
        '2026-01-01 09:00:00','2026-01-01 09:00:00'),
-
-      ('Job #2','19dfa1e6-6970-45fc-bf62-1a5e50a16888',
-       'Tire Inspection','ABC1234','Toyota','Camry','CANCELLED',
+      ('Tire Inspection','19dfa1e6-6970-45fc-bf62-1a5e50a16888',
+       'do a tire inspection','DEF1234','Chevy','Camaro','CREATED',
        '2025-12-23 14:30:00','2025-12-23 14:30:00'),
-
-      ('Job #3','3e017209-9817-4e5f-97d5-c32644618fdb',
-       'Oil Change & Multipoint inspection','XYZ9876','Honda','Civic','IN_PROGRESS',
+      ('Battery Replacement','19dfa1e6-6970-45fc-bf62-1a5e50a16888',
+       'replace the battery for the customer','DEF1234','Chevy','Camaro','IN_PROGRESS',
+       '2025-12-23 14:30:00','2025-12-23 14:30:00'),
+      ('Oil Change & Multipoint inspection','3e017209-9817-4e5f-97d5-c32644618fdb',
+       'do an oil change and check all the core components','XYZ9876','Honda','Civic','IN_PROGRESS',
        '2026-01-02 11:15:00','2026-01-02 11:15:00');

@@ -338,6 +338,48 @@
       ]
     },
     {
+      "name": "Search Repair Jobs by User Id",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/repair-jobs?userId=19dfa1e6-6970-45fc-bf62-1a5e50a16888&page=0&size=10&sort=created,asc",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","repair-jobs"],
+          "query": [
+            { "key": "userId", "value": "19dfa1e6-6970-45fc-bf62-1a5e50a16888" },
+            { "key": "page", "value": "0" },
+            { "key": "size", "value": "10" },
+            { "key": "sort", "value": "created,asc" }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"All returned statuses are CREATED\", function () {",
+              "    var json = pm.response.json();",
+              "    json.content.forEach(j => pm.expect(j.status).to.eql('CREATED'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
       "name": "Search Repair Jobs by Status = CREATED AND LicensePlate=ABC1234",
       "request": {
         "method": "GET",

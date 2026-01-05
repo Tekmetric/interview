@@ -11,11 +11,14 @@ A Spring Boot REST API for managing **automotive repair jobs**, featuring:
 ✔ JPA auditing (`created`, `lastModified`)  
 ✔ Integration & service tests
 
+# Prerequisites
+- Maven
+- Java 21
 ---
 
 ## 🚀 Tech Stack
 
-- Java 17+
+- Java 21+
 - Spring Boot 3.x
 - Spring Web
 - Spring Data JPA

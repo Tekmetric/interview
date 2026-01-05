@@ -1,7 +1,6 @@
 package com.interview.resource;
 
 import com.interview.model.RepairJob;
-import com.interview.model.RepairStatus;
 import com.interview.service.RepairJobService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -12,18 +11,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
+import static com.interview.model.RepairStatus.CREATED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(RepairJobResource.class)
+@WebMvcTest
 public class RepairJobResourceTest {
 
     private final MockMvc mockMvc;
@@ -38,15 +35,17 @@ public class RepairJobResourceTest {
     @Test
     @SneakyThrows
     void testPostSuccess() {
-        var saved = new RepairJob();
-        saved.setId(15L);
-        saved.setUserId("user-123");
-        saved.setLicensePlate("ABC1234");
-        saved.setMake("Toyota");
-        saved.setModel("Corolla");
-        saved.setStatus(RepairStatus.CREATED);
+        var job = RepairJob.builder()
+                .id(15L)
+                .userId("user-123")
+                .licensePlate("ABC1234")
+                .make("Toyota")
+                .model("Corolla")
+                .repairDescription("repair")
+                .status(CREATED)
+                .build();
 
-        when(service.createJob(any())).thenReturn(saved);
+        when(service.createJob(any())).thenReturn(job);
 
         var requestJson = """
             {
@@ -69,13 +68,15 @@ public class RepairJobResourceTest {
     @Test
     @SneakyThrows
     void testGetSuccess() {
-        var job = new RepairJob();
-        job.setId(15L);
-        job.setUserId("user-123");
-        job.setLicensePlate("ABC1234");
-        job.setMake("Toyota");
-        job.setModel("Corolla");
-        job.setStatus(RepairStatus.CREATED);
+        var job = RepairJob.builder()
+                .id(15L)
+                .userId("user-123")
+                .licensePlate("ABC1234")
+                .make("Toyota")
+                .model("Corolla")
+                .repairDescription("repair")
+                .status(CREATED)
+                .build();
 
         when(service.getJobById(15L)).thenReturn(Optional.of(job));
 
@@ -86,25 +87,27 @@ public class RepairJobResourceTest {
     @Test
     @SneakyThrows
     void testPutSuccess() {
-        var updated = new RepairJob();
-        updated.setId(15L);
-        updated.setUserId("user-123");
-        updated.setLicensePlate("ZZZ9999");
-        updated.setMake("Toyota");
-        updated.setModel("Corolla");
-        updated.setStatus(RepairStatus.IN_PROGRESS);
+        var request = RepairJob.builder()
+                .id(15L)
+                .userId("user-123")
+                .licensePlate("ZZZ9999")
+                .make("Toyota")
+                .model("Corolla")
+                .repairDescription("repair")
+                .status(CREATED)
+                .build();
 
-        when(service.updateJob(eq(15L), any())).thenReturn(updated);
+        when(service.updateJob(eq(15L), any())).thenReturn(request);
 
         var requestJson = """
         {
           "jobName": "First Repair Job",
-              "userId": "user-123",
-              "licensePlate": "ABC1234",
-              "repairDescription": "repair description",
-              "make": "Toyota",
-              "model": "Corolla",
-              "status": "CREATED"
+          "userId": "user-123",
+          "licensePlate": "ABC1234",
+          "repairDescription": "repair description",
+          "make": "Toyota",
+          "model": "Corolla",
+          "status": "IN_PROGRESS"
         }
         """;
         mockMvc.perform(put("/api/repair-jobs/15")

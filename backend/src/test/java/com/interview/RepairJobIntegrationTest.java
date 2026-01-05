@@ -1,7 +1,6 @@
 package com.interview.resource;
 
 import com.interview.model.RepairJob;
-import com.interview.model.RepairStatus;
 import com.interview.repository.RepairJobRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -9,17 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
+import static com.interview.model.RepairStatus.CREATED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
+@SpringBootTest
 class RepairJobIntegrationTest {
 
     @Autowired
@@ -54,14 +52,15 @@ class RepairJobIntegrationTest {
     @Test
     @SneakyThrows
     void testGetRepairJobById() {
-        var job = new RepairJob();
-        job.setJobName("New Repair Job");
-        job.setUserId("user-123");
-        job.setLicensePlate("XYZ000");
-        job.setMake("Honda");
-        job.setModel("Civic");
-        job.setRepairDescription("repair");
-        job.setStatus(RepairStatus.CREATED);
+        var job = RepairJob.builder()
+                .jobName("New Repair Job")
+                .userId("user-123")
+                .licensePlate("XYZ000")
+                .make("Honda")
+                .model("Civic")
+                .repairDescription("repair")
+                .status(CREATED)
+                .build();
 
         var saved = repository.save(job);
 
@@ -81,14 +80,15 @@ class RepairJobIntegrationTest {
     @Test
     @SneakyThrows
     void testUpdateRepairJob() {
-        var job = new RepairJob();
-        job.setJobName("New Repair Job");
-        job.setUserId("user-123");
-        job.setLicensePlate("AAA111");
-        job.setMake("Ford");
-        job.setModel("Focus");
-        job.setRepairDescription("repair");
-        job.setStatus(RepairStatus.CREATED);
+        var job = RepairJob.builder()
+                .jobName("New Repair Job")
+                .userId("user-123")
+                .licensePlate("AAA111")
+                .make("Ford")
+                .model("Focus")
+                .repairDescription("repair")
+                .status(CREATED)
+                .build();
 
         var saved = repository.save(job);
 
@@ -121,14 +121,15 @@ class RepairJobIntegrationTest {
     @SneakyThrows
     void testDeleteRepairJob() {
 
-        var job = new RepairJob();
-        job.setJobName("New Job");
-        job.setUserId("user-123");
-        job.setLicensePlate("ABC1234");
-        job.setMake("Toyota");
-        job.setModel("Camry");
-        job.setRepairDescription("repair");
-        job.setStatus(RepairStatus.CREATED);
+        var job = RepairJob.builder()
+                .jobName("New Repair Job")
+                .userId("user-123")
+                .licensePlate("ABC1234")
+                .make("Toyota")
+                .model("Camry")
+                .repairDescription("repair")
+                .status(CREATED)
+                .build();
 
         var saved = repository.save(job);
 

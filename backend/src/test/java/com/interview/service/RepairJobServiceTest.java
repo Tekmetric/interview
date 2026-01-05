@@ -81,14 +81,14 @@ public class RepairJobServiceTest {
         var originalLastModified = savedJob.getLastModified();
 
         // update request
-        var request = new RepairJob();
-        request.setJobName("New Job Name");
-        request.setUserId("123");
-        request.setRepairDescription("none");
-        request.setLicensePlate("none");
-        request.setMake("none");
-        request.setModel("none");
-        request.setStatus(IN_PROGRESS);
+        var request =  RepairJob.builder()
+                .jobName("New Job Name")
+                .userId("123")
+                .repairDescription("none")
+                .licensePlate("none")
+                .make("none")
+                .model("none")
+                .status(IN_PROGRESS).build();
 
         service.updateJob(savedJob.getId(), request);
 
@@ -175,14 +175,13 @@ public class RepairJobServiceTest {
     }
 
     private RepairJob createRepairJob(String jobName, String userId, String repairDescription, String licensePlate, String make, String model, RepairStatus status) {
-        var job = new RepairJob();
-        job.setJobName(jobName);
-        job.setUserId(userId);
-        job.setRepairDescription(repairDescription);
-        job.setLicensePlate(licensePlate);
-        job.setMake(make);
-        job.setModel(model);
-        job.setStatus(status);
-        return job;
+        return RepairJob.builder()
+                .jobName(jobName)
+                .userId(userId)
+                .repairDescription(repairDescription)
+                .licensePlate(licensePlate)
+                .make(make)
+                .model(model)
+                .status(status).build();
     }
 }

@@ -7,8 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.UUID;
 
-import static com.interview.model.RepairStatus.CANCELLED;
-import static com.interview.model.RepairStatus.COMPLETED;
+import static com.interview.model.RepairStatus.*;
 import static java.util.List.of;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.data.domain.Pageable.unpaged;
@@ -19,25 +18,27 @@ public class RepairJobRepositoryTest {
 
     @Test
     public void testFindByUserId() {
-        var repairJob = new RepairJob();
         var userId = UUID.randomUUID().toString();
-        repairJob.setJobName("New Test Job");
-        repairJob.setUserId(userId);
-        repairJob.setRepairDescription("Oil change");
-        repairJob.setLicensePlate("ABC1234");
-        repairJob.setMake("Toyota");
-        repairJob.setModel("Camry");
-        repairJob.setStatus(COMPLETED);
+        var repairJob = RepairJob.builder()
+                .jobName("New Test Job")
+                .userId(userId)
+                .licensePlate("ABC1234")
+                .make("Toyota")
+                .model("Camry")
+                .repairDescription("Oil change")
+                .status(COMPLETED)
+                .build();
 
         var userId2 = UUID.randomUUID().toString();
-        var repairJob2 = new RepairJob();
-        repairJob2.setJobName("New Test Job");
-        repairJob2.setUserId(userId2);
-        repairJob2.setRepairDescription("Oil change");
-        repairJob2.setLicensePlate("ABC1234");
-        repairJob2.setMake("Toyota");
-        repairJob2.setModel("Camry");
-        repairJob2.setStatus(COMPLETED);
+        var repairJob2 = RepairJob.builder()
+                .jobName("New Test Job")
+                .userId(userId2)
+                .licensePlate("ABC1234")
+                .make("Toyota")
+                .model("Camry")
+                .repairDescription("Oil change")
+                .status(COMPLETED)
+                .build();
 
         repairJobRepository.saveAll(of(repairJob, repairJob2));
         var jobs = repairJobRepository.search(userId, null, null, unpaged());
@@ -47,23 +48,25 @@ public class RepairJobRepositoryTest {
     @Test
     public void testFindByStatus() {
         var userId = UUID.randomUUID().toString();
-        var job = new RepairJob();
-        job.setJobName("New Test Job");
-        job.setUserId(userId);
-        job.setRepairDescription("Oil change");
-        job.setLicensePlate("ABC1234");
-        job.setMake("Toyota");
-        job.setModel("Camry");
-        job.setStatus(COMPLETED);
+        var job = RepairJob.builder()
+                .jobName("New Test Job")
+                .userId(userId)
+                .licensePlate("ABC1234")
+                .make("Toyota")
+                .model("Camry")
+                .repairDescription("repair")
+                .status(COMPLETED)
+                .build();
 
-        var job2 = new RepairJob();
-        job2.setJobName("New Test Job");
-        job2.setUserId(userId);
-        job2.setRepairDescription("Oil change");
-        job2.setLicensePlate("ABC1234");
-        job2.setMake("Toyota");
-        job2.setModel("Camry");
-        job2.setStatus(CANCELLED);
+        var job2 = RepairJob.builder()
+                .jobName("New Test Job")
+                .userId(userId)
+                .licensePlate("ABC1234")
+                .make("Toyota")
+                .model("Camry")
+                .repairDescription("Oil Change")
+                .status(CANCELLED)
+                .build();
 
         repairJobRepository.saveAll(of(job, job2));
         var jobs = repairJobRepository.search(null, COMPLETED, null, unpaged());

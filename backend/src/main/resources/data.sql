@@ -3,11 +3,7 @@
 -- ============================================================================
 -- NOTE: For production-ready applications and better maintainability, it is
 -- recommended to separate DDL (schema creation) into schema.sql and DML 
--- (data seeding) into data.sql. This allows for:
---   - Clear separation of concerns (structure vs. seed data)
---   - Independent schema migrations using tools like Flyway/Liquibase
---   - Ability to disable data seeding without affecting schema creation
---   - Better version control and change tracking
+-- (data seeding) into data.sql.
 -- This consolidated file is for demo/testing convenience only.
 -- ============================================================================
 

@@ -49,7 +49,7 @@ public class VehicleController {
     })
     @GetMapping
     public ResponseEntity<Page<VehicleDTO>> getAllVehicles(
-            @Parameter(description = "Filter by partial VIN (case-insensitive)", example = "1HGC")
+            @Parameter(description = "Filter by partial VIN (case-insensitive), optional", example = "1HGC")
             @RequestParam(required = false) String vin,
             @Parameter(hidden = true)
             @PageableDefault(size = 20, sort = "modelYear", direction = Sort.Direction.DESC) Pageable pageable) {

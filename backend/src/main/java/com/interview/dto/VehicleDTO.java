@@ -1,5 +1,7 @@
 package com.interview.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VehicleDTO {
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Unique vehicle identifier (auto-generated)")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "Make is required")

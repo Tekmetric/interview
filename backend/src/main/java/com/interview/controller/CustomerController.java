@@ -53,11 +53,11 @@ public class CustomerController {
     })
     @GetMapping
     public ResponseEntity<Page<CustomerDTO>> getAllCustomers(
-            @Parameter(description = "Filter by partial email (case-insensitive)", example = "john")
+            @Parameter(description = "Filter by partial email (case-insensitive), optional", example = "john")
             @RequestParam(required = false) String email,
-            @Parameter(description = "Filter by partial first name (case-insensitive)", example = "Jane")
+            @Parameter(description = "Filter by partial first name (case-insensitive), optional", example = "Jane")
             @RequestParam(required = false) String firstName,
-            @Parameter(description = "Filter by partial last name (case-insensitive)", example = "Smith")
+            @Parameter(description = "Filter by partial last name (case-insensitive), optional", example = "Smith")
             @RequestParam(required = false) String lastName,
             @Parameter(hidden = true)
             @PageableDefault(size = 20, sort = "firstName") Pageable pageable) {

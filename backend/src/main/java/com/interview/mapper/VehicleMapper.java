@@ -26,7 +26,6 @@ public class VehicleMapper {
             return null;
         }
         VehicleEntity entity = new VehicleEntity();
-        entity.setId(dto.getId());
         entity.setMake(dto.getMake());
         entity.setModel(dto.getModel());
         entity.setModelYear(dto.getModelYear());

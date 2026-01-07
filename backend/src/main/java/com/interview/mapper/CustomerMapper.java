@@ -23,7 +23,6 @@ public class CustomerMapper {
             return null;
         }
         CustomerEntity entity = new CustomerEntity();
-        entity.setId(dto.getId());
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
         entity.setEmail(dto.getEmail());

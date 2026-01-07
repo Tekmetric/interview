@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.interview.dto.CustomerDTO;
 import com.interview.entity.CustomerEntity;
+import com.interview.entity.VehicleEntity;
 import com.interview.repository.CustomerRepository;
+import com.interview.repository.VehicleRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,12 @@ class CustomerIntegrationTest {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @BeforeEach
     void setUp() {
@@ -113,6 +122,44 @@ class CustomerIntegrationTest {
 
         mockMvc.perform(get("/api/v1/customers/" + customerId))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Cascade Delete - Deleting Customer deletes their Vehicles")
+    void testCascadeDelete() throws Exception {
+        CustomerDTO customer = createCustomer("Cascade", "Owner", "cascade@test.com", "555-0000");
+        MvcResult result = mockMvc.perform(post("/api/v1/customers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customer)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        Long customerId = objectMapper.readTree(response).get("id").asLong();
+
+        VehicleEntity vehicle = new VehicleEntity();
+        vehicle.setVin("CASCADE12345678VN");
+        vehicle.setMake("TestMake");
+        vehicle.setModel("TestModel");
+        vehicle.setModelYear(2022);
+        vehicle.setCustomer(customerRepository.findById(customerId).get());
+
+        vehicleRepository.save(vehicle);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(customerRepository.existsById(customerId)).isTrue();
+        assertThat(vehicleRepository.existsByVin("CASCADE12345678VN")).isTrue();
+
+        mockMvc.perform(delete("/api/v1/customers/" + customerId))
+                .andExpect(status().isNoContent());
+
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(customerRepository.existsById(customerId)).isFalse();
+        assertThat(vehicleRepository.existsByVin("CASCADE12345678VN")).isFalse();
     }
 
     @Test

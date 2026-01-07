@@ -2,7 +2,6 @@ package com.interview.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.interview.dto.CustomerDTO;
 import com.interview.dto.VehicleDTO;
 import com.interview.entity.CustomerEntity;
 import com.interview.entity.VehicleEntity;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -172,5 +170,18 @@ class VehicleIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(1))
                 .andExpect(jsonPath("$.content[0].make").value("Toyota"));
+    }
+
+    @Test
+    @DisplayName("Create Vehicle - Should Fail if Customer ID does not exist")
+    void testCreateVehicleWithInvalidCustomer() throws Exception {
+        VehicleDTO invalidVehicle = createVehicle("BADV1N1234567890A", 2022, "Ford", "Focus");
+        invalidVehicle.setCustomerId(99999L);
+
+        mockMvc.perform(post("/api/v1/vehicles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidVehicle)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Customer not found with id: 99999"));
     }
 }

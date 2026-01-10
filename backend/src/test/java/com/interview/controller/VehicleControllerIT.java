@@ -38,7 +38,7 @@ class VehicleControllerIT {
                 2020
         );
 
-        mockMvc.perform(post("/api/vehicles")
+        mockMvc.perform(post("/api/v1/vehicles")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(req)))
                 .andExpect(status().isCreated())
@@ -54,7 +54,7 @@ class VehicleControllerIT {
                 2020
         );
 
-        mockMvc.perform(post("/api/vehicles")
+        mockMvc.perform(post("/api/v1/vehicles")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(req)))
                 .andExpect(status().isBadRequest())
@@ -70,14 +70,14 @@ class VehicleControllerIT {
         v.setYear(2021);
         v = repo.save(v);
 
-        mockMvc.perform(get("/api/vehicles/" + v.getId()))
+        mockMvc.perform(get("/api/v1/vehicles/" + v.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.make").value("Honda"));
     }
 
     @Test
     void getVehicleById_shouldReturn404() throws Exception {
-        mockMvc.perform(get("/api/vehicles/999"))
+        mockMvc.perform(get("/api/v1/vehicles/999"))
                 .andExpect(status().isNotFound());
     }
 
@@ -97,7 +97,7 @@ class VehicleControllerIT {
                 2022
         );
 
-        mockMvc.perform(put("/api/vehicles/" + v.getId())
+        mockMvc.perform(put("/api/v1/vehicles/" + v.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
@@ -114,7 +114,7 @@ class VehicleControllerIT {
         v.setYear(2020);
         v = repo.save(v);
 
-        mockMvc.perform(delete("/api/vehicles/" + v.getId()))
+        mockMvc.perform(delete("/api/v1/vehicles/" + v.getId()))
                 .andExpect(status().isNoContent());
 
         assertThat(repo.findById(v.getId())).isEmpty();

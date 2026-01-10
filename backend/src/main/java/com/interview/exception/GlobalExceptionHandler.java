@@ -64,4 +64,11 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(body);
     }
+
+    @ExceptionHandler(ConcurrentUpdateException.class)
+    public ResponseEntity<?> handleConcurrentUpdate(ConcurrentUpdateException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
 }

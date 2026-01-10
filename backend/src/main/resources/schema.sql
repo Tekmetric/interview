@@ -1,7 +1,0 @@
-CREATE TABLE IF NOT EXISTS VEHICLE (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    vin VARCHAR(50),
-    make VARCHAR(50),
-    model VARCHAR(50),
-    year INT
-    );

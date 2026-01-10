@@ -1,6 +1,7 @@
 package com.interview.service;
 
 import com.interview.dto.VehicleRequest;
+import com.interview.exception.ConcurrentUpdateException;
 import com.interview.exception.DuplicateVinException;
 import com.interview.exception.ResourceNotFoundException;
 import com.interview.model.Vehicle;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +58,11 @@ public class VehicleService {
         existing.setModel(req.getModel());
         existing.setYear(req.getYear());
 
-        return repo.save(existing);
+        try {
+            return repo.save(existing);
+        } catch (OptimisticLockException ex) {
+            throw new ConcurrentUpdateException("Vehicle was updated by another request");
+        }
     }
 
     @Transactional

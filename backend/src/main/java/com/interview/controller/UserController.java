@@ -1,5 +1,6 @@
 package com.interview.controller;
 
+import com.interview.dto.AdminUserRequest;
 import com.interview.dto.UserRequest;
 import com.interview.dto.UserResponse;
 import com.interview.service.UserService;
@@ -20,11 +21,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
-    @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest request) {
-        return new ResponseEntity<>(userService.createUser(request), HttpStatus.CREATED);
-    }
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {

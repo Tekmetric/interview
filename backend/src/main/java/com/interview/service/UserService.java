@@ -1,7 +1,10 @@
 package com.interview.service;
 
+import com.interview.dto.AdminUserRequest;
+import com.interview.dto.CustomerRegisterRequest;
 import com.interview.dto.UserRequest;
 import com.interview.dto.UserResponse;
+import com.interview.model.Role;
 import com.interview.model.User;
 import com.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public UserResponse createUser(UserRequest request) {
+    public UserResponse createCustomerUser(CustomerRegisterRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
@@ -26,7 +29,23 @@ public class UserService {
         User user = User.builder()
                 .username(request.getUsername())
                 .password(request.getPassword()) // In production, this should be encoded
-                .role(request.getRole())
+                .role(Role.CUSTOMER)
+                .build();
+
+        User savedUser = userRepository.save(user);
+        return mapToResponse(savedUser);
+    }
+
+    @Transactional
+    public UserResponse createAdminUser(AdminUserRequest request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .password(request.getPassword()) // In production, this should be encoded
+                .role(Role.ADMIN)
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -54,7 +73,6 @@ public class UserService {
 
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword()); // In production, this should be encoded
-        user.setRole(request.getRole());
 
         User updatedUser = userRepository.save(user);
         return mapToResponse(updatedUser);

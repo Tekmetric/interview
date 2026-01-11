@@ -15,7 +15,7 @@ public class VehicleResponse {
     private Long id;
     private String brand;
     private String model;
-    private Integer year;
+    private Integer registrationYear;
     private String licensePlate;
     private Long ownerId;
     private String ownerUsername;

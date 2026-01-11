@@ -28,7 +28,7 @@ public class VehicleService {
         Vehicle vehicle = Vehicle.builder()
                 .brand(request.getBrand())
                 .model(request.getModel())
-                .year(request.getYear())
+                .registrationYear(request.getRegistrationYear())
                 .licensePlate(request.getLicensePlate())
                 .owner(owner)
                 .build();
@@ -70,7 +70,7 @@ public class VehicleService {
 
         vehicle.setBrand(request.getBrand());
         vehicle.setModel(request.getModel());
-        vehicle.setYear(request.getYear());
+        vehicle.setRegistrationYear(request.getRegistrationYear());
         vehicle.setLicensePlate(request.getLicensePlate());
         vehicle.setOwner(owner);
 
@@ -91,7 +91,7 @@ public class VehicleService {
                 .id(vehicle.getId())
                 .brand(vehicle.getBrand())
                 .model(vehicle.getModel())
-                .year(vehicle.getYear())
+                .registrationYear(vehicle.getRegistrationYear())
                 .licensePlate(vehicle.getLicensePlate())
                 .ownerId(vehicle.getOwner().getId())
                 .ownerUsername(vehicle.getOwner().getUsername())

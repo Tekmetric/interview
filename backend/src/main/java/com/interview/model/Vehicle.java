@@ -30,7 +30,7 @@ public class Vehicle {
     @Column(nullable = false)
     private Integer year;
 
-    @Column(nullable = false)
+    @Column(name = "license_plate", nullable = false)
     private String licensePlate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,10 +38,10 @@ public class Vehicle {
     private User owner;
 
     @CreatedDate
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 }

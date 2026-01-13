@@ -8,6 +8,7 @@ import com.interview.model.Role;
 import com.interview.model.User;
 import com.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserResponse createCustomerUser(CustomerRegisterRequest request) {
@@ -28,7 +30,7 @@ public class UserService {
 
         User user = User.builder()
                 .username(request.getUsername())
-                .password(request.getPassword()) // In production, this should be encoded
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.CUSTOMER)
                 .build();
 
@@ -44,7 +46,7 @@ public class UserService {
 
         User user = User.builder()
                 .username(request.getUsername())
-                .password(request.getPassword()) // In production, this should be encoded
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ADMIN)
                 .build();
 
@@ -72,7 +74,6 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword()); // In production, this should be encoded
 
         User updatedUser = userRepository.save(user);
         return mapToResponse(updatedUser);

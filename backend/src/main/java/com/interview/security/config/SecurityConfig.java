@@ -35,6 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/api/welcome").permitAll()
+                        // User profile endpoint - authenticated users can update their own profile
+                        .requestMatchers("/api/users/me").authenticated()
                         // Admin-only endpoints
                         .requestMatchers("/api/users/**", "/api/auth/admins").hasRole("ADMIN")
                         // Vehicle endpoints - authenticated users only - will be updated later

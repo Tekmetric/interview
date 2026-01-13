@@ -5,8 +5,7 @@ import com.interview.mapper.UserMapper;
 import com.interview.model.Role;
 import com.interview.model.User;
 import com.interview.repository.UserRepository;
-import com.interview.security.dto.AdminUserRequest;
-import com.interview.security.dto.CustomerRegisterRequest;
+import com.interview.security.dto.CreateUserRequest;
 import com.interview.security.dto.LoginRequest;
 import com.interview.security.dto.LoginResponse;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +40,10 @@ public class AuthService {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        String token = jwtService.generateToken(userDetails.getUsername(), userDetails.getAuthorities());
-
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String token = jwtService.generateToken(user.getId(), userDetails.getAuthorities());
 
         LocalDateTime expiresAt = LocalDateTime.now().plusHours(24);
 
@@ -59,7 +58,7 @@ public class AuthService {
     }
 
     @Transactional
-    public UserResponse register(CustomerRegisterRequest request) {
+    public UserResponse register(CreateUserRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
@@ -74,28 +73,6 @@ public class AuthService {
                 .lastName(request.getLastName())
                 .emailAddress(request.getEmailAddress())
                 .role(Role.CUSTOMER)
-                .build();
-
-        User savedUser = userRepository.save(user);
-        return userMapper.toResponse(savedUser);
-    }
-
-    @Transactional
-    public UserResponse createAdmin(AdminUserRequest request) {
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
-        }
-        if (userRepository.findByEmailAddress(request.getEmailAddress()).isPresent()) {
-            throw new RuntimeException("Email address already exists");
-        }
-
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .emailAddress(request.getEmailAddress())
-                .role(Role.ADMIN)
                 .build();
 
         User savedUser = userRepository.save(user);

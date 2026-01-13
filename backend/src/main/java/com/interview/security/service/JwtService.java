@@ -5,16 +5,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -30,34 +27,18 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String username, Collection<? extends GrantedAuthority> authorities) {
-        List<String> roles = authorities.stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
+    public String generateToken(Long userId, Collection<? extends GrantedAuthority> authorities) {
         return Jwts.builder()
-                .subject(username)
-                .claim("roles", roles)
+                .subject(String.valueOf(userId))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
-    public List<String> extractRoles(String token) {
-        Claims claims = extractAllClaims(token);
-        return claims.get("roles", List.class);
-    }
-
-    public Collection<? extends GrantedAuthority> extractAuthorities(String token) {
-        List<String> roles = extractRoles(token);
-        return roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+    public Long extractUserId(String token) {
+        String subject = extractClaim(token, Claims::getSubject);
+        return Long.parseLong(subject);
     }
 
     public Date extractExpiration(String token) {
@@ -81,8 +62,8 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token, String username) {
-        final String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(username) && !isTokenExpired(token));
+    public Boolean validateToken(String token, Long userId) {
+        final Long extractedUserId = extractUserId(token);
+        return (extractedUserId.equals(userId) && !isTokenExpired(token));
     }
 }

@@ -34,6 +34,18 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public UserDetails loadUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .authorities(getAuthorities(user.getRole()))
+                .build();
+    }
+
     private Collection<? extends GrantedAuthority> getAuthorities(Role role) {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }

@@ -2,6 +2,7 @@ package com.interview.repository.specification;
 
 import com.interview.dto.VehicleFilterRequest;
 import com.interview.model.Vehicle;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -13,6 +14,8 @@ public class VehicleSpecification {
     public static Specification<Vehicle> withFilters(VehicleFilterRequest filter) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+
+            root.fetch("owner", JoinType.LEFT);
 
             if (filter.getBrand() != null && !filter.getBrand().isEmpty()) {
                 predicates.add(cb.like(cb.lower(root.get("brand")), 

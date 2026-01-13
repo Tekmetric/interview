@@ -4,6 +4,9 @@ import com.interview.dto.PaginatedResponse;
 import com.interview.dto.VehicleFilterRequest;
 import com.interview.dto.VehicleRequest;
 import com.interview.dto.VehicleResponse;
+import com.interview.exception.AccessDeniedException;
+import com.interview.exception.BusinessRuleViolationException;
+import com.interview.exception.NotFoundException;
 import com.interview.mapper.VehicleMapper;
 import com.interview.model.Role;
 import com.interview.model.User;
@@ -34,10 +37,6 @@ public class VehicleService {
     @Transactional
     public VehicleResponse createVehicle(VehicleRequest request) {
         User currentUser = securityService.getCurrentUser();
-
-        if (!currentUser.getId().equals(request.getOwnerId())) {
-            throw new RuntimeException("You can only create vehicles for yourself");
-        }
 
         Vehicle vehicle = Vehicle.builder()
                 .brand(request.getBrand())
@@ -72,14 +71,14 @@ public class VehicleService {
         User currentUser = securityService.getCurrentUser();
 
         Vehicle vehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+                .orElseThrow(() -> new NotFoundException("Vehicle not found with id: " + id));
 
         // Check if the user is the owner OR is an admin
         boolean isOwner = vehicle.getOwner().getId().equals(currentUser.getId());
         boolean isAdmin = currentUser.getRole() == Role.ADMIN;
 
         if (!isOwner && !isAdmin) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("You can't access other user's vehicles!");
         }
 
         return vehicleMapper.toResponse(vehicle);
@@ -93,12 +92,10 @@ public class VehicleService {
         boolean isAdmin = currentUser.getRole() == Role.ADMIN;
 
         if (!isOwner && !isAdmin) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("You can't access other user's vehicles!");
         }
 
-        User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return vehicleMapper.toResponseList(vehicleRepository.findByOwner(owner));
+        return vehicleMapper.toResponseList(vehicleRepository.findByOwner(currentUser));
     }
 
     @Transactional
@@ -106,21 +103,18 @@ public class VehicleService {
         User currentUser = securityService.getCurrentUser();
 
         Vehicle vehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+                .orElseThrow(() -> new NotFoundException("Vehicle not found with id: " + id));
 
-        boolean isOwner = request.getOwnerId().equals(currentUser.getId());
+        boolean isOwner = vehicle.getOwner().getId().equals(currentUser.getId());
         if (!isOwner) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("You can't update this vehicle!");
         }
-
-        User owner = userRepository.findById(request.getOwnerId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
         vehicle.setBrand(request.getBrand());
         vehicle.setModel(request.getModel());
         vehicle.setRegistrationYear(request.getRegistrationYear());
         vehicle.setLicensePlate(request.getLicensePlate());
-        vehicle.setOwner(owner);
+        vehicle.setOwner(currentUser);
 
         Vehicle updatedVehicle = vehicleRepository.save(vehicle);
         return vehicleMapper.toResponse(updatedVehicle);
@@ -130,15 +124,15 @@ public class VehicleService {
     public void deleteVehicle(Long id) {
         User currentUser = securityService.getCurrentUser();
         Vehicle vehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+                .orElseThrow(() -> new NotFoundException("Vehicle not found with id: " + id));
 
         boolean isOwner = vehicle.getOwner().getId().equals(currentUser.getId());
         if (!isOwner) {
-            throw new RuntimeException("Access denied");
+            throw new AccessDeniedException("You can't delete this vehicle!");
         }
 
         if (vehicle.getDeletedAt() != null) {
-            throw new RuntimeException("Vehicle already deleted");
+            throw new BusinessRuleViolationException("Vehicle already deleted!");
         }
         
         vehicle.setDeletedAt(LocalDateTime.now());

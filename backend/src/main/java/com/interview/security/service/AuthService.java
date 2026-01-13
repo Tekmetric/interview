@@ -1,6 +1,8 @@
 package com.interview.security.service;
 
 import com.interview.dto.UserResponse;
+import com.interview.exception.DuplicateEntityException;
+import com.interview.exception.NotFoundException;
 import com.interview.mapper.UserMapper;
 import com.interview.model.Role;
 import com.interview.model.User;
@@ -41,7 +43,7 @@ public class AuthService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found with username: " + request.getUsername()));
 
         String token = jwtService.generateToken(user.getId(), userDetails.getAuthorities());
 
@@ -60,10 +62,10 @@ public class AuthService {
     @Transactional
     public UserResponse register(CreateUserRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
+            throw new DuplicateEntityException("Username already exists!");
         }
         if (userRepository.findByEmailAddress(request.getEmailAddress()).isPresent()) {
-            throw new RuntimeException("Email address already exists");
+            throw new DuplicateEntityException("Email address already exists!");
         }
 
         User user = User.builder()

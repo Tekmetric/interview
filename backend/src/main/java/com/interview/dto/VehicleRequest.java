@@ -35,8 +35,4 @@ public class VehicleRequest {
     @Size(min = 2, max = 20, message = "License plate must be between 2 and 20 characters")
     @Pattern(regexp = "^[A-Z0-9\\-\\s]+$", message = "License plate must contain only uppercase letters, numbers, hyphens, and spaces")
     private String licensePlate;
-
-    @NotNull(message = "Owner ID is required")
-    @Positive(message = "Owner ID must be a positive number")
-    private Long ownerId;
 }

@@ -2,6 +2,9 @@ package com.interview.service;
 
 import com.interview.dto.UserRequest;
 import com.interview.dto.UserResponse;
+import com.interview.exception.BusinessRuleViolationException;
+import com.interview.exception.DuplicateEntityException;
+import com.interview.exception.NotFoundException;
 import com.interview.mapper.UserMapper;
 import com.interview.model.User;
 import com.interview.repository.UserRepository;
@@ -29,17 +32,17 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
         return userMapper.toResponse(user);
     }
 
     @Transactional
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         if (user.getDeletedAt() != null) {
-            throw new RuntimeException("User already deleted");
+            throw new BusinessRuleViolationException("User already deleted!");
         }
 
         user.setDeletedAt(LocalDateTime.now());
@@ -58,12 +61,12 @@ public class UserService {
 
         if (!currentUser.getUsername().equals(request.getUsername())
                 && userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
+            throw new DuplicateEntityException("Username already exists!");
         }
 
         if (!currentUser.getEmailAddress().equals(request.getEmailAddress())
                 && userRepository.findByEmailAddress(request.getEmailAddress()).isPresent()) {
-            throw new RuntimeException("Email address already exists");
+            throw new DuplicateEntityException("Email address already exists!");
         }
 
         currentUser.setUsername(request.getUsername());

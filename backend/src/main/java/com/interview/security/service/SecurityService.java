@@ -1,5 +1,7 @@
 package com.interview.security.service;
 
+import com.interview.exception.NotFoundException;
+import com.interview.exception.UnauthenticatedException;
 import com.interview.model.User;
 import com.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +22,13 @@ public class SecurityService {
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
             return ((UserDetails) authentication.getPrincipal()).getUsername();
         }
-        throw new RuntimeException("User not authenticated");
+        throw new UnauthenticatedException("User not authenticated!");
     }
 
     @Transactional(readOnly = true)
     public User getCurrentUser() {
         String username = getCurrentUsername();
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found with username: " + username));
     }
 }

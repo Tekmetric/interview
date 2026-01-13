@@ -1,0 +1,45 @@
+===============================================================================
+  Tekmetric Backend Service - Deployment Successful!
+===============================================================================
+
+1. Get the application URL by running these commands:
+
+{{- if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "backend.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo "Application URL: http://$NODE_IP:$NODE_PORT"
+{{- else if contains "LoadBalancer" .Values.service.type }}
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+  You can watch the status by running:
+    kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "backend.fullname" . }}
+
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "backend.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo "Application URL: http://$SERVICE_IP:{{ .Values.service.port }}"
+{{- else if contains "ClusterIP" .Values.service.type }}
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "backend.fullname" . }} 8080:{{ .Values.service.port }}
+  echo "Application URL: http://localhost:8080"
+{{- end }}
+
+2. Test the application:
+
+  # Welcome endpoint
+  curl http://localhost:8080/api/welcome
+
+  # Health check (liveness)
+  curl http://localhost:8080/actuator/health/liveness
+
+  # Health check (readiness)
+  curl http://localhost:8080/actuator/health/readiness
+
+  # Prometheus metrics
+  curl http://localhost:8080/actuator/prometheus
+
+3. View logs:
+
+  kubectl logs -f deployment/{{ include "backend.fullname" . }} --namespace {{ .Release.Namespace }}
+
+4. Check pod status:
+
+  kubectl get pods -l "app.kubernetes.io/name={{ include "backend.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" --namespace {{ .Release.Namespace }}
+
+===============================================================================

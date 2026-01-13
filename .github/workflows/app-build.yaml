@@ -1,0 +1,249 @@
+# =============================================================================
+# App build & deploy pipeline
+# =============================================================================
+# This workflow builds the backend application, pushes the Docker image
+# to Amazon ECR, and deploys to EKS.
+#
+# Triggers:
+#   - Push to main branch (paths: backend/**, sre/Dockerfile, sre/helm/**)
+#   - Pull requests to main
+#   - Manual trigger (workflow_dispatch)
+# =============================================================================
+
+name: App build & deploy
+run-name: "App: build & deploy (${{ github.ref_name }})"
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'backend/**'
+      - 'sre/Dockerfile'
+      - 'sre/helm/**'
+      - 'sre/k8s/**'
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - 'backend/**'
+      - 'sre/Dockerfile'
+      - 'sre/helm/**'
+      - 'sre/k8s/**'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Select action'
+        type: choice
+        default: 'build-push-deploy'
+        options:
+          - build-push-deploy
+          - build-only
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
+  ECR_REPOSITORY: tekmetric-backend
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: app-deploy
+  cancel-in-progress: true  # New build cancels previous builds
+
+jobs:
+  check-infra:
+    name: Check infra status
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if infra workflow is running
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RUNNING=$(gh api repos/${{ github.repository }}/actions/runs \
+            --jq '[.workflow_runs[] | select(.status == "in_progress" or .status == "queued") | select(.name | startswith("Infra"))] | length')
+          if [ "$RUNNING" -gt 0 ]; then
+            echo "::error::Infrastructure workflow is running. Cannot deploy app while infra changes are in progress."
+            exit 1
+          fi
+          echo "No infra workflows running. Proceeding with build."
+
+  lint:
+    name: Lint Helm chart
+    needs: check-infra
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint Helm chart
+        run: helm lint ./sre/helm/backend
+
+  build:
+    name: Build
+    needs: [check-infra, lint]
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.build-meta.outputs.sha }}
+      environment: ${{ steps.build-meta.outputs.env }}
+
+    steps:
+      - name: Set build metadata
+        id: build-meta
+        run: |
+          echo "sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "env=dev" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build and test with Maven
+        run: |
+          cd backend
+          mvn package -B
+
+      - name: Configure AWS credentials
+        if: github.event_name != 'pull_request'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        if: github.event_name != 'pull_request'
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
+          tags: |
+            type=sha,prefix=
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: sre/Dockerfile
+          push: false
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.meta.outputs.tags }}
+          exit-code: '0'  # Report only, don't fail (legacy app has known CVEs)
+          severity: 'CRITICAL,HIGH'
+          format: 'table'
+          limit-severities-for-sarif: true
+          hide-progress: true
+          scanners: 'vuln'  # Only scan for vulnerabilities, skip secrets/config
+          vuln-type: 'library'  # Only app dependencies, skip OS packages
+
+      - name: Push Docker image
+        if: github.event_name != 'pull_request' && (github.event.inputs.action == 'build-push-deploy' || github.event.inputs.action == '')
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: sre/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # TODO: Slack notification on build failure
+      # - name: Notify Slack on build failure
+      #   if: failure()
+      #   uses: slackapi/slack-github-action@v1.24.0
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  deploy:
+    name: Deploy to EKS
+    needs: [lint, build]
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' && (github.event.inputs.action == 'build-push-deploy' || github.event.inputs.action == '')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        id: aws-account
+        run: |
+          echo "id=$(aws sts get-caller-identity --query Account --output text)" >> $GITHUB_OUTPUT
+          aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: '3.13.0'
+
+      - name: Get build date
+        id: build-date
+        run: echo "date=$(date -u +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_OUTPUT
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install backend ./sre/helm/backend \
+            -f ./sre/helm/backend/values-${{ needs.build.outputs.environment }}.yaml \
+            --set image.repository=${{ steps.aws-account.outputs.id }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }} \
+            --set image.tag=${{ needs.build.outputs.image-tag }} \
+            --set image.commitUrl="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}" \
+            --set image.buildDate="${{ steps.build-date.outputs.date }}" \
+            --wait \
+            --timeout 5m
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -l app.kubernetes.io/name=backend
+          kubectl get svc backend
+
+      - name: Smoke test
+        run: |
+          echo "Waiting for pods to be ready..."
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=backend --timeout=120s
+          ENDPOINT=$(kubectl get svc backend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "Testing endpoint: http://${ENDPOINT}/api/welcome"
+          curl -sf --retry 5 --retry-delay 10 "http://${ENDPOINT}/api/welcome"
+
+      # TODO: Slack notification on deploy success
+      # - name: Notify Slack on deploy success
+      #   if: success()
+      #   uses: slackapi/slack-github-action@v1.24.0
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # TODO: Slack notification on deploy failure
+      # - name: Notify Slack on deploy failure
+      #   if: failure()
+      #   uses: slackapi/slack-github-action@v1.24.0
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

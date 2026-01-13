@@ -1,0 +1,25 @@
+provider:
+  name: cloudflare
+
+extraArgs:
+  - --cloudflare-proxied
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-token
+        key: cloudflare_api_token
+
+domainFilters:
+  - example.com
+
+txtOwnerId: ${CLUSTER_NAME}
+
+policy: sync
+
+sources:
+  - service
+  - ingress
+
+logLevel: info

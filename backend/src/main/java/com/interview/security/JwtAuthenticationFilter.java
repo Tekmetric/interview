@@ -1,7 +1,7 @@
-package com.interview.filter;
+package com.interview.security;
 
-import com.interview.service.JwtService;
-import com.interview.service.CustomUserDetailsService;
+import com.interview.security.service.JwtService;
+import com.interview.security.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.interview.service;
+package com.interview.security.service;
 
 import com.interview.model.Role;
 import com.interview.model.User;

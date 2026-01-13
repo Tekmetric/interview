@@ -1,4 +1,4 @@
-package com.interview.dto;
+package com.interview.security.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

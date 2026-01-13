@@ -1,4 +1,4 @@
-package com.interview.dto;
+package com.interview.security.dto;
 
 import com.interview.model.Role;
 import lombok.AllArgsConstructor;

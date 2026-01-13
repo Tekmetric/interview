@@ -1,4 +1,4 @@
-package com.interview.service;
+package com.interview.security.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

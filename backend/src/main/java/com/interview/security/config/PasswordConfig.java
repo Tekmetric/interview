@@ -1,4 +1,4 @@
-package com.interview.config;
+package com.interview.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

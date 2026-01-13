@@ -1,7 +1,7 @@
-package com.interview.config;
+package com.interview.security.config;
 
-import com.interview.filter.JwtAuthenticationFilter;
-import com.interview.service.CustomUserDetailsService;
+import com.interview.security.JwtAuthenticationFilter;
+import com.interview.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

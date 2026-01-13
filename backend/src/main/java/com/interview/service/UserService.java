@@ -1,14 +1,10 @@
 package com.interview.service;
 
-import com.interview.dto.AdminUserRequest;
-import com.interview.dto.CustomerRegisterRequest;
 import com.interview.dto.UserRequest;
 import com.interview.dto.UserResponse;
-import com.interview.model.Role;
 import com.interview.model.User;
 import com.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,39 +16,6 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    @Transactional
-    public UserResponse createCustomerUser(CustomerRegisterRequest request) {
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
-        }
-
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.CUSTOMER)
-                .build();
-
-        User savedUser = userRepository.save(user);
-        return mapToResponse(savedUser);
-    }
-
-    @Transactional
-    public UserResponse createAdminUser(AdminUserRequest request) {
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
-        }
-
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ADMIN)
-                .build();
-
-        User savedUser = userRepository.save(user);
-        return mapToResponse(savedUser);
-    }
 
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {

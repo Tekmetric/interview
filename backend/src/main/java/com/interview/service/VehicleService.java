@@ -2,6 +2,7 @@ package com.interview.service;
 
 import com.interview.dto.VehicleRequest;
 import com.interview.dto.VehicleResponse;
+import com.interview.mapper.VehicleMapper;
 import com.interview.model.User;
 import com.interview.model.Vehicle;
 import com.interview.repository.UserRepository;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +19,7 @@ public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
     private final UserRepository userRepository;
+    private final VehicleMapper vehicleMapper;
 
     @Transactional
     public VehicleResponse createVehicle(VehicleRequest request) {
@@ -34,30 +35,26 @@ public class VehicleService {
                 .build();
 
         Vehicle savedVehicle = vehicleRepository.save(vehicle);
-        return mapToResponse(savedVehicle);
+        return vehicleMapper.toResponse(savedVehicle);
     }
 
     @Transactional(readOnly = true)
     public List<VehicleResponse> getAllVehicles() {
-        return vehicleRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return vehicleMapper.toResponseList(vehicleRepository.findAll());
     }
 
     @Transactional(readOnly = true)
     public VehicleResponse getVehicleById(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
-        return mapToResponse(vehicle);
+        return vehicleMapper.toResponse(vehicle);
     }
 
     @Transactional(readOnly = true)
     public List<VehicleResponse> getVehiclesByOwner(Long ownerId) {
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return vehicleRepository.findByOwner(owner).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return vehicleMapper.toResponseList(vehicleRepository.findByOwner(owner));
     }
 
     @Transactional
@@ -75,7 +72,7 @@ public class VehicleService {
         vehicle.setOwner(owner);
 
         Vehicle updatedVehicle = vehicleRepository.save(vehicle);
-        return mapToResponse(updatedVehicle);
+        return vehicleMapper.toResponse(updatedVehicle);
     }
 
     @Transactional
@@ -84,19 +81,5 @@ public class VehicleService {
             throw new RuntimeException("Vehicle not found");
         }
         vehicleRepository.deleteById(id);
-    }
-
-    private VehicleResponse mapToResponse(Vehicle vehicle) {
-        return VehicleResponse.builder()
-                .id(vehicle.getId())
-                .brand(vehicle.getBrand())
-                .model(vehicle.getModel())
-                .registrationYear(vehicle.getRegistrationYear())
-                .licensePlate(vehicle.getLicensePlate())
-                .ownerId(vehicle.getOwner().getId())
-                .ownerUsername(vehicle.getOwner().getUsername())
-                .createdAt(vehicle.getCreatedAt())
-                .updatedAt(vehicle.getUpdatedAt())
-                .build();
     }
 }

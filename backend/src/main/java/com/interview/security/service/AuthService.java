@@ -1,6 +1,7 @@
 package com.interview.security.service;
 
 import com.interview.dto.UserResponse;
+import com.interview.mapper.UserMapper;
 import com.interview.model.Role;
 import com.interview.model.User;
 import com.interview.repository.UserRepository;
@@ -27,6 +28,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest request) {
@@ -69,7 +71,7 @@ public class AuthService {
                 .build();
 
         User savedUser = userRepository.save(user);
-        return mapToResponse(savedUser);
+        return userMapper.toResponse(savedUser);
     }
 
     @Transactional
@@ -85,16 +87,6 @@ public class AuthService {
                 .build();
 
         User savedUser = userRepository.save(user);
-        return mapToResponse(savedUser);
-    }
-
-    private UserResponse mapToResponse(User user) {
-        return UserResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .role(user.getRole())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .build();
+        return userMapper.toResponse(savedUser);
     }
 }

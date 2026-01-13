@@ -2,6 +2,7 @@ package com.interview.service;
 
 import com.interview.dto.UserRequest;
 import com.interview.dto.UserResponse;
+import com.interview.mapper.UserMapper;
 import com.interview.model.User;
 import com.interview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,26 +10,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return userMapper.toResponseList(userRepository.findAll());
     }
 
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return mapToResponse(user);
+        return userMapper.toResponse(user);
     }
 
     @Transactional
@@ -39,7 +38,7 @@ public class UserService {
         user.setUsername(request.getUsername());
 
         User updatedUser = userRepository.save(user);
-        return mapToResponse(updatedUser);
+        return userMapper.toResponse(updatedUser);
     }
 
     @Transactional
@@ -48,15 +47,5 @@ public class UserService {
             throw new RuntimeException("User not found");
         }
         userRepository.deleteById(id);
-    }
-
-    private UserResponse mapToResponse(User user) {
-        return UserResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .role(user.getRole())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .build();
     }
 }

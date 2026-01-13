@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -35,7 +36,20 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (!user.getUsername().equals(request.getUsername()) 
+                && userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if (!user.getEmailAddress().equals(request.getEmailAddress()) 
+                && userRepository.findByEmailAddress(request.getEmailAddress()).isPresent()) {
+            throw new RuntimeException("Email address already exists");
+        }
+
         user.setUsername(request.getUsername());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmailAddress(request.getEmailAddress());
 
         User updatedUser = userRepository.save(user);
         return userMapper.toResponse(updatedUser);
@@ -43,9 +57,14 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found");
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if (user.getDeletedAt() != null) {
+            throw new RuntimeException("User already deleted");
         }
-        userRepository.deleteById(id);
+        
+        user.setDeletedAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 }

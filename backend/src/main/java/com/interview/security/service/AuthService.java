@@ -63,10 +63,16 @@ public class AuthService {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
+        if (userRepository.findByEmailAddress(request.getEmailAddress()).isPresent()) {
+            throw new RuntimeException("Email address already exists");
+        }
 
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .emailAddress(request.getEmailAddress())
                 .role(Role.CUSTOMER)
                 .build();
 
@@ -79,10 +85,16 @@ public class AuthService {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
+        if (userRepository.findByEmailAddress(request.getEmailAddress()).isPresent()) {
+            throw new RuntimeException("Email address already exists");
+        }
 
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .emailAddress(request.getEmailAddress())
                 .role(Role.ADMIN)
                 .build();
 

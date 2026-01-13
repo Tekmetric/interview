@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -77,9 +78,14 @@ public class VehicleService {
 
     @Transactional
     public void deleteVehicle(Long id) {
-        if (!vehicleRepository.existsById(id)) {
-            throw new RuntimeException("Vehicle not found");
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        
+        if (vehicle.getDeletedAt() != null) {
+            throw new RuntimeException("Vehicle already deleted");
         }
-        vehicleRepository.deleteById(id);
+        
+        vehicle.setDeletedAt(LocalDateTime.now());
+        vehicleRepository.save(vehicle);
     }
 }

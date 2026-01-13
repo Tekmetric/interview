@@ -2,6 +2,7 @@ package com.interview.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@Where(clause = "deleted_at IS NULL")
 public class Vehicle {
 
     @Id
@@ -44,4 +46,7 @@ public class Vehicle {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }

@@ -35,7 +35,8 @@ public class SecurityConfig {
         // Completely ignore these paths - they won't go through the security filter chain
         return (web) -> web.ignoring()
                 .requestMatchers("/favicon.ico", "/error")
-                .requestMatchers("/h2-console/**");
+                .requestMatchers("/h2-console/**")
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html");
     }
 
     @Bean

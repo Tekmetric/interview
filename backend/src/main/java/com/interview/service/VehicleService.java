@@ -6,6 +6,7 @@ import com.interview.dto.VehicleRequest;
 import com.interview.dto.VehicleResponse;
 import com.interview.exception.AccessDeniedException;
 import com.interview.exception.BusinessRuleViolationException;
+import com.interview.exception.DuplicateEntityException;
 import com.interview.exception.NotFoundException;
 import com.interview.mapper.VehicleMapper;
 import com.interview.model.Role;
@@ -37,6 +38,11 @@ public class VehicleService {
     @Transactional
     public VehicleResponse createVehicle(VehicleRequest request) {
         User currentUser = securityService.getCurrentUser();
+
+        // Check license plate uniqueness
+        if (vehicleRepository.findByLicensePlate(request.getLicensePlate()).isPresent()) {
+            throw new DuplicateEntityException("License plate already exists: " + request.getLicensePlate());
+        }
 
         Vehicle vehicle = Vehicle.builder()
                 .brand(request.getBrand())
@@ -108,6 +114,13 @@ public class VehicleService {
         boolean isOwner = vehicle.getOwner().getId().equals(currentUser.getId());
         if (!isOwner) {
             throw new AccessDeniedException("You can't update this vehicle!");
+        }
+
+        // Check license plate uniqueness (excluding current vehicle)
+        if (!vehicle.getLicensePlate().equals(request.getLicensePlate())) {
+            if (vehicleRepository.findByLicensePlate(request.getLicensePlate()).isPresent()) {
+                throw new DuplicateEntityException("License plate already exists: " + request.getLicensePlate());
+            }
         }
 
         vehicle.setBrand(request.getBrand());

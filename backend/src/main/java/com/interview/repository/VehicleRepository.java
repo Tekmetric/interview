@@ -19,4 +19,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long>, JpaSpec
     
     @EntityGraph(attributePaths = {"owner"})
     List<Vehicle> findByOwner(User owner);
+    
+    Optional<Vehicle> findByLicensePlate(String licensePlate);
 }

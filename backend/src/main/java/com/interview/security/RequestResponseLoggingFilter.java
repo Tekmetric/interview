@@ -1,4 +1,4 @@
-package com.interview.filter;
+package com.interview.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

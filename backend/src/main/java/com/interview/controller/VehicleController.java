@@ -37,7 +37,7 @@ public class VehicleController {
             @RequestParam(required = false) Integer registrationYearTo,
             @RequestParam(required = false) String licensePlate,
             @RequestParam(required = false) Long ownerId,
-            @RequestParam(defaultValue = "0") @Positive(message = "Page size must be positive") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") @Positive(message = "Page size must be positive") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {

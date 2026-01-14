@@ -15,7 +15,9 @@ public class VehicleSpecification {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            root.fetch("owner", JoinType.LEFT);
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                root.fetch("owner", JoinType.LEFT);
+            }
 
             if (filter.getBrand() != null && !filter.getBrand().isEmpty()) {
                 predicates.add(cb.like(cb.lower(root.get("brand")), 

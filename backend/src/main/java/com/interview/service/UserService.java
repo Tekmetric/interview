@@ -22,6 +22,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final VehicleService vehicleService;
     private final SecurityService securityService;
 
     @Transactional(readOnly = true)
@@ -41,9 +42,15 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
+        if (user.getId().equals(securityService.getCurrentUser().getId())) {
+            throw new BusinessRuleViolationException("You can't delete yourself!");
+        }
+
         if (user.getDeletedAt() != null) {
             throw new BusinessRuleViolationException("User already deleted!");
         }
+
+        vehicleService.deleteVehiclesByOwner(user);
 
         user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);

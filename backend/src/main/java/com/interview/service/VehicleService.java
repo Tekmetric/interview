@@ -31,8 +31,8 @@ import java.util.List;
 public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
-    private final UserRepository userRepository;
     private final VehicleMapper vehicleMapper;
+    private final UserRepository userRepository;
     private final SecurityService securityService;
 
     @Transactional
@@ -101,7 +101,10 @@ public class VehicleService {
             throw new AccessDeniedException("You can't access other user's vehicles!");
         }
 
-        return vehicleMapper.toResponseList(vehicleRepository.findByOwner(currentUser));
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + ownerId));
+
+        return vehicleMapper.toResponseList(vehicleRepository.findByOwner(owner));
     }
 
     @Transactional
@@ -150,5 +153,17 @@ public class VehicleService {
         
         vehicle.setDeletedAt(LocalDateTime.now());
         vehicleRepository.save(vehicle);
+    }
+
+    @Transactional
+    public void deleteVehiclesByOwner(User owner) {
+        List<Vehicle> vehicles = vehicleRepository.findByOwner(owner);
+        LocalDateTime now = LocalDateTime.now();
+        vehicles.forEach(vehicle -> {
+            if (vehicle.getDeletedAt() == null) {
+                vehicle.setDeletedAt(now);
+            }
+        });
+        vehicleRepository.saveAll(vehicles);
     }
 }

@@ -25,6 +25,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService userDetailsService;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        // Skip JWT processing for static resources, error pages, and public endpoints
+        return path.startsWith("/h2-console") ||
+                path.startsWith("/actuator") ||
+                path.equals("/favicon.ico") ||
+                path.equals("/error") ||
+                path.startsWith("/api/auth");
+    }
+
+    @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,

@@ -12,7 +12,9 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -29,24 +31,30 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        // Completely ignore these paths - they won't go through the security filter chain
+        return (web) -> web.ignoring()
+                .requestMatchers("/favicon.ico", "/error")
+                .requestMatchers("/h2-console/**");
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
+                .authorizeHttpRequests(request -> request
                         // Public endpoints
-                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/welcome").permitAll()
-                        // Actuator endpoints - public for monitoring
-                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/welcome", "/actuator/**").permitAll()
                         // User endpoints - method-level security handles roles
                         .requestMatchers("/api/users/**").authenticated()
                         // Vehicle endpoints - method-level security handles roles
                         .requestMatchers("/api/vehicles/**").authenticated()
-                        // All other requests require authentication
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

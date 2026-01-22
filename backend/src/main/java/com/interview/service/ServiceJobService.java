@@ -1,0 +1,110 @@
+package com.interview.service;
+
+import com.interview.dto.ServiceJobDTO;
+import com.interview.mapper.ServiceJobMapper;
+import com.interview.model.ServiceJob;
+import com.interview.repository.ServiceJobRepository;
+import com.interview.repository.VehicleRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@Transactional
+public class ServiceJobService {
+
+    private final ServiceJobRepository serviceJobRepository;
+    private final VehicleRepository vehicleRepository;
+
+
+    public ServiceJobService(ServiceJobRepository serviceJobRepository, VehicleRepository vehicleRepository) {
+        this.serviceJobRepository = serviceJobRepository;
+        this.vehicleRepository = vehicleRepository;
+    }
+
+    /**
+     * Save a serviceJob.
+     *
+     * @param serviceJobDTO the entity to save.
+     * @return the persisted entity.
+     */
+    public ServiceJobDTO save(ServiceJobDTO serviceJobDTO) {
+        ServiceJob serviceJob = ServiceJobMapper.toEntity(serviceJobDTO);
+        if (serviceJobDTO.getVehicleId() != null) {
+            com.interview.model.Vehicle vehicle = vehicleRepository.findById(serviceJobDTO.getVehicleId())
+                .orElseThrow(() -> new com.interview.web.rest.errors.ResourceNotFoundException("Vehicle not found with id: " + serviceJobDTO.getVehicleId()));
+            serviceJob.setVehicle(vehicle);
+        }
+        serviceJob = serviceJobRepository.save(serviceJob);
+        return ServiceJobMapper.toDto(serviceJob);
+    }
+
+    /**
+     * Partially updates a serviceJob.
+     *
+     * @param serviceJobDTO the entity to update partially.
+     * @return the persisted entity.
+     */
+    public ServiceJobDTO partialUpdate(ServiceJobDTO serviceJobDTO) {
+        return serviceJobRepository.findById(serviceJobDTO.getId())
+            .map(existingServiceJob -> {
+                if (serviceJobDTO.getDescription() != null) {
+                    existingServiceJob.setDescription(serviceJobDTO.getDescription());
+                }
+                if (serviceJobDTO.getCreationDate() != null) {
+                    existingServiceJob.setCreationDate(serviceJobDTO.getCreationDate());
+                }
+                if (serviceJobDTO.getStatus() != null) {
+                    existingServiceJob.setStatus(serviceJobDTO.getStatus());
+                }
+                if (serviceJobDTO.getCost() != null) {
+                    existingServiceJob.setCost(serviceJobDTO.getCost());
+                }
+                if (serviceJobDTO.getVehicleId() != null) {
+                    com.interview.model.Vehicle vehicle = vehicleRepository.findById(serviceJobDTO.getVehicleId())
+                        .orElseThrow(() -> new com.interview.web.rest.errors.ResourceNotFoundException("Vehicle not found with id: " + serviceJobDTO.getVehicleId()));
+                    existingServiceJob.setVehicle(vehicle);
+                }
+                return serviceJobRepository.save(existingServiceJob);
+            })
+            .map(ServiceJobMapper::toDto)
+            .orElseThrow(() -> new com.interview.web.rest.errors.ResourceNotFoundException("ServiceJob not found!"));
+    }
+
+
+    /**
+     * Get all the serviceJobs.
+     *
+     * @return the list of entities.
+     */
+    @Transactional(readOnly = true)
+    public List<ServiceJobDTO> findAll() {
+        return serviceJobRepository.findAll().stream()
+            .map(ServiceJobMapper::toDto)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Get one serviceJob by id.
+     *
+     * @param id the id of the entity.
+     * @return the entity.
+     */
+    @Transactional(readOnly = true)
+    public ServiceJobDTO findOne(Long id) {
+        return serviceJobRepository.findById(id)
+            .map(ServiceJobMapper::toDto)
+            .orElseThrow(() -> new com.interview.web.rest.errors.ResourceNotFoundException("ServiceJob not found!"));
+    }
+
+    /**
+     * Delete the serviceJob by id.
+     *
+     * @param id the id of the entity.
+     */
+    public void delete(Long id) {
+        serviceJobRepository.deleteById(id);
+    }
+}

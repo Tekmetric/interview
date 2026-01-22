@@ -24,12 +24,12 @@ public class VehicleService {
     }
 
     /**
-     * Save a vehicle.
+     * Create a vehicle.
      *
      * @param vehicleDTO the entity to save.
      * @return the persisted entity.
      */
-    public VehicleDTO save(VehicleDTO vehicleDTO) {
+    public VehicleDTO create(VehicleDTO vehicleDTO) {
         Vehicle vehicle = VehicleMapper.toEntity(vehicleDTO);
         if (vehicleDTO.getCustomerId() != null) {
             com.interview.model.Customer customer = customerRepository.findById(vehicleDTO.getCustomerId())
@@ -38,6 +38,30 @@ public class VehicleService {
         }
         vehicle = vehicleRepository.save(vehicle);
         return VehicleMapper.toDto(vehicle);
+    }
+
+    /**
+     * Update a vehicle.
+     *
+     * @param vehicleDTO the entity to update.
+     * @return the persisted entity.
+     */
+    public VehicleDTO update(VehicleDTO vehicleDTO) {
+        return vehicleRepository.findById(vehicleDTO.getId())
+            .map(existingVehicle -> {
+                existingVehicle.setVin(vehicleDTO.getVin());
+                existingVehicle.setMake(vehicleDTO.getMake());
+                existingVehicle.setModel(vehicleDTO.getModel());
+                existingVehicle.setModelYear(vehicleDTO.getModelYear());
+                if (vehicleDTO.getCustomerId() != null) {
+                    com.interview.model.Customer customer = customerRepository.findById(vehicleDTO.getCustomerId())
+                        .orElseThrow(() -> new com.interview.web.rest.errors.ResourceNotFoundException("Customer not found with id: " + vehicleDTO.getCustomerId()));
+                    existingVehicle.setCustomer(customer);
+                }
+                return vehicleRepository.save(existingVehicle);
+            })
+            .map(VehicleMapper::toDto)
+            .orElseThrow(() -> new com.interview.web.rest.errors.ResourceNotFoundException("Vehicle not found!"));
     }
 
     /**

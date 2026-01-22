@@ -3,6 +3,7 @@ package com.interview.service;
 import com.interview.dto.CustomerDTO;
 import com.interview.model.Customer;
 import com.interview.repository.CustomerRepository;
+import com.interview.web.rest.errors.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,23 +82,39 @@ class CustomerServiceTest {
         when(customerRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             customerService.findOne(1L);
         });
         verify(customerRepository).findById(1L);
     }
 
     @Test
-    void testSave() {
+    void testCreate() {
         // Arrange
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
         // Act
-        CustomerDTO result = customerService.save(customerDTO);
+        CustomerDTO result = customerService.create(customerDTO);
 
         // Assert
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(customer.getId());
+        verify(customerRepository).save(any(Customer.class));
+    }
+
+    @Test
+    void testUpdate() {
+        // Arrange
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+
+        // Act
+        CustomerDTO result = customerService.update(customerDTO);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(customer.getId());
+        verify(customerRepository).findById(1L);
         verify(customerRepository).save(any(Customer.class));
     }
 
@@ -134,7 +151,7 @@ class CustomerServiceTest {
         when(customerRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             customerService.partialUpdate(customerDTO);
         });
         verify(customerRepository).findById(1L);

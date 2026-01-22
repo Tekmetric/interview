@@ -43,7 +43,7 @@ class VehicleResourceTest {
 
     @Test
     void createVehicle_shouldReturnCreated() throws Exception {
-        when(vehicleService.save(any(VehicleDTO.class))).thenReturn(vehicleDTO);
+        when(vehicleService.create(any(VehicleDTO.class))).thenReturn(vehicleDTO);
 
         mockMvc.perform(post("/api/vehicles")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -62,7 +62,7 @@ class VehicleResourceTest {
 
     @Test
     void updateVehicle_shouldReturnOk() throws Exception {
-        when(vehicleService.save(any(VehicleDTO.class))).thenReturn(vehicleDTO);
+        when(vehicleService.update(any(VehicleDTO.class))).thenReturn(vehicleDTO);
 
         mockMvc.perform(put("/api/vehicles/1")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -25,12 +25,12 @@ public class ServiceJobService {
     }
 
     /**
-     * Save a serviceJob.
+     * Create a serviceJob.
      *
      * @param serviceJobDTO the entity to save.
      * @return the persisted entity.
      */
-    public ServiceJobDTO save(ServiceJobDTO serviceJobDTO) {
+    public ServiceJobDTO create(ServiceJobDTO serviceJobDTO) {
         ServiceJob serviceJob = ServiceJobMapper.toEntity(serviceJobDTO);
         if (serviceJobDTO.getVehicleId() != null) {
             com.interview.model.Vehicle vehicle = vehicleRepository.findById(serviceJobDTO.getVehicleId())
@@ -39,6 +39,30 @@ public class ServiceJobService {
         }
         serviceJob = serviceJobRepository.save(serviceJob);
         return ServiceJobMapper.toDto(serviceJob);
+    }
+
+    /**
+     * Update a serviceJob.
+     *
+     * @param serviceJobDTO the entity to update.
+     * @return the persisted entity.
+     */
+    public ServiceJobDTO update(ServiceJobDTO serviceJobDTO) {
+        return serviceJobRepository.findById(serviceJobDTO.getId())
+            .map(existingServiceJob -> {
+                existingServiceJob.setDescription(serviceJobDTO.getDescription());
+                existingServiceJob.setCreationDate(serviceJobDTO.getCreationDate());
+                existingServiceJob.setStatus(serviceJobDTO.getStatus());
+                existingServiceJob.setCost(serviceJobDTO.getCost());
+                if (serviceJobDTO.getVehicleId() != null) {
+                    com.interview.model.Vehicle vehicle = vehicleRepository.findById(serviceJobDTO.getVehicleId())
+                        .orElseThrow(() -> new com.interview.web.rest.errors.ResourceNotFoundException("Vehicle not found with id: " + serviceJobDTO.getVehicleId()));
+                    existingServiceJob.setVehicle(vehicle);
+                }
+                return serviceJobRepository.save(existingServiceJob);
+            })
+            .map(ServiceJobMapper::toDto)
+            .orElseThrow(() -> new com.interview.web.rest.errors.ResourceNotFoundException("ServiceJob not found!"));
     }
 
     /**

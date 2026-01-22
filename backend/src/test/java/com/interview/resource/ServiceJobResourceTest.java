@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,12 +43,23 @@ class ServiceJobResourceTest {
 
     @Test
     void createServiceJob_shouldReturnCreated() throws Exception {
-        when(serviceJobService.save(any(ServiceJobDTO.class))).thenReturn(serviceJobDTO);
+        when(serviceJobService.create(any(ServiceJobDTO.class))).thenReturn(serviceJobDTO);
 
         mockMvc.perform(post("/api/service-jobs")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new ServiceJobDTO())))
             .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @Test
+    void updateServiceJob_shouldReturnOk() throws Exception {
+        when(serviceJobService.update(any(ServiceJobDTO.class))).thenReturn(serviceJobDTO);
+
+        mockMvc.perform(put("/api/service-jobs/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(serviceJobDTO)))
+            .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(1L));
     }
 

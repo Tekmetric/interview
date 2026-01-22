@@ -20,15 +20,33 @@ public class CustomerService {
     }
 
     /**
-     * Save a customer.
+     * Create a customer.
      *
      * @param customerDTO the entity to save.
      * @return the persisted entity.
      */
-    public CustomerDTO save(CustomerDTO customerDTO) {
+    public CustomerDTO create(CustomerDTO customerDTO) {
         com.interview.model.Customer customer = CustomerMapper.toEntity(customerDTO);
         customer = customerRepository.save(customer);
         return CustomerMapper.toDto(customer);
+    }
+
+    /**
+     * Update a customer.
+     *
+     * @param customerDTO the entity to update.
+     * @return the persisted entity.
+     */
+    public CustomerDTO update(CustomerDTO customerDTO) {
+        return customerRepository.findById(customerDTO.getId())
+            .map(existingCustomer -> {
+                existingCustomer.setFirstName(customerDTO.getFirstName());
+                existingCustomer.setLastName(customerDTO.getLastName());
+                existingCustomer.setEmail(customerDTO.getEmail());
+                return customerRepository.save(existingCustomer);
+            })
+            .map(CustomerMapper::toDto)
+            .orElseThrow(() -> new com.interview.web.rest.errors.ResourceNotFoundException("Customer not found!"));
     }
 
     /**

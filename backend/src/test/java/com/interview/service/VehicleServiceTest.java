@@ -57,13 +57,13 @@ class VehicleServiceTest {
     }
 
     @Test
-    void testSave_whenCustomerExists() {
+    void testCreate_whenCustomerExists() {
         // Arrange
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
 
         // Act
-        VehicleDTO result = vehicleService.save(vehicleDTO);
+        VehicleDTO result = vehicleService.create(vehicleDTO);
 
         // Assert
         assertThat(result).isNotNull();
@@ -73,18 +73,35 @@ class VehicleServiceTest {
     }
 
     @Test
-    void testSave_whenCustomerDoesNotExist_shouldThrowException() {
+    void testCreate_whenCustomerDoesNotExist_shouldThrowException() {
         // Arrange
         vehicleDTO.setCustomerId(99L);
         when(customerRepository.findById(99L)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> {
-            vehicleService.save(vehicleDTO);
+            vehicleService.create(vehicleDTO);
         });
 
         verify(customerRepository).findById(99L);
         verify(vehicleRepository, never()).save(any(Vehicle.class));
+    }
+
+    @Test
+    void testUpdate() {
+        // Arrange
+        when(vehicleRepository.findById(10L)).thenReturn(Optional.of(vehicle));
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
+
+        // Act
+        VehicleDTO result = vehicleService.update(vehicleDTO);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getCustomerId()).isEqualTo(1L);
+        verify(vehicleRepository).findById(10L);
+        verify(vehicleRepository).save(any(Vehicle.class));
     }
 
 

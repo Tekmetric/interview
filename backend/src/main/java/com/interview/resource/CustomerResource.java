@@ -25,14 +25,14 @@ public class CustomerResource {
         if (customerDTO.getId() != null) {
             throw new IllegalArgumentException("A new customer cannot already have an ID");
         }
-        CustomerDTO result = customerService.save(customerDTO);
+        CustomerDTO result = customerService.create(customerDTO);
         return ResponseEntity.created(new URI("/api/customers/" + result.getId())).body(result);
     }
 
     @PutMapping("/customers/{id}")
     public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
         customerDTO.setId(id);
-        CustomerDTO result = customerService.save(customerDTO);
+        CustomerDTO result = customerService.update(customerDTO);
         return ResponseEntity.ok(result);
     }
 

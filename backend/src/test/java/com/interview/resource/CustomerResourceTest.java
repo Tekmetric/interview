@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -44,13 +45,35 @@ class CustomerResourceTest {
 
     @Test
     void createCustomer_shouldReturnCreated() throws Exception {
-        when(customerService.save(any(CustomerDTO.class))).thenReturn(customerDTO);
+        when(customerService.create(any(CustomerDTO.class))).thenReturn(customerDTO);
 
         mockMvc.perform(post("/api/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new CustomerDTO())))
             .andExpect(status().isCreated())
             .andExpect(header().string("Location", "/api/customers/1"))
+            .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @Test
+    void createCustomer_withDuplicateEmail_shouldReturnConflict() throws Exception {
+        when(customerService.create(any(CustomerDTO.class)))
+            .thenThrow(new DataIntegrityViolationException("Duplicate entry"));
+
+        mockMvc.perform(post("/api/customers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new CustomerDTO())))
+            .andExpect(status().isConflict());
+    }
+
+    @Test
+    void updateCustomer_shouldReturnOk() throws Exception {
+        when(customerService.update(any(CustomerDTO.class))).thenReturn(customerDTO);
+
+        mockMvc.perform(put("/api/customers/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customerDTO)))
+            .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(1L));
     }
 

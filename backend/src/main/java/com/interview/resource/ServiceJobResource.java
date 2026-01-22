@@ -24,14 +24,14 @@ public class ServiceJobResource {
         if (serviceJobDTO.getId() != null) {
             throw new IllegalArgumentException("A new service job cannot already have an ID");
         }
-        ServiceJobDTO result = serviceJobService.save(serviceJobDTO);
+        ServiceJobDTO result = serviceJobService.create(serviceJobDTO);
         return ResponseEntity.created(new URI("/api/service-jobs/" + result.getId())).body(result);
     }
 
     @PutMapping("/service-jobs/{id}")
     public ResponseEntity<ServiceJobDTO> updateServiceJob(@PathVariable Long id, @RequestBody ServiceJobDTO serviceJobDTO) {
         serviceJobDTO.setId(id);
-        ServiceJobDTO result = serviceJobService.save(serviceJobDTO);
+        ServiceJobDTO result = serviceJobService.update(serviceJobDTO);
         return ResponseEntity.ok(result);
     }
 

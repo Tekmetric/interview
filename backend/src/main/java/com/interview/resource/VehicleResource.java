@@ -24,14 +24,14 @@ public class VehicleResource {
         if (vehicleDTO.getId() != null) {
             throw new IllegalArgumentException("A new vehicle cannot already have an ID");
         }
-        VehicleDTO result = vehicleService.save(vehicleDTO);
+        VehicleDTO result = vehicleService.create(vehicleDTO);
         return ResponseEntity.created(new URI("/api/vehicles/" + result.getId())).body(result);
     }
 
     @PutMapping("/vehicles/{id}")
     public ResponseEntity<VehicleDTO> updateVehicle(@PathVariable Long id, @RequestBody VehicleDTO vehicleDTO) {
         vehicleDTO.setId(id);
-        VehicleDTO result = vehicleService.save(vehicleDTO);
+        VehicleDTO result = vehicleService.update(vehicleDTO);
         return ResponseEntity.ok(result);
     }
 

@@ -12,7 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -170,6 +175,40 @@ class VehicleServiceTest {
         });
         verify(vehicleRepository).findById(10L);
         verify(vehicleRepository, never()).save(any(Vehicle.class));
+    }
+
+    @Test
+    void findAll_shouldReturnPageOfVehicles() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Vehicle> vehiclePage = new PageImpl<>(Collections.singletonList(vehicle), pageable, 1);
+        when(vehicleRepository.findAll(pageable)).thenReturn(vehiclePage);
+
+        // Act
+        Page<VehicleDTO> result = vehicleService.findAll(pageable);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(vehicle.getId());
+        verify(vehicleRepository).findAll(pageable);
+    }
+
+    @Test
+    void findByCustomerId_shouldReturnVehicles() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Vehicle> vehiclePage = new PageImpl<>(Collections.singletonList(vehicle), pageable, 1);
+        when(vehicleRepository.findByCustomerId(1L, pageable)).thenReturn(vehiclePage);
+
+        // Act
+        Page<VehicleDTO> result = vehicleService.findByCustomerId(1L, pageable);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(vehicle.getId());
+        verify(vehicleRepository).findByCustomerId(1L, pageable);
     }
 
     @Test

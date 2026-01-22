@@ -1,15 +1,29 @@
 package com.interview.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class VehicleDTO implements Serializable {
 
     private Long id;
+
+    @NotBlank(message = "VIN is mandatory")
+    @Size(min = 17, max = 17, message = "VIN must be 17 characters")
     private String vin;
+
+    @NotBlank(message = "Make is mandatory")
     private String make;
+
+    @NotBlank(message = "Model is mandatory")
     private String model;
+
+    @NotNull(message = "Model year is mandatory")
     private Integer modelYear;
+
+    @NotNull(message = "Customer ID is mandatory")
     private Long customerId;
 
     public Long getId() {

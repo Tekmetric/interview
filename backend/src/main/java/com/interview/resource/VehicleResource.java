@@ -1,26 +1,32 @@
 package com.interview.resource;
 
+import com.interview.dto.ServiceJobDTO;
 import com.interview.dto.VehicleDTO;
+import com.interview.service.ServiceJobService;
 import com.interview.service.VehicleService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 public class VehicleResource {
 
     private final VehicleService vehicleService;
+    private final ServiceJobService serviceJobService;
 
-    public VehicleResource(VehicleService vehicleService) {
+    public VehicleResource(VehicleService vehicleService, ServiceJobService serviceJobService) {
         this.vehicleService = vehicleService;
+        this.serviceJobService = serviceJobService;
     }
 
     @PostMapping("/vehicles")
-    public ResponseEntity<VehicleDTO> createVehicle(@RequestBody VehicleDTO vehicleDTO) throws URISyntaxException {
+    public ResponseEntity<VehicleDTO> createVehicle(@Valid @RequestBody VehicleDTO vehicleDTO) throws URISyntaxException {
         if (vehicleDTO.getId() != null) {
             throw new IllegalArgumentException("A new vehicle cannot already have an ID");
         }
@@ -29,7 +35,7 @@ public class VehicleResource {
     }
 
     @PutMapping("/vehicles/{id}")
-    public ResponseEntity<VehicleDTO> updateVehicle(@PathVariable Long id, @RequestBody VehicleDTO vehicleDTO) {
+    public ResponseEntity<VehicleDTO> updateVehicle(@PathVariable Long id, @Valid @RequestBody VehicleDTO vehicleDTO) {
         vehicleDTO.setId(id);
         VehicleDTO result = vehicleService.update(vehicleDTO);
         return ResponseEntity.ok(result);
@@ -43,15 +49,21 @@ public class VehicleResource {
     }
 
     @GetMapping("/vehicles")
-    public ResponseEntity<List<VehicleDTO>> getAllVehicles() {
-        List<VehicleDTO> list = vehicleService.findAll();
-        return ResponseEntity.ok(list);
+    public ResponseEntity<Page<VehicleDTO>> getAllVehicles(Pageable pageable) {
+        Page<VehicleDTO> page = vehicleService.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/vehicles/{id}")
     public ResponseEntity<VehicleDTO> getVehicle(@PathVariable Long id) {
         VehicleDTO vehicleDTO = vehicleService.findOne(id);
         return ResponseEntity.ok(vehicleDTO);
+    }
+
+    @GetMapping("/vehicles/{id}/service-jobs")
+    public ResponseEntity<Page<ServiceJobDTO>> getServiceJobsForVehicle(@PathVariable Long id, Pageable pageable) {
+        Page<ServiceJobDTO> page = serviceJobService.findByVehicleId(id, pageable);
+        return ResponseEntity.ok(page);
     }
 
     @DeleteMapping("/vehicles/{id}")

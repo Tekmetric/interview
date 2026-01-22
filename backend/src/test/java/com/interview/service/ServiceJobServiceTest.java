@@ -13,8 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -144,6 +149,57 @@ class ServiceJobServiceTest {
         });
         verify(serviceJobRepository).findById(100L);
         verify(serviceJobRepository, never()).save(any(ServiceJob.class));
+    }
+
+    @Test
+    void findAll_shouldReturnPageOfServiceJobs() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<ServiceJob> serviceJobPage = new PageImpl<>(Collections.singletonList(serviceJob), pageable, 1);
+        when(serviceJobRepository.findAll(pageable)).thenReturn(serviceJobPage);
+
+        // Act
+        Page<ServiceJobDTO> result = serviceJobService.findAll(pageable);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(serviceJob.getId());
+        verify(serviceJobRepository).findAll(pageable);
+    }
+
+    @Test
+    void findByVehicleId_shouldReturnServiceJobs() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<ServiceJob> serviceJobPage = new PageImpl<>(Collections.singletonList(serviceJob), pageable, 1);
+        when(serviceJobRepository.findByVehicleId(10L, pageable)).thenReturn(serviceJobPage);
+
+        // Act
+        Page<ServiceJobDTO> result = serviceJobService.findByVehicleId(10L, pageable);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(serviceJob.getId());
+        verify(serviceJobRepository).findByVehicleId(10L, pageable);
+    }
+
+    @Test
+    void findByCustomerId_shouldReturnServiceJobs() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<ServiceJob> serviceJobPage = new PageImpl<>(Collections.singletonList(serviceJob), pageable, 1);
+        when(serviceJobRepository.findByVehicleCustomerId(1L, pageable)).thenReturn(serviceJobPage);
+
+        // Act
+        Page<ServiceJobDTO> result = serviceJobService.findByCustomerId(1L, pageable);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(serviceJob.getId());
+        verify(serviceJobRepository).findByVehicleCustomerId(1L, pageable);
     }
 
     @Test

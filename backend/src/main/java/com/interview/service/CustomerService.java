@@ -3,11 +3,10 @@ package com.interview.service;
 import com.interview.dto.CustomerDTO;
 import com.interview.mapper.CustomerMapper;
 import com.interview.repository.CustomerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -76,13 +75,13 @@ public class CustomerService {
     /**
      * Get all the customers.
      *
+     * @param pageable the pagination information.
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public List<CustomerDTO> findAll() {
-        return customerRepository.findAll().stream()
-            .map(CustomerMapper::toDto)
-            .collect(Collectors.toList());
+    public Page<CustomerDTO> findAll(Pageable pageable) {
+        return customerRepository.findAll(pageable)
+            .map(CustomerMapper::toDto);
     }
 
     /**

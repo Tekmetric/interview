@@ -2,12 +2,14 @@ package com.interview.resource;
 
 import com.interview.dto.ServiceJobDTO;
 import com.interview.service.ServiceJobService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -20,7 +22,7 @@ public class ServiceJobResource {
     }
 
     @PostMapping("/service-jobs")
-    public ResponseEntity<ServiceJobDTO> createServiceJob(@RequestBody ServiceJobDTO serviceJobDTO) throws URISyntaxException {
+    public ResponseEntity<ServiceJobDTO> createServiceJob(@Valid @RequestBody ServiceJobDTO serviceJobDTO) throws URISyntaxException {
         if (serviceJobDTO.getId() != null) {
             throw new IllegalArgumentException("A new service job cannot already have an ID");
         }
@@ -29,7 +31,7 @@ public class ServiceJobResource {
     }
 
     @PutMapping("/service-jobs/{id}")
-    public ResponseEntity<ServiceJobDTO> updateServiceJob(@PathVariable Long id, @RequestBody ServiceJobDTO serviceJobDTO) {
+    public ResponseEntity<ServiceJobDTO> updateServiceJob(@PathVariable Long id, @Valid @RequestBody ServiceJobDTO serviceJobDTO) {
         serviceJobDTO.setId(id);
         ServiceJobDTO result = serviceJobService.update(serviceJobDTO);
         return ResponseEntity.ok(result);
@@ -43,9 +45,9 @@ public class ServiceJobResource {
     }
 
     @GetMapping("/service-jobs")
-    public ResponseEntity<List<ServiceJobDTO>> getAllServiceJobs() {
-        List<ServiceJobDTO> list = serviceJobService.findAll();
-        return ResponseEntity.ok(list);
+    public ResponseEntity<Page<ServiceJobDTO>> getAllServiceJobs(Pageable pageable) {
+        Page<ServiceJobDTO> page = serviceJobService.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/service-jobs/{id}")

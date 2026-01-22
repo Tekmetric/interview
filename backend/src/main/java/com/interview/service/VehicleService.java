@@ -5,10 +5,11 @@ import com.interview.mapper.VehicleMapper;
 import com.interview.model.Vehicle;
 import com.interview.repository.CustomerRepository;
 import com.interview.repository.VehicleRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -100,13 +101,24 @@ public class VehicleService {
     /**
      * Get all the vehicles.
      *
-     * @return the list of entities.
+     * @return the page of entities.
      */
     @Transactional(readOnly = true)
-    public List<VehicleDTO> findAll() {
-        return vehicleRepository.findAll().stream()
-            .map(VehicleMapper::toDto)
-            .collect(Collectors.toList());
+    public Page<VehicleDTO> findAll(Pageable pageable) {
+        return vehicleRepository.findAll(pageable)
+            .map(VehicleMapper::toDto);
+    }
+
+    /**
+     * Get all the vehicles for a specific customer.
+     *
+     * @param customerId the id of the customer.
+     * @return the page of entities.
+     */
+    @Transactional(readOnly = true)
+    public Page<VehicleDTO> findByCustomerId(Long customerId, Pageable pageable) {
+        return vehicleRepository.findByCustomerId(customerId, pageable)
+            .map(VehicleMapper::toDto);
     }
 
     /**

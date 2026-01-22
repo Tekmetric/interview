@@ -2,6 +2,8 @@ package com.interview.dto;
 
 import com.interview.model.enumeration.ServiceJobStatus;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -10,10 +12,19 @@ import java.util.Objects;
 public class ServiceJobDTO implements Serializable {
 
     private Long id;
+
+    @NotBlank(message = "Description is mandatory")
     private String description;
+
+    @NotNull(message = "Creation date is mandatory")
     private Instant creationDate;
+
+    @NotNull(message = "Status is mandatory")
     private ServiceJobStatus status;
+
     private BigDecimal cost;
+
+    @NotNull(message = "Vehicle ID is mandatory")
     private Long vehicleId;
 
     public Long getId() {

@@ -63,6 +63,13 @@ The application exposes a RESTful API on `http://localhost:8080`. Ensure the app
 
 The H2 Console is available at `http://localhost:8080/h2-console` with JDBC URL `jdbc:h2:mem:testdb`, Username `sa`, and Password `password`.
 
+**Note on Pagination:** All endpoints that return a list of objects are paginated. You can use the following query parameters to control the response:
+*   `page`: The page number to retrieve (0-indexed).
+*   `size`: The number of items per page.
+*   `sort`: A comma-separated list of properties to sort by, e.g., `sort=lastName,asc&sort=firstName,desc`.
+
+The response will be a JSON object containing the list of items under the `content` key, along with pagination metadata like `totalPages`, `totalElements`, etc.
+
 ---
 
 **Sample cURLs:**
@@ -71,13 +78,21 @@ The H2 Console is available at `http://localhost:8080/h2-console` with JDBC URL 
 
 **A. Customer Endpoints (`/api/customers`)**
 
-*   **Get all Customers:**
+*   **Get all Customers (with pagination):**
     ```bash
-    curl -X GET http://localhost:8080/api/customers
+    curl -X GET 'http://localhost:8080/api/customers?page=0&size=5&sort=lastName,asc'
     ```
 *   **Get Customer by ID (e.g., ID 1):**
     ```bash
     curl -X GET http://localhost:8080/api/customers/1
+    ```
+*   **Get all Vehicles for a Customer (e.g., Customer ID 1):**
+    ```bash
+    curl -X GET 'http://localhost:8080/api/customers/1/vehicles?page=0&size=5'
+    ```
+*   **Get all Service Jobs for a Customer (e.g., Customer ID 1):**
+    ```bash
+    curl -X GET 'http://localhost:8080/api/customers/1/service-jobs?sort=creationDate,desc'
     ```
 *   **Create a new Customer:**
     ```bash
@@ -122,13 +137,17 @@ The H2 Console is available at `http://localhost:8080/h2-console` with JDBC URL 
 
 **B. Vehicle Endpoints (`/api/vehicles`)**
 
-*   **Get all Vehicles:**
+*   **Get all Vehicles (with pagination):**
     ```bash
-    curl -X GET http://localhost:8080/api/vehicles
+    curl -X GET 'http://localhost:8080/api/vehicles?page=0&size=5&sort=modelYear,desc'
     ```
 *   **Get Vehicle by ID (e.g., ID 1):**
     ```bash
     curl -X GET http://localhost:8080/api/vehicles/1
+    ```
+*   **Get all Service Jobs for a Vehicle (e.g., Vehicle ID 1):**
+    ```bash
+    curl -X GET 'http://localhost:8080/api/vehicles/1/service-jobs?page=0&size=5'
     ```
 *   **Create a new Vehicle (for Customer ID 1):**
     ```bash
@@ -136,7 +155,7 @@ The H2 Console is available at `http://localhost:8080/h2-console` with JDBC URL 
          -H "Content-Type: application/json" \
          -d \
              '{
-               "vin": "VINXYZ789",
+               "vin": "1G1FY2D37A7123456",
                "make": "Nissan",
                "model": "Altima",
                "modelYear": 2023,
@@ -149,7 +168,7 @@ The H2 Console is available at `http://localhost:8080/h2-console` with JDBC URL 
          -H "Content-Type: application/json" \
          -d \
              '{
-               "vin": "VINBADID123",
+               "vin": "VINBADID123456789",
                "make": "Chevy",
                "model": "Malibu",
                "modelYear": 2020,
@@ -159,9 +178,9 @@ The H2 Console is available at `http://localhost:8080/h2-console` with JDBC URL 
 
 **C. Service Job Endpoints (`/api/service-jobs`)**
 
-*   **Get all Service Jobs:**
+*   **Get all Service Jobs (with pagination):**
     ```bash
-    curl -X GET http://localhost:8080/api/service-jobs
+    curl -X GET 'http://localhost:8080/api/service-jobs?page=0&size=10'
     ```
 *   **Get Service Job by ID (e.g., ID 1):**
     ```bash

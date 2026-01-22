@@ -5,11 +5,10 @@ import com.interview.mapper.ServiceJobMapper;
 import com.interview.model.ServiceJob;
 import com.interview.repository.ServiceJobRepository;
 import com.interview.repository.VehicleRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -101,13 +100,37 @@ public class ServiceJobService {
     /**
      * Get all the serviceJobs.
      *
-     * @return the list of entities.
+     * @param pageable the pagination information.
+     * @return the page of entities.
      */
     @Transactional(readOnly = true)
-    public List<ServiceJobDTO> findAll() {
-        return serviceJobRepository.findAll().stream()
-            .map(ServiceJobMapper::toDto)
-            .collect(Collectors.toList());
+    public Page<ServiceJobDTO> findAll(Pageable pageable) {
+        return serviceJobRepository.findAll(pageable)
+            .map(ServiceJobMapper::toDto);
+    }
+
+    /**
+     * Get all the serviceJobs for a specific vehicle.
+     *
+     * @param vehicleId the id of the vehicle.
+     * @return the page of entities.
+     */
+    @Transactional(readOnly = true)
+    public Page<ServiceJobDTO> findByVehicleId(Long vehicleId, Pageable pageable) {
+        return serviceJobRepository.findByVehicleId(vehicleId, pageable)
+            .map(ServiceJobMapper::toDto);
+    }
+
+    /**
+     * Get all the serviceJobs for a specific customer.
+     *
+     * @param customerId the id of the customer.
+     * @return the page of entities.
+     */
+    @Transactional(readOnly = true)
+    public Page<ServiceJobDTO> findByCustomerId(Long customerId, Pageable pageable) {
+        return serviceJobRepository.findByVehicleCustomerId(customerId, pageable)
+            .map(ServiceJobMapper::toDto);
     }
 
     /**

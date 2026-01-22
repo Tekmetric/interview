@@ -4,6 +4,10 @@ import com.interview.dto.CustomerDTO;
 import com.interview.model.Customer;
 import com.interview.repository.CustomerRepository;
 import com.interview.web.rest.errors.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,16 +54,18 @@ class CustomerServiceTest {
     @Test
     void testFindAll() {
         // Arrange
-        when(customerRepository.findAll()).thenReturn(Collections.singletonList(customer));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Customer> customerPage = new PageImpl<>(Collections.singletonList(customer), pageable, 1);
+        when(customerRepository.findAll(pageable)).thenReturn(customerPage);
 
         // Act
-        List<CustomerDTO> result = customerService.findAll();
+        Page<CustomerDTO> result = customerService.findAll(pageable);
 
         // Assert
         assertThat(result).isNotNull();
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getEmail()).isEqualTo(customer.getEmail());
-        verify(customerRepository).findAll();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getEmail()).isEqualTo(customer.getEmail());
+        verify(customerRepository).findAll(pageable);
     }
 
     @Test

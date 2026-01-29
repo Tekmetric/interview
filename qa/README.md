@@ -95,6 +95,19 @@ Include a README section in your submission that covers:
 
 Keep this concise. One to two pages max.
 
+## Submission Instructions
+
+1. Fork the repository to your own GitHub account  
+2. Clone your fork locally  
+3. Complete the exercise in your forked repository  
+4. Push your changes to your fork  
+5. Open a pull request back in https://github.com/Tekmetric/interview
+
+Your pull request should include:
+- Your implementation
+- Any documentation added or updated
+- Clear commit history where appropriate
+
 
 ## Interview Discussion Topics
 

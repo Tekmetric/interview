@@ -25,7 +25,7 @@ We care about:
 
 Quality and clarity matter more than volume.
 
-Time expectation: 3 days. Do not overbuild.
+Time expectation: 3 days.
 
 
 
@@ -65,7 +65,7 @@ Notes:
 - The goal is to demonstrate clean session reuse and state management
 - You do not need to automate the admin login UI
 
----
+
 
 ## Architecture and Design Expectations
 
@@ -93,7 +93,7 @@ Include a README section in your submission that covers:
 - How you would run this in CI  
 - What you would improve next with more time  
 
-Keep this concise. One to two pages max.
+
 
 ## Submission Instructions
 
@@ -109,17 +109,16 @@ Your pull request should include:
 - Clear commit history where appropriate
 
 
-## Interview Discussion Topics
+## Interview Discussion
 
-During the interview, you should be prepared to walk through:
+During the interview, we will ask you to walk through your solution using the code you wrote.
 
-- Framework structure and extensibility  
-- Fixture and setup strategy  
-- Authentication and state control  
-- Test strategy and layering decisions  
-- Flake prevention and waiting strategy  
-- Debugging a failing test using available artifacts  
-- How this would fit into a CI pipeline  
-
-You may be asked to make a small change or explain how you would extend the framework.
+Be prepared to:
+- Explain how your framework is structured and show where new tests would be added
+- Walk through how setup, fixtures, and authentication work in your implementation
+- Show how test state is created, reused, and isolated
+- Explain why you chose the test scenarios you automated and what you intentionally left out
+- Demonstrate how your tests handle waiting and avoid flake
+- Walk through how you would debug a failing test using the artifacts your framework produces
+- Explain how this would run in CI and what changes you would make for scale
 

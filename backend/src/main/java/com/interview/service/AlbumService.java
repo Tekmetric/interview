@@ -3,15 +3,19 @@ package com.interview.service;
 import com.interview.dto.AlbumDto;
 import com.interview.dto.AlbumListDto;
 import com.interview.dto.ArtistRefDto;
+import com.interview.dto.EntityType;
+import com.interview.dto.NotificationAction;
 import com.interview.dto.SongRefDto;
 import com.interview.entity.Album;
 import com.interview.entity.Artist;
 import com.interview.entity.Song;
+import com.interview.event.EntityChangeEvent;
 import com.interview.repository.AlbumRepository;
 import com.interview.repository.ArtistRepository;
 import com.interview.repository.SongRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,14 +33,16 @@ public class AlbumService {
     private final ArtistRepository artistRepository;
     private final SongRepository songRepository;
     private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
     public AlbumService(AlbumRepository albumRepository, ArtistRepository artistRepository,
-                        SongRepository songRepository, ModelMapper modelMapper) {
+                        SongRepository songRepository, ModelMapper modelMapper, ApplicationEventPublisher eventPublisher) {
         this.albumRepository = albumRepository;
         this.artistRepository = artistRepository;
         this.songRepository = songRepository;
         this.modelMapper = modelMapper;
+        this.eventPublisher = eventPublisher;
     }
 
     public AlbumDto createAlbum(AlbumDto albumDto) {
@@ -57,6 +63,7 @@ public class AlbumService {
         }
 
         Album savedAlbum = albumRepository.save(album);
+        eventPublisher.publishEvent(new EntityChangeEvent(NotificationAction.CREATE, EntityType.ALBUM, savedAlbum.getId()));
         return convertToDto(savedAlbum);
     }
 
@@ -90,6 +97,7 @@ public class AlbumService {
         }
 
         Album updatedAlbum = albumRepository.save(album);
+        eventPublisher.publishEvent(new EntityChangeEvent(NotificationAction.UPDATE, EntityType.ALBUM, updatedAlbum.getId()));
         return convertToDto(updatedAlbum);
     }
 
@@ -98,6 +106,7 @@ public class AlbumService {
             throw new EntityNotFoundException("Album not found with id: " + id);
         }
         albumRepository.deleteById(id);
+        eventPublisher.publishEvent(new EntityChangeEvent(NotificationAction.DELETE, EntityType.ALBUM, id));
     }
 
     @Transactional(readOnly = true)

@@ -2,16 +2,20 @@ package com.interview.service;
 
 import com.interview.dto.AlbumRefDto;
 import com.interview.dto.ArtistRefDto;
+import com.interview.dto.EntityType;
+import com.interview.dto.NotificationAction;
 import com.interview.dto.SongDto;
 import com.interview.dto.SongListDto;
 import com.interview.entity.Album;
 import com.interview.entity.Artist;
 import com.interview.entity.Song;
+import com.interview.event.EntityChangeEvent;
 import com.interview.repository.AlbumRepository;
 import com.interview.repository.ArtistRepository;
 import com.interview.repository.SongRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,14 +33,16 @@ public class SongService {
     private final ArtistRepository artistRepository;
     private final AlbumRepository albumRepository;
     private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
     public SongService(SongRepository songRepository, ArtistRepository artistRepository,
-                       AlbumRepository albumRepository, ModelMapper modelMapper) {
+                       AlbumRepository albumRepository, ModelMapper modelMapper, ApplicationEventPublisher eventPublisher) {
         this.songRepository = songRepository;
         this.artistRepository = artistRepository;
         this.albumRepository = albumRepository;
         this.modelMapper = modelMapper;
+        this.eventPublisher = eventPublisher;
     }
 
     public SongDto createSong(SongDto songDto) {
@@ -58,6 +64,7 @@ public class SongService {
         }
 
         Song savedSong = songRepository.save(song);
+        eventPublisher.publishEvent(new EntityChangeEvent(NotificationAction.CREATE, EntityType.SONG, savedSong.getId()));
         return convertToDto(savedSong);
     }
 
@@ -92,6 +99,7 @@ public class SongService {
         }
 
         Song updatedSong = songRepository.save(song);
+        eventPublisher.publishEvent(new EntityChangeEvent(NotificationAction.UPDATE, EntityType.SONG, updatedSong.getId()));
         return convertToDto(updatedSong);
     }
 
@@ -102,6 +110,7 @@ public class SongService {
         // Remove from all albums before deleting
         song.removeFromAllAlbums();
         songRepository.delete(song);
+        eventPublisher.publishEvent(new EntityChangeEvent(NotificationAction.DELETE, EntityType.SONG, id));
     }
 
     @Transactional(readOnly = true)

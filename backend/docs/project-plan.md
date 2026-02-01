@@ -16,16 +16,38 @@ Implementation of a Spring Boot microservice for managing a music application da
   - ✅ Task 5: Repository Query Integration Tests (16 tests passing)
   - ✅ Task 6: Search View Integration Tests (12 tests passing)
   - ✅ **Total: 42 repository integration tests passing**
+- **Phase 2**: API Layer Setup (Tasks 7-8)
+  - ✅ Task 7: Create DTO Classes (10 DTOs created)
+  - ✅ Task 8: Configure ModelMapper
 - **Phase 3**: Data Access Layer
   - ✅ Task 9: Spring Data JPA Repositories (All 4 repositories created)
+- **Phase 4**: Business Logic Layer (Tasks 10-13)
+  - ✅ Task 10: Artist Service Implementation
+  - ✅ Task 11: Song Service Implementation
+  - ✅ Task 12: Album Service Implementation
+  - ✅ Task 13: Search Service Implementation
+- **Phase 5**: REST API Implementation (Tasks 14-16)
+  - ✅ Task 14: Artist REST Controller (7 endpoints)
+  - ✅ Task 15: Song REST Controller (5 endpoints)
+  - ✅ Task 16: Album REST Controller (6 endpoints)
+- **Phase 6**: Search API Implementation (Task 17)
+  - ✅ Task 17: Search Controller Implementation (unified search endpoint)
+- **Phase 8**: End-to-End Testing (Tasks 21-25) - **PARTIAL**
+  - ✅ Task 21: E2E Testing Infrastructure Setup
+  - ✅ Task 22: Artist E2E Tests (10 tests passing)
+  - ✅ Task 23: Song and Album E2E Tests (17 tests passing)
+  - ✅ Task 24: Search E2E Tests (8 tests passing)
+  - ✅ Task 25: Pagination E2E Tests (7 tests passing)
+  - ✅ **Total: 42 E2E tests passing**
+  - ✅ **Combined Total: 84 tests passing (42 repository + 42 E2E)**
 
 ### 🔄 REMAINING
-- **Phase 2**: API Layer Setup (Tasks 7-8)
-- **Phase 4**: Business Logic Layer (Tasks 10-13)
-- **Phase 5**: REST API Implementation (Tasks 14-16)
-- **Phase 6**: Search API Implementation (Task 17)
 - **Phase 7**: Real-time Communication (Tasks 18-20)
-- **Phase 8**: End-to-End Testing (Tasks 21-26)
+  - ⏸️ Task 18: WebSocket Configuration
+  - ⏸️ Task 19: JMS Broker Setup
+  - ⏸️ Task 20: Notification Integration
+- **Phase 8**: End-to-End Testing (Task 26) - **FINAL**
+  - ⏸️ Task 26: WebSocket and JMS E2E Tests (10 tests planned)
 
 ## Architecture Overview
 - **Technology Stack**: Spring Boot 2.2.1, Java 11, H2 Database 2.1.210, JPA/Hibernate
@@ -455,10 +477,12 @@ spring.sql.init.data-locations=classpath:database/data.sql
 
 ---
 
-### Phase 2: API Layer Setup (Tasks 7-8)
+### Phase 2: API Layer Setup (Tasks 7-8) ✅ COMPLETED
 
-#### Task 7: Create DTO Classes
+#### Task 7: Create DTO Classes ✅ COMPLETED
 **Objective**: Implement Data Transfer Objects for API communication
+
+**Status**: All 10 DTOs created with proper validation and structure
 
 **Main Entity DTOs** (for CRUD operations):
 - `ArtistDto.java`
@@ -512,24 +536,23 @@ spring.sql.init.data-locations=classpath:database/data.sql
 - `com.interview.dto.list` - List/Search DTOs
 - `com.interview.dto.search` - Search result DTOs
 
-#### Task 8: Configure ModelMapper
+#### Task 8: Configure ModelMapper ✅ COMPLETED
 **Objective**: Set up automatic DTO-Entity mapping
+
+**Status**: ModelMapper configured with STRICT matching strategy
 
 **Configuration class**: `ModelMapperConfig.java`
 **Package**: `com.interview.config`
 
-**Setup**:
-- Bean definition for ModelMapper
-- Custom mappings for complex relationships
-- Bidirectional mapping configurations
-- Separate mapping configurations for:
-  - Entity ↔ Entity DTO mappings (for CRUD operations)
+**Implementation**:
+- Bean definition for ModelMapper with STRICT matching strategy
+- skipNullEnabled configuration
+- Custom DTO conversion logic implemented in service layer for List DTOs
+- Services handle manual conversion for:
   - Entity → Reference DTO mappings (for lightweight references)
-  - Entity → List DTO mappings (for list/search results)
-  - Custom converters for:
-    - Converting entity collections to Reference DTO lists
-    - Aggregated fields (counts)
-    - Nested reference resolution
+  - Entity → List DTO mappings (for list/search results with aggregated data)
+  - Converting entity collections to Reference DTO lists
+  - Aggregated fields (songCount, albumCount)
 
 ---
 
@@ -571,122 +594,154 @@ spring.sql.init.data-locations=classpath:database/data.sql
 
 ---
 
-### Phase 4: Business Logic Layer (Tasks 10-13)
+### Phase 4: Business Logic Layer (Tasks 10-13) ✅ COMPLETED
 
-#### Task 10: Artist Service Implementation
+#### Task 10: Artist Service Implementation ✅ COMPLETED
 **Objective**: Implement business logic for Artist operations
+
+**Status**: ArtistService fully implemented with custom DTO conversion logic
 
 **Class**: `ArtistService.java`
 **Package**: `com.interview.service`
 
-**Methods**:
+**Methods Implemented**:
 - `createArtist(ArtistDto dto)` → Returns ArtistDto
 - `updateArtist(Long id, ArtistDto dto)` → Returns ArtistDto
 - `deleteArtist(Long id)` - with cascade delete
 - `getArtist(Long id)` → Returns ArtistDto
 - `getAllArtists(Pageable pageable)` → Returns Page<ArtistListDto>
+- `convertToListDto(Artist artist)` - Custom conversion with songCount and albumCount
 
-#### Task 11: Song Service Implementation
+#### Task 11: Song Service Implementation ✅ COMPLETED
 **Objective**: Implement business logic for Song operations
+
+**Status**: SongService fully implemented with many-to-many relationship management
 
 **Class**: `SongService.java`
 
-**Methods**:
+**Methods Implemented**:
 - `createSong(SongDto dto)` → Returns SongDto
 - `updateSong(Long id, SongDto dto)` → Returns SongDto
-- `deleteSong(Long id)`
+- `deleteSong(Long id)` - with removeFromAllAlbums() cleanup
 - `getSong(Long id)` → Returns SongDto
 - `getSongsByArtist(Long artistId, Pageable pageable)` → Returns Page<SongListDto>
 - `getSongsByAlbum(Long albumId, Pageable pageable)` → Returns Page<SongListDto>
+- `getAllSongs(Pageable pageable)` → Returns Page<SongListDto>
+- `convertToListDto(Song song)` - Creates ArtistRefDto and List<AlbumRefDto>
 
-#### Task 12: Album Service Implementation
+#### Task 12: Album Service Implementation ✅ COMPLETED
 **Objective**: Implement business logic for Album operations
+
+**Status**: AlbumService fully implemented with bidirectional relationship management
 
 **Class**: `AlbumService.java`
 
-**Methods**:
+**Methods Implemented**:
 - `createAlbum(AlbumDto dto)` → Returns AlbumDto
 - `updateAlbum(Long id, AlbumDto dto)` → Returns AlbumDto
 - `deleteAlbum(Long id)`
 - `getAlbum(Long id)` → Returns AlbumDto
 - `getAlbumsByArtist(Long artistId, Pageable pageable)` → Returns Page<AlbumListDto>
+- `getAllAlbums(Pageable pageable)` → Returns Page<AlbumListDto>
+- `convertToListDto(Album album)` - Creates ArtistRefDto, songCount, and List<SongRefDto>
 
-#### Task 13: Search Service Implementation
+#### Task 13: Search Service Implementation ✅ COMPLETED
 **Objective**: Implement unified search across all entities using database view
+
+**Status**: SearchService fully implemented using database view
 
 **Class**: `SearchService.java`
 
-**Methods**:
+**Methods Implemented**:
 - `search(String query, Pageable pageable)` → Returns Page<SearchResultDto>
 - `searchByType(String query, String entityType, Pageable pageable)` → Returns Page<SearchResultDto>
 - `searchByArtist(String artistName, Pageable pageable)` → Returns Page<SearchResultDto>
 
-**Note**: Uses SearchResultRepository to query the database view for efficient unified search
+**Implementation**: Uses SearchResultRepository to query the database view for efficient unified search
 
 ---
 
-### Phase 5: REST API Implementation (Tasks 14-16)
+### Phase 5: REST API Implementation (Tasks 14-16) ✅ COMPLETED
 
-#### Task 14: Artist REST Controller
+#### Task 14: Artist REST Controller ✅ COMPLETED
 **Objective**: Expose Artist operations via REST endpoints
+
+**Status**: ArtistController fully implemented with 7 endpoints
 
 **Class**: `ArtistController.java`
 **Package**: `com.interview.controller`
 **Base path**: `/api/artists`
 
-**Endpoints**:
-- `GET /api/artists` → Page<ArtistListDto> - List all artists (paginated)
+**Endpoints Implemented**:
+- `GET /api/artists` → Page<ArtistListDto> - List all artists (paginated, default size 20)
 - `GET /api/artists/{id}` → ArtistDto - Get specific artist
-- `POST /api/artists` → ArtistDto - Create new artist
+- `POST /api/artists` → ArtistDto - Create new artist (returns 201 Created)
 - `PUT /api/artists/{id}` → ArtistDto - Update artist
-- `DELETE /api/artists/{id}` → void - Delete artist (cascade)
+- `DELETE /api/artists/{id}` → void - Delete artist with cascade (204 No Content)
 - `GET /api/artists/{id}/songs` → Page<SongListDto> - Get artist's songs
 - `GET /api/artists/{id}/albums` → Page<AlbumListDto> - Get artist's albums
 
-#### Task 15: Song REST Controller
+#### Task 15: Song REST Controller ✅ COMPLETED
+**Objective**: Expose Song operations via REST endpoints
+
+**Status**: SongController fully implemented with 5 endpoints
+
 **Class**: `SongController.java`
 **Base path**: `/api/songs`
 
-**Endpoints**:
-- `GET /api/songs` → Page<SongListDto> - List all songs (paginated)
+**Endpoints Implemented**:
+- `GET /api/songs` → Page<SongListDto> - List all songs (paginated, default size 20)
 - `GET /api/songs/{id}` → SongDto - Get specific song
 - `POST /api/songs` → SongDto - Create new song
 - `PUT /api/songs/{id}` → SongDto - Update song
-- `DELETE /api/songs/{id}` → void - Delete song
+- `DELETE /api/songs/{id}` → void - Delete song (204 No Content)
 
-#### Task 16: Album REST Controller
+#### Task 16: Album REST Controller ✅ COMPLETED
+**Objective**: Expose Album operations via REST endpoints
+
+**Status**: AlbumController fully implemented with 6 endpoints
+
 **Class**: `AlbumController.java`
 **Base path**: `/api/albums`
 
-**Endpoints**:
-- `GET /api/albums` → Page<AlbumListDto> - List all albums (paginated)
+**Endpoints Implemented**:
+- `GET /api/albums` → Page<AlbumListDto> - List all albums (paginated, default size 20)
 - `GET /api/albums/{id}` → AlbumDto - Get specific album
 - `POST /api/albums` → AlbumDto - Create new album
 - `PUT /api/albums/{id}` → AlbumDto - Update album
-- `DELETE /api/albums/{id}` → void - Delete album
-- `GET /api/albums/{id}/songs` → Page<SongRefDto> - Get album's songs
+- `DELETE /api/albums/{id}` → void - Delete album (204 No Content)
+- `GET /api/albums/{id}/songs` → Page<SongListDto> - Get album's songs
+
+**Additional Implementation**:
+- `GlobalExceptionHandler.java` created for centralized error handling
+- 404 Not Found handling for EntityNotFoundException
+- 400 Bad Request handling for validation errors with detailed field messages
+- 500 Internal Server Error handling for unexpected exceptions
 
 ---
 
-### Phase 6: Search API Implementation (Task 17)
+### Phase 6: Search API Implementation (Task 17) ✅ COMPLETED
 
-#### Task 17: Search Controller Implementation
+#### Task 17: Search Controller Implementation ✅ COMPLETED
 **Objective**: Implement unified search using database view
+
+**Status**: SearchController fully implemented with flexible search capabilities
 
 **Class**: `SearchController.java`
 **Base path**: `/api/search`
 
-**Endpoints**:
+**Endpoints Implemented**:
 - `GET /api/search?q={query}` → Page<SearchResultDto> - Search all entity types
 - `GET /api/search?q={query}&type={entityType}` → Page<SearchResultDto> - Filter by entity type
 - `GET /api/search?artist={artistName}` → Page<SearchResultDto> - Search by artist name
 
-**Features**:
+**Features Implemented**:
 - Leverages database view for efficient searching
 - Substring matching (case-insensitive) via view
 - Unified result format with entity type discrimination
-- Paginated results
+- Paginated results (default size 20)
 - Returns SearchResultDto with: id, entityType, name, artistName, releaseDate
+- Returns empty page when no query parameters provided
 
 ---
 
@@ -742,18 +797,21 @@ spring.sql.init.data-locations=classpath:database/data.sql
 
 ### Phase 8: End-to-End Testing (Tasks 21-26)
 
-#### Task 21: E2E Testing Infrastructure Setup
+#### Task 21: E2E Testing Infrastructure Setup ✅ COMPLETED
 **Objective**: Configure WebTestClient for comprehensive API testing
 
-**Test Configuration Class**: `TestConfig.java`
-**Base Test Class**: `BaseE2ETest.java`
+**Status**: Complete E2E test infrastructure configured and operational
 
-**Setup Requirements**:
-- Use `@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)`
-- Configure WebTestClient bean
-- Set up test data initialization
-- Configure H2 test database (separate from main)
-- Mock/configure JMS and WebSocket for testing
+**Base Test Class**: `BaseE2ETest.java`
+**Test Configuration**: `application-e2e.properties`
+
+**Setup Implemented**:
+- `@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)` configured
+- WebTestClient autowired and available
+- Database cleanup in @BeforeEach for test isolation
+- H2 test database with LEGACY mode (jdbc:h2:mem:testdb_e2e)
+- RestResponsePage helper class for deserializing Page responses
+- @ActiveProfiles("e2e") for test-specific configuration
 
 **Dependencies** (add to pom.xml):
 ```xml
@@ -796,12 +854,14 @@ public abstract class BaseE2ETest {
 }
 ```
 
-#### Task 22: Artist E2E Tests
+#### Task 22: Artist E2E Tests ✅ COMPLETED
 **Objective**: Test all Artist endpoints and cascade delete functionality
+
+**Status**: 10 tests passing - All Artist endpoints and cascade functionality verified
 
 **Test Class**: `ArtistE2ETest.java`
 
-**Test Methods**:
+**Test Methods Implemented**:
 1. **testCreateArtist()**
    - POST /api/artists with valid ArtistDto
    - Verify 201 Created status
@@ -861,12 +921,14 @@ public abstract class BaseE2ETest {
     - Verify 400 Bad Request status
     - Verify error response contains validation messages
 
-#### Task 23: Song and Album E2E Tests
+#### Task 23: Song and Album E2E Tests ✅ COMPLETED
 **Objective**: Test Song and Album CRUD operations and relationships
 
-**Test Class**: `SongE2ETest.java`
+**Status**: 17 tests passing (8 Song tests + 9 Album tests) - All CRUD and relationship operations verified
 
-**Test Methods**:
+**Test Class**: `SongE2ETest.java` (8 tests)
+
+**Test Methods Implemented**:
 1. **testCreateSong()**
    - Create artist first
    - POST /api/songs with SongDto (artistId, title, length, releaseDate)
@@ -910,9 +972,9 @@ public abstract class BaseE2ETest {
    - GET /api/albums/{albumId}/songs
    - Verify correct songs returned
 
-**Test Class**: `AlbumE2ETest.java`
+**Test Class**: `AlbumE2ETest.java` (9 tests)
 
-**Test Methods**:
+**Test Methods Implemented**:
 1. **testCreateAlbum()**
    - Create artist
    - POST /api/albums with AlbumDto
@@ -949,12 +1011,14 @@ public abstract class BaseE2ETest {
    - GET /api/artists/{artistId}/albums
    - Verify correct albums returned
 
-#### Task 24: Search E2E Tests
+#### Task 24: Search E2E Tests ✅ COMPLETED
 **Objective**: Test unified search functionality using database view
+
+**Status**: 8 tests passing - Unified search across all entity types verified
 
 **Test Class**: `SearchE2ETest.java`
 
-**Test Methods**:
+**Test Methods Implemented**:
 1. **testSearchAllEntities()**
    - Create artist "Queen", song "Bohemian Rhapsody", album "A Night at the Opera"
    - GET /api/search?q=queen
@@ -998,12 +1062,14 @@ public abstract class BaseE2ETest {
    - Verify artistName populated for songs and albums
    - Verify artistName equals name for artists
 
-#### Task 25: Pagination E2E Tests
+#### Task 25: Pagination E2E Tests ✅ COMPLETED
 **Objective**: Comprehensive pagination testing across all list endpoints
+
+**Status**: 7 tests passing - Pagination verified across all endpoints with sorting
 
 **Test Class**: `PaginationE2ETest.java`
 
-**Test Methods**:
+**Test Methods Implemented**:
 1. **testArtistsPagination()**
    - Create 50 artists
    - GET /api/artists?page=0&size=20
@@ -1581,20 +1647,20 @@ src/test/resources/
 
 ## Success Criteria
 
-1. **All CRUD operations functional** for Artist, Song, and Album
-2. **Cascade delete working** - Artist deletion removes all associated data
-3. **Pagination implemented** on all list endpoints
-4. **Search API functional** with database view and substring matching
-5. **WebSocket notifications working** for all write operations
-6. **JMS messages publishing** for internal communication
-7. **Clean separation** between DTOs (Entity, Reference, List, Search)
-8. **Service layer** properly abstracting business logic
-9. **No direct repository access** from controllers
-10. **Proper error handling** and validation
-11. **Comprehensive repository integration test suite** covering JPA mappings, queries, and database view
-12. **All repository integration tests passing** validating data access layer
-13. **Comprehensive E2E test suite** covering all endpoints and features
-14. **All E2E tests passing** with >90% code coverage
+1. ✅ **All CRUD operations functional** for Artist, Song, and Album
+2. ✅ **Cascade delete working** - Artist deletion removes all associated data
+3. ✅ **Pagination implemented** on all list endpoints (default size 20)
+4. ✅ **Search API functional** with database view and substring matching
+5. ⏸️ **WebSocket notifications working** for all write operations - PENDING Phase 7
+6. ⏸️ **JMS messages publishing** for internal communication - PENDING Phase 7
+7. ✅ **Clean separation** between DTOs (Entity, Reference, List, Search) - 10 DTOs created
+8. ✅ **Service layer** properly abstracting business logic - 4 services implemented
+9. ✅ **No direct repository access** from controllers - All controllers use services
+10. ✅ **Proper error handling** and validation - GlobalExceptionHandler + @Valid annotations
+11. ✅ **Comprehensive repository integration test suite** covering JPA mappings, queries, and database view
+12. ✅ **All repository integration tests passing** - 42/42 tests passing
+13. ✅ **Comprehensive E2E test suite** covering all endpoints and features (except Phase 7)
+14. ✅ **All E2E tests passing** - 42/42 tests passing (84 total tests passing)
 
 ---
 
@@ -1612,67 +1678,80 @@ src/test/resources/
 - [x] Many-to-many relationships verified
 - [x] Database view queries working correctly
 
-### Implementation Tests
-- [ ] Create, read, update, delete Artist (via E2E tests)
-- [ ] Create, read, update, delete Song (via E2E tests)
-- [ ] Create, read, update, delete Album (via E2E tests)
-- [ ] Artist cascade delete removes Songs and Albums (via E2E tests)
-- [ ] List all artists with pagination (via E2E tests)
-- [ ] List all songs for an artist with pagination (via E2E tests)
-- [ ] List all albums for an artist with pagination (via E2E tests)
-- [ ] List all songs on an album with pagination (via E2E tests)
-- [ ] Search across all entities using database view (via E2E tests)
-- [ ] Search filtered by entity type (ARTIST, SONG, ALBUM) (via E2E tests)
-- [ ] Search by artist name (via E2E tests)
-- [ ] Search results include correct entity type discrimination (via E2E tests)
-- [ ] Search results properly paginated (via E2E tests)
-- [ ] WebSocket notifications received on write operations (via E2E tests)
-- [ ] JMS messages published on write operations (via E2E tests)
-- [ ] Proper error responses for invalid requests (via E2E tests)
-- [ ] Data validation working correctly (via E2E tests)
+### Implementation Tests ✅ COMPLETED (Except Real-time)
+- [x] Create, read, update, delete Artist (via E2E tests)
+- [x] Create, read, update, delete Song (via E2E tests)
+- [x] Create, read, update, delete Album (via E2E tests)
+- [x] Artist cascade delete removes Songs and Albums (via E2E tests)
+- [x] List all artists with pagination (via E2E tests)
+- [x] List all songs for an artist with pagination (via E2E tests)
+- [x] List all albums for an artist with pagination (via E2E tests)
+- [x] List all songs on an album with pagination (via E2E tests)
+- [x] Search across all entities using database view (via E2E tests)
+- [x] Search filtered by entity type (ARTIST, SONG, ALBUM) (via E2E tests)
+- [x] Search by artist name (via E2E tests)
+- [x] Search results include correct entity type discrimination (via E2E tests)
+- [x] Search results properly paginated (via E2E tests)
+- [ ] WebSocket notifications received on write operations (via E2E tests) - PENDING Phase 7
+- [ ] JMS messages published on write operations (via E2E tests) - PENDING Phase 7
+- [x] Proper error responses for invalid requests (via E2E tests)
+- [x] Data validation working correctly (via E2E tests)
 
-### E2E Test Suite
-- [ ] BaseE2ETest and TestDataHelper implemented
-- [ ] ArtistE2ETest: 10 test methods covering all Artist endpoints
-- [ ] SongE2ETest: 8 test methods covering Song CRUD and relationships
-- [ ] AlbumE2ETest: 7 test methods covering Album CRUD and relationships
-- [ ] SearchE2ETest: 8 test methods covering unified search
-- [ ] PaginationE2ETest: 7 test methods covering pagination across all endpoints
-- [ ] NotificationE2ETest: 10 test methods covering WebSocket and JMS
-- [ ] All E2E tests passing
-- [ ] Test coverage > 90% for controllers and services
+### E2E Test Suite ✅ PARTIALLY COMPLETED (42/52 tests)
+- [x] BaseE2ETest infrastructure implemented
+- [x] ArtistE2ETest: 10 test methods covering all Artist endpoints - PASSING
+- [x] SongE2ETest: 8 test methods covering Song CRUD and relationships - PASSING
+- [x] AlbumE2ETest: 9 test methods covering Album CRUD and relationships - PASSING
+- [x] SearchE2ETest: 8 test methods covering unified search - PASSING
+- [x] PaginationE2ETest: 7 test methods covering pagination across all endpoints - PASSING
+- [ ] NotificationE2ETest: 10 test methods covering WebSocket and JMS - PENDING Phase 7
+- [x] All implemented E2E tests passing (42/42)
+- [ ] Test coverage > 90% for controllers and services - To be measured after Phase 7
 
 ---
 
 ## Timeline Estimate
 
-- **Phase 1** (Data Model + Search View): ✅ COMPLETED
+- **Phase 1** (Data Model + Search View): ✅ COMPLETED (~2-3 hours)
   - JPA entities, database view, SearchResult entity, SQL scripts
-- **Phase 1.5** (Repository Integration Testing): ✅ COMPLETED
+- **Phase 1.5** (Repository Integration Testing): ✅ COMPLETED (~4-5 hours)
   - Test infrastructure setup
-  - Entity mapping tests
-  - Repository query tests
-  - Search view tests
-- **Phase 3** (Data Access): ✅ COMPLETED
-  - All repositories including SearchResultRepository
-- **Phase 2** (API Layer Setup): 🔄 REMAINING - 2-3 hours
-  - Entity DTOs, Reference DTOs, List DTOs, SearchResultDto, ModelMapper config
-- **Phase 4** (Business Logic): 🔄 REMAINING - 4-5 hours
+  - Entity mapping tests (14 tests)
+  - Repository query tests (16 tests)
+  - Search view tests (12 tests)
+- **Phase 2** (API Layer Setup): ✅ COMPLETED (~2-3 hours)
+  - Entity DTOs, Reference DTOs, List DTOs, SearchResultDto (10 DTOs total)
+  - ModelMapper configuration with STRICT matching
+- **Phase 3** (Data Access): ✅ COMPLETED (~2 hours)
+  - All 4 repositories including SearchResultRepository
+- **Phase 4** (Business Logic): ✅ COMPLETED (~4-5 hours)
   - Artist, Song, Album services + SearchService
-- **Phase 5** (REST APIs): 🔄 REMAINING - 2-3 hours
-  - Artist, Song, Album controllers
-- **Phase 6** (Search API): 🔄 REMAINING - 1-2 hours
-  - SearchController implementation
+  - Custom DTO conversion logic with Reference DTOs
+  - Relationship management (many-to-many, cascade operations)
+- **Phase 5** (REST APIs): ✅ COMPLETED (~2-3 hours)
+  - Artist Controller (7 endpoints)
+  - Song Controller (5 endpoints)
+  - Album Controller (6 endpoints)
+  - GlobalExceptionHandler for error handling
+- **Phase 6** (Search API): ✅ COMPLETED (~1-2 hours)
+  - SearchController with unified search endpoint
+  - Multiple search strategies (general, by type, by artist)
+- **Phase 8** (End-to-End Testing): ✅ PARTIALLY COMPLETED (~5-6 hours)
+  - Test infrastructure setup (BaseE2ETest, application-e2e.properties)
+  - Artist E2E tests (10 tests)
+  - Song E2E tests (8 tests)
+  - Album E2E tests (9 tests)
+  - Search E2E tests (8 tests)
+  - Pagination E2E tests (7 tests)
+  - **Total: 42 E2E tests passing**
 - **Phase 7** (Real-time): 🔄 REMAINING - 3-4 hours
-  - WebSocket, JMS configuration and integration
-- **Phase 8** (End-to-End Testing): 🔄 REMAINING - 6-8 hours
-  - Test infrastructure setup (1 hour)
-  - Artist E2E tests (1-1.5 hours)
-  - Song and Album E2E tests (1.5-2 hours)
-  - Search E2E tests (1-1.5 hours)
-  - Pagination E2E tests (1 hour)
-  - WebSocket/JMS notification tests (1.5-2 hours)
+  - WebSocket configuration
+  - JMS broker setup
+  - Notification service integration
+- **Phase 8** (WebSocket/JMS Testing): 🔄 REMAINING - 1.5-2 hours
+  - WebSocket notification E2E tests
+  - JMS message publishing tests
 
 **Total Estimate**: 26-36 hours for complete implementation with comprehensive testing
-**Completed**: ~8-11 hours (Phases 1, 1.5, 3)
-**Remaining**: ~18-25 hours (Phases 2, 4-8)
+**Completed**: ~23-29 hours (Phases 1, 1.5, 2, 3, 4, 5, 6, 8-partial)
+**Remaining**: ~4.5-6 hours (Phase 7 + Phase 8 WebSocket/JMS tests)

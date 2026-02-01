@@ -78,8 +78,9 @@ public class SongService {
 
         // Update album associations
         if (songDto.getAlbumIds() != null) {
-            // Remove from all current albums
-            for (Album album : song.getAlbums()) {
+            // Remove from all current albums (create a copy to avoid ConcurrentModificationException)
+            List<Album> currentAlbums = new java.util.ArrayList<>(song.getAlbums());
+            for (Album album : currentAlbums) {
                 album.removeSong(song);
             }
 

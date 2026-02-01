@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
         @Index(name = "idx_worker_name", columnList = "name")
 })
 @DynamicUpdate
-@EntityListeners(AuditingEntityListener.class) // Automatically handles timestamps
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA spec requirement, protected for safety
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Worker implements Serializable {

@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+#
+# music-search - Search the Music Library
+#
+# Usage:
+#   music-search <query> [options]
+#
+
+set -euo pipefail
+
+# Detect script and repository root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Source required libraries
+source "$REPO_ROOT/lib/colors.sh"
+source "$REPO_ROOT/lib/common.sh"
+source "$REPO_ROOT/lib/validate.sh"
+source "$REPO_ROOT/lib/format.sh"
+source "$REPO_ROOT/lib/api.sh"
+
+# Initialize
+init_common
+check_dependencies
+load_config
+
+# Show usage information
+function show_help() {
+    cat << EOF
+Usage: music-search <query> [options]
+
+Search for artists, songs, and albums in the Music Library.
+
+ARGUMENTS:
+    <query>             Search query string
+
+OPTIONS:
+    --type <type>       Filter by entity type (artist, song, album)
+    --page <n>          Page number (default: 0)
+    --size <n>          Page size (default: 20)
+
+GLOBAL OPTIONS:
+    --api-url <url>     Override API URL
+    --json              Output raw JSON
+    --help              Show this help message
+
+EXAMPLES:
+    # Search for "queen" across all entities
+    music-search queen
+
+    # Search for songs only
+    music-search rhapsody --type song
+
+    # Search for artists only
+    music-search beatles --type artist
+
+    # Search with pagination
+    music-search the --page 0 --size 10
+
+EOF
+}
+
+# Main search function
+function action_search() {
+    local query="$1"
+    shift
+
+    local type=""
+    local page=0
+    local size=20
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --type)
+                type="$2"
+                shift 2
+                ;;
+            --page)
+                page="$2"
+                shift 2
+                ;;
+            --size)
+                size="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate inputs
+    if [[ -z "$query" ]]; then
+        log_error "Search query is required"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_non_negative_integer "$page"; then
+        log_error "Invalid page number: $page"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_positive_integer "$size"; then
+        log_error "Invalid page size: $size"
+        exit $EXIT_USAGE
+    fi
+
+    if [[ -n "$type" ]]; then
+        # Convert to uppercase for validation
+        local type_upper
+        type_upper=$(echo "$type" | tr '[:lower:]' '[:upper:]')
+
+        if ! validate_entity_type "$type_upper"; then
+            log_error "Invalid entity type: $type (must be artist, song, or album)"
+            exit $EXIT_USAGE
+        fi
+    fi
+
+    # Perform search
+    local response
+    if [[ -n "$type" ]]; then
+        # Convert type to uppercase for API
+        local type_upper
+        type_upper=$(echo "$type" | tr '[:lower:]' '[:upper:]')
+        response=$(api_search_by_type "$query" "$type_upper" "$page" "$size")
+    else
+        response=$(api_search "$query" "$page" "$size")
+    fi
+
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Format output
+    format_search_results "$response"
+}
+
+# Main script logic
+if [[ $# -eq 0 ]]; then
+    show_help
+    exit $EXIT_USAGE
+fi
+
+# Parse command-line arguments
+QUERY=""
+QUERY_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help|-h)
+            show_help
+            exit 0
+            ;;
+        --api-url|--json|--no-color|--verbose|--debug|--quiet)
+            parse_common_option "$1" "${2:-}"
+            if [[ $1 == --api-url ]]; then
+                shift 2
+            else
+                shift
+            fi
+            ;;
+        --type|--page|--size)
+            # These are search options, save them
+            QUERY_ARGS+=("$1" "$2")
+            shift 2
+            ;;
+        *)
+            # First non-option argument is the query
+            if [[ -z "$QUERY" ]]; then
+                QUERY="$1"
+                shift
+            else
+                log_error "Unexpected argument: $1"
+                echo ""
+                show_help
+                exit $EXIT_USAGE
+            fi
+            ;;
+    esac
+done
+
+# Execute search
+if [[ -z "$QUERY" ]]; then
+    log_error "Search query is required"
+    echo ""
+    show_help
+    exit $EXIT_USAGE
+fi
+
+action_search "$QUERY" "${QUERY_ARGS[@]+"${QUERY_ARGS[@]}"}"

@@ -609,13 +609,17 @@ With --json flag, output raw JSON suitable for piping to jq or other tools.
 **Example:**
 ```bash
 # Get all artist IDs
-music-artist list --json | jq -r '.content[].id'
+music-artist --json list | jq -r '.content[].id'
 
 # Create multiple songs from a file
 while IFS=, read title artist_id length date; do
   music-song create --title "$title" --artist-id "$artist_id" --length "$length" --release-date "$date"
 done < songs.csv
 ```
+
+**Note:** Global options like `--json`, `--api-url`, `--verbose` can be specified either before or after the action for convenience:
+- `music-artist --json list` (recommended)
+- `music-artist list --json` (also supported)
 
 ### Exit Codes
 Consistent exit codes allow proper error handling in scripts.

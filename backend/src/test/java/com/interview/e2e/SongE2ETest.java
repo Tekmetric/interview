@@ -208,6 +208,115 @@ public class SongE2ETest extends BaseE2ETest {
     }
 
     @Test
+    public void testGetAllSongs_Pagination() {
+        Artist artist = artistRepository.save(new Artist("The Beatles"));
+        for (int i = 1; i <= 25; i++) {
+            songRepository.save(new Song("Song " + i, 180L + i, LocalDate.now(), artist));
+        }
+
+        // First page
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/songs")
+                        .queryParam("page", 0)
+                        .queryParam("size", 10)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SongListDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(10);
+                    assertThat(page.getTotalElements()).isEqualTo(25);
+                    assertThat(page.getTotalPages()).isEqualTo(3);
+                    assertThat(page.getNumber()).isEqualTo(0);
+                });
+
+        // Second page
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/songs")
+                        .queryParam("page", 1)
+                        .queryParam("size", 10)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SongListDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(10);
+                    assertThat(page.getNumber()).isEqualTo(1);
+                });
+
+        // Last page
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/songs")
+                        .queryParam("page", 2)
+                        .queryParam("size", 10)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SongListDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(5);
+                    assertThat(page.getNumber()).isEqualTo(2);
+                });
+    }
+
+    @Test
+    public void testGetAllSongs_Sorting() {
+        Artist artist = artistRepository.save(new Artist("Various Artists"));
+        songRepository.save(new Song("Zebra Song", 180L, LocalDate.of(2023, 1, 1), artist));
+        songRepository.save(new Song("Alpha Song", 200L, LocalDate.of(2022, 1, 1), artist));
+        songRepository.save(new Song("Beta Song", 220L, LocalDate.of(2021, 1, 1), artist));
+
+        // Sort by title ascending
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/songs")
+                        .queryParam("sort", "title,asc")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SongListDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(3);
+                    assertThat(page.getContent().get(0).getTitle()).isEqualTo("Alpha Song");
+                    assertThat(page.getContent().get(1).getTitle()).isEqualTo("Beta Song");
+                    assertThat(page.getContent().get(2).getTitle()).isEqualTo("Zebra Song");
+                });
+
+        // Sort by title descending
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/songs")
+                        .queryParam("sort", "title,desc")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SongListDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(3);
+                    assertThat(page.getContent().get(0).getTitle()).isEqualTo("Zebra Song");
+                    assertThat(page.getContent().get(1).getTitle()).isEqualTo("Beta Song");
+                    assertThat(page.getContent().get(2).getTitle()).isEqualTo("Alpha Song");
+                });
+    }
+
+    @Test
+    public void testGetAllSongs_EmptyResult() {
+        webTestClient.get()
+                .uri("/api/songs")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SongListDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).isEmpty();
+                    assertThat(page.getTotalElements()).isEqualTo(0);
+                    assertThat(page.getTotalPages()).isEqualTo(0);
+                });
+    }
+
+    @Test
     public void testSongNotFound() {
         webTestClient.get()
                 .uri("/api/songs/{id}", 999999L)

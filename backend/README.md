@@ -75,7 +75,8 @@ cd ../demo
 
 ### Developer Tools
 - **Command-Line Interface** - Full-featured CLI for all operations (see `../music-cli/`)
-- **Comprehensive Test Suite** - Unit, integration, and E2E tests
+- **Swagger UI** - Interactive API documentation at `http://localhost:8080/swagger-ui.html`
+- **Comprehensive Test Suite** - Unit, integration, and E2E tests (E2E requires flag)
 - **Demo Scripts** - Automated demonstrations of all features
 - **H2 Console** - Database inspection at `http://localhost:8080/h2-console`
 
@@ -242,29 +243,35 @@ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=
 
 ### Running Tests
 
+The test suite is organized into three categories: unit tests, integration tests, and E2E tests.
+
 ```bash
-# Run all tests
+# Default: Run unit and integration tests
 mvn test
 
-# Run specific test class
-mvn test -Dtest=ArtistServiceTest
+# Include E2E tests (runs all test types)
+mvn test -Dtest.e2e=true
 
-# Run integration tests only
+# Run specific test class
+mvn test -Dtest=ArtistTest
+
+# Run specific test pattern
 mvn test -Dtest=*IntegrationTest
 
-# Run E2E tests only
-mvn test -Dtest=NotificationE2ETest
+# Run specific test method
+mvn test -Dtest=ArtistTest#testGettersAndSetters
 
 # Generate coverage report
 mvn test jacoco:report
 # View at: target/site/jacoco/index.html
 ```
 
-**Test Coverage:**
-- **42 Integration Tests** - Repository and service layer testing
-- **9 E2E Tests** - End-to-end WebSocket notification testing
-- **Transactional Isolation** - Clean database state per test
-- **Test Data Management** - Separate test profiles and data
+**Test Organization:**
+- **Unit Tests** (`*Test.java`) - 3 test classes testing entity behavior
+- **Integration Tests** (`*IntegrationTest.java`) - 5 test classes for repository layer
+- **E2E Tests** (`*E2ETest.java`) - 6 test classes for end-to-end scenarios
+- **Default Behavior** - Unit and integration tests run automatically (fast, frequent)
+- **E2E Tests** - Run with `-Dtest.e2e=true` flag (slower, pre-commit/CI)
 
 ### Building for Production
 
@@ -379,9 +386,9 @@ public class PlaylistController {
 ```
 
 5. **Add Tests** (`src/test/java/com/interview/`)
-- Unit tests for service layer
-- Integration tests for repository
-- E2E tests for WebSocket notifications
+- Unit tests (`*Test.java`) for entity behavior
+- Integration tests (`*IntegrationTest.java`) for repository layer
+- E2E tests (`*E2ETest.java`) for complete API workflows
 
 ### Contributing Guidelines
 
@@ -410,6 +417,21 @@ public class PlaylistController {
 
 ## API Documentation
 
+### Swagger UI (Interactive Documentation)
+
+The API includes interactive Swagger UI documentation for exploring and testing all endpoints:
+
+**Access:** `http://localhost:8080/swagger-ui.html`
+
+Features:
+- Browse all available endpoints organized by controller
+- View request/response schemas and examples
+- Try out API calls directly from the browser
+- See detailed parameter descriptions and constraints
+- View model definitions for all DTOs
+
+The Swagger documentation is automatically generated from the code and annotations, ensuring it stays in sync with the actual API implementation.
+
 ### Complete API Reference
 See [docs/Requirements.md](docs/Requirements.md) for:
 - All endpoints with request/response examples
@@ -433,38 +455,71 @@ See [docs/CLI-Implementation-Plan.md](docs/CLI-Implementation-Plan.md) and [docs
 
 ### Test Structure
 
+The test suite is organized by test type with clear naming conventions:
+
 ```
 src/test/java/com/interview/
-├── controller/              # Controller unit tests (future)
-├── service/                 # Service unit tests (future)
-├── repository/              # Integration tests (42 tests)
+├── entity/                  # Unit tests (*Test.java)
+│   ├── AlbumTest.java
+│   ├── ArtistTest.java
+│   └── SongTest.java
+├── repository/              # Integration tests (*IntegrationTest.java)
 │   ├── ArtistRepositoryIntegrationTest.java
 │   ├── SongRepositoryIntegrationTest.java
 │   ├── AlbumRepositoryIntegrationTest.java
 │   ├── EntityMappingIntegrationTest.java
-│   └── SearchIntegrationTest.java
-└── e2e/                     # End-to-end tests (9 tests)
-    └── NotificationE2ETest.java
+│   └── SearchResultRepositoryIntegrationTest.java
+└── e2e/                     # End-to-end tests (*E2ETest.java)
+    ├── AlbumE2ETest.java
+    ├── ArtistE2ETest.java
+    ├── NotificationE2ETest.java
+    ├── PaginationE2ETest.java
+    ├── SearchE2ETest.java
+    └── SongE2ETest.java
 ```
 
-### Running Specific Test Suites
+### Running Test Suites
 
 ```bash
-# All tests
+# Default: Unit + Integration tests (recommended for development)
 mvn test
 
-# Repository integration tests
-mvn test -Dtest=*RepositoryIntegrationTest
+# All tests including E2E (recommended for CI/CD)
+mvn test -Dtest.e2e=true
 
-# Relationship mapping tests
-mvn test -Dtest=EntityMappingIntegrationTest
+# Run specific test class
+mvn test -Dtest=ArtistRepositoryIntegrationTest
 
-# E2E notification tests
-mvn test -Dtest=NotificationE2ETest
+# Run all integration tests only
+mvn test -Dtest=*IntegrationTest
 
-# Specific test method
+# Run all E2E tests
+mvn test -Dtest.e2e=true -Dtest=*E2ETest
+
+# Run specific test method
 mvn test -Dtest=ArtistRepositoryIntegrationTest#testFindByNameContaining
 ```
+
+### Test Categories
+
+**Unit Tests (`*Test.java`)** - Run by default
+- Fast, isolated tests of entity behavior
+- Test getters, setters, equals, hashCode, toString
+- No Spring context or database required
+- 3 test classes covering Album, Artist, and Song entities
+
+**Integration Tests (`*IntegrationTest.java`)** - Run by default
+- Test repository layer with real database
+- Full Spring Data JPA context
+- Transactional isolation (rollback after each test)
+- 5 test classes covering all repositories and entity mappings
+
+**E2E Tests (`*E2ETest.java`)** - Require `-Dtest.e2e=true` flag
+- Full application context with embedded server
+- Test complete workflows including WebSocket notifications
+- JMS message broker for real-time events
+- 6 test classes covering all API endpoints and notifications
+- Slower execution time (suitable for pre-commit or CI)
 
 ### Test Profiles
 

@@ -16,6 +16,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>nl.jqno.equalsverifier</groupId>
+            <artifactId>equalsverifier</artifactId>
+            <version>3.13</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -82,8 +88,77 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <!-- Configure Surefire to run tests based on system properties -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>${test.integration.pattern}</include>
+                        <include>${test.e2e.pattern}</include>
+                    </includes>
+                    <excludes>
+                        <exclude>${test.exclude.integration}</exclude>
+                        <exclude>${test.exclude.e2e}</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!-- JaCoCo code coverage plugin -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.7</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
+    <profiles>
+        <!-- Default profile: unit and integration tests -->
+        <profile>
+            <id>default-tests</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <test.integration.pattern>**/*IntegrationTest.java</test.integration.pattern>
+                <test.e2e.pattern>none</test.e2e.pattern>
+                <test.exclude.integration>none</test.exclude.integration>
+                <test.exclude.e2e>**/*E2ETest.java</test.exclude.e2e>
+            </properties>
+        </profile>
+
+        <!-- Include E2E tests: mvn test -Dtest.e2e=true -->
+        <profile>
+            <id>e2e-tests</id>
+            <activation>
+                <property>
+                    <name>test.e2e</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <test.e2e.pattern>**/*E2ETest.java</test.e2e.pattern>
+                <test.exclude.e2e>none</test.exclude.e2e>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>

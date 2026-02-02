@@ -2,6 +2,7 @@ package com.interview.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Pageable;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -29,7 +30,8 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("com.interview.controller"))
                 .paths(PathSelectors.ant("/api/**"))
                 .build()
-                .apiInfo(apiInfo());
+                .apiInfo(apiInfo())
+                .directModelSubstitute(Pageable.class, SwaggerPageable.class);
     }
 
     private ApiInfo apiInfo() {
@@ -41,5 +43,39 @@ public class SwaggerConfig {
                 .license("Apache 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
                 .build();
+    }
+
+    /**
+     * Swagger representation of Spring Data Pageable with correct parameter names.
+     * This class is used only for Swagger documentation and not for actual request handling.
+     */
+    private static class SwaggerPageable {
+        private Integer page;
+        private Integer size;
+        private String sort;
+
+        public Integer getPage() {
+            return page;
+        }
+
+        public void setPage(Integer page) {
+            this.page = page;
+        }
+
+        public Integer getSize() {
+            return size;
+        }
+
+        public void setSize(Integer size) {
+            this.size = size;
+        }
+
+        public String getSort() {
+            return sort;
+        }
+
+        public void setSort(String sort) {
+            this.sort = sort;
+        }
     }
 }

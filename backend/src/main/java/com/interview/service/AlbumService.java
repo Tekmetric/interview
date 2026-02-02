@@ -54,12 +54,10 @@ public class AlbumService {
         album.setReleaseDate(albumDto.getReleaseDate());
         album.setArtist(artist);
 
-        // Associate with songs if provided
+        // Associate with songs if provided - delegate to entity to manage both sides
         if (albumDto.getSongIds() != null && !albumDto.getSongIds().isEmpty()) {
             List<Song> songs = songRepository.findAllById(albumDto.getSongIds());
-            for (Song song : songs) {
-                album.addSong(song);
-            }
+            album.setSongs(songs);
         }
 
         Album savedAlbum = albumRepository.save(album);
@@ -81,19 +79,10 @@ public class AlbumService {
             album.setArtist(newArtist);
         }
 
-        // Update song associations
+        // Update song associations - delegate to entity to manage both sides
         if (albumDto.getSongIds() != null) {
-            // Remove all current songs (create a copy to avoid ConcurrentModificationException)
-            List<Song> currentSongs = new java.util.ArrayList<>(album.getSongs());
-            for (Song song : currentSongs) {
-                album.removeSong(song);
-            }
-
-            // Add new songs
             List<Song> newSongs = songRepository.findAllById(albumDto.getSongIds());
-            for (Song song : newSongs) {
-                album.addSong(song);
-            }
+            album.setSongs(newSongs);
         }
 
         Album updatedAlbum = albumRepository.save(album);
@@ -155,10 +144,7 @@ public class AlbumService {
     }
 
     private AlbumListDto convertToListDto(Album album) {
-        AlbumListDto dto = new AlbumListDto();
-        dto.setId(album.getId());
-        dto.setTitle(album.getTitle());
-        dto.setReleaseDate(album.getReleaseDate());
+        AlbumListDto dto = modelMapper.map(album, AlbumListDto.class);
 
         // Set artist reference
         ArtistRefDto artistRef = new ArtistRefDto(album.getArtist().getId(), album.getArtist().getName());

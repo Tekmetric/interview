@@ -53,7 +53,18 @@ public class Artist {
     }
 
     public void setSongs(List<Song> songs) {
-        this.songs = songs;
+        // Remove all current songs (manages both sides via public API)
+        List<Song> currentSongs = new ArrayList<>(this.songs);
+        for (Song song : currentSongs) {
+            this.removeSong(song);
+        }
+
+        // Add all new songs (manages both sides via public API)
+        if (songs != null) {
+            for (Song song : songs) {
+                this.addSong(song);
+            }
+        }
     }
 
     /**
@@ -61,11 +72,13 @@ public class Artist {
      * Note: This is the inverse side; the relationship is owned by Song.
      */
     public void addSong(Song song) {
+        addSongInternal(song);
+        song.setArtist(this);
+    }
+
+    void addSongInternal(Song song) {
         if (!this.songs.contains(song)) {
             this.songs.add(song);
-            if (song.getArtist() != this) {
-                song.setArtist(this);
-            }
         }
     }
 
@@ -75,8 +88,12 @@ public class Artist {
     public void removeSong(Song song) {
         this.songs.remove(song);
         if (song.getArtist() == this) {
-            song.setArtist(null);
+            song.setArtistInternal(null);
         }
+    }
+
+    void removeSongInternal(Song song) {
+        this.songs.remove(song);
     }
 
     public List<Album> getAlbums() {
@@ -84,7 +101,21 @@ public class Artist {
     }
 
     public void setAlbums(List<Album> albums) {
-        this.albums = albums;
+        // Remove all current albums (manages both sides via public API)
+        List<Album> currentAlbums = new ArrayList<>(this.albums);
+        for (Album album : currentAlbums) {
+            album.setArtistInternal(null);
+        }
+
+        this.albums.clear();
+
+        // Add all new albums (manages both sides via public API)
+        if (albums != null) {
+            for (Album album : albums) {
+                album.setArtistInternal(this);
+            }
+            this.albums.addAll(albums);
+        }
     }
 
     /**
@@ -95,8 +126,14 @@ public class Artist {
         if (!this.albums.contains(album)) {
             this.albums.add(album);
             if (album.getArtist() != this) {
-                album.setArtist(this);
+                album.setArtistInternal(this);
             }
+        }
+    }
+
+    void addAlbumInternal(Album album) {
+        if (!this.albums.contains(album)) {
+            this.albums.add(album);
         }
     }
 
@@ -106,20 +143,23 @@ public class Artist {
     public void removeAlbum(Album album) {
         this.albums.remove(album);
         if (album.getArtist() == this) {
-            album.setArtist(null);
+            album.setArtistInternal(null);
         }
+    }
+
+    void removeAlbumInternal(Album album) {
+        this.albums.remove(album);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Artist artist = (Artist) o;
-        return Objects.equals(id, artist.id);
+        return Objects.equals(name, artist.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(name);
     }
 }

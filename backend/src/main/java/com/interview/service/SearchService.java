@@ -23,17 +23,20 @@ public class SearchService {
         this.modelMapper = modelMapper;
     }
 
+    @Transactional(readOnly = true)
     public Page<SearchResultDto> search(String query, Pageable pageable) {
         Page<SearchResult> results = searchResultRepository.findByNameContainingIgnoreCase(query, pageable);
         return results.map(result -> modelMapper.map(result, SearchResultDto.class));
     }
 
+    @Transactional(readOnly = true)
     public Page<SearchResultDto> searchByType(String query, String entityType, Pageable pageable) {
         Page<SearchResult> results = searchResultRepository
                 .findByEntityTypeAndNameContainingIgnoreCase(entityType, query, pageable);
         return results.map(result -> modelMapper.map(result, SearchResultDto.class));
     }
 
+    @Transactional(readOnly = true)
     public Page<SearchResultDto> searchByArtist(String artistName, Pageable pageable) {
         Page<SearchResult> results = searchResultRepository
                 .findByArtistNameContainingIgnoreCase(artistName, pageable);

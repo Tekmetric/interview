@@ -188,4 +188,255 @@ public class SearchE2ETest extends BaseE2ETest {
                     assertThat(page.getContent()).isEmpty();
                 });
     }
+
+    @Test
+    public void testSearchPagination_GeneralQuery() {
+        // Create 25 items that match "Music"
+        Artist artist = artistRepository.save(new Artist("Music Lover"));
+
+        for (int i = 1; i <= 12; i++) {
+            songRepository.save(new Song("Music Song " + i, 180L, LocalDate.now(), artist));
+        }
+        for (int i = 1; i <= 12; i++) {
+            albumRepository.save(new Album("Music Album " + i, LocalDate.now(), artist));
+        }
+
+        // First page with size 10
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("q", "Music")
+                        .queryParam("page", 0)
+                        .queryParam("size", 10)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(10);
+                    assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(25);
+                    assertThat(page.getTotalPages()).isGreaterThanOrEqualTo(3);
+                    assertThat(page.getNumber()).isEqualTo(0);
+                    assertThat(page.getSize()).isEqualTo(10);
+                });
+
+        // Second page with size 10
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("q", "Music")
+                        .queryParam("page", 1)
+                        .queryParam("size", 10)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(10);
+                    assertThat(page.getNumber()).isEqualTo(1);
+                });
+
+        // Third page with size 10
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("q", "Music")
+                        .queryParam("page", 2)
+                        .queryParam("size", 10)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSizeGreaterThanOrEqualTo(5);
+                    assertThat(page.getNumber()).isEqualTo(2);
+                });
+    }
+
+    @Test
+    public void testSearchPagination_ByType() {
+        // Create 15 songs that match "Rock"
+        Artist artist = artistRepository.save(new Artist("Rock Band"));
+
+        for (int i = 1; i <= 15; i++) {
+            songRepository.save(new Song("Rock Song " + i, 180L, LocalDate.now(), artist));
+        }
+
+        // First page
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("q", "Rock")
+                        .queryParam("type", "SONG")
+                        .queryParam("page", 0)
+                        .queryParam("size", 5)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(5);
+                    assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(15);
+                    assertThat(page.getTotalPages()).isGreaterThanOrEqualTo(3);
+                    assertThat(page.getNumber()).isEqualTo(0);
+                    assertThat(page.getSize()).isEqualTo(5);
+                    // All results should be songs
+                    assertThat(page.getContent()).allMatch(r -> "SONG".equals(r.getEntityType()));
+                });
+
+        // Second page
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("q", "Rock")
+                        .queryParam("type", "SONG")
+                        .queryParam("page", 1)
+                        .queryParam("size", 5)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(5);
+                    assertThat(page.getNumber()).isEqualTo(1);
+                });
+    }
+
+    @Test
+    public void testSearchPagination_ByArtist() {
+        // Create artist with multiple songs and albums
+        Artist beatles = artistRepository.save(new Artist("The Beatles"));
+
+        for (int i = 1; i <= 10; i++) {
+            songRepository.save(new Song("Beatles Song " + i, 180L, LocalDate.now(), beatles));
+        }
+        for (int i = 1; i <= 10; i++) {
+            albumRepository.save(new Album("Beatles Album " + i, LocalDate.now(), beatles));
+        }
+
+        // First page with size 8
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("artist", "Beatles")
+                        .queryParam("page", 0)
+                        .queryParam("size", 8)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(8);
+                    assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(20);
+                    assertThat(page.getTotalPages()).isGreaterThanOrEqualTo(3);
+                    assertThat(page.getNumber()).isEqualTo(0);
+                    assertThat(page.getSize()).isEqualTo(8);
+                    // All results should be from The Beatles
+                    assertThat(page.getContent()).allMatch(r -> r.getArtistName().contains("Beatles"));
+                });
+
+        // Last page
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("artist", "Beatles")
+                        .queryParam("page", 2)
+                        .queryParam("size", 8)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSizeGreaterThanOrEqualTo(4);
+                    assertThat(page.getNumber()).isEqualTo(2);
+                });
+    }
+
+    @Test
+    public void testSearchPagination_DifferentPageSizes() {
+        // Create 30 items
+        Artist artist = artistRepository.save(new Artist("Jazz Musician"));
+
+        for (int i = 1; i <= 30; i++) {
+            songRepository.save(new Song("Jazz Track " + i, 180L, LocalDate.now(), artist));
+        }
+
+        // Test with size 5
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("q", "Jazz")
+                        .queryParam("page", 0)
+                        .queryParam("size", 5)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(5);
+                    assertThat(page.getSize()).isEqualTo(5);
+                    assertThat(page.getTotalPages()).isGreaterThanOrEqualTo(6);
+                });
+
+        // Test with size 15
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("q", "Jazz")
+                        .queryParam("page", 0)
+                        .queryParam("size", 15)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSize(15);
+                    assertThat(page.getSize()).isEqualTo(15);
+                    assertThat(page.getTotalPages()).isGreaterThanOrEqualTo(2);
+                });
+
+        // Test with size 50 (should get all results on one page)
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("q", "Jazz")
+                        .queryParam("page", 0)
+                        .queryParam("size", 50)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).hasSizeGreaterThanOrEqualTo(30);
+                    assertThat(page.getSize()).isEqualTo(50);
+                    assertThat(page.getTotalPages()).isEqualTo(1);
+                });
+    }
+
+    @Test
+    public void testSearchPagination_EmptyPage() {
+        // Create only 5 items
+        Artist artist = artistRepository.save(new Artist("Solo Artist"));
+
+        for (int i = 1; i <= 5; i++) {
+            songRepository.save(new Song("Solo Song " + i, 180L, LocalDate.now(), artist));
+        }
+
+        // Request page 2 with size 10 (should be empty since we only have 5 items)
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/search")
+                        .queryParam("q", "Solo")
+                        .queryParam("page", 2)
+                        .queryParam("size", 10)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponsePage<SearchResultDto>>() {})
+                .value(page -> {
+                    assertThat(page.getContent()).isEmpty();
+                    assertThat(page.getNumber()).isEqualTo(2);
+                    assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(5);
+                });
+    }
 }

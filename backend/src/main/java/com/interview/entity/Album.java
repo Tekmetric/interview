@@ -44,6 +44,9 @@ public class Album {
         this.title = title;
         this.releaseDate = releaseDate;
         this.artist = artist;
+        if (artist != null) {
+            artist.addAlbumInternal(this);
+        }
     }
 
     public Long getId() {
@@ -75,43 +78,68 @@ public class Album {
     }
 
     public void setArtist(Artist artist) {
+        if (this.artist != null) {
+            this.artist.removeAlbumInternal(this);
+        }
         this.artist = artist;
+        if (artist != null) {
+            artist.addAlbumInternal(this);
+        }
     }
 
+    void setArtistInternal(Artist artist) {
+        this.artist = artist;
+    }
     public List<Song> getSongs() {
         return Collections.unmodifiableList(songs);
     }
 
     public void setSongs(List<Song> songs) {
-        this.songs = songs;
-    }
+        // Remove all current songs (manages both sides via public API)
+        List<Song> currentSongs = new ArrayList<>(this.songs);
+        for (Song song : currentSongs) {
+            this.removeSong(song);
+        }
 
-    public void addSong(Song song) {
-        if (!this.songs.contains(song)) {
-            this.songs.add(song);
-            // Use internal accessor to manage bidirectional relationship
-            if (!song.getAlbumsInternal().contains(this)) {
-                song.getAlbumsInternal().add(this);
+        // Add all new songs (manages both sides via public API)
+        if (songs != null) {
+            for (Song song : songs) {
+                this.addSong(song);
             }
         }
     }
 
+    public void addSong(Song song) {
+        addSongInternal(song);
+        song.addAlbumInternal(this);
+    }
+
+    void addSongInternal(Song song) {
+        if (!this.songs.contains(song)) {
+            this.songs.add(song);
+        }
+    }
+
     public void removeSong(Song song) {
-        this.songs.remove(song);
+        removeSongInternal(song);
         // Use internal accessor to manage bidirectional relationship
-        song.getAlbumsInternal().remove(this);
+        song.removeAlbumInternal(this);
+    }
+
+    void removeSongInternal(Song song) {
+        this.songs.remove(song);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Album album = (Album) o;
-        return Objects.equals(id, album.id);
+        return Objects.equals(title, album.title)
+                && Objects.equals(releaseDate, album.releaseDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(title, releaseDate);
     }
 }

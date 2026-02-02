@@ -307,7 +307,7 @@ public class EntityMappingIntegrationTest extends BaseRepositoryTest {
 
         // Delete Song - must remove from albums first
         Song toDelete = entityManager.find(Song.class, songId);
-        toDelete.removeFromAllAlbums();
+        toDelete.setAlbums(null);
         entityManager.remove(toDelete);
         flushAndClear();
 

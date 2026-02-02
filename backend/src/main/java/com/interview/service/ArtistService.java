@@ -32,6 +32,7 @@ public class ArtistService {
         this.eventPublisher = eventPublisher;
     }
 
+    @Transactional
     public ArtistDto createArtist(ArtistDto artistDto) {
         Artist artist = modelMapper.map(artistDto, Artist.class);
         Artist savedArtist = artistRepository.save(artist);
@@ -39,6 +40,7 @@ public class ArtistService {
         return modelMapper.map(savedArtist, ArtistDto.class);
     }
 
+    @Transactional
     public ArtistDto updateArtist(Long id, ArtistDto artistDto) {
         Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + id));
@@ -49,6 +51,7 @@ public class ArtistService {
         return modelMapper.map(updatedArtist, ArtistDto.class);
     }
 
+    @Transactional
     public void deleteArtist(Long id) {
         if (!artistRepository.existsById(id)) {
             throw new EntityNotFoundException("Artist not found with id: " + id);
@@ -77,11 +80,6 @@ public class ArtistService {
     }
 
     private ArtistListDto convertToListDto(Artist artist) {
-        ArtistListDto dto = new ArtistListDto();
-        dto.setId(artist.getId());
-        dto.setName(artist.getName());
-        dto.setSongCount(artist.getSongs() != null ? artist.getSongs().size() : 0);
-        dto.setAlbumCount(artist.getAlbums() != null ? artist.getAlbums().size() : 0);
-        return dto;
+        return modelMapper.map(artist, ArtistListDto.class);
     }
 }

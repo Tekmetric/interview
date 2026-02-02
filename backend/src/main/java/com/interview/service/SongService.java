@@ -45,22 +45,20 @@ public class SongService {
         this.eventPublisher = eventPublisher;
     }
 
+    @Transactional
     public SongDto createSong(SongDto songDto) {
+        // Map basic properties using ModelMapper
+        Song song = modelMapper.map(songDto, Song.class);
+
+        // Handle artist relationship
         Artist artist = artistRepository.findById(songDto.getArtistId())
                 .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + songDto.getArtistId()));
-
-        Song song = new Song();
-        song.setTitle(songDto.getTitle());
-        song.setLengthInSeconds(songDto.getLengthInSeconds());
-        song.setReleaseDate(songDto.getReleaseDate());
         song.setArtist(artist);
 
-        // Associate with albums if provided
+        // Associate with albums if provided - delegate to entity to manage both sides
         if (songDto.getAlbumIds() != null && !songDto.getAlbumIds().isEmpty()) {
             List<Album> albums = albumRepository.findAllById(songDto.getAlbumIds());
-            for (Album album : albums) {
-                album.addSong(song);
-            }
+            song.setAlbums(albums);
         }
 
         Song savedSong = songRepository.save(song);
@@ -68,13 +66,13 @@ public class SongService {
         return convertToDto(savedSong);
     }
 
+    @Transactional
     public SongDto updateSong(Long id, SongDto songDto) {
         Song song = songRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Song not found with id: " + id));
 
-        song.setTitle(songDto.getTitle());
-        song.setLengthInSeconds(songDto.getLengthInSeconds());
-        song.setReleaseDate(songDto.getReleaseDate());
+        // Map basic properties using ModelMapper
+        modelMapper.map(songDto, song);
 
         // Update artist if changed
         if (!song.getArtist().getId().equals(songDto.getArtistId())) {
@@ -83,19 +81,10 @@ public class SongService {
             song.setArtist(newArtist);
         }
 
-        // Update album associations
+        // Update album associations - delegate to entity to manage both sides
         if (songDto.getAlbumIds() != null) {
-            // Remove from all current albums (create a copy to avoid ConcurrentModificationException)
-            List<Album> currentAlbums = new java.util.ArrayList<>(song.getAlbums());
-            for (Album album : currentAlbums) {
-                album.removeSong(song);
-            }
-
-            // Add to new albums
             List<Album> newAlbums = albumRepository.findAllById(songDto.getAlbumIds());
-            for (Album album : newAlbums) {
-                album.addSong(song);
-            }
+            song.setAlbums(newAlbums);
         }
 
         Song updatedSong = songRepository.save(song);
@@ -103,12 +92,13 @@ public class SongService {
         return convertToDto(updatedSong);
     }
 
+    @Transactional
     public void deleteSong(Long id) {
         Song song = songRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Song not found with id: " + id));
 
         // Remove from all albums before deleting
-        song.removeFromAllAlbums();
+        song.setAlbums(null);
         songRepository.delete(song);
         eventPublisher.publishEvent(new EntityChangeEvent(NotificationAction.DELETE, EntityType.SONG, id));
     }
@@ -151,13 +141,13 @@ public class SongService {
     }
 
     private SongDto convertToDto(Song song) {
-        SongDto dto = new SongDto();
-        dto.setId(song.getId());
-        dto.setTitle(song.getTitle());
-        dto.setLengthInSeconds(song.getLengthInSeconds());
-        dto.setReleaseDate(song.getReleaseDate());
+        // Map basic properties using ModelMapper
+        SongDto dto = modelMapper.map(song, SongDto.class);
+
+        // Set artist ID (relationship field)
         dto.setArtistId(song.getArtist().getId());
 
+        // Set album IDs (relationship field)
         if (song.getAlbums() != null) {
             List<Long> albumIds = song.getAlbums().stream()
                     .map(Album::getId)
@@ -169,11 +159,7 @@ public class SongService {
     }
 
     private SongListDto convertToListDto(Song song) {
-        SongListDto dto = new SongListDto();
-        dto.setId(song.getId());
-        dto.setTitle(song.getTitle());
-        dto.setLengthInSeconds(song.getLengthInSeconds());
-        dto.setReleaseDate(song.getReleaseDate());
+        SongListDto dto = modelMapper.map(song, SongListDto.class);
 
         // Set artist reference
         ArtistRefDto artistRef = new ArtistRefDto(song.getArtist().getId(), song.getArtist().getName());
@@ -182,7 +168,7 @@ public class SongService {
         // Set album references
         if (song.getAlbums() != null) {
             List<AlbumRefDto> albumRefs = song.getAlbums().stream()
-                    .map(album -> new AlbumRefDto(album.getId(), album.getTitle()))
+                    .map(album -> modelMapper.map(album, AlbumRefDto.class))
                     .collect(Collectors.toList());
             dto.setAlbums(albumRefs);
         }

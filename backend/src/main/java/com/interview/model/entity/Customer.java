@@ -1,4 +1,4 @@
-package com.interview.model;
+package com.interview.model.entity;
 
 import lombok.*;
 import javax.persistence.*;

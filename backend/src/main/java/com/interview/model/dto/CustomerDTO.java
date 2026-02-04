@@ -4,14 +4,12 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.util.List;
+import java.util.Set;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDTO {
-    private Long id;
     @NotBlank(message = "First name is required")
     private String firstName;
 
@@ -23,5 +21,5 @@ public class CustomerDTO {
             message = "Invalid phone number format"
     )
     private String phone;
-    private List<Long> vehicleIds;
+    private Set<VehicleDTO> vehicles;
 }

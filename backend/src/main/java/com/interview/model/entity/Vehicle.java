@@ -1,5 +1,6 @@
-package com.interview.model;
+package com.interview.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,7 +13,6 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Vehicle implements Serializable {
 
     @Id
@@ -28,6 +28,7 @@ public class Vehicle implements Serializable {
     @Column(nullable = false)
     private String model;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
@@ -42,6 +43,6 @@ public class Vehicle implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(vin);
+        return getClass().hashCode();
     }
 }

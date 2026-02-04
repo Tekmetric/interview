@@ -10,29 +10,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
-    public CustomerDTO createCustomer(CustomerDTO dto) {
-        // Check if a customer already exists using the phone number
+    public CustomerDTO createCustomer(CustomerDTO  dto) {
         if (customerRepository.existsByPhone(dto.getPhone())) {
             throw new ResourceAlreadyExistsException("Customer with phone " + dto.getPhone() + " already exists.");
         }
         Customer customer = customerMapper.toEntity(dto);
-        return customerMapper.toDto(customerRepository.save(customer));
+        return customerMapper.toDTO(customerRepository.save(customer));
     }
 
     public CustomerDTO getCustomerById(Long id) {
         return customerRepository.findById(id)
-                .map(customerMapper::toDto)
+                .map(customerMapper::toDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
     }
 
@@ -41,7 +38,10 @@ public class CustomerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         customerMapper.updateEntityFromDto(dto, existing);
-        return customerMapper.toDto(customerRepository.save(existing));
+        if (dto.getVehicles() != null) {
+            existing.getVehicles().forEach(v -> v.setCustomer(existing));
+        }
+        return customerMapper.toDTO(customerRepository.save(existing));
     }
 
     public void deleteCustomer(Long id) {

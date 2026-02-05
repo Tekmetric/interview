@@ -36,7 +36,7 @@ class CustomerResourceTest {
 
     @BeforeEach
     void setUp() {
-        customerDto = new CustomerDTO(null, "Jack", "McGinnis", "1234567890", Set.of());
+        customerDto = new CustomerDTO("Jack", "McGinnis", "1234567890", Set.of());
     }
 
     @Test

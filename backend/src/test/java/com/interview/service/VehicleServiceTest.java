@@ -68,9 +68,9 @@ class VehicleServiceTest {
 
     @Test
     void getVehicleByVin_ShouldThrow_WhenNotFound() {
-        when(vehicleRepository.findByVin("NONAME")).thenReturn(Optional.empty());
+        when(vehicleRepository.findByVin("FAILME")).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> vehicleService.getVehicleByVin("NONAME"))
+        assertThatThrownBy(() -> vehicleService.getVehicleByVin("FAILME"))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -104,9 +104,9 @@ class VehicleServiceTest {
     @Test
     void removeVehicleFromCustomer_ShouldThrow_WhenVehicleNotFound() {
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(vehicleRepository.findByVin("MISSING")).thenReturn(Optional.empty());
+        when(vehicleRepository.findByVin("FAILME")).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> vehicleService.removeVehicleFromCustomer(1L, "MISSING"))
+        assertThatThrownBy(() -> vehicleService.removeVehicleFromCustomer(1L, "FAILME"))
                 .isInstanceOf(ResourceNotFoundException.class);
 
         verify(customerRepository, never()).save(any());

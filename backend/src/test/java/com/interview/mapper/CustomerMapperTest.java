@@ -22,7 +22,7 @@ class CustomerMapperTest {
     void shouldMapDtoToEntityAndLinkVehicles() {
         VehicleDTO v1 = new VehicleDTO("1234", "Chevy", "Malibu", 2014);
         CustomerDTO dto = new CustomerDTO(
-                null, "Jack", "McGinnis", "1234567890", Set.of(v1)
+                "Jack", "McGinnis", "1234567890", Set.of(v1)
         );
 
         Customer customer = mapper.toEntity(dto);
@@ -41,7 +41,7 @@ class CustomerMapperTest {
         existingCustomer.setPhone("1234567890");
 
         CustomerDTO updateDto = new CustomerDTO(
-                null, "Marisa", null, null, null
+                "Marisa", null, null, null
         );
 
         mapper.updateEntityFromDto(updateDto, existingCustomer);
@@ -62,7 +62,7 @@ class CustomerMapperTest {
 
         VehicleDTO v2 = new VehicleDTO("2222", "Chevy", "Malibu", 2012);
         CustomerDTO updateDto = new CustomerDTO(
-                null, "Jack", "McGinnis", "1234567890", Set.of(v2)
+                "Jack", "McGinnis", "1234567890", Set.of(v2)
         );
 
         mapper.updateEntityFromDto(updateDto, existingCustomer);

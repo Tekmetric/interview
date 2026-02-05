@@ -32,17 +32,17 @@ class VehicleResourceTest {
 
     @Test
     void getByVin_ShouldReturnVehicle() throws Exception {
-        VehicleDTO dto = new VehicleDTO("VIN123", "Ford", "F150", 2020);
-        when(vehicleService.getVehicleByVin("VIN123")).thenReturn(dto);
+        VehicleDTO dto = new VehicleDTO("VIN1234567890ABCD", "Ford", "F150", 2020);
+        when(vehicleService.getVehicleByVin("VIN1234567890ABCD")).thenReturn(dto);
 
-        mockMvc.perform(get("/api/vehicles/VIN123"))
+        mockMvc.perform(get("/api/vehicles/VIN1234567890ABCD"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.make").value("Ford"));
     }
 
     @Test
     void addVehicleToCustomer_ShouldReturnCreated() throws Exception {
-        VehicleDTO dto = new VehicleDTO("VIN123", "Ford", "F150", 2020);
+        VehicleDTO dto = new VehicleDTO("VIN1234567890ABCD", "Ford", "F150", 2020);
         when(vehicleService.addVehicleToCustomer(eq(1L), any(VehicleDTO.class))).thenReturn(dto);
 
         mockMvc.perform(post("/api/vehicles/customer/1")
@@ -53,9 +53,9 @@ class VehicleResourceTest {
 
     @Test
     void removeVehicleFromCustomer_ShouldReturnNoContent() throws Exception {
-        doNothing().when(vehicleService).removeVehicleFromCustomer(1L, "VIN123");
+        doNothing().when(vehicleService).removeVehicleFromCustomer(1L, "VIN1234567890ABCD");
 
-        mockMvc.perform(delete("/api/vehicles/VIN123/customer/1"))
+        mockMvc.perform(delete("/api/vehicles/VIN1234567890ABCD/customer/1"))
                 .andExpect(status().isNoContent());
     }
 }

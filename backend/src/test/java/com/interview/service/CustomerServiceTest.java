@@ -44,7 +44,7 @@ class CustomerServiceTest {
         customer.setFirstName("Jack");
         customer.setPhone("1234567890");
 
-        customerDto = new CustomerDTO(null, "Jack", "McGinnis", "1234567890", Set.of());
+        customerDto = new CustomerDTO("Jack", "McGinnis", "1234567890", Set.of());
     }
 
     @Test
@@ -71,8 +71,8 @@ class CustomerServiceTest {
     @Test
     void updateCustomer_ShouldSyncVehicles_AndSave() {
         Long id = 1L;
-        VehicleDTO vDto = new VehicleDTO(null, "VIN123", "Ford", 2012);
-        CustomerDTO updateDto = new CustomerDTO(null, "Jack", "NewName", "123", Set.of(vDto));
+        VehicleDTO vDto = new VehicleDTO("VIN1234567890ABCD", "Ford", "Taurus", 2012);
+        CustomerDTO updateDto = new CustomerDTO("Jack", "McGinnis", "123", Set.of(vDto));
 
         when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
         when(customerRepository.save(customer)).thenReturn(customer);
@@ -81,7 +81,7 @@ class CustomerServiceTest {
         CustomerDTO result = customerService.updateCustomer(id, updateDto);
         verify(customerMapper).updateEntityFromDto(updateDto, customer);
         verify(customerRepository).save(customer);
-        assertThat(result.getLastName()).isEqualTo("NewName");
+        assertThat(result.getLastName()).isEqualTo("McGinnis");
     }
 
     @Test

@@ -3,7 +3,7 @@
 BASE_URL="http://localhost:8080/api"
 CONTENT_TYPE="Content-Type: application/json"
 
-echo "🚀 Starting API Integration Test (Using grep/sed)..."
+echo "Starting API Integration Test (Using grep/sed)..."
 echo "-----------------------------------"
 
 # 1. Create a Customer (Chihiro Ogino)
@@ -79,4 +79,4 @@ curl -s -X DELETE "$BASE_URL/customer/$CUSTOMER_ID"
 echo "Status: No Content (204)"
 echo "-----------------------------------"
 
-echo "✅ Integration Test Complete."
+echo "Integration Test Complete."

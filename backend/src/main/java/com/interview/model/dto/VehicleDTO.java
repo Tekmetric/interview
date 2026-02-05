@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -25,7 +24,7 @@ public class VehicleDTO {
     @NotBlank(message = "Model is required")
     private String model;
 
-    @NotBlank(message = "Year is required")
+    @NotNull(message = "Year is required")
     private Integer year;
 
     public VehicleDTO(String vin, String make, String model, Integer year) {

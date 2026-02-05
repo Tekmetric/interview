@@ -11,7 +11,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/vehicles")
+@RequestMapping("/api/vehicle")
 public class VehicleResource {
 
     private final VehicleService vehicleService;

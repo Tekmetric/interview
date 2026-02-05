@@ -35,7 +35,7 @@ class VehicleResourceTest {
         VehicleDTO dto = new VehicleDTO("VIN1234567890ABCD", "Ford", "F150", 2020);
         when(vehicleService.getVehicleByVin("VIN1234567890ABCD")).thenReturn(dto);
 
-        mockMvc.perform(get("/api/vehicles/VIN1234567890ABCD"))
+        mockMvc.perform(get("/api/vehicle/VIN1234567890ABCD"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.make").value("Ford"));
     }
@@ -45,7 +45,7 @@ class VehicleResourceTest {
         VehicleDTO dto = new VehicleDTO("VIN1234567890ABCD", "Ford", "F150", 2020);
         when(vehicleService.addVehicleToCustomer(eq(1L), any(VehicleDTO.class))).thenReturn(dto);
 
-        mockMvc.perform(post("/api/vehicles/customer/1")
+        mockMvc.perform(post("/api/vehicle/customer/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated());
@@ -55,7 +55,7 @@ class VehicleResourceTest {
     void removeVehicleFromCustomer_ShouldReturnNoContent() throws Exception {
         doNothing().when(vehicleService).removeVehicleFromCustomer(1L, "VIN1234567890ABCD");
 
-        mockMvc.perform(delete("/api/vehicles/VIN1234567890ABCD/customer/1"))
+        mockMvc.perform(delete("/api/vehicle/VIN1234567890ABCD/customer/1"))
                 .andExpect(status().isNoContent());
     }
 }

@@ -19,13 +19,13 @@ echo "-----------------------------------"
 echo "2. Adding Vehicle to Customer..."
 VIN="SPIRITAWAY1234568"
 VEHICLE_JSON='{"vin": "'$VIN'", "make": "Audi", "model": "A4", "year": 2001}'
-VEHICLE_RESPONSE=$(curl -s -X POST "$BASE_URL/vehicles/customer/$CUSTOMER_ID" -H "$CONTENT_TYPE" -d "$VEHICLE_JSON")
+VEHICLE_RESPONSE=$(curl -s -X POST "$BASE_URL/vehicle/customer/$CUSTOMER_ID" -H "$CONTENT_TYPE" -d "$VEHICLE_JSON")
 echo "Response: $VEHICLE_RESPONSE"
 echo "-----------------------------------"
 
 # 3. Get Vehicle by VIN
 echo "3. Fetching Vehicle by VIN..."
-curl -s -X GET "$BASE_URL/vehicles/$VIN"
+curl -s -X GET "$BASE_URL/vehicle/$VIN"
 echo -e "\n-----------------------------------"
 
 # 4. Add a Service Order to the Vehicle
@@ -69,7 +69,7 @@ echo "-----------------------------------"
 
 # 9. Remove Vehicle from Customer
 echo "9. Removing Vehicle from Customer..."
-curl -s -X DELETE "$BASE_URL/vehicles/$VIN/customer/$CUSTOMER_ID"
+curl -s -X DELETE "$BASE_URL/vehicle/$VIN/customer/$CUSTOMER_ID"
 echo "Status: No Content (204)"
 echo "-----------------------------------"
 

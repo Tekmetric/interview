@@ -7,11 +7,13 @@ import org.mapstruct.*;
 @Mapper(
         componentModel = "spring",
         collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED,
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public interface CustomerMapper {
 
     Customer toEntity(CustomerDTO dto);
+
     CustomerDTO toDTO(Customer customer);
 
     void updateEntityFromDto(CustomerDTO dto, @MappingTarget Customer customer);

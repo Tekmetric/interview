@@ -2,15 +2,15 @@ package com.interview.mapper;
 
 import com.interview.model.dto.ServiceOrderDTO;
 import com.interview.model.entity.ServiceOrder;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ServiceOrderMapper {
 
     ServiceOrder toEntity(ServiceOrderDTO dto);
+
     ServiceOrderDTO toDTO(ServiceOrder entity);
 
     @Mapping(target = "id", ignore = true)

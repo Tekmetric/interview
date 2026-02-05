@@ -42,6 +42,13 @@ public class Vehicle implements Serializable {
     @ManyToMany(mappedBy = "vehicles")
     private Set<ServiceOrder> serviceOrders = new HashSet<>();
 
+    @PreRemove
+    private void removeServiceOrdersFromVehicle() {
+        for (ServiceOrder order : new HashSet<>(serviceOrders)) {
+            order.removeVehicle(this);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

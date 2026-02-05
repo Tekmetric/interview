@@ -10,7 +10,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDTO {
-    Long id;
+    private Long id;
 
     @NotBlank(message = "First name is required")
     private String firstName;

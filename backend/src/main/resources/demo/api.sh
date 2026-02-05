@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE_URL="http://localhost:9993/api"
+BASE_URL="http://localhost:8080/api"
 CONTENT_TYPE="Content-Type: application/json"
 
 echo "🚀 Starting API Integration Test (Using grep/sed)..."
@@ -8,7 +8,7 @@ echo "-----------------------------------"
 
 # 1. Create a Customer (Chihiro Ogino)
 echo "1. Creating Customer..."
-CUSTOMER_JSON='{"firstName": "Chihiro", "lastName": "Ogino", "phone": "123-555-0103"}'
+CUSTOMER_JSON='{"firstName": "Chihiro", "lastName": "Ogino", "phone": "123-456-0103"}'
 CUSTOMER_RESPONSE=$(curl -s -X POST "$BASE_URL/customer" -H "$CONTENT_TYPE" -d "$CUSTOMER_JSON")
 CUSTOMER_ID=$(echo "$CUSTOMER_RESPONSE" | sed -n 's/.*"id":\([0-9]*\).*/\1/p')
 echo "Response: $CUSTOMER_RESPONSE"
@@ -17,7 +17,7 @@ echo "-----------------------------------"
 
 # 2. Add a Vehicle to that Customer
 echo "2. Adding Vehicle to Customer..."
-VIN="SPIRITAWAY1234567"
+VIN="SPIRITAWAY1234568"
 VEHICLE_JSON='{"vin": "'$VIN'", "make": "Audi", "model": "A4", "year": 2001}'
 VEHICLE_RESPONSE=$(curl -s -X POST "$BASE_URL/vehicles/customer/$CUSTOMER_ID" -H "$CONTENT_TYPE" -d "$VEHICLE_JSON")
 echo "Response: $VEHICLE_RESPONSE"
@@ -35,6 +35,14 @@ ORDER_RESPONSE=$(curl -s -X POST "$BASE_URL/service/vehicle/$VIN" -H "$CONTENT_T
 ORDER_ID=$(echo "$ORDER_RESPONSE" | sed -n 's/.*"id":\([0-9]*\).*/\1/p')
 echo "Response: $ORDER_RESPONSE"
 echo "Generated Order ID: $ORDER_ID"
+echo "-----------------------------------"
+
+echo "4. Adding Service Order 2..."
+ORDER_JSON2='{"description": "Tire Change", "status": "PENDING"}'
+ORDER_RESPONSE2=$(curl -s -X POST "$BASE_URL/service/vehicle/$VIN" -H "$CONTENT_TYPE" -d "$ORDER_JSON2")
+ORDER_ID2=$(echo "$ORDER_RESPONSE2" | sed -n 's/.*"id":\([0-9]*\).*/\1/p')
+echo "Response: $ORDER_RESPONSE2"
+echo "Generated Order ID: $ORDER_ID2"
 echo "-----------------------------------"
 
 # 5. Update Service Order Status

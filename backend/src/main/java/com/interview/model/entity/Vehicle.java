@@ -5,7 +5,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "vehicles")
@@ -28,10 +30,17 @@ public class Vehicle implements Serializable {
     @Column(nullable = false)
     private String model;
 
+    // prevent SQL 'YEAR' collision
+    @Column(name = "model_year", nullable = false)
+    private Integer year;
+
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
+
+    @ManyToMany(mappedBy = "vehicles")
+    private Set<ServiceOrder> serviceOrders = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

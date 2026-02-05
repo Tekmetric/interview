@@ -4,12 +4,15 @@ import com.interview.exception.ResourceAlreadyExistsException;
 import com.interview.exception.ResourceNotFoundException;
 import com.interview.mapper.CustomerMapper;
 import com.interview.model.dto.CustomerDTO;
+import com.interview.model.dto.VehicleDTO;
 import com.interview.model.entity.Customer;
 import com.interview.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional

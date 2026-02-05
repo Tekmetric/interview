@@ -44,7 +44,7 @@ class CustomerServiceTest {
         customer.setFirstName("Jack");
         customer.setPhone("1234567890");
 
-        customerDto = new CustomerDTO("Jack", "McGinnis", "1234567890", Set.of());
+        customerDto = new CustomerDTO(null, "Jack", "McGinnis", "1234567890", Set.of());
     }
 
     @Test
@@ -72,7 +72,7 @@ class CustomerServiceTest {
     void updateCustomer_ShouldSyncVehicles_AndSave() {
         Long id = 1L;
         VehicleDTO vDto = new VehicleDTO(null, "VIN123", "Ford", 2012);
-        CustomerDTO updateDto = new CustomerDTO("Jack", "NewName", "123", Set.of(vDto));
+        CustomerDTO updateDto = new CustomerDTO(null, "Jack", "NewName", "123", Set.of(vDto));
 
         when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
         when(customerRepository.save(customer)).thenReturn(customer);

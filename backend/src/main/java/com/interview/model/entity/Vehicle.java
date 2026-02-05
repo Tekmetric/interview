@@ -36,7 +36,7 @@ public class Vehicle implements Serializable {
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @ManyToMany(mappedBy = "vehicles")

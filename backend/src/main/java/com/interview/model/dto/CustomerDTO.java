@@ -10,6 +10,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDTO {
+    Long id;
+
     @NotBlank(message = "First name is required")
     private String firstName;
 
@@ -22,4 +24,11 @@ public class CustomerDTO {
     )
     private String phone;
     private Set<VehicleDTO> vehicles;
+
+    public CustomerDTO(String firstName, String lastName, String phone, Set<VehicleDTO> vehicles) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+        this.vehicles = vehicles;
+    }
 }

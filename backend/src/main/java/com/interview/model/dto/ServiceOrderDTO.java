@@ -11,7 +11,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServiceOrderDTO {
+    private Long id;
     private String description;
     private LocalDateTime createdAt;
     private ServiceOrderStatus status;
+    public  ServiceOrderDTO(String description, LocalDateTime createdAt, ServiceOrderStatus status) {
+        this.description = description;
+        this.createdAt = createdAt;
+        this.status = status;
+    }
 }

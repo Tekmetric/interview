@@ -26,9 +26,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(err -> {
-            String fieldName = ((FieldError) err).getField();
-            String message = err.getDefaultMessage();
-            errors.put(fieldName, message);
+            if (err instanceof FieldError) {
+                String fieldName = ((FieldError) err).getField();
+                errors.put(fieldName, err.getDefaultMessage());
+            } else {
+                errors.put(err.getObjectName(), err.getDefaultMessage());
+            }
         });
 
         ErrorResponse error = new ErrorResponse(

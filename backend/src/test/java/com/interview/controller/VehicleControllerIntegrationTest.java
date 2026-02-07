@@ -135,4 +135,12 @@ class VehicleControllerIntegrationTest {
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.last").value(true));
     }
+
+    @Test
+    @DisplayName("GET /api/vehicles/paged - Should fallback to id sort for invalid sort field")
+    void getAllVehiclesPaged_InvalidSortField() throws Exception {
+        mockMvc.perform(get("/api/vehicles/paged?sortBy=invalidField"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+    }
 }

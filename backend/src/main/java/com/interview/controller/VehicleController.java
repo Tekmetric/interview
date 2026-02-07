@@ -28,6 +28,9 @@ public class VehicleController {
 
     private final VehicleService vehicleService;
 
+    private static final List<String> ALLOWED_SORT_FIELDS =
+            List.of("id", "make", "model", "year", "color", "mileage", "ownerName");
+
     public VehicleController(VehicleService vehicleService) {
         this.vehicleService = vehicleService;
     }
@@ -49,11 +52,17 @@ public class VehicleController {
         List<VehicleResponse> responses = vehicleService.getAllVehicles();
         return ResponseEntity.ok(responses);
     }
+
     @GetMapping("/paged")
     public ResponseEntity<VehiclePageResponse> getAllVehiclesPaged(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy) {
+
+        if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+            sortBy = "id";
+        }
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
         VehiclePageResponse response = vehicleService.getAllVehicles(pageable);
         return ResponseEntity.ok(response);

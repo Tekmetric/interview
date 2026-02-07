@@ -47,9 +47,10 @@ Once you have finished the coding exercise please create a PR into Tekmetric/int
 - **DTO pattern**: Separated API contract (request/response) from the JPA entity
 - **Record for Response**: `VehicleResponse` and `VehiclePageResponse` use Java 17 Records for immutable output data
 - **Constructor injection**: Over field injection, following Spring best practices
-- **Global exception handler**: Consistent error responses with proper HTTP status codes
+- **Global exception handler**: Consistent error responses with proper HTTP status codes. Validation handler safely distinguishes between field-level and object-level errors to prevent ClassCastException.
 - **Service interface**: Enables easy testing and follows Dependency Inversion Principle
 - **Pagination**: A busy auto repair shop can accumulate thousands of vehicles over time. Returning all records in a single response would degrade performance and waste bandwidth. The paginated endpoint supports page, size, and sorting parameters, giving API consumers full control over data retrieval.
+- **Input validation**: Sort field whitelist on the paginated endpoint prevents invalid field errors. Unrecognized fields fallback to `id` instead of returning a 500.
 - **SLF4J Logging**: Added structured logging at the service layer using `info` for normal operations and `warn` for not-found scenarios. Uses `{}` placeholders for performance over string concatenation. In a production environment, these logs enable monitoring, debugging, and auditing of API activity.
 
 ### Changes from Original Project
@@ -161,7 +162,7 @@ mvn test
 ```
 
 - **9 unit tests** — Service layer with Mockito
-- **9 integration tests** — Full HTTP cycle with MockMvc
+- **10 integration tests** — Full HTTP cycle with MockMvc
 
 ### H2 Console
 

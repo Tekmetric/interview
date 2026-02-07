@@ -114,6 +114,7 @@ class VehicleControllerIntegrationTest {
         mockMvc.perform(get("/api/vehicles/5"))
                 .andExpect(status().isNotFound());
     }
+
     @Test
     @DisplayName("GET /api/vehicles/paged - Should return paginated results")
     void getAllVehiclesPaged() throws Exception {

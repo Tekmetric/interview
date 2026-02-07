@@ -25,20 +25,20 @@ public class VehicleRequest {
     @Size(max = 17, message = "VIN must not exceed 17 characters")
     private String vin;
 
-    @Size(max = 20)
+    @Size(max = 20, message = "License plate must not exceed 20 characters")
     private String licensePlate;
 
-    @Size(max = 30)
+    @Size(max = 30, message = "Color must not exceed 30 characters")
     private String color;
 
     @Min(value = 0, message = "Mileage cannot be negative")
     private Integer mileage;
 
     @NotBlank(message = "Owner name is required")
-    @Size(max = 100)
+    @Size(max = 100, message = "Owner name must not exceed 100 characters")
     private String ownerName;
 
-    @Size(max = 20)
+    @Size(max = 20, message = "Owner phone must not exceed 20 characters")
     private String ownerPhone;
 
     public String getMake() {

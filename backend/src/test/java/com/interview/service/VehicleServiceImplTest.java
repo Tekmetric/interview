@@ -153,6 +153,7 @@ class VehicleServiceImplTest {
         assertThatThrownBy(() -> vehicleService.deleteVehicle(99L))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
+
     @Test
     @DisplayName("Should return paginated vehicles")
     void getAllVehiclesPaged_Success() {

@@ -1,6 +1,7 @@
 package com.interview.service;
 
 import com.interview.exception.ResourceNotFoundException;
+import com.interview.model.dto.VehiclePageResponse;
 import com.interview.model.dto.VehicleRequest;
 import com.interview.model.dto.VehicleResponse;
 import com.interview.model.entity.Vehicle;
@@ -13,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -147,5 +152,31 @@ class VehicleServiceImplTest {
 
         assertThatThrownBy(() -> vehicleService.deleteVehicle(99L))
                 .isInstanceOf(ResourceNotFoundException.class);
+    }
+    @Test
+    @DisplayName("Should return paginated vehicles")
+    void getAllVehiclesPaged_Success() {
+        Vehicle vehicle2 = new Vehicle();
+        vehicle2.setId(2L);
+        vehicle2.setMake("Honda");
+        vehicle2.setModel("Civic");
+        vehicle2.setYear(2020);
+        vehicle2.setOwnerName("Jane Doe");
+
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<Vehicle> page = new PageImpl<>(
+                Arrays.asList(vehicle, vehicle2), pageable, 5
+        );
+
+        when(vehicleRepository.findAll(pageable)).thenReturn(page);
+
+        VehiclePageResponse response = vehicleService.getAllVehicles(pageable);
+
+        assertThat(response.content()).hasSize(2);
+        assertThat(response.currentPage()).isEqualTo(0);
+        assertThat(response.totalPages()).isEqualTo(3);
+        assertThat(response.totalElements()).isEqualTo(5);
+        assertThat(response.pageSize()).isEqualTo(2);
+        assertThat(response.last()).isFalse();
     }
 }

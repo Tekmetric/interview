@@ -114,4 +114,25 @@ class VehicleControllerIntegrationTest {
         mockMvc.perform(get("/api/vehicles/5"))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    @DisplayName("GET /api/vehicles/paged - Should return paginated results")
+    void getAllVehiclesPaged() throws Exception {
+        mockMvc.perform(get("/api/vehicles/paged?page=0&size=2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.currentPage").value(0))
+                .andExpect(jsonPath("$.totalPages").value(3))
+                .andExpect(jsonPath("$.totalElements").value(5))
+                .andExpect(jsonPath("$.pageSize").value(2))
+                .andExpect(jsonPath("$.last").value(false));
+    }
+
+    @Test
+    @DisplayName("GET /api/vehicles/paged - Should return last page")
+    void getAllVehiclesPaged_LastPage() throws Exception {
+        mockMvc.perform(get("/api/vehicles/paged?page=2&size=2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.last").value(true));
+    }
 }

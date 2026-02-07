@@ -1,11 +1,14 @@
 package com.interview.service.impl;
 
 import com.interview.exception.ResourceNotFoundException;
+import com.interview.model.dto.VehiclePageResponse;
 import com.interview.model.dto.VehicleRequest;
 import com.interview.model.dto.VehicleResponse;
 import com.interview.model.entity.Vehicle;
 import com.interview.repository.VehicleRepository;
 import com.interview.service.VehicleService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +21,6 @@ public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleRepository vehicleRepository;
 
-    // Constructor injection (preferred over @Autowired on field)
     public VehicleServiceImpl(VehicleRepository vehicleRepository) {
         this.vehicleRepository = vehicleRepository;
     }
@@ -48,6 +50,26 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public VehiclePageResponse getAllVehicles(Pageable pageable) {
+        Page<Vehicle> page = vehicleRepository.findAll(pageable);
+
+        List<VehicleResponse> content = page.getContent()
+                .stream()
+                .map(VehicleResponse::fromEntity)
+                .collect(Collectors.toList());
+
+        return new VehiclePageResponse(
+                content,
+                page.getNumber(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.getSize(),
+                page.isLast()
+        );
+    }
+
+    @Override
     public VehicleResponse updateVehicle(Long id, VehicleRequest request) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle", "id", id));
@@ -74,7 +96,6 @@ public class VehicleServiceImpl implements VehicleService {
         vehicleRepository.deleteById(id);
     }
 
-    // Private helper — keeps mapping logic in one place
     private Vehicle mapToEntity(VehicleRequest request) {
         Vehicle vehicle = new Vehicle();
         vehicle.setMake(request.getMake());

@@ -50,6 +50,7 @@ Once you have finished the coding exercise please create a PR into Tekmetric/int
 - **Global exception handler**: Consistent error responses with proper HTTP status codes
 - **Service interface**: Enables easy testing and follows Dependency Inversion Principle
 - **Pagination**: A busy auto repair shop can accumulate thousands of vehicles over time. Returning all records in a single response would degrade performance and waste bandwidth. The paginated endpoint supports page, size, and sorting parameters, giving API consumers full control over data retrieval.
+- **SLF4J Logging**: Added structured logging at the service layer using `info` for normal operations and `warn` for not-found scenarios. Uses `{}` placeholders for performance over string concatenation. In a production environment, these logs enable monitoring, debugging, and auditing of API activity.
 
 ### Changes from Original Project
 - Upgraded Spring Boot from 2.2.1 to 2.7.18 to support Java 17 (as suggested in the README)
@@ -68,8 +69,8 @@ Once you have finished the coding exercise please create a PR into Tekmetric/int
 
 #### Pagination Parameters
 
-| Parameter | Default | Description             |
-|-----------|---------|-------------------------|
+| Parameter | Default | Description            |
+|-----------|---------|------------------------|
 | page      | 0       | Page number (0-indexed) |
 | size      | 10      | Items per page          |
 | sortBy    | id      | Field to sort by        |

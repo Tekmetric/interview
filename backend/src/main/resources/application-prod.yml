@@ -1,0 +1,47 @@
+# Production Configuration - Only prod-specific overrides
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/interview_prod;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+# Logging Configuration (Prod-specific)
+logging:
+  level:
+    com.interview: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/application.log
+
+# Server Configuration (Prod-specific)
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+
+# OpenAPI Configuration (Disabled in Production)
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# Actuator Configuration (Prod-specific)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized

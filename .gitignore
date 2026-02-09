@@ -1,14 +1,84 @@
-frontend/node_modules
-backend/.idea/*
-backend/*.iml
-backend/target/**
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
 
-#ignore playwright resources
-qa/node_modules/
-qa/test-results/
-qa/playwright-report/
-qa/blob-report/
-qa/playwright/.cache/
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# ignoring the .idea folder
-.idea
+# =========================
+# Java / Maven
+# =========================
+backend/target/
+**/target/
+
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# =========================
+# Node / Frontend / QA
+# =========================
+node_modules/
+**/node_modules/
+
+dist/
+build/
+.cache/
+.tmp/
+
+# Playwright
+playwright-report/
+test-results/
+
+# =========================
+# Python / ML
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# =========================
+# Docker
+# =========================
+**/.dockerignore
+docker-compose.override.yml
+
+# =========================
+# Kubernetes / Helm
+# =========================
+*.tgz          # helm package output
+charts/        # helm dependency builds
+values-*.yaml  # env-specific overrides (if generated)
+
+# =========================
+# CI / Secrets
+# =========================
+.env
+.env.*
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# Google Cloud
+**/gcloud/
+**/.config/gcloud/
+
+# =========================
+# Logs / Runtime
+# =========================
+*.log
+logs/
+tmp/

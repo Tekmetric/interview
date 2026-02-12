@@ -1,0 +1,76 @@
+### GET all listings
+GET http://localhost:8080/listing
+
+### GET listing by id
+GET http://localhost:8080/listing/8cea99ff-2fc4-4fb8-9685-06d3887afcb0
+
+### Create listing
+POST http://localhost:8080/listing
+Content-Type: application/json
+
+{
+  "address": "9050 AHHH st",
+  "agentName": "Big Boss",
+  "propertyType": "HOUSE",
+  "listingPrice": 300000.0
+}
+
+### GET all offers of listing
+GET http://localhost:8080/listing/3b27092c-644a-49a9-a4e3-e575fd163525/offer
+
+### GET single offer of listing
+GET http://localhost:8080/offer/80cb6c28-cdba-43f1-b581-3e0779f9c134
+
+### PUT listing
+PUT http://localhost:8080/listing/6c231252-1555-4435-9a87-e208ef32c015
+Content-Type: application/json
+
+{
+  "address": "9050 AHHH st",
+  "agentName": "Big Boss",
+  "propertyType": "HOUSE",
+  "listingPrice": 300000.0
+}
+
+### Create offer on a listing
+POST http://localhost:8080/listing/3b27092c-644a-49a9-a4e3-e575fd163525/offer
+Content-Type: application/json
+
+{
+  "offerPrice": 666666.0,
+  "lenderName": "Big Hotdogs",
+  "status": "ACCEPTED"
+}
+
+### PUT offer on listing
+PUT http://localhost:8080/listing/b85a315a-124c-45d1-baa4-dcf9dc9e3745/offer/045274f8-dd6b-4a38-8b57-7f81b746648a
+Content-Type: application/json
+
+{
+  "offerPrice": 666666.0,
+  "lenderName": "Big Hotdogs2",
+  "status": "CANCELED"
+}
+
+### PATCH listing
+PATCH http://localhost:8080/listing/283685d5-b7f0-4e2b-9561-cacd22b8549b
+Content-Type: application/json
+
+{
+  "listingPrice": 500000.0,
+  "agentName": "Mr. Beast"
+}
+
+### PATCH offer
+PATCH http://localhost:8080/offer/0f3518df-f30f-41b0-b70a-e6d3215fe31f
+Content-Type: application/json
+
+{
+  "status": "PENDING"
+}
+
+### DELETE listing
+DELETE http://localhost:8080/listing/78594372-4ae4-4ebb-a57a-231e898d0bdc
+
+### DELETE offer
+DELETE http://localhost:8080/offer/3bdeb393-f42a-4a24-afc9-2e2ee1628592

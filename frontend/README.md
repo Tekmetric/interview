@@ -1,21 +1,10 @@
-# Tech Interview Project
+# Product List - Frontend
 
-## Steps to get started:
-
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
-
-#### Let's install the project locally
-`npm install`
-
-#### Let's start the project locally
-`npm start`
-
-### Goals
-1. Fetch Data from the backend Crud API you created or from a public API
-2. Display data from API onto your page (Table, List, etc.)
-3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
-4. Have fun
-
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+To make this app work you need to do the following
+1. Open your terminal
+2. Make sure you have the backend running (see ../back/README.md)
+3. Go to the front folder and run the following commands
+    - npm install
+    - npm run dev
+4. Open your browser and go to the link provided in the terminal
+5. You should see the app running

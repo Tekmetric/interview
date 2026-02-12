@@ -1,0 +1,595 @@
+{
+	"info": {
+		"_postman_id": "interview-api-collection",
+		"name": "Interview API Collection",
+		"description": "Postman collection for testing the Interview API endpoints with JWT authentication.\n\n**Authentication Flow:**\n1. Use 'Auth > Login' endpoint to authenticate and get JWT token\n2. The token is automatically extracted and set to the 'jwtToken' collection variable\n3. All protected endpoints will automatically use the token in Authorization header\n\n**Public Endpoints:** Welcome, Register, Login\n**Protected Endpoints:** All other endpoints require JWT token",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Welcome",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/welcome",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"welcome"
+					]
+				},
+				"description": "Welcome endpoint to verify the API is running."
+			},
+			"response": []
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"newcustomer\",\n    \"password\": \"123456\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"emailAddress\": \"john.doe@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Public endpoint for customer self-registration. Always creates a user with CUSTOMER role. All fields are required."
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.token) {",
+									"        pm.collectionVariables.set('jwtToken', response.token);",
+									"        console.log('JWT token automatically set to collection variable: jwtToken');",
+									"        console.log('Token:', response.token.substring(0, 20) + '...');",
+									"    } else {",
+									"        console.log('Warning: No token found in response');",
+									"    }",
+									"} else {",
+									"    console.log('Login failed. Status:', pm.response.code);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Authenticate user and receive JWT token. The token is automatically extracted from the response and set to the collection variable 'jwtToken' for use in authenticated requests."
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints"
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Retrieve all users from the system. Requires ADMIN role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "Retrieve a specific user by their ID. Requires ADMIN role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Retrieve the currently authenticated user's details. Available to all authenticated users (ADMIN and CUSTOMER)."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Current User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"updateduser\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"emailAddress\": \"john.doe@example.com\",\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Update the currently authenticated user's own profile. Available to all authenticated users (ADMIN and CUSTOMER). Password can't be updated. Note: userId and role fields are not included in the request."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "Delete a user by ID. Requires ADMIN role."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing users"
+		},
+		{
+			"name": "Vehicles",
+			"item": [
+				{
+					"name": "Create Vehicle",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"brand\": \"Toyota\",\n    \"model\": \"Camry\",\n    \"registrationYear\": 2022,\n    \"licensePlate\": \"ABC-123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/vehicles",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"vehicles"
+							]
+						},
+						"description": "Create a new vehicle. Requires CUSTOMER role. The owner is automatically set from the authenticated user's JWT token. License plate must be unique."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Vehicles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/vehicles?page=0&size=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"vehicles"
+							],
+							"query": [
+								{
+									"key": "brand",
+									"value": "",
+									"description": "Filter by brand (case-insensitive partial match)",
+									"disabled": true
+								},
+								{
+									"key": "model",
+									"value": "",
+									"description": "Filter by model (case-insensitive partial match)",
+									"disabled": true
+								},
+								{
+									"key": "registrationYear",
+									"value": "",
+									"description": "Filter by exact registration year",
+									"disabled": true
+								},
+								{
+									"key": "registrationYearFrom",
+									"value": "",
+									"description": "Filter by minimum registration year",
+									"disabled": true
+								},
+								{
+									"key": "registrationYearTo",
+									"value": "",
+									"description": "Filter by maximum registration year",
+									"disabled": true
+								},
+								{
+									"key": "licensePlate",
+									"value": "",
+									"description": "Filter by license plate (case-insensitive partial match)",
+									"disabled": true
+								},
+								{
+									"key": "ownerId",
+									"value": "",
+									"description": "Filter by owner ID",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number (0-indexed)"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size (number of items per page)"
+								},
+								{
+									"key": "sortBy",
+									"value": "id",
+									"description": "Field to sort by (e.g., id, brand, model, registrationYear)"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc",
+									"description": "Sort direction: asc or desc"
+								}
+							]
+						},
+						"description": "Retrieve all vehicles with pagination and filtering. Requires ADMIN role.\n\n**Filtering Parameters:**\n- `brand`: Filter by brand (case-insensitive partial match)\n- `model`: Filter by model (case-insensitive partial match)\n- `registrationYear`: Filter by exact registration year\n- `registrationYearFrom`: Filter by minimum registration year\n- `registrationYearTo`: Filter by maximum registration year\n- `licensePlate`: Filter by license plate (case-insensitive partial match)\n- `ownerId`: Filter by owner ID\n\n**Pagination Parameters:**\n- `page`: Page number (default: 0)\n- `size`: Page size (default: 10)\n- `sortBy`: Field to sort by (default: id)\n- `sortDir`: Sort direction - asc or desc (default: asc)\n\n**Response Format:**\nReturns a paginated response with:\n- `content`: Array of vehicles\n- `page`: Current page number\n- `size`: Page size\n- `totalElements`: Total number of vehicles\n- `totalPages`: Total number of pages\n\n**Example Queries:**\n- `?brand=Toyota&page=0&size=5` - Get first 5 Toyota vehicles\n- `?registrationYearFrom=2020&registrationYearTo=2023&page=0&size=20` - Get vehicles from 2020-2023\n- `?ownerId=2&model=Camry&sortBy=registrationYear&sortDir=desc` - Get Camry vehicles for owner 2, sorted by year descending"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Vehicle by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/vehicles/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"vehicles",
+								"1"
+							]
+						},
+						"description": "Retrieve a specific vehicle by its ID. Requires ADMIN or CUSTOMER role. Customers can only access their own vehicles."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Vehicles by Owner",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/vehicles/owner/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"vehicles",
+								"owner",
+								"2"
+							]
+						},
+						"description": "Retrieve all vehicles owned by a specific user (ownerId). Requires ADMIN or CUSTOMER role. Customers can only access their own vehicles (when ownerId matches their user ID)."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Vehicle",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"brand\": \"Honda\",\n    \"model\": \"Civic\",\n    \"registrationYear\": 2023,\n    \"licensePlate\": \"XYZ-789\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/vehicles/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"vehicles",
+								"1"
+							]
+						},
+						"description": "Update an existing vehicle by ID. Requires CUSTOMER role. Only the vehicle owner can update their own vehicles. License plate must be unique. The owner is automatically set from the authenticated user's JWT token."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Vehicle",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwtToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/vehicles/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"vehicles",
+								"1"
+							]
+						},
+						"description": "Delete a vehicle by ID. Requires CUSTOMER role. Only the vehicle owner can delete their own vehicles."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing vehicles"
+		},
+		{
+			"name": "Actuator",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/actuator/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						},
+						"description": "Public endpoint to check application health status. Returns basic health info without authentication, detailed health info with authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/actuator/info",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"actuator",
+								"info"
+							]
+						},
+						"description": "Public endpoint to retrieve application information."
+					},
+					"response": []
+				},
+				{
+					"name": "Metrics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/actuator/metrics",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"actuator",
+								"metrics"
+							]
+						},
+						"description": "Public endpoint to list all available metrics. Use specific metric name to get detailed metrics (e.g., /actuator/metrics/http.server.requests)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Specific Metric",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/actuator/metrics/http.server.requests",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"actuator",
+								"metrics",
+								"http.server.requests"
+							]
+						},
+						"description": "Get detailed information for a specific metric. Example: http.server.requests, jvm.memory.used, jdbc.connections.active, process.uptime"
+					},
+					"response": []
+				}
+			],
+			"description": "Spring Boot Actuator endpoints for monitoring and observability"
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwtToken",
+			"value": "",
+			"type": "string",
+			"description": "JWT token obtained from login endpoint. Copy the 'token' value from login response and paste it here."
+		}
+	]
+}

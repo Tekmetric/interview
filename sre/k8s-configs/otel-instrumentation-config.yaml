@@ -1,0 +1,13 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: auto-instrumentation
+spec:
+  exporter:
+    endpoint: http://10.104.228.55:4318 # Destination for otel data, should be the ingest endpoint of a monitoring/observability platform
+  propagators:
+    - tracecontext
+    - baggage
+  sampler:
+    type: parentbased_traceidratio
+    argument: "1"

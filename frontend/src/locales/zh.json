@@ -1,0 +1,45 @@
+{
+  "app": {
+    "title": "宝可梦图鉴",
+    "tagline": "要全部抓住它们！",
+    "search": "按名称、编号或类型搜索...",
+    "loading": "加载中...",
+    "error": {
+      "title": "API 错误",
+      "retry": "重试"
+    },
+    "footer": "© {{year}} 宝可梦图鉴。保留所有权利。",
+    "skipToContent": "跳到主要内容"
+  },
+  "table": {
+    "headers": {
+      "number": "编号",
+      "image": "图片",
+      "name": "名称",
+      "height": "身高",
+      "weight": "体重",
+      "stats": "属性"
+    },
+    "ariaLabel": "宝可梦列表 - 使用方向键、上下翻页键、首页/末页键滚动"
+  },
+  "language": {
+    "select": "语言",
+    "label": "语言",
+    "en": "English",
+    "es": "Español",
+    "ja": "日本語",
+    "fr": "Français",
+    "de": "Deutsch",
+    "zh": "简体中文"
+  },
+  "theme": {
+    "light": "浅色",
+    "dark": "深色",
+    "mode": "主题",
+    "switchToLight": "切换到浅色模式",
+    "switchToDark": "切换到深色模式"
+  },
+  "settings": {
+    "menu": "设置"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "app": {
+    "title": "Pokédex",
+    "tagline": "Schnapp sie dir alle!",
+    "search": "Suche nach Name, Nummer oder Typ...",
+    "loading": "Laden...",
+    "error": {
+      "title": "API-Fehler",
+      "retry": "Wiederholen"
+    },
+    "footer": "© {{year}} Pokédex. Alle Rechte vorbehalten.",
+    "skipToContent": "Zum Hauptinhalt springen"
+  },
+  "table": {
+    "headers": {
+      "number": "Nr.",
+      "image": "Bild",
+      "name": "Name",
+      "height": "Größe",
+      "weight": "Gewicht",
+      "stats": "Statistiken"
+    },
+    "ariaLabel": "Pokémon-Liste - Pfeiltasten, Bild auf/ab, Pos1/Ende zum Scrollen verwenden"
+  },
+  "language": {
+    "select": "Sprache",
+    "label": "Sprache",
+    "en": "English",
+    "es": "Español",
+    "ja": "日本語",
+    "fr": "Français",
+    "de": "Deutsch",
+    "zh": "简体中文"
+  },
+  "theme": {
+    "light": "Hell",
+    "dark": "Dunkel",
+    "mode": "Design",
+    "switchToLight": "Zum hellen Modus wechseln",
+    "switchToDark": "Zum dunklen Modus wechseln"
+  },
+  "settings": {
+    "menu": "Einstellungen"
+  }
+}

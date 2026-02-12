@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  flyway:
+    enabled: true
+    locations: classpath:database/migration
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      org:
+        hibernate:
+          envers:
+            audit_table_suffix: _AUD
+            audit_table_prefix:
+            revision_field_name: REV_ID
+            revision_type_field_name: REV_TYPE
+            store_data_at_delete: true
+  h2:
+    console:
+      enabled: true
+  threads:
+    virtual:
+      enabled: true
+server:
+  port: 8080
+management:
+  security:
+    enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"

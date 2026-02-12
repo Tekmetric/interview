@@ -1,0 +1,69 @@
+package com.interview.feature.project;
+
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public class ProjectService {
+
+    private final ProjectRepository projectRepository;
+
+    public ProjectService(final ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
+    }
+
+    public ProjectDTO create(final ProjectDTO projectDTO) {
+        final var project = new Project();
+        project.setName(projectDTO.name());
+        project.setDescription(projectDTO.description());
+        project.setStatus(ProjectStatus.PLANNED);
+        return ProjectDTO.toDTO(projectRepository.save(project));
+    }
+
+    public ProjectDTO update(String projectUid, final ProjectDTO projectDTO) {
+        final var project = doFindByUid(projectUid);
+        project.setName(projectDTO.name());
+        project.setDescription(projectDTO.description());
+        project.setStatus(projectDTO.status());
+        return ProjectDTO.toDTO(projectRepository.save(project));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProjectDTO> findAll(final Pageable page) {
+        return this.projectRepository.findAll(page).map(ProjectDTO::toDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public ProjectDTO findByUid(final String projectUid) {
+        return ProjectDTO.toDTO(doFindByUid(projectUid));
+    }
+
+    public ProjectDTO start(final String projectUid) {
+        final var project = doFindByUid(projectUid);
+        project.setStatus(ProjectStatus.ACTIVE);
+        return ProjectDTO.toDTO(project);
+    }
+
+    public ProjectDTO complete(final String projectUid) {
+        final var project = doFindByUid(projectUid);
+        project.setStatus(ProjectStatus.COMPLETED);
+        return ProjectDTO.toDTO(project);
+    }
+
+    public void deleteByUid(final String projectUid) {
+        if (!projectRepository.existsByUid(projectUid)) {
+            throw new EntityNotFoundException("Project with uid: %s not found".formatted(projectUid));
+        }
+        this.projectRepository.deleteByUid(projectUid);
+    }
+
+    private Project doFindByUid(String projectUid) {
+        return this.projectRepository
+            .findByUid(projectUid)
+            .orElseThrow(() -> new EntityNotFoundException("Project with uid: %s not found".formatted(projectUid)));
+    }
+}

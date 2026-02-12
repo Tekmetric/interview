@@ -1,0 +1,319 @@
+openapi: 3.0.1
+info:
+  title: Interview Project API
+  version: 1.0.0
+  description: |
+    Tekmetric Spring Boot project.
+servers:
+  - url: http://localhost:8080
+    description: Local server
+paths:
+  '/api/welcome':
+    get:
+      tags:
+        - Welcome
+      summary: Provides welcome message to verify service is running
+      operationId: index
+      responses:
+        '200':
+          description: A successful welcome response
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                message:
+                  value: Welcome to the interview project!
+  '/api/parts':
+    get:
+      tags:
+        - AutoPartsService
+      summary: Retrieve a list of auto parts. Query parameter can be used to fetch a single part
+      operationId: retrieveAutoParts
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+          description: The unique id of the single part to be retrieved.
+      responses:
+        '200':
+          description: A successful retrieval response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoPartResponse'
+              examples:
+                singlePart:
+                  $ref: '#/components/examples/AutoPartSingleExample'
+                multipleParts:
+                  $ref: '#/components/examples/AutoPartListExample'
+        '404':
+          description: Auto part(s) not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                404ErrorMessage:
+                  $ref: '#/components/examples/404ErrorMessage'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                500ErrorMessage:
+                  $ref: '#/components/examples/500ErrorMessage'
+    post:
+      tags:
+        - AutoPartsService
+      summary: Create a new auto part object
+      operationId: createAutoPart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutoPart'
+      responses:
+        '201':
+          description: A successful creation response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoPartResponse'
+              examples:
+                singlePart:
+                  $ref: '#/components/examples/AutoPartSingleExample'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                400ErrorMessage:
+                  $ref: '#/components/examples/400ErrorMessage'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                500ErrorMessage:
+                  $ref: '#/components/examples/500ErrorMessage'
+  '/api/parts/{id}':
+    delete:
+      tags:
+        - AutoPartsService
+      summary: Delete a single auto part by id
+      operationId: deleteAutoPart
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: The unique id of the auto part to be deleted
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A successful delete response
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                message:
+                  value: "Part with ID '9771d750-a78b-459f-bd82-7283a3fa246b' has been deleted successfully"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                400ErrorMessage:
+                  $ref: '#/components/examples/400ErrorMessage'
+        '404':
+          description: Auto part(s) not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                404ErrorMessage:
+                  $ref: '#/components/examples/404ErrorMessage'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                500ErrorMessage:
+                  $ref: '#/components/examples/500ErrorMessage'
+    put:
+      tags:
+        - AutoPartsService
+      summary: Update an auto part object
+      operationId: updateAutoPart
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: The unique id of the auto part to be updated
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutoPart'
+      responses:
+        '200':
+          description: A successful update response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoPartResponse'
+              examples:
+                singlePart:
+                  $ref: '#/components/examples/AutoPartSingleExample'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                400ErrorMessage:
+                  $ref: '#/components/examples/400ErrorMessage'
+        '404':
+          description: Auto part not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                404ErrorMessage:
+                  $ref: '#/components/examples/404ErrorMessage'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+              examples:
+                500ErrorMessage:
+                  $ref: '#/components/examples/500ErrorMessage'
+components:
+  schemas:
+    AutoPart:
+      type: object
+      required:
+        - name
+        - quantity
+        - manufacturer
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: 9771d750-a78b-459f-bd82-7283a3fa246b
+        name:
+          type: string
+          pattern: '^[a-zA-Z0-9 ]*[a-zA-Z0-9][a-zA-Z0-9 ]*$'
+          example: Water Pump
+        description:
+          type: string
+          example: Perpetually leaking water pump for a 2010 Audi A4
+        manufacturer:
+          type: string
+          example: Audi
+        quantity:
+          type: integer
+          format: int32
+          minimum: 0
+          example: 6
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2025-10-23T12:00:00Z"
+        lastModifiedDate:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2025-10-23T12:00:00Z"
+    AutoPartList:
+      type: array
+      items:
+        $ref: '#/components/schemas/AutoPart'
+    AutoPartResponse:
+      oneOf:
+        - $ref: '#/components/schemas/AutoPart'
+        - $ref: '#/components/schemas/AutoPartList'
+    ErrorMessage:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-10-23T12:00:00Z"
+        status:
+          type: integer
+          format: int32
+          example: 404
+        message:
+          type: string
+          example: "Auto part not found"
+  examples:
+    AutoPartSingleExample:
+      summary: Example of a single AutoPart response
+      value:
+        id: 9771d750-a78b-459f-bd82-7283a3fa246b
+        name: Water Pump
+        description: Perpetually leaking water pump for a 2010 Audi A4
+        manufacturer: Audi
+        quantity: 6
+        createdDate: "2025-10-23T12:00:00Z"
+        lastModifiedDate: "2025-10-23T12:00:00Z"
+    AutoPartListExample:
+      summary: Example of a single AutoPart response
+      value:
+        - id: 9771d750-a78b-459f-bd82-7283a3fa246b
+          name: Water Pump
+          description: Perpetually leaking water pump for a 2010 Audi A4
+          manufacturer: Audi
+          quantity: 6
+          createdDate: "2025-10-23T12:00:00Z"
+          lastModifiedDate: "2025-10-23T12:00:00Z"
+        - id: 6871d750-a42b-459f-bf82-7893a3fa246f
+          name: 295/45R21 Tires
+          description: Tires for a 2012 Mercedes-Benz GL63 AMG
+          manufacturer: Michelin
+          quantity: 4
+          createdDate: "2025-10-23T12:00:00Z"
+          lastModifiedDate: "2025-10-23T12:00:00Z"
+    500ErrorMessage:
+      summary: Example of a 500 error response
+      value:
+        timestamp: "2025-10-23T12:00:00Z"
+        status: 500
+        message: "Internal server error"
+    404ErrorMessage:
+      summary: Example of a 404 error response
+      value:
+        timestamp: "2025-10-23T12:00:00Z"
+        status: 404
+        message: "Auto part not found"
+    400ErrorMessage:
+      summary: Example of a 400 error response
+      value:
+        timestamp: "2025-10-23T12:00:00Z"
+        status: 400
+        message: "Bad request"

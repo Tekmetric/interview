@@ -12,3 +12,13 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+.env
+data/simple-solution/output/*
+data/advanced-solution/output/*
+
+.venv/
+*/__pycache__/
+**/__pycache__/
+data/tests/test_data/*
+data/tests/test_output/*
+**/output/

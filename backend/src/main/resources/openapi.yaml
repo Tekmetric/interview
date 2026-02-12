@@ -1,0 +1,510 @@
+openapi: 3.0.3
+info:
+  title: Employee Goal Tracker API
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+
+paths:
+  /employees:
+    get:
+      tags: [Employees]
+      summary: List employees with their goals (paginated)
+      operationId: listEmployees
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Paginated list of employees
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeePage'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [Employees]
+      summary: Create a new employee
+      operationId: createEmployee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeCreateRequest'
+      responses:
+        '201':
+          description: Employee created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /employees/{employeeId}:
+    get:
+      tags: [Employees]
+      summary: Get a single employee by ID
+      operationId: getEmployeeById
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Employee found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags: [Employees]
+      summary: Update an employee
+      operationId: updateEmployee
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeUpdateRequest'
+      responses:
+        '200':
+          description: Employee updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [Employees]
+      summary: Delete an employee
+      operationId: deleteEmployee
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Employee deleted
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /employees/{employeeId}/goals:
+    get:
+      tags: [Goals]
+      summary: List goals for a specific employee
+      operationId: listEmployeeGoals
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of goals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Goal'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [Goals]
+      summary: Create a goal for a specific employee
+      operationId: createEmployeeGoal
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalCreateRequest'
+      responses:
+        '201':
+          description: Goal created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /employees/{employeeId}/goals/{goalId}:
+    get:
+      tags: [Goals]
+      summary: Get a goal for an employee
+      operationId: getEmployeeGoal
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: goalId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Goal found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags: [Goals]
+      summary: Update a goal for an employee
+      operationId: updateEmployeeGoal
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: goalId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalUpdateRequest'
+      responses:
+        '200':
+          description: Goal updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [Goals]
+      summary: Delete a goal for an employee
+      operationId: deleteEmployeeGoal
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: goalId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Goal deleted
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Employee:
+      type: object
+      required:
+        - id
+        - name
+        - role
+        - goals
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        role:
+          $ref: '#/components/schemas/EmployeeRole'
+        goals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Goal'
+        department:
+          type: string
+          maxLength: 100
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    EmployeeCreateRequest:
+      type: object
+      required:
+        - name
+        - role
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        role:
+          $ref: '#/components/schemas/EmployeeRole'
+        department:
+          type: string
+          maxLength: 100
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+
+    EmployeeUpdateRequest:
+      type: object
+      required:
+        - name
+        - role
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        role:
+          $ref: '#/components/schemas/EmployeeRole'
+        department:
+          type: string
+          maxLength: 100
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+
+    EmployeeRole:
+      type: string
+      enum:
+        - ENGINEER
+        - MANAGER
+        - HR
+        - PRODUCT
+        - OTHER
+
+    Goal:
+      type: object
+      required:
+        - id
+        - name
+        - status
+        - dueDate
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          minLength: 1
+          maxLength: 256
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+        status:
+          $ref: '#/components/schemas/GoalStatus'
+        dueDate:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    GoalCreateRequest:
+      type: object
+      required:
+        - name
+        - dueDate
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 256
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+        status:
+          $ref: '#/components/schemas/GoalStatus'
+        dueDate:
+          type: string
+          format: date-time
+
+    GoalUpdateRequest:
+      type: object
+      required:
+        - name
+        - status
+        - dueDate
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 256
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+        status:
+          $ref: '#/components/schemas/GoalStatus'
+        dueDate:
+          type: string
+          format: date-time
+
+    GoalStatus:
+      type: string
+      enum:
+        - NOT_STARTED
+        - IN_PROGRESS
+        - COMPLETED
+        - BLOCKED
+
+    EmployeePage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Employee'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        first:
+          type: boolean
+        last:
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+
+    ValidationError:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+        rejectedValue:
+          nullable: true
+
+  responses:
+    BadRequestError:
+      description: Input validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

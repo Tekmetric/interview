@@ -1,0 +1,1 @@
+INSERT INTO USERS (email, name, surname, version) VALUES ('bsmith@email.com', 'Bob', 'Smith', 0)

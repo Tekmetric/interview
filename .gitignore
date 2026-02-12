@@ -12,3 +12,7 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+
+# build files
+build/
+frontend/server/node_modules

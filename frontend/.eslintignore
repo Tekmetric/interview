@@ -1,0 +1,6 @@
+node_modules
+build
+*.config.*s
+server
+*.setup.ts
+setupTests.ts

@@ -1,0 +1,32 @@
+@startuml
+set separator none
+title Event Management System - Containers
+
+top to bottom direction
+
+!include <C4/C4>
+!include <C4/C4_Context>
+!include <C4/C4_Container>
+
+Person(AdminUser, "Admin User", $descr="Administrator who manages events, venues, and performers", $tags="", $link="")
+Person(RegularUser, "Regular User", $descr="End user who views and searches events", $tags="", $link="")
+
+System_Boundary("EventManagementSystem_boundary", "Event Management System", $tags="") {
+  Container(EventManagementSystem.SwaggerUI, "Swagger UI", $techn="OpenAPI 3.0", $descr="Interactive API documentation and testing interface", $tags="", $link="")
+  Container(EventManagementSystem.SpringBootApplication, "Spring Boot Application", $techn="Java 21, Spring Boot 3.2.0", $descr="Provides REST API for event management with JWT authentication", $tags="", $link="")
+  Container(EventManagementSystem.H2Database, "H2 Database", $techn="H2 In-Memory Database", $descr="Stores events, venues, performers, accounts, and roles", $tags="", $link="")
+  Container(EventManagementSystem.RedisCache, "Redis Cache", $techn="Redis", $descr="Distributed cache for frequently accessed data", $tags="", $link="")
+  Container(EventManagementSystem.OpenSearch, "OpenSearch", $techn="OpenSearch 2.x", $descr="Full-text search engine for events", $tags="", $link="")
+}
+
+Rel(AdminUser, EventManagementSystem.SpringBootApplication, "Creates, updates, deletes events via", $techn="HTTPS/JSON", $tags="", $link="")
+Rel(RegularUser, EventManagementSystem.SpringBootApplication, "Views and searches events via", $techn="HTTPS/JSON", $tags="", $link="")
+Rel(AdminUser, EventManagementSystem.SwaggerUI, "Tests API endpoints via", $techn="HTTPS", $tags="", $link="")
+Rel(RegularUser, EventManagementSystem.SwaggerUI, "Explores API documentation via", $techn="HTTPS", $tags="", $link="")
+Rel(EventManagementSystem.SwaggerUI, EventManagementSystem.SpringBootApplication, "Makes API calls to", $techn="HTTPS/JSON", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication, EventManagementSystem.H2Database, "Reads from and writes to", $techn="JPA/JDBC", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication, EventManagementSystem.RedisCache, "Caches data in", $techn="Redis Protocol", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication, EventManagementSystem.OpenSearch, "Performs full-text search via", $techn="REST API", $tags="", $link="")
+
+SHOW_LEGEND(true)
+@enduml

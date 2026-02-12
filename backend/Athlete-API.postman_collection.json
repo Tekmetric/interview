@@ -1,0 +1,996 @@
+{
+	"info": {
+		"_postman_id": "athlete-crud-api-demo",
+		"name": "Athlete CRUD API Demo",
+		"description": "Complete CRUD API demonstration for Athlete management with filtering, pagination, sorting, and validation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "athlete-api-demo"
+	},
+	"item": [
+		{
+			"name": "READ Operations",
+			"item": [
+				{
+					"name": "Get All Athletes (Paginated)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has pagination data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('content');",
+									"    pm.expect(jsonData).to.have.property('totalElements');",
+									"    pm.expect(jsonData).to.have.property('totalPages');",
+									"    pm.expect(jsonData).to.have.property('size');",
+									"    pm.expect(jsonData).to.have.property('page');",
+									"});",
+									"",
+									"pm.test(\"Content is array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.content).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes?page=0&size=10&sortBy=id&direction=ASC",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Page number (0-based)"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Page size (1-100)"
+								},
+								{
+									"key": "sortBy",
+									"value": "id",
+									"description": "Sort field (id, firstName, lastName, nationality, discipline)"
+								},
+								{
+									"key": "direction",
+									"value": "ASC",
+									"description": "Sort direction (ASC, DESC)"
+								}
+							]
+						},
+						"description": "Retrieve all athletes with pagination and sorting. Default page size is 10."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Athletes by Nationality",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"All athletes have correct nationality\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    jsonData.content.forEach(function(athlete) {",
+									"        pm.expect(athlete.nationality.toLowerCase()).to.include('jamaica');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes?nationality=Jamaica&size=5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes"
+							],
+							"query": [
+								{
+									"key": "nationality",
+									"value": "Jamaica",
+									"description": "Filter by nationality (case-insensitive partial match)"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Filter athletes by nationality. Returns athletes whose nationality contains the search term (case-insensitive)."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Athletes by Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Athletes contain search term in name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var searchTerm = 'bolt';",
+									"    jsonData.content.forEach(function(athlete) {",
+									"        var fullName = (athlete.firstName + ' ' + athlete.lastName).toLowerCase();",
+									"        pm.expect(fullName).to.include(searchTerm);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes?search=Bolt&size=3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Bolt",
+									"description": "Search by first or last name (case-insensitive partial match)"
+								},
+								{
+									"key": "size",
+									"value": "3"
+								}
+							]
+						},
+						"description": "Search athletes by name (first name or last name). Returns athletes whose names contain the search term (case-insensitive)."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter by Discipline",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes?discipline=100m&size=5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes"
+							],
+							"query": [
+								{
+									"key": "discipline",
+									"value": "100m",
+									"description": "Filter by discipline (case-insensitive partial match)"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Filter athletes by discipline. Returns athletes whose discipline contains the search term (case-insensitive)."
+					},
+					"response": []
+				},
+				{
+					"name": "Multiple Filters",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"All results match filters\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    jsonData.content.forEach(function(athlete) {",
+									"        pm.expect(athlete.nationality.toLowerCase()).to.include('usa');",
+									"        pm.expect(athlete.discipline.toLowerCase()).to.include('100m');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes?nationality=USA&discipline=100m",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes"
+							],
+							"query": [
+								{
+									"key": "nationality",
+									"value": "USA"
+								},
+								{
+									"key": "discipline",
+									"value": "100m"
+								}
+							]
+						},
+						"description": "Apply multiple filters simultaneously. This example filters by both nationality and discipline."
+					},
+					"response": []
+				},
+				{
+					"name": "Advanced Sorting",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes?sortBy=lastName&direction=DESC&size=5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "lastName",
+									"description": "Sort by last name"
+								},
+								{
+									"key": "direction",
+									"value": "DESC",
+									"description": "Descending order"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Example of sorting in descending order by last name."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Athlete by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains athlete data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('firstName');",
+									"    pm.expect(jsonData).to.have.property('lastName');",
+									"    pm.expect(jsonData).to.have.property('nationality');",
+									"    pm.expect(jsonData).to.have.property('discipline');",
+									"});",
+									"",
+									"// Store the athlete ID for use in other requests",
+									"pm.test(\"Store athlete ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('athlete_id', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes/{{athlete_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes",
+								"{{athlete_id}}"
+							]
+						},
+						"description": "Get a specific athlete by their ID. Replace {{athlete_id}} with an actual ID from your database."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Athlete by ID (404 Test)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error message contains athlete not found\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.include('Athlete with ID');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes/99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes",
+								"99999"
+							]
+						},
+						"description": "Test error handling when trying to get a non-existent athlete ID."
+					},
+					"response": []
+				}
+			],
+			"description": "READ operations - retrieving athlete data with various filtering, sorting, and pagination options."
+		},
+		{
+			"name": "CREATE Operations",
+			"item": [
+				{
+					"name": "Create New Athlete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response contains created athlete data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData.firstName).to.include('Demo');",
+									"    pm.expect(jsonData.lastName).to.eql('Athlete');",
+									"    pm.expect(jsonData.nationality).to.eql('Demo Country');",
+									"    pm.expect(jsonData.discipline).to.eql('Demo Event');",
+									"});",
+									"",
+									"// Store the created athlete ID for update/delete operations",
+									"pm.test(\"Store created athlete ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('created_athlete_id', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Demo{{$timestamp}}\",\n    \"lastName\": \"Athlete\",\n    \"birthDate\": \"1995-06-15\",\n    \"nationality\": \"Demo Country\",\n    \"discipline\": \"Demo Event\",\n    \"personalBest\": \"99.99s\",\n    \"bio\": \"This is a demo athlete created via API\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes"
+							]
+						},
+						"description": "Create a new athlete with all required fields. Returns 201 Created with the athlete data including the generated ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Athlete - Validation Error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains validation errors\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"\",\n    \"lastName\": \"Invalid\",\n    \"birthDate\": \"2050-01-01\",\n    \"nationality\": \"\",\n    \"discipline\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes"
+							]
+						},
+						"description": "Test validation by sending invalid data. Should return 400 Bad Request with validation error details."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Duplicate Athlete (409 Conflict)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									"",
+									"pm.test(\"Response contains conflict message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.include('already exists');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Usain\",\n    \"lastName\": \"Bolt\",\n    \"birthDate\": \"1986-08-21\",\n    \"nationality\": \"Jamaica\",\n    \"discipline\": \"100m\",\n    \"personalBest\": \"9.58s\",\n    \"bio\": \"Olympic gold medalist and world record holder\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes"
+							]
+						},
+						"description": "Try to create an athlete that already exists. Should return 409 Conflict since Usain Bolt is in the seed data."
+					},
+					"response": []
+				}
+			],
+			"description": "CREATE operations - adding new athletes with validation and error handling."
+		},
+		{
+			"name": "UPDATE Operations",
+			"item": [
+				{
+					"name": "Update Athlete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains updated athlete data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.firstName).to.eql('Updated');",
+									"    pm.expect(jsonData.lastName).to.eql('Demo Athlete');",
+									"    pm.expect(jsonData.nationality).to.eql('Updated Country');",
+									"    pm.expect(jsonData.discipline).to.eql('Updated Event');",
+									"    pm.expect(jsonData.personalBest).to.eql('88.88s');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Updated\",\n    \"lastName\": \"Demo Athlete\",\n    \"birthDate\": \"1995-06-15\",\n    \"nationality\": \"Updated Country\",\n    \"discipline\": \"Updated Event\",\n    \"personalBest\": \"88.88s\",\n    \"bio\": \"This athlete has been updated via API\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes/{{created_athlete_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes",
+								"{{created_athlete_id}}"
+							]
+						},
+						"description": "Update an existing athlete by ID. Uses the athlete ID from the previously created athlete."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Non-existent Athlete (404)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error message contains athlete not found\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.include('Athlete with ID');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Updated\",\n    \"lastName\": \"Non-existent\",\n    \"birthDate\": \"1990-01-01\",\n    \"nationality\": \"Unknown\",\n    \"discipline\": \"Unknown\",\n    \"personalBest\": \"00.00s\",\n    \"bio\": \"This athlete does not exist\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes/99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes",
+								"99999"
+							]
+						},
+						"description": "Test updating a non-existent athlete. Should return 404 Not Found."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Athlete - Validation Error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains validation errors\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"\",\n    \"lastName\": \"\",\n    \"birthDate\": \"2050-01-01\",\n    \"nationality\": \"\",\n    \"discipline\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes/{{created_athlete_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes",
+								"{{created_athlete_id}}"
+							]
+						},
+						"description": "Test validation during update by sending invalid data. Should return 400 Bad Request."
+					},
+					"response": []
+				}
+			],
+			"description": "UPDATE operations - modifying existing athlete data with validation and error handling."
+		},
+		{
+			"name": "DELETE Operations",
+			"item": [
+				{
+					"name": "Delete Athlete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Response body is empty\", function () {",
+									"    pm.expect(pm.response.text()).to.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes/{{created_athlete_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes",
+								"{{created_athlete_id}}"
+							]
+						},
+						"description": "Delete an athlete by ID. Returns 204 No Content on successful deletion."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Non-existent Athlete (204 - Idempotent)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204 (DELETE is idempotent)\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes/99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes",
+								"99999"
+							]
+						},
+						"description": "Test deleting a non-existent athlete. Should return 404 Not Found."
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Deletion (Get Deleted Athlete)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Athlete no longer exists\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.include('Athlete with ID');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/athletes/{{created_athlete_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"athletes",
+								"{{created_athlete_id}}"
+							]
+						},
+						"description": "Verify that the athlete was successfully deleted by trying to retrieve it. Should return 404."
+					},
+					"response": []
+				}
+			],
+			"description": "DELETE operations - removing athletes with proper error handling."
+		},
+		{
+			"name": "Advanced Features",
+			"item": [
+				{
+					"name": "Pagination Examples",
+					"item": [
+						{
+							"name": "Page 1 (First 5 items)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/athletes?page=0&size=5",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"athletes"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "size",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Page 2 (Next 5 items)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/athletes?page=1&size=5",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"athletes"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "size",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Large Page Size",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/athletes?page=0&size=20",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"athletes"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "size",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Examples of different pagination scenarios."
+				},
+				{
+					"name": "Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Application is healthy\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('UP');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/actuator/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						},
+						"description": "Check the health status of the application."
+					},
+					"response": []
+				}
+			],
+			"description": "Advanced API features including pagination examples, health checks, and rate limiting tests."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Set default athlete ID if not already set",
+					"if (!pm.collectionVariables.get('athlete_id')) {",
+					"    pm.collectionVariables.set('athlete_id', '1');",
+					"}",
+					"",
+					"// Set fallback for created_athlete_id if null/empty",
+					"if (!pm.collectionVariables.get('created_athlete_id')) {",
+					"    pm.collectionVariables.set('created_athlete_id', '1');",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "athlete_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "created_athlete_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

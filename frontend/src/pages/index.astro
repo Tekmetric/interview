@@ -1,0 +1,57 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import AsteroidFeed from "../components/AsteroidFeed";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import { NeoWsFeedResponseSchema } from "../schemas/nasa";
+
+// Disable prerendering to allow server-side rendering with URL params
+export const prerender = false;
+
+// Helper to format date as YYYY-MM-DD
+function formatDate(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+// Get date parameter from URL, default to today
+const today = new Date();
+const selectedDate = Astro.url.searchParams.get("date") || formatDate(today);
+
+// Fetch data server-side
+const runtime = Astro.locals.runtime as any;
+const apiKey = runtime?.env?.NASA_API_KEY;
+
+if (!apiKey) {
+  throw new Error('NASA_API_KEY not configured');
+}
+
+// Fetch from NASA NeoWs Feed API (use same date for start and end to get single day)
+const nasaUrl = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${selectedDate}&end_date=${selectedDate}&api_key=${apiKey}`;
+const response = await fetch(nasaUrl);
+
+if (!response.ok) {
+  throw new Error('Failed to fetch NeoWs Feed data from NASA');
+}
+
+const rawData = await response.json();
+
+// Parse and validate response with Zod
+const data = NeoWsFeedResponseSchema.parse(rawData);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <AsteroidFeed
+        data={data}
+        selectedDate={selectedDate}
+        client:load
+      />
+    </main>
+  </body>
+</html>

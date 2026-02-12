@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="1" author="system">
+        <createTable tableName="customer">
+            <column name="id" type="char(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="system">
+        <createTable tableName="vehicle">
+            <column name="id" type="char(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="plate_number" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="model" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_id" type="char(36)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+            baseTableName="vehicle"
+            baseColumnNames="customer_id"
+            constraintName="fk_vehicle_customer"
+            referencedTableName="customer"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="3" author="system">
+        <createTable tableName="work_order">
+            <column name="id" type="char(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="customer_id" type="char(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="vehicle_id" type="char(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)"/>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+            baseTableName="work_order"
+            baseColumnNames="customer_id"
+            constraintName="fk_work_order_customer"
+            referencedTableName="customer"
+            referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+            baseTableName="work_order"
+            baseColumnNames="vehicle_id"
+            constraintName="fk_work_order_vehicle"
+            referencedTableName="vehicle"
+            referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

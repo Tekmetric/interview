@@ -1,0 +1,5 @@
+{
+  "errors": {
+    "email": ["must be a well-formed email address"]
+  }
+}

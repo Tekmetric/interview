@@ -1,0 +1,4 @@
+# Main Application Configuration
+spring:
+  profiles:
+    active: dev

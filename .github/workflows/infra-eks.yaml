@@ -1,0 +1,261 @@
+# =============================================================================
+# Infrastructure EKS: VPC + EKS cluster + node group
+# =============================================================================
+# This workflow manages EKS cluster infrastructure.
+# Create before demo, destroy after to save costs.
+#
+# Triggers:
+#   - Manual trigger only (workflow_dispatch)
+#
+# Actions:
+#   - plan: Preview changes
+#   - apply: Create/update EKS cluster (~15-20 min)
+#   - destroy: Remove EKS cluster and VPC
+#
+# Jobs:
+#   - terraform: Manages AWS infrastructure
+#   - cluster-setup: Installs Helm charts after apply (depends on terraform)
+# =============================================================================
+
+name: Infra - EKS
+run-name: "Infra - EKS: ${{ github.event.inputs.action }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Terraform action to perform'
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+      auto_approve:
+        description: 'Auto-approve apply/destroy (skip confirmation)'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
+  TF_VERSION: '1.7.0'
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: infra
+  cancel-in-progress: false  # Never cancel infra workflows
+
+jobs:
+  # ===========================================================================
+  # Job 1: Terraform - Manage AWS Infrastructure
+  # ===========================================================================
+  terraform:
+    name: Terraform ${{ github.event.inputs.action }}
+    runs-on: ubuntu-latest
+    outputs:
+      apply_success: ${{ steps.apply-status.outputs.success }}
+    defaults:
+      run:
+        working-directory: sre/terraform/environments/dev/eks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform format check
+        run: terraform fmt -check -recursive
+        continue-on-error: true
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        if: github.event.inputs.action == 'plan' || github.event.inputs.action == 'apply'
+        run: terraform plan -out=tfplan
+
+      - name: Terraform apply
+        if: github.event.inputs.action == 'apply'
+        run: |
+          if [ "${{ github.event.inputs.auto_approve }}" == "true" ]; then
+            terraform apply -auto-approve tfplan
+          else
+            terraform apply tfplan
+          fi
+
+      - name: Set apply success output
+        if: github.event.inputs.action == 'apply'
+        id: apply-status
+        run: echo "success=true" >> $GITHUB_OUTPUT
+
+      # =========================================================================
+      # Destroy: Cleanup Kubernetes resources before Terraform destroy
+      # =========================================================================
+      - name: Install Helm (for destroy)
+        if: github.event.inputs.action == 'destroy'
+        uses: azure/setup-helm@v3
+        with:
+          version: '3.13.0'
+
+      - name: Cleanup before destroy
+        if: github.event.inputs.action == 'destroy'
+        continue-on-error: true
+        run: |
+          aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }} || true
+
+          # 1. Uninstall app and any test deployments
+          helm uninstall backend || true
+          kubectl delete deployment stress-test --ignore-not-found || true
+
+          # 2. Delete custom resources BEFORE uninstalling operators
+          #    (operators need to be running to handle finalizers)
+          kubectl delete externalsecret --all -A --force --grace-period=0 || true
+          kubectl delete clustersecretstore --all --force --grace-period=0 || true
+
+          # 3. Now uninstall operators (safe - no orphaned resources)
+          helm uninstall cluster-autoscaler -n kube-system || true
+          helm uninstall external-dns -n external-dns || true
+          helm uninstall external-secrets -n external-secrets || true
+
+          # 4. Delete stale APIService that can block namespace deletion
+          kubectl delete apiservice v1beta1.metrics.k8s.io --ignore-not-found || true
+
+          # 5. Delete namespaces (should be clean now)
+          kubectl delete namespace external-dns --ignore-not-found || true
+          kubectl delete namespace external-secrets --ignore-not-found || true
+
+          # 6. Wait for LoadBalancers to be deleted
+          sleep 60
+
+      - name: Terraform plan destroy
+        if: github.event.inputs.action == 'destroy'
+        run: terraform plan -destroy -out=tfplan-destroy
+
+      - name: Terraform destroy
+        if: github.event.inputs.action == 'destroy'
+        run: |
+          if [ "${{ github.event.inputs.auto_approve }}" == "true" ]; then
+            terraform apply -auto-approve tfplan-destroy
+          else
+            echo "::warning::Destroy requires manual approval. Run with auto_approve=true to proceed."
+            echo "Review the plan above and re-run with auto_approve if you want to destroy."
+            exit 1
+          fi
+
+  # ===========================================================================
+  # Job 2: Cluster Setup - Install Helm Charts & Operators
+  # ===========================================================================
+  cluster-setup:
+    name: Cluster setup
+    runs-on: ubuntu-latest
+    needs: terraform
+    if: github.event.inputs.action == 'apply' && needs.terraform.outputs.apply_success == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get AWS account ID
+        id: aws-account
+        run: echo "id=$(aws sts get-caller-identity --query Account --output text)" >> $GITHUB_OUTPUT
+
+      - name: Configure kubectl
+        run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: '3.13.0'
+
+      - name: Wait for nodes to be ready
+        run: |
+          echo "Waiting for nodes to be ready..."
+          kubectl wait --for=condition=ready nodes --all --timeout=300s
+
+      - name: Install metrics-server
+        run: |
+          kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+          kubectl wait --for=condition=ready pod -l k8s-app=metrics-server -n kube-system --timeout=120s || true
+
+      - name: Install ESO (External Secrets Operator)
+        run: |
+          ESO_ROLE_ARN="arn:aws:iam::${{ steps.aws-account.outputs.id }}:role/${{ env.CLUSTER_NAME }}-external-secrets"
+          helm repo add external-secrets https://charts.external-secrets.io
+          helm repo update
+          helm upgrade --install external-secrets external-secrets/external-secrets \
+            --namespace external-secrets \
+            --create-namespace \
+            --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"="${ESO_ROLE_ARN}" \
+            --wait
+
+      - name: Apply SecretStore and ExternalSecret
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+        run: |
+          envsubst < sre/k8s/external-dns/cluster-secret-store.yaml | kubectl apply -f -
+          kubectl create namespace external-dns --dry-run=client -o yaml | kubectl apply -f -
+          kubectl apply -f sre/k8s/external-dns/external-secret.yaml
+          kubectl wait --for=condition=Ready externalsecret/cloudflare-api-token -n external-dns --timeout=60s || true
+
+      - name: Install ExternalDNS
+        env:
+          CLUSTER_NAME: ${{ env.CLUSTER_NAME }}
+        run: |
+          helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/
+          envsubst < sre/k8s/external-dns/values.yaml > /tmp/external-dns-values.yaml
+          helm upgrade --install external-dns external-dns/external-dns \
+            --namespace external-dns \
+            -f /tmp/external-dns-values.yaml \
+            --wait
+
+      - name: Install cluster autoscaler
+        run: |
+          CA_ROLE_ARN="arn:aws:iam::${{ steps.aws-account.outputs.id }}:role/${{ env.CLUSTER_NAME }}-cluster-autoscaler"
+          helm repo add autoscaler https://kubernetes.github.io/autoscaler
+          helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler \
+            --namespace kube-system \
+            --set autoDiscovery.clusterName=${{ env.CLUSTER_NAME }} \
+            --set awsRegion=${{ env.AWS_REGION }} \
+            --set rbac.serviceAccount.annotations."eks\.amazonaws\.com/role-arn"="${CA_ROLE_ARN}" \
+            --set rbac.serviceAccount.name=cluster-autoscaler \
+            --set extraArgs.scale-down-unneeded-time=3m \
+            --wait
+
+      - name: Verify cluster setup
+        run: |
+          echo "=== Cluster Components ==="
+          echo ""
+          echo "Nodes:"
+          kubectl get nodes
+          echo ""
+          echo "Helm releases:"
+          helm list -A
+          echo ""
+          echo "External Secrets:"
+          kubectl get externalsecret -A
+          echo ""
+          echo "Cluster setup complete!"

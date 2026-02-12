@@ -1,0 +1,67 @@
+# =============================================================================
+# Development environment values
+# =============================================================================
+# Overrides for local development and testing.
+# Use with: helm install backend ./sre/helm/backend -f values-dev.yaml
+# =============================================================================
+
+replicaCount: 1
+
+# Use LoadBalancer for public access (creates AWS ELB)
+service:
+  type: LoadBalancer
+  port: 80
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: tekmetric.example.com
+
+image:
+  tag: "dev-latest"
+
+# Minimal resources for dev
+resources:
+  limits:
+    cpu: 500m
+    memory: 384Mi
+  requests:
+    cpu: 100m
+    memory: 200Mi  # Actual usage ~140Mi, 70% utilization gives HPA headroom
+
+# Disable HPA for dev (single replica)
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 90
+
+# Faster probe timings for dev
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 5
+
+readinessProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 5
+
+startupProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 20
+
+# Debug logging for dev
+config:
+  spring:
+    profiles:
+      active: "dev"
+  logging:
+    level:
+      root: DEBUG
+      com.interview: DEBUG
+
+# Disable pod anti-affinity for single-node dev clusters
+affinity: {}
+
+# Enable network policy for security
+networkPolicy:
+  enabled: true
+  denyEgress: false  # Allow outbound (needed for external APIs)

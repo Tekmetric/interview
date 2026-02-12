@@ -12,3 +12,25 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+**/.terraform/
+
+# Terraform state (contains sensitive info)
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+
+# Secrets and credentials
+.env
+.env.*
+*.pem
+*.key
+
+# Local demo scripts (not committed)
+sre/scripts/

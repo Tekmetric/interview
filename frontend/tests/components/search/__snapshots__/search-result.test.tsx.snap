@@ -1,0 +1,83 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SearchResult Component > should render large/default size correctly 1`] = `
+<div>
+  <a
+    class=""
+    data-discover="true"
+    href="/forecast/12345"
+  >
+    <div
+      class="relative p-4 pl-12 bg-white hover:bg-blue-100 cursor-pointer"
+    >
+      <span
+        class="material-icons-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+      >
+        location_on
+      </span>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div>
+          <h2
+            class="text-lg font-semibold"
+          >
+            Test City
+          </h2>
+          <p
+            class="text-sm text-gray-600"
+          >
+            Test State
+          </p>
+        </div>
+        <p
+          class="text-sm text-gray-600"
+        >
+          Test Country
+        </p>
+      </div>
+    </div>
+  </a>
+</div>
+`;
+
+exports[`SearchResult Component > should render small size correctly 1`] = `
+<div>
+  <a
+    class=""
+    data-discover="true"
+    href="/forecast/12345"
+  >
+    <div
+      class="relative p-2 pl-8 bg-white hover:bg-blue-100 cursor-pointer"
+    >
+      <span
+        class="material-icons-outlined absolute left-1 top-1/2 transform -translate-y-1/2 text-gray-500"
+      >
+        location_on
+      </span>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div>
+          <h2
+            class="text-md font-semibold"
+          >
+            Test City
+          </h2>
+          <p
+            class="text-xs text-gray-600"
+          >
+            Test State
+          </p>
+        </div>
+        <p
+          class="text-xs text-gray-600"
+        >
+          Test Country
+        </p>
+      </div>
+    </div>
+  </a>
+</div>
+`;

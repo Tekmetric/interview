@@ -61,8 +61,8 @@ kubectl -n monitoring port-forward svc/kube-prometheus-grafana 3000:80
 # Open browser:
 # http://localhost:3000
 
+```
 
----
 
 ## Notes & Design
 

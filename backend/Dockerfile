@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 FROM eclipse-temurin:8-jre-jammy
 
 RUN groupadd --system --gid 10001 app \
- && useradd --system --uid 10001 --gid 10001 --no-create-home --shell /usr/sbin/nologin app
+  && useradd --system --uid 10001 --gid 10001 --no-create-home --shell /usr/sbin/nologin app
 
 WORKDIR /app
 

@@ -1,0 +1,7 @@
+Ingress:
+  http://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
+
+Endpoints:
+  Health:  GET {{ .Values.probes.path }}
+  Welcome: GET /api/welcome
+  Metrics: GET {{ .Values.metrics.path }}

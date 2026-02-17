@@ -60,7 +60,9 @@ kubectl -n monitoring port-forward svc/kube-prometheus-grafana 3000:80
 
 # Open browser:
 # http://localhost:3000
-
+# Default credentials: admin / admin
+# Dashboard location:
+# Home → Dashboards → Home assignment - Spring Boot Backend
 ```
 
 

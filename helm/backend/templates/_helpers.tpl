@@ -1,12 +1,13 @@
 {{- define "backend.name" -}}
-{{- default .Chart.name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- $name | toString | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "backend.fullname" -}}
 {{- if .Values.fullnameOverride -}}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- .Values.fullnameOverride | toString | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- printf "%s-%s" .Release.Name (include "backend.name" .) | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name (include "backend.name" .) | toString | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 
@@ -15,7 +16,7 @@ app.kubernetes.io/name: {{ include "backend.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: Helm
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-helm.sh/chart: {{ printf "%s-%s" .Chart.name .Chart.version | quote }}
+helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
 {{- end -}}
 
 {{- define "backend.selectorLabels" -}}

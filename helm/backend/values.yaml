@@ -60,12 +60,12 @@ env:
 probes:
   liveness:
     enabled: true
-    path: /actuator/health/liveness
-    initialDelaySeconds: 20
+    path: /actuator/health
+    initialDelaySeconds: 30
     periodSeconds: 10
   readiness:
     enabled: true
-    path: /actuator/health/readiness
+    path: /actuator/health
     initialDelaySeconds: 10
     periodSeconds: 5
 

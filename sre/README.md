@@ -1,6 +1,6 @@
 ---
 # Backend Service – Kubernetes Productionization Demo
-This project shows how the Backend Service can be built, containerized, and deployed to Kubernetes using Docker and Helm.
+This project shows how Java Spring Backend Service can be built, containerized, and deployed to Kubernetes using Docker and Helm.
 
 The focus is on creating a setup that is easy to run while reflecting common production considerations such as health checks, resource management, scaling, and observability.
 
@@ -70,6 +70,10 @@ kubectl -n monitoring port-forward svc/kube-prometheus-grafana 3000:80
 
 ### Observability
 
+Spring Boot Actuator is enabled to expose metrics required by Prometheus.
+
+The necessary Actuator and Micrometer dependencies are included, and the application is configured to expose the relevant endpoints via `application.properties`.
+
 Monitoring is included directly in the deployment.
 
 Prometheus discovers application metrics using a ServiceMonitor, and Grafana dashboards are provided via ConfigMaps.  
@@ -87,7 +91,7 @@ This keeps the runtime container lightweight.
 Dependencies are resolved separately for faster rebuilds.
 The container runs as a non-root user.
 
-Basic JVM flags are included to ensure stable behavior inside Kubernetes.
+Basic JVM flags are included to ensure stable behavior inside k8s.
 
 ---
 
@@ -95,8 +99,8 @@ Basic JVM flags are included to ensure stable behavior inside Kubernetes.
 
 A minimal GitHub Actions workflow is included.
 
-The pipeline runs on pushes and pull requests and builds the Docker image using the same Dockerfile.  
-This keeps builds consistent between local and CI environments.
+The pipeline runs manually as well as on push/pull requests and builds the Docker image using the same Dockerfile.  
+Builds are consistent between local and CI environments.
 
 ---
 
@@ -105,9 +109,9 @@ This keeps builds consistent between local and CI environments.
 The Helm chart includes basic production considerations:
 
 - Resource requests and limits
-- Health probes
+- Readiness/liveliness probes
 - Horizontal Pod Autoscaler (HPA)
-- Pod Disruption Budget (PDB)
+- Pod Disruption Budget (PDB) -  not enabled by default
 - ServiceMonitor integration
 
-The goal is a stable and predictable deployment while keeping the setup simple.
+The goal is a stable deployment while keeping the setup simple.

@@ -1,0 +1,52 @@
+# values.yaml
+prometheus-node-exporter:
+  enabled: false
+
+nodeExporter:
+  enabled: false
+
+prometheusOperator:
+  admissionWebhooks:
+    enabled: true
+
+grafana:
+  adminUser: admin
+  adminPassword: admin
+
+  env:
+    GF_SECURITY_DISABLE_INITIAL_ADMIN_PASSWORD_CHANGE: true
+
+  persistence:
+    enabled: false
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.local
+
+  sidecar:
+    dashboards:
+      searchNamespace: monitoring
+      # Folder support for ConfigMap dashboards:
+      folderAnnotation: grafana_folder
+      label: grafana_dashboard
+      labelValue: "1"
+      env:
+        SKIP_TLS_VERIFY: true
+
+    datasources:
+      searchNamespace: monitoring
+      env:
+        SKIP_TLS_VERIFY: true
+
+prometheus:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - prometheus.local
+    paths:
+      - /
+    pathType: Prefix
+

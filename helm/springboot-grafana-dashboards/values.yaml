@@ -1,0 +1,13 @@
+dashboards:
+  enabled: true
+
+  # Must match grafana.sidecar.dashboards.searchNamespace
+  namespace: monitoring
+
+  # Must match the sidecar label selector (default in kube-prometheus-stack is grafana_dashboard=1)
+  labelKey: grafana_dashboard
+  labelValue: "1"
+
+  # Folder name in Grafana UI (optional). Some sidecars support folder annotation; kube-prometheus-stack often uses providers.
+  # We'll keep it simple and not rely on folder annotations.
+

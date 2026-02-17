@@ -45,11 +45,11 @@ ingress:
 
 resources:
   requests:
-    cpu: 100m
-    memory: 512Mi
-  limits:
     cpu: 500m
     memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
 
 # Java 8 heap sizing for k8s limits (leave headroom for non-heap)
 env:
@@ -74,7 +74,7 @@ pdb:
   minAvailable: 1
 
 autoscaling:
-  enabled: false
+  enabled: true
   minReplicas: 2
   maxReplicas: 5
   targetCPUUtilizationPercentage: 70
@@ -86,4 +86,12 @@ observability:
       enabled: true
       interval: 30s
       scrapePath: /actuator/prometheus
+
+dashboards:
+  enabled: true
+  namespace: monitoring
+  labelKey: grafana_dashboard
+  labelValue: "1"
+  folder: "INTERVIEW Spring Boot Backend"
+
 

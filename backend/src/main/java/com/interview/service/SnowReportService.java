@@ -47,7 +47,7 @@ public class SnowReportService {
         log.info("Updating snow report with id: {}", id);
         SnowReport existing = snowReportRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.info("Could not find snow report to update with id: {}", id);
+                    log.warn("Could not find snow report to update with id: {}", id);
                     return new SnowReportNotFoundException(id);
                 });
         existing.setMountainName(request.getMountainName());
@@ -59,6 +59,10 @@ public class SnowReportService {
 
     public void delete(Long id) {
         log.info("Deleting snow report with id: {}", id);
+        if (!snowReportRepository.existsById(id)) {
+            log.warn("Could not find snow report to delete with id: {}", id);
+            throw new SnowReportNotFoundException(id);
+        }
         snowReportRepository.deleteById(id);
     }
 }

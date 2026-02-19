@@ -1,6 +1,7 @@
 package com.interview.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.interview.dto.SnowReportRequest;
 import com.interview.entity.SnowReport;
 import com.interview.repository.SnowReportRepository;
 import org.junit.jupiter.api.Test;
@@ -55,15 +56,15 @@ class SnowReportResourceIntegrationTest {
 
     @Test
     void createShouldReturn201() throws Exception {
-        SnowReport input = new SnowReport();
-        input.setMountainName("Breckenridge");
-        input.setRegion("Colorado");
-        input.setCountry("USA");
-        input.setCurrentSnowTotal(75);
+        SnowReportRequest request = new SnowReportRequest();
+        request.setMountainName("Breckenridge");
+        request.setRegion("Colorado");
+        request.setCountry("USA");
+        request.setCurrentSnowTotal(75);
 
         mockMvc.perform(post("/api/snow-reports")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(input)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.mountainName").value("Breckenridge"))
@@ -71,44 +72,49 @@ class SnowReportResourceIntegrationTest {
     }
 
     @Test
+    void createWithNoRegionShouldReturn201() throws Exception {
+        SnowReportRequest request = new SnowReportRequest();
+        request.setMountainName("Matterhorn");
+        request.setCountry("Switzerland");
+        request.setCurrentSnowTotal(120);
+
+        mockMvc.perform(post("/api/snow-reports")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.mountainName").value("Matterhorn"))
+                .andExpect(jsonPath("$.region").doesNotExist());
+    }
+
+    @Test
     void updateShouldReturn200() throws Exception {
         SnowReport existing = snowReportRepository.findAll().get(0);
-        existing.setCurrentSnowTotal(999);
+
+        SnowReportRequest request = new SnowReportRequest();
+        request.setMountainName(existing.getMountainName());
+        request.setRegion(existing.getRegion());
+        request.setCountry(existing.getCountry());
+        request.setCurrentSnowTotal(999);
 
         mockMvc.perform(put("/api/snow-reports/" + existing.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(existing)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.currentSnowTotal").value(999));
     }
 
     @Test
     void updateShouldReturn404WhenNotFound() throws Exception {
-        SnowReport input = new SnowReport();
-        input.setMountainName("Ghost Mountain");
-        input.setCountry("USA");
-        input.setCurrentSnowTotal(0);
+        SnowReportRequest request = new SnowReportRequest();
+        request.setMountainName("Ghost Mountain");
+        request.setCountry("USA");
+        request.setCurrentSnowTotal(0);
 
         mockMvc.perform(put("/api/snow-reports/9999")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(input)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void createWithNoRegionShouldReturn201() throws Exception {
-        SnowReport input = new SnowReport();
-        input.setMountainName("Matterhorn");
-        input.setCountry("Switzerland");
-        input.setCurrentSnowTotal(120);
-
-        mockMvc.perform(post("/api/snow-reports")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.mountainName").value("Matterhorn"))
-                .andExpect(jsonPath("$.region").doesNotExist());
     }
 
     @Test

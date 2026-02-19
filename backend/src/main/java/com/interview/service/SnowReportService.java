@@ -1,5 +1,6 @@
 package com.interview.service;
 
+import com.interview.dto.SnowReportRequest;
 import com.interview.entity.SnowReport;
 import com.interview.exception.SnowReportNotFoundException;
 import com.interview.repository.SnowReportRepository;
@@ -32,22 +33,27 @@ public class SnowReportService {
         return snowReportRepository.findById(id);
     }
 
-    public SnowReport save(SnowReport snowReport) {
-        log.info("Saving new snow report for mountain: {}", snowReport.getMountainName());
+    public SnowReport save(SnowReportRequest request) {
+        log.info("Saving new snow report for mountain: {}", request.getMountainName());
+        SnowReport snowReport = new SnowReport();
+        snowReport.setMountainName(request.getMountainName());
+        snowReport.setRegion(request.getRegion());
+        snowReport.setCountry(request.getCountry());
+        snowReport.setCurrentSnowTotal(request.getCurrentSnowTotal());
         return snowReportRepository.save(snowReport);
     }
 
-    public SnowReport update(Long id, SnowReport updated) {
+    public SnowReport update(Long id, SnowReportRequest request) {
         log.info("Updating snow report with id: {}", id);
         SnowReport existing = snowReportRepository.findById(id)
                 .orElseThrow(() -> {
                     log.info("Could not find snow report to update with id: {}", id);
                     return new SnowReportNotFoundException(id);
                 });
-        existing.setMountainName(updated.getMountainName());
-        existing.setRegion(updated.getRegion()); // Region can be null!
-        existing.setCountry(updated.getCountry());
-        existing.setCurrentSnowTotal(updated.getCurrentSnowTotal());
+        existing.setMountainName(request.getMountainName());
+        existing.setRegion(request.getRegion());
+        existing.setCountry(request.getCountry());
+        existing.setCurrentSnowTotal(request.getCurrentSnowTotal());
         return snowReportRepository.save(existing);
     }
 

@@ -1,5 +1,6 @@
 package com.interview.resource;
 
+import com.interview.dto.SnowReportRequest;
 import com.interview.entity.SnowReport;
 import com.interview.exception.SnowReportNotFoundException;
 import com.interview.service.SnowReportService;
@@ -31,13 +32,13 @@ public class SnowReportResource {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public SnowReport create(@RequestBody SnowReport snowReport) {
-        return snowReportService.save(snowReport);
+    public SnowReport create(@RequestBody SnowReportRequest request) {
+        return snowReportService.save(request);
     }
 
     @PutMapping("/{id}")
-    public SnowReport update(@PathVariable Long id, @RequestBody SnowReport snowReport) {
-        return snowReportService.update(id, snowReport);
+    public SnowReport update(@PathVariable Long id, @RequestBody SnowReportRequest request) {
+        return snowReportService.update(id, request);
     }
 
     @DeleteMapping("/{id}")

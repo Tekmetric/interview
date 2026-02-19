@@ -38,9 +38,12 @@ public class SnowReportService {
     }
 
     public SnowReport update(Long id, SnowReport updated) {
-        SnowReport existing = snowReportRepository.findById(id)
-                .orElseThrow(() -> new SnowReportNotFoundException(id));
         log.info("Updating snow report with id: {}", id);
+        SnowReport existing = snowReportRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.info("Could not find snow report to update with id: {}", id);
+                    return new SnowReportNotFoundException(id);
+                });
         existing.setMountainName(updated.getMountainName());
         existing.setRegion(updated.getRegion()); // Region can be null!
         existing.setCountry(updated.getCountry());

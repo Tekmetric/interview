@@ -1,14 +1,40 @@
 {
-  "name": "qa",
+  "name": "restful-booker",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "private": true,
+  "scripts": {
+    "start": "cross-env SEED=true node ./bin/www",
+    "test": "playwright test",
+    "test:ui": "playwright test tests/ui",
+    "test:api": "playwright test tests/api",
+    "test:admin": "playwright test tests/admin",
+    "test:legacy": "mocha -R spec tests/spec.js",
+    "test:headed": "playwright test --headed",
+    "test:debug": "PWDEBUG=1 playwright test",
+    "report": "playwright show-report",
+    "build_docs": "apidoc -i ./routes/ -o public/apidoc/"
+  },
+  "dependencies": {
+    "body-parser": "2.2.0",
+    "cookie-parser": "1.4.7",
+    "cross-env": "7.0.3",
+    "date-and-time": "3.6.0",
+    "debug": "4.4.1",
+    "express": "5.1.0",
+    "express-xml-bodyparser": "0.3.0",
+    "form-urlencoded": "6.1.5",
+    "js2xmlparser": "5.0.0",
+    "morgan": "1.10.0",
+    "nedb": "1.8.0",
+    "pug": "3.0.3",
+    "uuid": "11.1.0",
+    "validate.js": "0.13.1",
+    "xml2js": "0.6.2"
+  },
   "devDependencies": {
-    "@playwright/test": "^1.49.1",
-    "@types/node": "^22.10.7"
+    "@playwright/test": "1.54.2",
+    "chai": "5.2.0",
+    "mocha": "11.6.0",
+    "supertest": "7.1.1"
   }
 }

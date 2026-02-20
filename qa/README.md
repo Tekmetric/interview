@@ -27,30 +27,30 @@ https://restful-booker.herokuapp.com/apidoc/index.html
 
 ## High-Level Architecture
 
+```
 qa/
 ├── fixtures/
-│   └── index.ts               # Playwright fixture definitions and dependency injection
+│   └── index.ts                       # Playwright fixture definitions and dependency injection
 ├── helpers/
-│   ├── api-helper.ts          # API request functions (CRUD operations)
-│   ├── auth-helper.ts         # Authentication helpers for both services
-│   ├── date-helper.ts         # Date utilities for generating future dates
-│   └── test-data.ts           # Faker-based test data generators
+│   ├── api-helper.ts                  # API request functions (CRUD operations)
+│   ├── auth-helper.ts                 # Authentication helpers for both services
+│   ├── date-helper.ts                 # Date utilities for generating future dates
+│   └── test-data.ts                   # Faker-based test data generators
 ├── page-objects/
 │   ├── components/
-│   │   └── contact-component.ts  # Contact form as a scoped component
-│   ├── home-page.ts           # Home page interactions
-│   └── reservation-page.ts    # Room reservation and calendar interactions
+│   │   └── contact-component.ts       # Contact form as a scoped component
+│   ├── home-page.ts                   # Home page interactions
+│   └── reservation-page.ts           # Room reservation and calendar interactions
 ├── tests/
 │   ├── api/
-│   │   └── booking-crud.spec.ts  # API-level booking CRUD tests
+│   │   └── booking-crud.spec.ts       # API-level booking CRUD tests
 │   └── ui/
-│       ├── admin-session.spec.ts  # Admin session reuse test
-│       ├── booking-end-to-end.spec.ts  # Full booking flow UI test
-│       └── contact-form.spec.ts   # Contact form UI tests
-├── global-setup.ts            # One-time admin authentication before test run
-├── playwright.config.ts       # Framework configuration
-└── storageState.json          # Saved admin session 
-
+│       ├── admin-session.spec.ts      # Admin session reuse test
+│       ├── booking-end-to-end.spec.ts # Full booking flow UI test
+│       └── contact-form.spec.ts       # Contact form UI tests
+├── global-setup.ts                    # One-time admin authentication before test run
+└── playwright.config.ts               # Framework configuration
+```
 
 1. Tests: this directory contains all the test scripts, separated into ui and api subdirectories for clear distinction between API level and UI level tests.
 2. Page Objects: By implementing the Page Object Model design pattern, each page of the application is represented by class with page elements and actions.

@@ -1,10 +1,26 @@
 {
   "name": "qa",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright automation framework for Restful Booker Platform",
   "main": "index.js",
-  "scripts": {},
-  "keywords": [],
+  "scripts": {
+    "test": "playwright test",
+
+  "test:dev": "ENV=dev playwright test",
+  "test:stg": "ENV=stg playwright test",
+  "test:prod": "ENV=prod playwright test",
+
+  "test:ui:dev": "ENV=dev playwright test tests/ui",
+  "test:ui:stg": "ENV=stg playwright test tests/ui",
+  "test:ui:prod": "ENV=prod playwright test tests/ui",
+
+  "test:api:dev": "ENV=dev playwright test tests/api",
+  "test:api:stg": "ENV=stg playwright test tests/api",
+  "test:api:prod": "ENV=prod playwright test tests/api",
+
+  "test:report": "playwright show-report"
+  },
+  "keywords": ["playwright", "automation", "testing", "e2e"],
   "author": "",
   "license": "ISC",
   "devDependencies": {

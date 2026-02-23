@@ -44,23 +44,38 @@ export class BookingPage {
     await this.fillGuestDetails(guest);
   }
 
-  async submitBooking(): Promise<void> {
-    const reserveBtn = this.page.getByRole('button', { name: /reserve now/i })
-      .or(this.page.locator('button').filter({ hasText: /reserve now/i }));
-    await reserveBtn.last().scrollIntoViewIfNeeded();
-    const responsePromise = this.page.waitForResponse(
-      (r) => r.url().includes('/api/booking') && r.request().method() === 'POST',
-      { timeout: 15000 }
-    ).catch(() => null);
-    await reserveBtn.last().click();
-    const response = await responsePromise;
-    if (response && response.ok()) {
-      await this.page.waitForTimeout(5000);
-    } else {
-      await this.page.waitForLoadState('networkidle');
-      await this.page.waitForTimeout(2000);
-    }
+  async submitBooking(): Promise<number> {
+  const reserveBtn = this.page
+    .getByRole('button', { name: /reserve now/i })
+    .or(this.page.locator('button').filter({ hasText: /reserve now/i }));
+
+  await reserveBtn.last().scrollIntoViewIfNeeded();
+
+  const responsePromise = this.page.waitForResponse(
+    (r) =>
+      r.url().includes('/api/booking') &&
+      r.request().method() === 'POST',
+    { timeout: 15000 }
+  );
+
+  await reserveBtn.last().click();
+
+  const response = await responsePromise;
+
+  if (!response.ok()) {
+    throw new Error(`Booking creation failed: ${response.status()}`);
   }
+
+  const responseBody = await response.json();
+
+  const bookingId = responseBody.bookingid;
+
+  if (!bookingId) {
+    throw new Error('Booking ID not found in response');
+  }
+
+  return bookingId;
+}
 
   async isFormVisible(): Promise<boolean> {
     try {

@@ -1,5 +1,7 @@
-export const BASE_URL = 'https://automationintesting.online';
-export const API_BASE_URL = 'https://restful-booker.herokuapp.com';
+import { envConfig } from '../config/env';
+
+export const BASE_URL = envConfig.baseURL;
+export const API_BASE_URL = envConfig.apiURL;
 
 export const ENDPOINTS = {
   AUTH: {

@@ -5,12 +5,20 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
-    "test:ui": "playwright test tests/ui",
-    "test:api": "playwright test tests/api",
-    "test:headed": "playwright test --headed",
-    "test:debug": "playwright test --debug",
-    "test:report": "playwright show-report",
-    "test:codegen": "playwright codegen https://automationintesting.online"
+
+  "test:dev": "ENV=dev playwright test",
+  "test:stg": "ENV=stg playwright test",
+  "test:prod": "ENV=prod playwright test",
+
+  "test:ui:dev": "ENV=dev playwright test tests/ui",
+  "test:ui:stg": "ENV=stg playwright test tests/ui",
+  "test:ui:prod": "ENV=prod playwright test tests/ui",
+
+  "test:api:dev": "ENV=dev playwright test tests/api",
+  "test:api:stg": "ENV=stg playwright test tests/api",
+  "test:api:prod": "ENV=prod playwright test tests/api",
+
+  "test:report": "playwright show-report"
   },
   "keywords": ["playwright", "automation", "testing", "e2e"],
   "author": "",

@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { envConfig, currentEnv } from './config/env';
 
 /**
  * Read environment variables from file.
@@ -25,22 +26,13 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'https://automationintesting.online',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
-    
-    /* Screenshot on failure */
-    screenshot: 'only-on-failure',
-    
-    /* Video on failure */
-    video: 'retain-on-failure',
-    
-    /* Timeout settings */
-    actionTimeout: 10000,
-    navigationTimeout: 30000,
-  },
+  baseURL: envConfig.baseURL,
+  trace: 'on-first-retry',
+  screenshot: 'only-on-failure',
+  video: 'retain-on-failure',
+  actionTimeout: 10000,
+  navigationTimeout: 30000,
+},
 
   /* Configure projects - Chrome only */
   projects: [

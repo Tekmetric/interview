@@ -2,7 +2,7 @@ namespace: tekmetric
 replicaCount: 1
 image:
   repository: ghcr.io/hoppr-gg/interview/backend
-  tag: "feature-k8s-app-mod"
+  tag: "latest"
   pullPolicy: Always
 service:
   type: ClusterIP

@@ -2,7 +2,7 @@ name: Build and Release
 
 on:
   push:
-    branches: [master, feature/**]
+    branches: [master]
   pull_request:
     branches: [master]
 
@@ -34,6 +34,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
             type=sha
             type=ref,event=branch
             type=ref,event=pr

@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 image:
   repository: ghcr.io/hoppr-gg/interview/backend
   tag: "feature-k8s-app-mod"
@@ -13,14 +13,27 @@ ingress:
   hostname: backend.hoppr.gg
 resources:
   requests:
-    cpu: 100m
+    cpu: 50m
     memory: 128Mi
   limits:
-    cpu: 500m
+    cpu: 250m
     memory: 512Mi
 healthCheck:
   path: /actuator/health
   port: 8080
+serviceAccount:
+  create: true
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPU: 80
+  targetMemory: 80
+pdb:
+  enabled: true
+  minAvailable: 1
+networkPolicy:
+  enabled: true
 env: {}
 nodeSelector: {}
 tolerations: []

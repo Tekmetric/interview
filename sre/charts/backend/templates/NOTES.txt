@@ -1,0 +1,14 @@
+The backend service has been deployed.
+
+To check the service:
+  kubectl get pods -l app.kubernetes.io/instance={{ .Release.Name }}
+
+To access locally with port forwarding:
+  kubectl port-forward svc/{{ include "backend.fullname" . }} 8080:{{ .Values.service.port }}
+  curl http://localhost:8080/api/welcome
+  curl http://localhost:8080/actuator/health
+
+To access through nginx Ingress object and service
+  (Requires host file be updated)
+  curl http://interview-backend.local/api/welcome
+  curl http://interview-backend.local/actuator/health

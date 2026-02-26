@@ -1,20 +1,16 @@
 replicaCount: 2
-
 image:
   repository: ghcr.io/hoppr-gg/interview/backend
-  tag: "latest"
+  tag: "feature-k8s-app-mod"
   pullPolicy: Always
-
 service:
   type: ClusterIP
   port: 80
   targetPort: 8080
-
 ingress:
   enabled: true
   className: cilium
   hostname: backend.hoppr.gg
-
 resources:
   requests:
     cpu: 100m
@@ -22,13 +18,10 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
-
 healthCheck:
   path: /actuator/health
   port: 8080
-
 env: {}
-
 nodeSelector: {}
 tolerations: []
 affinity: {}

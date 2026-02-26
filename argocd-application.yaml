@@ -13,7 +13,7 @@ spec:
     path: charts/backend
   destination:
     server: https://kubernetes.default.svc
-    namespace: hopprgg
+    namespace: tekmetric
   syncPolicy:
     automated:
       prune: true

@@ -1,6 +1,6 @@
-{{- if .Values.pdb.enabled }}
-apiVersion: policy/v1
-kind: PodDisruptionBudget
+{{- if .Values.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
 metadata:
   name: {{ .Chart.Name }}
   namespace: {{ .Values.namespace }}
@@ -9,8 +9,14 @@ metadata:
     app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
-  minAvailable: {{ .Values.pdb.minAvailable }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.namespace }}
+  endpoints:
+    - port: metrics
+      interval: {{ .Values.metrics.interval }}
+      path: {{ .Values.metrics.path }}
 {{- end }}

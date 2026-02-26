@@ -1,3 +1,4 @@
+namespace: tekmetric
 replicaCount: 1
 image:
   repository: ghcr.io/hoppr-gg/interview/backend
@@ -34,6 +35,10 @@ pdb:
   minAvailable: 1
 networkPolicy:
   enabled: true
+metrics:
+  enabled: true
+  path: /actuator/prometheus
+  interval: 30s
 env: {}
 nodeSelector: {}
 tolerations: []

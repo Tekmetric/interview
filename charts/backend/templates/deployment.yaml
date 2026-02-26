@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Chart.Name }}
-  namespace: hopprgg
+  namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Chart.Name }}
     app.kubernetes.io/name: {{ .Chart.Name }}

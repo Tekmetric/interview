@@ -10,7 +10,7 @@ RUN mvn dependency:go-offline -B
 RUN mvn package -DskipTests -B
 
 # copy app to runtime
-FROM openjdk:8-jre-slim
+FROM eclipse-temurin:8-jre
 
 WORKDIR /app
 COPY --from=build /app/target/interview-1.0-SNAPSHOT.jar app.jar

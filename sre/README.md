@@ -45,3 +45,54 @@ For the interview, make sure you have the following ready:
 - A running K8s or K3s cluster (local or cloud-based) to demonstrate your Helm chart deployment
 - Make sure you can explain your design choices and answer any questions related to the exercise.
 - You will have only 10 minutes to showcase your submission during the interview, so please be concise and focus on the key aspects of your implementation.
+
+---
+
+# Deployment Instructions
+
+## Build
+
+```bash
+podman build -t ghcr.io/hoppr-gg/interview/backend:latest -f Dockerfile .
+```
+
+Run locally to test:
+```bash
+podman run -p 8080:8080 ghcr.io/hoppr-gg/interview/backend:latest
+```
+
+## Deploy
+
+Apply the ArgoCD application:
+```bash
+kubectl apply -f argocd-application.yaml
+```
+
+ArgoCD will sync the Helm chart from `charts/backend/` and deploy to the `tekmetric` namespace.
+
+To deploy manually with Helm:
+```bash
+helm upgrade --install backend charts/backend -n tekmetric --create-namespace
+```
+
+## Validate
+
+Check pods are running:
+```bash
+kubectl get pods -n tekmetric -l app=backend
+```
+
+Health check:
+```bash
+kubectl exec -n tekmetric deploy/backend -- curl -s localhost:8080/actuator/health
+```
+
+Welcome endpoint:
+```bash
+kubectl exec -n tekmetric deploy/backend -- curl -s localhost:8080/api/welcome
+```
+
+Prometheus metrics:
+```bash
+kubectl exec -n tekmetric deploy/backend -- curl -s localhost:8080/actuator/prometheus | head
+```

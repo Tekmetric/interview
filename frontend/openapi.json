@@ -1,0 +1,378 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Interview Shop API",
+    "version": "1.0.0",
+    "description": "Simple Tekmetric-style interview API"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Health": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone",
+          "email"
+        ]
+      },
+      "NotFound": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "Vehicle": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "customerId": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer"
+          },
+          "make": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "vin": {
+            "type": "string"
+          },
+          "mileage": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "customerId",
+          "year",
+          "make",
+          "model",
+          "vin",
+          "mileage"
+        ]
+      },
+      "RepairOrder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "vehicleId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "in_progress",
+              "waiting_parts",
+              "completed"
+            ]
+          },
+          "openedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "laborTotal": {
+            "type": "number"
+          },
+          "partsTotal": {
+            "type": "number"
+          },
+          "tax": {
+            "type": "number"
+          },
+          "grandTotal": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "vehicleId",
+          "status",
+          "openedAt",
+          "laborTotal",
+          "partsTotal",
+          "tax",
+          "grandTotal"
+        ]
+      },
+      "DashboardKpis": {
+        "type": "object",
+        "properties": {
+          "carCountToday": {
+            "type": "integer"
+          },
+          "revenueToday": {
+            "type": "number"
+          },
+          "averageRO": {
+            "type": "number"
+          },
+          "openROs": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "carCountToday",
+          "revenueToday",
+          "averageRO",
+          "openROs"
+        ]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Service status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customers": {
+      "get": {
+        "summary": "List customers",
+        "responses": {
+          "200": {
+            "description": "Customers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Customer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customers/{customerId}": {
+      "get": {
+        "summary": "Get customer",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "customerId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vehicles": {
+      "get": {
+        "summary": "List vehicles",
+        "responses": {
+          "200": {
+            "description": "Vehicles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vehicle"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vehicles/{vehicleId}": {
+      "get": {
+        "summary": "Get vehicle",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "vehicleId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vehicle",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vehicle"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/repair-orders": {
+      "get": {
+        "summary": "List repair orders",
+        "responses": {
+          "200": {
+            "description": "Repair orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RepairOrder"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/repair-orders/{roId}": {
+      "get": {
+        "summary": "Get repair order",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "roId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Repair order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepairOrder"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/kpis": {
+      "get": {
+        "summary": "Get dashboard KPIs",
+        "responses": {
+          "200": {
+            "description": "KPIs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardKpis"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

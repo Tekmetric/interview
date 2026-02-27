@@ -1,0 +1,230 @@
+import { z } from 'zod'
+import {
+  customerSchema,
+  dashboardKpisSchema,
+  repairOrderSchema,
+  repairOrderStatusSchema,
+  vehicleSchema,
+} from '@/lib/api/contracts/schemas'
+
+export type Customer = z.infer<typeof customerSchema>
+export type Vehicle = z.infer<typeof vehicleSchema>
+export type RepairOrderStatus = z.infer<typeof repairOrderStatusSchema>
+export type RepairOrder = z.infer<typeof repairOrderSchema>
+export type Kpis = z.infer<typeof dashboardKpisSchema>
+
+export const customers: Customer[] = [
+  {
+    id: 'cus_001',
+    name: 'Jane Cooper',
+    phone: '+1-555-0101',
+    email: 'jane@example.com',
+  },
+  {
+    id: 'cus_002',
+    name: 'Wade Warren',
+    phone: '+1-555-0102',
+    email: 'wade@example.com',
+  },
+  {
+    id: 'cus_003',
+    name: 'Robert Fox',
+    phone: '+1-555-0103',
+    email: 'robert@example.com',
+  },
+  {
+    id: 'cus_004',
+    name: 'Jenny Wilson',
+    phone: '+1-555-0104',
+    email: 'jenny@example.com',
+  },
+  {
+    id: 'cus_005',
+    name: 'Cody Fisher',
+    phone: '+1-555-0105',
+    email: 'cody@example.com',
+  },
+  {
+    id: 'cus_006',
+    name: 'Leslie Alexander',
+    phone: '+1-555-0106',
+    email: 'leslie@example.com',
+  },
+  {
+    id: 'cus_007',
+    name: 'Brooklyn Simmons',
+    phone: '+1-555-0107',
+    email: 'brooklyn@example.com',
+  },
+  {
+    id: 'cus_008',
+    name: 'Savannah Nguyen',
+    phone: '+1-555-0108',
+    email: 'savannah@example.com',
+  },
+]
+
+export const vehicles: Vehicle[] = [
+  {
+    id: 'veh_001',
+    customerId: 'cus_001',
+    year: 2019,
+    make: 'Toyota',
+    model: 'Camry',
+    vin: '4T1B11HK0KU123456',
+    mileage: 84210,
+  },
+  {
+    id: 'veh_002',
+    customerId: 'cus_002',
+    year: 2017,
+    make: 'Honda',
+    model: 'Civic',
+    vin: '2HGFC2F59HH654321',
+    mileage: 102340,
+  },
+  {
+    id: 'veh_003',
+    customerId: 'cus_003',
+    year: 2020,
+    make: 'Ford',
+    model: 'F-150',
+    vin: '1FTEW1E58LFA11223',
+    mileage: 67890,
+  },
+  {
+    id: 'veh_004',
+    customerId: 'cus_004',
+    year: 2018,
+    make: 'Subaru',
+    model: 'Outback',
+    vin: '4S4BSAFC7J3321456',
+    mileage: 91840,
+  },
+  {
+    id: 'veh_005',
+    customerId: 'cus_005',
+    year: 2016,
+    make: 'Nissan',
+    model: 'Altima',
+    vin: '1N4AL3AP9GC220145',
+    mileage: 126500,
+  },
+  {
+    id: 'veh_006',
+    customerId: 'cus_006',
+    year: 2022,
+    make: 'Tesla',
+    model: 'Model 3',
+    vin: '5YJ3E1EA8NF510246',
+    mileage: 22400,
+  },
+  {
+    id: 'veh_007',
+    customerId: 'cus_007',
+    year: 2015,
+    make: 'Chevrolet',
+    model: 'Tahoe',
+    vin: '1GNSKBKC5FR334567',
+    mileage: 141260,
+  },
+  {
+    id: 'veh_008',
+    customerId: 'cus_008',
+    year: 2021,
+    make: 'Kia',
+    model: 'Telluride',
+    vin: '5XYP5DHC5MG132478',
+    mileage: 38920,
+  },
+]
+
+export const repairOrders: RepairOrder[] = [
+  {
+    id: 'ro_1001',
+    vehicleId: 'veh_001',
+    status: 'in_progress',
+    openedAt: '2026-02-24T10:00:00Z',
+    laborTotal: 180.0,
+    partsTotal: 95.5,
+    tax: 22.8,
+    grandTotal: 298.3,
+  },
+  {
+    id: 'ro_1002',
+    vehicleId: 'veh_002',
+    status: 'waiting_parts',
+    openedAt: '2026-02-25T15:30:00Z',
+    laborTotal: 120.0,
+    partsTotal: 210.0,
+    tax: 27.2,
+    grandTotal: 357.2,
+  },
+  {
+    id: 'ro_1003',
+    vehicleId: 'veh_003',
+    status: 'new',
+    openedAt: '2026-02-25T08:10:00Z',
+    laborTotal: 85.0,
+    partsTotal: 42.75,
+    tax: 10.58,
+    grandTotal: 138.33,
+  },
+  {
+    id: 'ro_1004',
+    vehicleId: 'veh_004',
+    status: 'completed',
+    openedAt: '2026-02-23T13:20:00Z',
+    laborTotal: 240.0,
+    partsTotal: 160.0,
+    tax: 33.0,
+    grandTotal: 433.0,
+  },
+  {
+    id: 'ro_1005',
+    vehicleId: 'veh_005',
+    status: 'in_progress',
+    openedAt: '2026-02-26T09:05:00Z',
+    laborTotal: 320.0,
+    partsTotal: 410.25,
+    tax: 60.25,
+    grandTotal: 790.5,
+  },
+  {
+    id: 'ro_1006',
+    vehicleId: 'veh_006',
+    status: 'completed',
+    openedAt: '2026-02-22T16:40:00Z',
+    laborTotal: 110.0,
+    partsTotal: 0.0,
+    tax: 9.08,
+    grandTotal: 119.08,
+  },
+  {
+    id: 'ro_1007',
+    vehicleId: 'veh_007',
+    status: 'waiting_parts',
+    openedAt: '2026-02-24T11:15:00Z',
+    laborTotal: 205.0,
+    partsTotal: 520.0,
+    tax: 59.81,
+    grandTotal: 784.81,
+  },
+  {
+    id: 'ro_1008',
+    vehicleId: 'veh_008',
+    status: 'completed',
+    openedAt: '2026-02-21T14:50:00Z',
+    laborTotal: 150.0,
+    partsTotal: 98.4,
+    tax: 20.49,
+    grandTotal: 268.89,
+  },
+]
+
+export const dashboardKpis: Kpis = {
+  carCountToday: 24,
+  revenueToday: 15840.75,
+  averageRO: 398.29,
+  openROs: 8,
+}

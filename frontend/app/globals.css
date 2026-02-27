@@ -1,0 +1,75 @@
+@import 'tailwindcss';
+
+:root {
+  --background: #f7f8fa;
+  --foreground: #171a21;
+  --surface: #ffffff;
+  --muted: #5f6875;
+  --border: #dbe1ea;
+  --brand: #ff6a2a;
+  --brand-strong: #e55215;
+  --brand-soft: #ffe2d4;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+
+  --color-brand-50: #fff1ea;
+  --color-brand-100: #ffe2d4;
+  --color-brand-200: #ffc2a7;
+  --color-brand-300: #ffa17b;
+  --color-brand-600: #e55215;
+  --color-brand-700: #be4113;
+  --color-brand-800: #983716;
+  --color-brand-900: #7a3018;
+
+  --color-slate-950: #171a21;
+  --color-slate-800: #2c3440;
+  --color-slate-700: #3b4654;
+  --color-slate-600: #5f6875;
+  --color-slate-500: #7a8492;
+  --color-slate-300: #bcc4d1;
+  --color-slate-200: #dbe1ea;
+  --color-slate-100: #eef2f7;
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@layer base {
+  body {
+    background:
+      radial-gradient(circle at 90% -15%, #fff1ea 0%, transparent 48%),
+      radial-gradient(circle at 0% 100%, #eef2f7 0%, transparent 42%), var(--background);
+    color: var(--foreground);
+    font-family: var(--font-geist-sans), 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: #131820;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+  .tm-card {
+    @apply rounded-3xl border border-border bg-surface shadow-[0_10px_32px_-24px_rgba(22,31,48,0.55)];
+  }
+
+  .tm-btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-600;
+  }
+
+  .tm-btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-800 transition-colors hover:border-brand-300 hover:text-brand-700;
+  }
+}

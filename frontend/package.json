@@ -1,25 +1,66 @@
 {
-  "name": "interview",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "react": "^16.8.1",
-    "react-dom": "^16.8.1",
-    "react-scripts": "2.1.3"
-  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:unit:ui": "vitest --ui",
+    "tsc": "tsc",
+    "lint": "eslint",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "lint:staged": "lint-staged",
+    "gen:openapi": "tsx scripts/generate-openapi.ts",
+    "gen:api-types": "pnpm gen:openapi && openapi-typescript openapi.json -o lib/api/contracts/generated/api.types.ts"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^8.4.1",
+    "@tanstack/react-query": "^5.90.21",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.542.0",
+    "next": "16.1.6",
+    "openapi-fetch": "^0.17.0",
+    "openapi-react-query": "^0.5.4",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  "devDependencies": {
+    "@storybook/addon-a11y": "10.2.13",
+    "@storybook/nextjs-vite": "10.2.13",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
+    "lint-staged": "^16.2.7",
+    "openapi-typescript": "^7.13.0",
+    "prettier": "^3.8.1",
+    "storybook": "10.2.13",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "vitest": "^4.0.18"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs,css,md,json,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "eslint --fix"
+    ]
+  }
 }

@@ -2,7 +2,7 @@ import {After, Before} from '@cucumber/cucumber';
 import { chromium } from 'playwright';
 import config from './playwright.config';
 
-Before(async function () {
+Before ({ tags: 'not @api' }, async function () {
     console.log('Before hook');
     this.browser = await chromium.launch(config.use);
     this.context = await this.browser.newContext(); // Create a new context

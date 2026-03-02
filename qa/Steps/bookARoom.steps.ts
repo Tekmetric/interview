@@ -1,15 +1,16 @@
-import {Given, When, Then, setDefaultTimeout} from '@cucumber/cucumber';
+import {Given, When, Then,} from '@cucumber/cucumber';
 import BookOnlinePage from "../Pages/BookOnlinePage";
+import {appConfig} from "../Utilities/env";
 
 // ... existing code ...
 
-setDefaultTimeout(60 * 1000); // Set the default timeout to 60 seconds
+// setDefaultTimeout(60 * 1000); // Set the default timeout to 60 seconds
 
 let bookOnlinePage;
 
-Given(/^I navigate to the following url '([^']+)'$/i, async function (url: string) {
+Given(/^I navigate to the Booking url$/, async function () {
     this.bookOnlinePage = this.bookOnlinePage || bookOnlinePage || new BookOnlinePage(this.page);
-    await this.bookOnlinePage.navigateToURL(url);
+    await this.bookOnlinePage.navigateToURL(appConfig.baseUiURL);
     await this.page.waitForLoadState('networkidle');
 });
 
@@ -53,4 +54,9 @@ When(/^I enter the phone as '([^']+)'$/i, async function (phone: string) {
     this.bookOnlinePage = this.bookOnlinePage || bookOnlinePage || new BookOnlinePage(this.page);
     await this.bookOnlinePage.interactWithPage('click', 'phoneText');
     await this.bookOnlinePage.interactWithPage('fill', 'phoneText',  phone);
+});
+
+Then(/^I verify the booking is confirmed with the following message '([^']+)'$/i, async function (message: string) {
+    this.bookOnlinePage = this.bookOnlinePage || bookOnlinePage || new BookOnlinePage(this.page);
+    await this.bookOnlinePage.getTextFieldValue('confirmDialogue', message);
 });

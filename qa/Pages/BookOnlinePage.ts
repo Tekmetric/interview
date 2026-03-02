@@ -15,6 +15,7 @@ type BookOnlineLocators = {
     emailText: Locator;
     phoneText: Locator;
     returnHome: Locator;
+    confirmDialogue: Locator;
 };
 
 class BookOnlinePage extends BasePage {
@@ -43,6 +44,7 @@ class BookOnlinePage extends BasePage {
             emailText: this.page.locator('.room-email'),
             phoneText: this.page.locator('.room-phone'),
             returnHome: this.page.getByRole('button', { name:'Return home'}),
+            confirmDialogue: this.page.getByRole('heading', { name: 'Booking Confirmed' }),
         };
     }
 
@@ -57,9 +59,8 @@ class BookOnlinePage extends BasePage {
         console.log(`Action: ${action}`);
         console.log(`Value: ${value}`);
         console.log(`Element: ${element}`);
-        console.log(`Locators: ${locators}`);
         if (!locators[element]) {
-            throw new Error(`Locator for claim payment "${element}" not found.`);
+            throw new Error(`Locator for "${element}" not found.`);
         }
         const cellLocator = locators[element];
         if (action === 'clickNselect') {
@@ -74,6 +75,19 @@ class BookOnlinePage extends BasePage {
             throw new Error(`Invalid action "${action}" or missing
 value for action "enter".`);
         }
+    }
+
+    async getTextFieldValue(element, value) {
+        await expect(this.page).toHaveTitle(this.title);
+        const locators = this.getCurrentLocators();
+        console.log(`Value: ${value}`);
+        console.log(`Element: ${element}`);
+        if (!locators[element]) {
+            throw new Error(`Locator for "${element}" not found.`);
+        }
+        const textValue = await locators[element].textContent();
+        console.log(`text is : ${textValue}`);
+        expect(textValue).toBe(value);
     }
 
 }

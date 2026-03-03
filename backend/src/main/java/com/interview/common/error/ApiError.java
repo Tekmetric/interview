@@ -1,4 +1,4 @@
-package com.interview.common;
+package com.interview.common.error;
 
 import java.time.Instant;
 import java.util.Map;

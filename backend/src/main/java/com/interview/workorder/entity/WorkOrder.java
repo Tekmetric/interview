@@ -1,4 +1,4 @@
-package com.interview.workorder;
+package com.interview.workorder.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

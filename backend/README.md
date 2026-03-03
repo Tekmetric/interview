@@ -66,7 +66,7 @@ curl -X DELETE http://localhost:8080/api/work-orders/1
 
 ## Database script
 DDL and seed data are provided in:
-- `src/main/resources/data.sql`
+- `src/main/resources/database/data.sql`
 
 ## H2 Console
 - URL: http://localhost:8080/h2-console

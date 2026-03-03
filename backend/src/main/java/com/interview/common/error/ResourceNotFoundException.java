@@ -1,4 +1,4 @@
-package com.interview.common;
+package com.interview.common.error;
 
 public class ResourceNotFoundException extends RuntimeException {
 

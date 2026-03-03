@@ -1,4 +1,4 @@
-package com.interview.workorder;
+package com.interview.workorder.response;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package com.interview.common;
+package com.interview.common.error;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;

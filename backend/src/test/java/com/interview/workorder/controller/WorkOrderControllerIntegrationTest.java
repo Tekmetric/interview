@@ -1,4 +1,4 @@
-package com.interview.workorder;
+package com.interview.workorder.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

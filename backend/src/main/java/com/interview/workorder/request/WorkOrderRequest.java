@@ -1,4 +1,4 @@
-package com.interview.workorder;
+package com.interview.workorder.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

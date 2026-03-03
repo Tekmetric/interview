@@ -1,0 +1,31 @@
+package com.interview.workorder.mapping;
+
+import com.interview.workorder.entity.WorkOrder;
+import com.interview.workorder.request.WorkOrderRequest;
+import com.interview.workorder.response.WorkOrderResponse;
+import java.util.List;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface WorkOrderMapper {
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    WorkOrder toEntity(WorkOrderRequest request);
+
+    WorkOrderResponse toResponse(WorkOrder workOrder);
+
+    List<WorkOrderResponse> toResponseList(List<WorkOrder> workOrders);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    void updateEntityFromRequest(WorkOrderRequest request, @MappingTarget WorkOrder workOrder);
+}

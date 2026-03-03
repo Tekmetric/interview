@@ -48,6 +48,6 @@ public class WorkOrderService {
 
     private WorkOrder findByIdOrThrow(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Work order with id " + id + " was not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(WorkOrder.class, id));
     }
 }

@@ -1,7 +1,6 @@
 package com.interview.workorder.service;
 
 import com.interview.common.error.ResourceNotFoundException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.interview.workorder.mapping.WorkOrderMapper;
@@ -25,10 +24,6 @@ public class WorkOrderService {
 
     public WorkOrderResponse create(WorkOrderRequest request) {
         WorkOrder workOrder = mapper.toEntity(request);
-        LocalDateTime now = LocalDateTime.now();
-        workOrder.setCreatedAt(now);
-        workOrder.setUpdatedAt(now);
-
         return mapper.toResponse(repository.save(workOrder));
     }
 
@@ -43,8 +38,6 @@ public class WorkOrderService {
     public WorkOrderResponse update(Long id, WorkOrderRequest request) {
         WorkOrder existing = findByIdOrThrow(id);
         mapper.updateEntityFromRequest(request, existing);
-        existing.setUpdatedAt(LocalDateTime.now());
-
         return mapper.toResponse(repository.save(existing));
     }
 

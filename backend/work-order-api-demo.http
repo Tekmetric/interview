@@ -1,0 +1,30 @@
+### Create a work order
+POST http://localhost:8080/api/work-orders
+Content-Type: application/json
+
+{
+  "customerName": "Jane Doe",
+  "vin": "1HGCM82633A123456",
+  "issueDescription": "Air conditioning not cooling",
+  "status": "OPEN"
+}
+
+### List work orders
+GET http://localhost:8080/api/work-orders
+
+### Get by id
+GET http://localhost:8080/api/work-orders/1
+
+### Update a work order
+PUT http://localhost:8080/api/work-orders/1
+Content-Type: application/json
+
+{
+  "customerName": "Jane Doe",
+  "vin": "1HGCM82633A123456",
+  "issueDescription": "A/C repaired and tested",
+  "status": "COMPLETED"
+}
+
+### Delete a work order
+DELETE http://localhost:8080/api/work-orders/1

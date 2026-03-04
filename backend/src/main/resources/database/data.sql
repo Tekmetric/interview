@@ -7,7 +7,8 @@ CREATE TABLE work_orders (
     issue_description VARCHAR(500) NOT NULL,
     status VARCHAR(30) NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+    updated_at TIMESTAMP NOT NULL,
+    version BIGINT NOT NULL DEFAULT 0
 );
 
 INSERT INTO work_orders (customer_name, vin, issue_description, status, created_at, updated_at)

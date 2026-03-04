@@ -17,6 +17,7 @@ public interface WorkOrderMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "version", ignore = true)
     WorkOrder toEntity(WorkOrderRequest request);
 
     WorkOrderResponse toResponse(WorkOrder workOrder);
@@ -27,5 +28,6 @@ public interface WorkOrderMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "version", ignore = true)
     void updateEntityFromRequest(WorkOrderRequest request, @MappingTarget WorkOrder workOrder);
 }

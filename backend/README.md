@@ -65,8 +65,6 @@ curl -X DELETE http://localhost:8080/api/customers/1/work-orders/1
 ## Database migration
 Schema and seed data are managed by Flyway migration:
 - `src/main/resources/db/migration/V1__init_work_orders.sql`
-- `src/main/resources/db/migration/V2__add_customers_and_link_work_orders.sql`
-- `src/main/resources/db/migration/V3__add_work_orders_customer_id_id_index.sql`
 
 `work_orders` now has a FK relation to `customers` (`work_orders.customer_id -> customers.id`).
 Work order create/update requires an existing `customerId` in URL path; customer records are not auto-created from work order requests.

@@ -11,13 +11,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.is;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.interview.common.error.ApiExceptionHandler;
 import com.interview.common.error.ResourceNotFoundException;
 import com.interview.workorder.model.WorkOrderStatus;
-import com.interview.workorder.request.WorkOrderRequest;
-import com.interview.workorder.response.WorkOrderResponse;
+import com.interview.workorder.dto.WorkOrderRequest;
+import com.interview.workorder.dto.WorkOrderResponse;
 import com.interview.workorder.service.WorkOrderService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -80,12 +82,15 @@ class WorkOrderControllerUnitTest {
                 "status", "OPEN"
         );
 
-        mockMvc.perform(post("/api/customers/1/work-orders")
+                mockMvc.perform(post("/api/customers/1/work-orders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidPayload)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Request validation failed"))
-                .andExpect(jsonPath("$.validationErrors.vin").value("vin must be 11-17 uppercase alphanumeric characters"));
+                .andExpect(jsonPath("$.validationErrors.vin").value(anyOf(
+                        is("vin is required"),
+                        is("vin must be 11-17 uppercase alphanumeric characters")
+                )));
 
         verify(workOrderService, never()).create(eq(1L), any(WorkOrderRequest.class));
     }

@@ -1,8 +1,8 @@
 package com.interview.workorder.mapping;
 
 import com.interview.workorder.entity.WorkOrder;
-import com.interview.workorder.request.WorkOrderRequest;
-import com.interview.workorder.response.WorkOrderResponse;
+import com.interview.workorder.dto.WorkOrderRequest;
+import com.interview.workorder.dto.WorkOrderResponse;
 import java.util.List;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;

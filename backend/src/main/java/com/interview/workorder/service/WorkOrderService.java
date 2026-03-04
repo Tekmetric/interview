@@ -6,8 +6,8 @@ import com.interview.customer.service.CustomerService;
 import java.util.List;
 
 import com.interview.workorder.mapping.WorkOrderMapper;
-import com.interview.workorder.request.WorkOrderRequest;
-import com.interview.workorder.response.WorkOrderResponse;
+import com.interview.workorder.dto.WorkOrderRequest;
+import com.interview.workorder.dto.WorkOrderResponse;
 import com.interview.workorder.dao.WorkOrderRepository;
 import com.interview.workorder.entity.WorkOrder;
 import lombok.RequiredArgsConstructor;

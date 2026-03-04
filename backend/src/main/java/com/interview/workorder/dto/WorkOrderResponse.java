@@ -1,4 +1,4 @@
-package com.interview.workorder.response;
+package com.interview.workorder.dto;
 
 import com.interview.workorder.model.WorkOrderStatus;
 import java.time.LocalDateTime;

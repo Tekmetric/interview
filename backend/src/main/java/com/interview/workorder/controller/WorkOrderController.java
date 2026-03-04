@@ -1,7 +1,7 @@
 package com.interview.workorder.controller;
 
-import com.interview.workorder.request.WorkOrderRequest;
-import com.interview.workorder.response.WorkOrderResponse;
+import com.interview.workorder.dto.WorkOrderRequest;
+import com.interview.workorder.dto.WorkOrderResponse;
 import com.interview.workorder.service.WorkOrderService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;

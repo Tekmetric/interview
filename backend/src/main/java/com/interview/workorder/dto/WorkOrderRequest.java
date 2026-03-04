@@ -1,4 +1,4 @@
-package com.interview.workorder.request;
+package com.interview.workorder.dto;
 
 import com.interview.workorder.model.WorkOrderStatus;
 import jakarta.validation.constraints.NotBlank;

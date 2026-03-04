@@ -9,17 +9,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@SqlGroup({
+        @Sql(scripts = "/sql/cleanup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        @Sql(scripts = "/sql/test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+})
 class WorkOrderControllerIntegrationTest {
 
     @Autowired
@@ -27,29 +31,6 @@ class WorkOrderControllerIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE work_orders RESTART IDENTITY");
-        jdbcTemplate.execute("TRUNCATE TABLE customers RESTART IDENTITY");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-        jdbcTemplate.execute("""
-                INSERT INTO customers (name, created_at, updated_at, version)
-                VALUES ('Seed Customer', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
-                """);
-        jdbcTemplate.execute("""
-                INSERT INTO customers (name, created_at, updated_at, version)
-                VALUES ('Another Customer', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
-                """);
-        jdbcTemplate.execute("""
-                INSERT INTO work_orders (customer_id, vin, issue_description, status, created_at, updated_at, version)
-                VALUES (1, '1HGCM82633A004352', 'Initial issue', 'OPEN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
-                """);
-    }
 
     @Test
     void shouldListWorkOrders() throws Exception {

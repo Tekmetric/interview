@@ -63,11 +63,16 @@ curl -X DELETE http://localhost:8080/api/customers/1/work-orders/1
 ```
 
 ## Database migration
-Schema and seed data are managed by Flyway migration:
+Schema is managed by Flyway migration:
 - `src/main/resources/db/migration/V1__init_work_orders.sql`
 
 `work_orders` now has a FK relation to `customers` (`work_orders.customer_id -> customers.id`).
 Work order create/update requires an existing `customerId` in URL path; customer records are not auto-created from work order requests.
+
+## Test data
+Integration-test data is managed in test scope SQL scripts:
+- `src/test/resources/sql/cleanup.sql`
+- `src/test/resources/sql/test-data.sql`
 
 ## H2 Console
 - URL: http://localhost:8080/h2-console

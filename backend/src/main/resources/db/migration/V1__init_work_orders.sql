@@ -20,31 +20,3 @@ CREATE TABLE work_orders (
 
 CREATE INDEX idx_work_orders_customer_id_id
     ON work_orders (customer_id, id);
-
-INSERT INTO customers (name, created_at, updated_at, version)
-VALUES ('Alice Johnson', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
-
-INSERT INTO customers (name, created_at, updated_at, version)
-VALUES ('Marcus Lee', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
-
-INSERT INTO work_orders (customer_id, vin, issue_description, status, created_at, updated_at, version)
-VALUES (
-    (SELECT id FROM customers WHERE name = 'Alice Johnson'),
-    '1HGCM82633A004352',
-    'Brake pads replacement',
-    'OPEN',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP,
-    0
-);
-
-INSERT INTO work_orders (customer_id, vin, issue_description, status, created_at, updated_at, version)
-VALUES (
-    (SELECT id FROM customers WHERE name = 'Marcus Lee'),
-    'JH4KA9650MC012345',
-    'Check engine light diagnosis',
-    'IN_PROGRESS',
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP,
-    0
-);

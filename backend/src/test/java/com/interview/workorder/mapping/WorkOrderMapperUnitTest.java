@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.interview.customer.entity.Customer;
 import com.interview.workorder.entity.WorkOrder;
+import com.interview.workorder.model.WorkOrderStatus;
 import com.interview.workorder.request.WorkOrderRequest;
 import com.interview.workorder.response.WorkOrderResponse;
 import java.time.LocalDateTime;
@@ -19,14 +20,14 @@ class WorkOrderMapperUnitTest {
         WorkOrderRequest request = new WorkOrderRequest(
                 "1HGCM82633A004352",
                 "Brake pads replacement",
-                "OPEN"
+                WorkOrderStatus.OPEN
         );
 
         WorkOrder entity = mapper.toEntity(request);
 
         assertThat(entity.getVin()).isEqualTo("1HGCM82633A004352");
         assertThat(entity.getIssueDescription()).isEqualTo("Brake pads replacement");
-        assertThat(entity.getStatus()).isEqualTo("OPEN");
+        assertThat(entity.getStatus()).isEqualTo(WorkOrderStatus.OPEN);
         assertThat(entity.getId()).isNull();
         assertThat(entity.getCustomer()).isNull();
         assertThat(entity.getCreatedAt()).isNull();
@@ -45,7 +46,7 @@ class WorkOrderMapperUnitTest {
         workOrder.setCustomer(customer);
         workOrder.setVin("JH4KA9650MC012345");
         workOrder.setIssueDescription("Engine check");
-        workOrder.setStatus("IN_PROGRESS");
+        workOrder.setStatus(WorkOrderStatus.IN_PROGRESS);
         workOrder.setCreatedAt(LocalDateTime.of(2026, 3, 4, 10, 0));
         workOrder.setUpdatedAt(LocalDateTime.of(2026, 3, 4, 11, 0));
 
@@ -55,7 +56,7 @@ class WorkOrderMapperUnitTest {
         assertThat(response.customerId()).isEqualTo(10L);
         assertThat(response.vin()).isEqualTo("JH4KA9650MC012345");
         assertThat(response.issueDescription()).isEqualTo("Engine check");
-        assertThat(response.status()).isEqualTo("IN_PROGRESS");
+        assertThat(response.status()).isEqualTo(WorkOrderStatus.IN_PROGRESS);
         assertThat(response.createdAt()).isEqualTo(LocalDateTime.of(2026, 3, 4, 10, 0));
         assertThat(response.updatedAt()).isEqualTo(LocalDateTime.of(2026, 3, 4, 11, 0));
     }
@@ -71,7 +72,7 @@ class WorkOrderMapperUnitTest {
         existing.setCustomer(customer);
         existing.setVin("1HGCM82633A004352");
         existing.setIssueDescription("Initial issue");
-        existing.setStatus("OPEN");
+        existing.setStatus(WorkOrderStatus.OPEN);
         existing.setCreatedAt(LocalDateTime.of(2026, 1, 1, 10, 0));
         existing.setUpdatedAt(LocalDateTime.of(2026, 1, 1, 10, 0));
         existing.setVersion(3L);
@@ -79,14 +80,14 @@ class WorkOrderMapperUnitTest {
         WorkOrderRequest request = new WorkOrderRequest(
                 "1HGCM82633A004352",
                 "Issue resolved",
-                "COMPLETED"
+                WorkOrderStatus.COMPLETED
         );
 
         mapper.updateEntityFromRequest(request, existing);
 
         assertThat(existing.getVin()).isEqualTo("1HGCM82633A004352");
         assertThat(existing.getIssueDescription()).isEqualTo("Issue resolved");
-        assertThat(existing.getStatus()).isEqualTo("COMPLETED");
+        assertThat(existing.getStatus()).isEqualTo(WorkOrderStatus.COMPLETED);
         assertThat(existing.getId()).isEqualTo(5L);
         assertThat(existing.getCustomer()).isSameAs(customer);
         assertThat(existing.getCreatedAt()).isEqualTo(LocalDateTime.of(2026, 1, 1, 10, 0));

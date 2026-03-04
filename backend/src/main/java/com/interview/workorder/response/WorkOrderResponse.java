@@ -1,5 +1,6 @@
 package com.interview.workorder.response;
 
+import com.interview.workorder.model.WorkOrderStatus;
 import java.time.LocalDateTime;
 
 public record WorkOrderResponse(
@@ -7,7 +8,7 @@ public record WorkOrderResponse(
         Long customerId,
         String vin,
         String issueDescription,
-        String status,
+        WorkOrderStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

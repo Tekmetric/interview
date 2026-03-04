@@ -13,6 +13,7 @@ import com.interview.customer.service.CustomerService;
 import com.interview.workorder.dao.WorkOrderRepository;
 import com.interview.workorder.entity.WorkOrder;
 import com.interview.workorder.mapping.WorkOrderMapper;
+import com.interview.workorder.model.WorkOrderStatus;
 import com.interview.workorder.request.WorkOrderRequest;
 import com.interview.workorder.response.WorkOrderResponse;
 import java.util.List;
@@ -50,7 +51,7 @@ class WorkOrderServiceUnitTest {
         WorkOrderRequest request = new WorkOrderRequest(
                 "1HGCM82633A004352",
                 "Brake pads replacement",
-                "OPEN"
+                WorkOrderStatus.OPEN
         );
 
         when(customerService.findByIdOrThrow(1L)).thenReturn(customer);
@@ -65,7 +66,7 @@ class WorkOrderServiceUnitTest {
         assertThat(response.id()).isEqualTo(10L);
         assertThat(response.customerId()).isEqualTo(1L);
         assertThat(response.vin()).isEqualTo("1HGCM82633A004352");
-        assertThat(response.status()).isEqualTo("OPEN");
+        assertThat(response.status()).isEqualTo(WorkOrderStatus.OPEN);
 
         ArgumentCaptor<WorkOrder> captor = ArgumentCaptor.forClass(WorkOrder.class);
         verify(repository).save(captor.capture());
@@ -76,8 +77,8 @@ class WorkOrderServiceUnitTest {
     @Test
     void listShouldLoadByCustomerIdAndAscIdSort() {
         Customer customer = customer(1L, "Alice Johnson");
-        WorkOrder first = workOrder(1L, customer, "1HGCM82633A004352", "OPEN");
-        WorkOrder second = workOrder(2L, customer, "JH4KA9650MC012345", "IN_PROGRESS");
+        WorkOrder first = workOrder(1L, customer, "1HGCM82633A004352", WorkOrderStatus.OPEN);
+        WorkOrder second = workOrder(2L, customer, "JH4KA9650MC012345", WorkOrderStatus.IN_PROGRESS);
 
         when(customerService.findByIdOrThrow(1L)).thenReturn(customer);
         when(repository.findAllByCustomer_Id(eq(1L), any(Sort.class))).thenReturn(List.of(first, second));
@@ -87,7 +88,7 @@ class WorkOrderServiceUnitTest {
         assertThat(responses).hasSize(2);
         assertThat(responses.get(0).id()).isEqualTo(1L);
         assertThat(responses.get(0).customerId()).isEqualTo(1L);
-        assertThat(responses.get(1).status()).isEqualTo("IN_PROGRESS");
+        assertThat(responses.get(1).status()).isEqualTo(WorkOrderStatus.IN_PROGRESS);
 
         ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
         verify(repository).findAllByCustomer_Id(eq(1L), sortCaptor.capture());
@@ -110,13 +111,13 @@ class WorkOrderServiceUnitTest {
     @Test
     void updateShouldModifyMutableFields() {
         Customer customer = customer(1L, "Alice Johnson");
-        WorkOrder existing = workOrder(5L, customer, "1HGCM82633A004352", "OPEN");
+        WorkOrder existing = workOrder(5L, customer, "1HGCM82633A004352", WorkOrderStatus.OPEN);
         existing.setIssueDescription("Initial issue");
 
         WorkOrderRequest request = new WorkOrderRequest(
                 "1HGCM82633A004352",
                 "Issue resolved",
-                "COMPLETED"
+                WorkOrderStatus.COMPLETED
         );
 
         when(customerService.findByIdOrThrow(1L)).thenReturn(customer);
@@ -128,13 +129,13 @@ class WorkOrderServiceUnitTest {
         assertThat(response.id()).isEqualTo(5L);
         assertThat(response.customerId()).isEqualTo(1L);
         assertThat(response.issueDescription()).isEqualTo("Issue resolved");
-        assertThat(response.status()).isEqualTo("COMPLETED");
+        assertThat(response.status()).isEqualTo(WorkOrderStatus.COMPLETED);
     }
 
     @Test
     void deleteShouldRemoveOwnedWorkOrder() {
         Customer customer = customer(1L, "Alice Johnson");
-        WorkOrder existing = workOrder(7L, customer, "1HGCM82633A004352", "OPEN");
+        WorkOrder existing = workOrder(7L, customer, "1HGCM82633A004352", WorkOrderStatus.OPEN);
 
         when(customerService.findByIdOrThrow(1L)).thenReturn(customer);
         when(repository.findByIdAndCustomer_Id(7L, 1L)).thenReturn(Optional.of(existing));
@@ -151,7 +152,7 @@ class WorkOrderServiceUnitTest {
         return customer;
     }
 
-    private static WorkOrder workOrder(Long id, Customer customer, String vin, String status) {
+    private static WorkOrder workOrder(Long id, Customer customer, String vin, WorkOrderStatus status) {
         WorkOrder workOrder = new WorkOrder();
         workOrder.setId(id);
         workOrder.setCustomer(customer);

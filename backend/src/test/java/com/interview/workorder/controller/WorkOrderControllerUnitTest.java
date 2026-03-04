@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.interview.common.error.ApiExceptionHandler;
 import com.interview.common.error.ResourceNotFoundException;
+import com.interview.workorder.model.WorkOrderStatus;
 import com.interview.workorder.request.WorkOrderRequest;
 import com.interview.workorder.response.WorkOrderResponse;
 import com.interview.workorder.service.WorkOrderService;
@@ -50,7 +51,7 @@ class WorkOrderControllerUnitTest {
 
     @Test
     void createShouldReturnCreatedWorkOrder() throws Exception {
-        WorkOrderResponse response = response(100L, 1L, "1HGCM82633A004352", "OPEN");
+        WorkOrderResponse response = response(100L, 1L, "1HGCM82633A004352", WorkOrderStatus.OPEN);
         when(workOrderService.create(eq(1L), any(WorkOrderRequest.class))).thenReturn(response);
 
         Map<String, Object> payload = Map.of(
@@ -76,7 +77,7 @@ class WorkOrderControllerUnitTest {
         Map<String, Object> invalidPayload = Map.of(
                 "vin", "",
                 "issueDescription", "",
-                "status", "UNKNOWN"
+                "status", "OPEN"
         );
 
         mockMvc.perform(post("/api/customers/1/work-orders")
@@ -92,8 +93,8 @@ class WorkOrderControllerUnitTest {
     @Test
     void listShouldReturnCustomerScopedItems() throws Exception {
         when(workOrderService.list(1L)).thenReturn(List.of(
-                response(1L, 1L, "1HGCM82633A004352", "OPEN"),
-                response(2L, 1L, "JH4KA9650MC012345", "IN_PROGRESS")
+                response(1L, 1L, "1HGCM82633A004352", WorkOrderStatus.OPEN),
+                response(2L, 1L, "JH4KA9650MC012345", WorkOrderStatus.IN_PROGRESS)
         ));
 
         mockMvc.perform(get("/api/customers/1/work-orders"))
@@ -117,7 +118,7 @@ class WorkOrderControllerUnitTest {
 
     @Test
     void updateAndDeleteShouldDelegateToService() throws Exception {
-        WorkOrderResponse updated = response(5L, 1L, "1HGCM82633A004352", "COMPLETED");
+        WorkOrderResponse updated = response(5L, 1L, "1HGCM82633A004352", WorkOrderStatus.COMPLETED);
         when(workOrderService.update(eq(1L), eq(5L), any(WorkOrderRequest.class))).thenReturn(updated);
 
         Map<String, Object> updatePayload = Map.of(
@@ -140,7 +141,7 @@ class WorkOrderControllerUnitTest {
         verify(workOrderService).delete(1L, 5L);
     }
 
-    private static WorkOrderResponse response(Long id, Long customerId, String vin, String status) {
+    private static WorkOrderResponse response(Long id, Long customerId, String vin, WorkOrderStatus status) {
         return new WorkOrderResponse(
                 id,
                 customerId,

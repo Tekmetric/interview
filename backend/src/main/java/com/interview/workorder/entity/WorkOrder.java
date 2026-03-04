@@ -2,8 +2,11 @@ package com.interview.workorder.entity;
 
 import com.interview.common.entity.BaseEntity;
 import com.interview.customer.entity.Customer;
+import com.interview.workorder.model.WorkOrderStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -29,6 +32,7 @@ public class WorkOrder extends BaseEntity {
     @Column(name = "issue_description", nullable = false, length = 500)
     private String issueDescription;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private String status;
+    private WorkOrderStatus status;
 }

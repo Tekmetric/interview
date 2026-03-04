@@ -1,6 +1,8 @@
 package com.interview.workorder.request;
 
+import com.interview.workorder.model.WorkOrderStatus;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -13,8 +15,7 @@ public record WorkOrderRequest(
         @Size(max = 500, message = "issueDescription cannot exceed 500 characters")
         String issueDescription,
 
-        @NotBlank(message = "status is required")
-        @Pattern(regexp = "OPEN|IN_PROGRESS|COMPLETED|CANCELLED", message = "status must be OPEN, IN_PROGRESS, COMPLETED, or CANCELLED")
-        String status
+        @NotNull(message = "status is required")
+        WorkOrderStatus status
 ) {
 }

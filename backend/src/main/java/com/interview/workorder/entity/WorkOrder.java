@@ -1,8 +1,12 @@
 package com.interview.workorder.entity;
 
 import com.interview.common.entity.BaseEntity;
+import com.interview.customer.entity.Customer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +19,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class WorkOrder extends BaseEntity {
 
-    @Column(name = "customer_name", nullable = false, length = 120)
-    private String customerName;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
 
     @Column(nullable = false, length = 17)
     private String vin;

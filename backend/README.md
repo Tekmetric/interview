@@ -17,20 +17,19 @@ curl -X GET http://localhost:8080/api/welcome
 ```
 
 ## CRUD endpoints
-- `POST /api/work-orders` - create a work order
-- `GET /api/work-orders` - list all work orders
-- `GET /api/work-orders/{id}` - fetch a single work order
-- `PUT /api/work-orders/{id}` - update a work order
-- `DELETE /api/work-orders/{id}` - delete a work order
+- `POST /api/customers/{customerId}/work-orders` - create a work order
+- `GET /api/customers/{customerId}/work-orders` - list all work orders for a customer
+- `GET /api/customers/{customerId}/work-orders/{id}` - fetch a single work order for a customer
+- `PUT /api/customers/{customerId}/work-orders/{id}` - update a work order
+- `DELETE /api/customers/{customerId}/work-orders/{id}` - delete a work order
 
 ## Example API-client demo (cURL)
 
 1. Create:
 ```bash
-curl -X POST http://localhost:8080/api/work-orders \
+curl -X POST http://localhost:8080/api/customers/1/work-orders \
   -H "Content-Type: application/json" \
   -d '{
-    "customerName": "Jane Doe",
     "vin": "1HGCM82633A123456",
     "issueDescription": "Air conditioning not cooling",
     "status": "OPEN"
@@ -39,20 +38,19 @@ curl -X POST http://localhost:8080/api/work-orders \
 
 2. List:
 ```bash
-curl -X GET http://localhost:8080/api/work-orders
+curl -X GET http://localhost:8080/api/customers/1/work-orders
 ```
 
 3. Get one:
 ```bash
-curl -X GET http://localhost:8080/api/work-orders/1
+curl -X GET http://localhost:8080/api/customers/1/work-orders/1
 ```
 
 4. Update:
 ```bash
-curl -X PUT http://localhost:8080/api/work-orders/1 \
+curl -X PUT http://localhost:8080/api/customers/1/work-orders/1 \
   -H "Content-Type: application/json" \
   -d '{
-    "customerName": "Jane Doe",
     "vin": "1HGCM82633A123456",
     "issueDescription": "A/C repaired and tested",
     "status": "COMPLETED"
@@ -61,12 +59,17 @@ curl -X PUT http://localhost:8080/api/work-orders/1 \
 
 5. Delete:
 ```bash
-curl -X DELETE http://localhost:8080/api/work-orders/1
+curl -X DELETE http://localhost:8080/api/customers/1/work-orders/1
 ```
 
 ## Database migration
 Schema and seed data are managed by Flyway migration:
 - `src/main/resources/db/migration/V1__init_work_orders.sql`
+- `src/main/resources/db/migration/V2__add_customers_and_link_work_orders.sql`
+- `src/main/resources/db/migration/V3__add_work_orders_customer_id_id_index.sql`
+
+`work_orders` now has a FK relation to `customers` (`work_orders.customer_id -> customers.id`).
+Work order create/update requires an existing `customerId` in URL path; customer records are not auto-created from work order requests.
 
 ## H2 Console
 - URL: http://localhost:8080/h2-console

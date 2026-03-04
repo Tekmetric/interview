@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record WorkOrderResponse(
         Long id,
-        String customerName,
+        Long customerId,
         String vin,
         String issueDescription,
         String status,

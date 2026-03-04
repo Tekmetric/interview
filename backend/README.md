@@ -64,9 +64,9 @@ curl -X PUT http://localhost:8080/api/work-orders/1 \
 curl -X DELETE http://localhost:8080/api/work-orders/1
 ```
 
-## Database script
-DDL and seed data are provided in:
-- `src/main/resources/database/data.sql`
+## Database migration
+Schema and seed data are managed by Flyway migration:
+- `src/main/resources/db/migration/V1__init_work_orders.sql`
 
 ## H2 Console
 - URL: http://localhost:8080/h2-console

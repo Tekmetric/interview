@@ -11,6 +11,16 @@ This project now includes a complete CRUD API for a `WorkOrder` resource, backed
 mvn spring-boot:run
 ```
 
+## Run tests
+- Unit tests only:
+```bash
+mvn test
+```
+- Integration tests (and unit tests in prior phase):
+```bash
+mvn verify
+```
+
 ## Verify app health
 ```bash
 curl -X GET http://localhost:8080/api/welcome

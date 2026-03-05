@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -97,5 +98,20 @@ class WorkOrderControllerIntegrationTest {
         mockMvc.perform(get("/api/customers/2/work-orders/1"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("WorkOrder with id 1 was not found"));
+    }
+
+    @Test
+    void shouldGenerateRequestIdWhenHeaderMissing() throws Exception {
+        mockMvc.perform(get("/api/customers/1/work-orders"))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("X-Request-Id"));
+    }
+
+    @Test
+    void shouldEchoRequestIdWhenHeaderProvided() throws Exception {
+        mockMvc.perform(get("/api/customers/1/work-orders")
+                        .header("X-Request-Id", "demo-request-id-123"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Request-Id", "demo-request-id-123"));
     }
 }

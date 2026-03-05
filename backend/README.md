@@ -32,6 +32,13 @@ curl -X GET http://localhost:8080/api/welcome
 - `GET /actuator/metrics`
 - Demo file: `demo/actuator-api-demo.http`
 
+## Logging
+- Structured JSON logging is enabled via Logback.
+- Configuration file: `src/main/resources/logback-spring.xml`
+- Request correlation id is supported with `X-Request-Id`.
+- If not provided, API generates one and returns it in response header.
+- Logs include this id as `requestId` (MDC) for request-level filtering.
+
 ## API demo files
 - `demo/work-order-api-demo.http`
 

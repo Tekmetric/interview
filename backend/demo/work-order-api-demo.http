@@ -1,6 +1,9 @@
+@requestId = demo-req-001
+
 ### Create a work order
 POST http://localhost:8080/api/customers/1/work-orders
 Content-Type: application/json
+X-Request-Id: {{requestId}}
 
 {
   "vin": "1HGCM82633A123456",
@@ -9,14 +12,17 @@ Content-Type: application/json
 }
 
 ### List work orders
-GET http://localhost:8080/api/customers/1/work-orders
+GET http://localhost:8080/api/customers/3/work-orders
+X-Request-Id: {{requestId}}
 
 ### Get by id
 GET http://localhost:8080/api/customers/1/work-orders/1
+X-Request-Id: {{requestId}}
 
 ### Update a work order
 PUT http://localhost:8080/api/customers/1/work-orders/1
 Content-Type: application/json
+X-Request-Id: {{requestId}}
 
 {
   "vin": "1HGCM82633A123456",
@@ -26,3 +32,4 @@ Content-Type: application/json
 
 ### Delete a work order
 DELETE http://localhost:8080/api/customers/1/work-orders/1
+X-Request-Id: {{requestId}}

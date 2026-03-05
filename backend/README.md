@@ -26,6 +26,15 @@ mvn verify
 curl -X GET http://localhost:8080/api/welcome
 ```
 
+## Actuator endpoints
+- `GET /actuator/health`
+- `GET /actuator/info`
+- `GET /actuator/metrics`
+- Demo file: `demo/actuator-api-demo.http`
+
+## API demo files
+- `demo/work-order-api-demo.http`
+
 ## CRUD endpoints
 - `POST /api/customers/{customerId}/work-orders` - create a work order
 - `GET /api/customers/{customerId}/work-orders` - list all work orders for a customer

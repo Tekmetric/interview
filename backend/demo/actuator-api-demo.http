@@ -1,0 +1,11 @@
+### Actuator health
+GET http://localhost:8080/actuator/health
+
+### Actuator info
+GET http://localhost:8080/actuator/info
+
+### Actuator metrics (list)
+GET http://localhost:8080/actuator/metrics
+
+### Actuator metric detail example
+GET http://localhost:8080/actuator/metrics/http.server.requests

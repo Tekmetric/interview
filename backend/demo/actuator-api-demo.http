@@ -1,11 +1,16 @@
+@adminBasic = Basic YXBpLWFkbWluOmNoYW5nZWl0LWFkbWlu
+
 ### Actuator health
 GET http://localhost:8080/actuator/health
 
 ### Actuator info
 GET http://localhost:8080/actuator/info
+Authorization: {{adminBasic}}
 
 ### Actuator metrics (list)
 GET http://localhost:8080/actuator/metrics
+Authorization: {{adminBasic}}
 
 ### Actuator metric detail example
 GET http://localhost:8080/actuator/metrics/http.server.requests
+Authorization: {{adminBasic}}

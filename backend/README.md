@@ -23,7 +23,7 @@ mvn verify
 
 ## Verify app health
 ```bash
-curl -X GET http://localhost:8080/api/welcome
+curl -X GET http://localhost:8080/actuator/health
 ```
 
 ## Actuator endpoints
@@ -31,6 +31,18 @@ curl -X GET http://localhost:8080/api/welcome
 - `GET /actuator/info`
 - `GET /actuator/metrics`
 - Demo file: `demo/actuator-api-demo.http`
+
+## API Security
+- HTTP Basic authentication is enabled.
+- `GET /api/**` requires `ROLE_USER` or `ROLE_ADMIN`.
+- `POST/PUT/DELETE /api/**` requires `ROLE_ADMIN`.
+- `GET /actuator/health` is public; other actuator endpoints require `ROLE_ADMIN`.
+- Users are loaded from DB table `users`.
+- Passwords are stored as BCrypt hashes (salted) in DB.
+- `ROLE_USER` accounts are linked to a customer via `users.customer_id`.
+- `ROLE_ADMIN` accounts can have `customer_id` as `NULL`.
+- No default users are seeded by Flyway migration.
+- Create users manually (or use test-scope SQL seeds during integration tests).
 
 ## Logging
 - Structured JSON logging is enabled via Logback.
@@ -57,9 +69,15 @@ curl -X GET http://localhost:8080/api/welcome
 
 ## Example API-client demo (cURL)
 
+0. Prepare credentials:
+```bash
+BASIC_AUTH=$(printf '%s' 'api-admin:changeit-admin' | base64)
+```
+
 1. Create:
 ```bash
 curl -X POST http://localhost:8080/api/customers/1/work-orders \
+  -H "Authorization: Basic $BASIC_AUTH" \
   -H "Content-Type: application/json" \
   -d '{
     "vin": "1HGCM82633A123456",
@@ -70,22 +88,26 @@ curl -X POST http://localhost:8080/api/customers/1/work-orders \
 
 2. List:
 ```bash
-curl -X GET http://localhost:8080/api/customers/1/work-orders
+curl -X GET http://localhost:8080/api/customers/1/work-orders \
+  -H "Authorization: Basic $BASIC_AUTH"
 ```
 
 2a. List with filter + pagination + sorting:
 ```bash
-curl -X GET "http://localhost:8080/api/customers/1/work-orders?status=OPEN&page=0&size=2&sort=id,asc"
+curl -X GET "http://localhost:8080/api/customers/1/work-orders?status=OPEN&page=0&size=2&sort=id,asc" \
+  -H "Authorization: Basic $BASIC_AUTH"
 ```
 
 3. Get one:
 ```bash
-curl -X GET http://localhost:8080/api/customers/1/work-orders/1
+curl -X GET http://localhost:8080/api/customers/1/work-orders/1 \
+  -H "Authorization: Basic $BASIC_AUTH"
 ```
 
 4. Update:
 ```bash
 curl -X PUT http://localhost:8080/api/customers/1/work-orders/1 \
+  -H "Authorization: Basic $BASIC_AUTH" \
   -H "Content-Type: application/json" \
   -d '{
     "vin": "1HGCM82633A123456",
@@ -96,14 +118,17 @@ curl -X PUT http://localhost:8080/api/customers/1/work-orders/1 \
 
 5. Delete:
 ```bash
-curl -X DELETE http://localhost:8080/api/customers/1/work-orders/1
+curl -X DELETE http://localhost:8080/api/customers/1/work-orders/1 \
+  -H "Authorization: Basic $BASIC_AUTH"
 ```
 
 ## Database migration
 Schema is managed by Flyway migration:
 - `src/main/resources/db/migration/V1__init_work_orders.sql`
+- `src/main/resources/db/migration/V2__add_users.sql`
 
 `work_orders` now has a FK relation to `customers` (`work_orders.customer_id -> customers.id`).
+`users` has an optional FK relation to `customers` (`users.customer_id -> customers.id`) with role-based check constraint.
 Work order create/update requires an existing `customerId` in URL path; customer records are not auto-created from work order requests.
 
 ## Test data

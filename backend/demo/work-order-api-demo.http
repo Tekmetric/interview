@@ -1,9 +1,11 @@
 @requestId = demo-req-001
+@adminBasic = Basic YXBpLWFkbWluOmNoYW5nZWl0LWFkbWlu
 
 ### Create a work order
 POST http://localhost:8080/api/customers/1/work-orders
 Content-Type: application/json
 X-Request-Id: {{requestId}}
+Authorization: {{adminBasic}}
 
 {
   "vin": "1HGCM82633A123456",
@@ -14,19 +16,23 @@ X-Request-Id: {{requestId}}
 ### List work orders
 GET http://localhost:8080/api/customers/1/work-orders
 X-Request-Id: {{requestId}}
+Authorization: {{adminBasic}}
 
 ### List work orders (filtered + paged + sorted)
 GET http://localhost:8080/api/customers/1/work-orders?status=OPEN&page=0&size=2&sort=id,asc
 X-Request-Id: {{requestId}}
+Authorization: {{adminBasic}}
 
 ### Get by id
 GET http://localhost:8080/api/customers/1/work-orders/1
 X-Request-Id: {{requestId}}
+Authorization: {{adminBasic}}
 
 ### Update a work order
 PUT http://localhost:8080/api/customers/1/work-orders/1
 Content-Type: application/json
 X-Request-Id: {{requestId}}
+Authorization: {{adminBasic}}
 
 {
   "vin": "1HGCM82633A123456",
@@ -37,3 +43,4 @@ X-Request-Id: {{requestId}}
 ### Delete a work order
 DELETE http://localhost:8080/api/customers/1/work-orders/1
 X-Request-Id: {{requestId}}
+Authorization: {{adminBasic}}

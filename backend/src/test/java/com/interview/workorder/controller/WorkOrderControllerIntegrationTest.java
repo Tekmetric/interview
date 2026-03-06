@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
+
+import com.interview.workorder.model.WorkOrderStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -37,8 +39,35 @@ class WorkOrderControllerIntegrationTest {
     void shouldListWorkOrders() throws Exception {
         mockMvc.perform(get("/api/customers/1/work-orders"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].customerId").value(1));
+                .andExpect(jsonPath("$.content.length()").value(3))
+                .andExpect(jsonPath("$.content[0].customerId").value(1))
+                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.size").value(20))
+                .andExpect(jsonPath("$.number").value(0));
+    }
+
+    @Test
+    void shouldFilterWorkOrdersByStatus() throws Exception {
+        mockMvc.perform(get("/api/customers/1/work-orders")
+                        .param("status", WorkOrderStatus.COMPLETED.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].status").value(WorkOrderStatus.COMPLETED.toString()))
+                .andExpect(jsonPath("$.totalElements").value(1));
+    }
+
+    @Test
+    void shouldPaginateWorkOrders() throws Exception {
+        mockMvc.perform(get("/api/customers/1/work-orders")
+                        .param("page", "1")
+                        .param("size", "2")
+                        .param("sort", "id,asc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].id").value(3))
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.number").value(1))
+                .andExpect(jsonPath("$.totalElements").value(3));
     }
 
     @Test
@@ -62,14 +91,14 @@ class WorkOrderControllerIntegrationTest {
         Map<String, Object> updatePayload = Map.of(
                 "vin", "1HGCM82633A004352",
                 "issueDescription", "Issue resolved",
-                "status", "COMPLETED"
+                "status", WorkOrderStatus.COMPLETED
         );
 
         mockMvc.perform(put("/api/customers/1/work-orders/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatePayload)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("COMPLETED"));
+                .andExpect(jsonPath("$.status").value(WorkOrderStatus.COMPLETED.toString()));
 
         mockMvc.perform(delete("/api/customers/1/work-orders/1"))
                 .andExpect(status().isNoContent());

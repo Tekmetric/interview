@@ -25,7 +25,10 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class WorkOrderServiceUnitTest {
@@ -75,26 +78,43 @@ class WorkOrderServiceUnitTest {
     }
 
     @Test
-    void listShouldLoadByCustomerIdAndAscIdSort() {
+    void listShouldLoadByCustomerIdWithPageable() {
         Customer customer = customer(1L, "Alice Johnson");
         WorkOrder first = workOrder(1L, customer, "1HGCM82633A004352", WorkOrderStatus.OPEN);
         WorkOrder second = workOrder(2L, customer, "JH4KA9650MC012345", WorkOrderStatus.IN_PROGRESS);
+        Pageable pageable = PageRequest.of(0, 2);
 
         when(customerService.findByIdOrThrow(1L)).thenReturn(customer);
-        when(repository.findAllByCustomer_Id(eq(1L), any(Sort.class))).thenReturn(List.of(first, second));
+        when(repository.findAllByCustomer_Id(1L, pageable))
+                .thenReturn(new PageImpl<>(List.of(first, second), pageable, 2));
 
-        List<WorkOrderResponse> responses = service.list(1L);
+        Page<WorkOrderResponse> responses = service.list(1L, null, pageable);
 
         assertThat(responses).hasSize(2);
-        assertThat(responses.get(0).id()).isEqualTo(1L);
-        assertThat(responses.get(0).customerId()).isEqualTo(1L);
-        assertThat(responses.get(1).status()).isEqualTo(WorkOrderStatus.IN_PROGRESS);
+        assertThat(responses.getContent().get(0).id()).isEqualTo(1L);
+        assertThat(responses.getContent().get(0).customerId()).isEqualTo(1L);
+        assertThat(responses.getContent().get(1).status()).isEqualTo(WorkOrderStatus.IN_PROGRESS);
 
-        ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
-        verify(repository).findAllByCustomer_Id(eq(1L), sortCaptor.capture());
-        Sort.Order order = sortCaptor.getValue().getOrderFor("id");
-        assertThat(order).isNotNull();
-        assertThat(order.isAscending()).isTrue();
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(repository).findAllByCustomer_Id(eq(1L), pageableCaptor.capture());
+        assertThat(pageableCaptor.getValue()).isEqualTo(pageable);
+    }
+
+    @Test
+    void listShouldFilterByStatusWhenProvided() {
+        Customer customer = customer(1L, "Alice Johnson");
+        WorkOrder openOrder = workOrder(1L, customer, "1HGCM82633A004352", WorkOrderStatus.OPEN);
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(customerService.findByIdOrThrow(1L)).thenReturn(customer);
+        when(repository.findAllByCustomer_IdAndStatus(1L, WorkOrderStatus.OPEN, pageable))
+                .thenReturn(new PageImpl<>(List.of(openOrder), pageable, 1));
+
+        Page<WorkOrderResponse> responses = service.list(1L, WorkOrderStatus.OPEN, pageable);
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getContent().getFirst().status()).isEqualTo(WorkOrderStatus.OPEN);
+        verify(repository).findAllByCustomer_IdAndStatus(1L, WorkOrderStatus.OPEN, pageable);
     }
 
     @Test

@@ -3,15 +3,15 @@ package com.interview.workorder.service;
 import com.interview.common.error.ResourceNotFoundException;
 import com.interview.customer.entity.Customer;
 import com.interview.customer.service.CustomerService;
-import java.util.List;
-
 import com.interview.workorder.mapping.WorkOrderMapper;
 import com.interview.workorder.dto.WorkOrderRequest;
 import com.interview.workorder.dto.WorkOrderResponse;
 import com.interview.workorder.dao.WorkOrderRepository;
 import com.interview.workorder.entity.WorkOrder;
+import com.interview.workorder.model.WorkOrderStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +30,14 @@ public class WorkOrderService {
         return mapper.toResponse(repository.save(workOrder));
     }
 
-    public List<WorkOrderResponse> list(Long customerId) {
+    public Page<WorkOrderResponse> list(Long customerId, WorkOrderStatus status, Pageable pageable) {
         resolveCustomerById(customerId);
-        return mapper.toResponseList(
-                repository.findAllByCustomer_Id(customerId, Sort.by(Sort.Direction.ASC, "id"))
-        );
+        if (status != null) {
+            return repository.findAllByCustomer_IdAndStatus(customerId, status, pageable)
+                    .map(mapper::toResponse);
+        }
+        return repository.findAllByCustomer_Id(customerId, pageable)
+                .map(mapper::toResponse);
     }
 
     public WorkOrderResponse getById(Long customerId, Long id) {

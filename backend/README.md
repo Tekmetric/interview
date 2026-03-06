@@ -44,10 +44,16 @@ curl -X GET http://localhost:8080/api/welcome
 
 ## CRUD endpoints
 - `POST /api/customers/{customerId}/work-orders` - create a work order
-- `GET /api/customers/{customerId}/work-orders` - list all work orders for a customer
+- `GET /api/customers/{customerId}/work-orders` - list work orders for a customer (paged, sortable, filterable)
 - `GET /api/customers/{customerId}/work-orders/{id}` - fetch a single work order for a customer
 - `PUT /api/customers/{customerId}/work-orders/{id}` - update a work order
 - `DELETE /api/customers/{customerId}/work-orders/{id}` - delete a work order
+
+### List query params
+- `status` (optional): `OPEN`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`
+- `page` (optional): zero-based page index, default `0`
+- `size` (optional): page size, default `20`
+- `sort` (optional): `<field>,<direction>`, default `id,asc`
 
 ## Example API-client demo (cURL)
 
@@ -65,6 +71,11 @@ curl -X POST http://localhost:8080/api/customers/1/work-orders \
 2. List:
 ```bash
 curl -X GET http://localhost:8080/api/customers/1/work-orders
+```
+
+2a. List with filter + pagination + sorting:
+```bash
+curl -X GET "http://localhost:8080/api/customers/1/work-orders?status=OPEN&page=0&size=2&sort=id,asc"
 ```
 
 3. Get one:

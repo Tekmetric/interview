@@ -2,6 +2,7 @@ package com.interview.workorder.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,6 +30,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -46,6 +51,7 @@ class WorkOrderControllerUnitTest {
     void setUp() {
         WorkOrderController controller = new WorkOrderController(workOrderService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .setControllerAdvice(new ApiExceptionHandler())
                 .build();
         objectMapper = new ObjectMapper().findAndRegisterModules();
@@ -82,7 +88,7 @@ class WorkOrderControllerUnitTest {
                 "status", "OPEN"
         );
 
-                mockMvc.perform(post("/api/customers/1/work-orders")
+        mockMvc.perform(post("/api/customers/1/work-orders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidPayload)))
                 .andExpect(status().isBadRequest())
@@ -97,18 +103,40 @@ class WorkOrderControllerUnitTest {
 
     @Test
     void listShouldReturnCustomerScopedItems() throws Exception {
-        when(workOrderService.list(1L)).thenReturn(List.of(
+        when(workOrderService.list(eq(1L), isNull(), any(Pageable.class))).thenReturn(new PageImpl<>(List.of(
                 response(1L, 1L, "1HGCM82633A004352", WorkOrderStatus.OPEN),
                 response(2L, 1L, "JH4KA9650MC012345", WorkOrderStatus.IN_PROGRESS)
-        ));
+        ), PageRequest.of(0, 20), 2));
 
         mockMvc.perform(get("/api/customers/1/work-orders"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].customerId").value(1))
-                .andExpect(jsonPath("$[1].status").value("IN_PROGRESS"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].customerId").value(1))
+                .andExpect(jsonPath("$.content[1].status").value(WorkOrderStatus.IN_PROGRESS.toString()))
+                .andExpect(jsonPath("$.size").value(20))
+                .andExpect(jsonPath("$.number").value(0));
 
-        verify(workOrderService).list(1L);
+        verify(workOrderService).list(eq(1L), isNull(), any(Pageable.class));
+    }
+
+    @Test
+    void listShouldApplyStatusAndPagingParams() throws Exception {
+        when(workOrderService.list(eq(1L), eq(WorkOrderStatus.OPEN), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(
+                        response(1L, 1L, "1HGCM82633A004352", WorkOrderStatus.OPEN)
+                ), PageRequest.of(0, 1), 1));
+
+        mockMvc.perform(get("/api/customers/1/work-orders")
+                        .param("status", "OPEN")
+                        .param("page", "0")
+                        .param("size", "1")
+                        .param("sort", "createdAt,desc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].status").value(WorkOrderStatus.OPEN.toString()))
+                .andExpect(jsonPath("$.size").value(1));
+
+        verify(workOrderService).list(eq(1L), eq(WorkOrderStatus.OPEN), any(Pageable.class));
     }
 
     @Test
@@ -137,7 +165,7 @@ class WorkOrderControllerUnitTest {
                         .content(objectMapper.writeValueAsString(updatePayload)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(5))
-                .andExpect(jsonPath("$.status").value("COMPLETED"));
+                .andExpect(jsonPath("$.status").value(WorkOrderStatus.COMPLETED.toString()));
 
         mockMvc.perform(delete("/api/customers/1/work-orders/5"))
                 .andExpect(status().isNoContent());

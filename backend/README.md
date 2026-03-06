@@ -11,6 +11,12 @@ This project now includes a complete CRUD API for a `WorkOrder` resource, backed
 mvn spring-boot:run
 ```
 
+## Run with dev profile (auto seed data)
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+When `dev` profile is active, SQL in `src/test/resources/sql/test-data.sql` is executed automatically.
+
 ## Run tests
 - Unit tests only:
 ```bash

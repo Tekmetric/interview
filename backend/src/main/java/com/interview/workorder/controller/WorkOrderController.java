@@ -4,6 +4,9 @@ import com.interview.workorder.dto.WorkOrderRequest;
 import com.interview.workorder.dto.WorkOrderResponse;
 import com.interview.workorder.model.WorkOrderStatus;
 import com.interview.workorder.service.WorkOrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/customers/{customerId}/work-orders")
 // TODO(prod): Introduce explicit API versioning strategy before public release.
+@Tag(name = "Work Orders", description = "Manage work orders under a customer")
 @Validated
 @RequiredArgsConstructor
 public class WorkOrderController {
@@ -34,6 +38,12 @@ public class WorkOrderController {
     private final WorkOrderService workOrderService;
 
     @PostMapping
+    @Operation(
+            summary = "Create work order",
+            description = "Creates a new work order for the given customer.",
+            tags = {"Work Orders"},
+            security = {@SecurityRequirement(name = "basicAuth")}
+    )
     public ResponseEntity<WorkOrderResponse> create(
             @PathVariable @Positive(message = "customerId must be positive") Long customerId,
             @Valid @RequestBody WorkOrderRequest request
@@ -42,6 +52,12 @@ public class WorkOrderController {
     }
 
     @GetMapping
+    @Operation(
+            summary = "List work orders",
+            description = "Returns paged work orders for a customer with optional status filter.",
+            tags = {"Work Orders"},
+            security = {@SecurityRequirement(name = "basicAuth")}
+    )
     public Page<WorkOrderResponse> list(
             @PathVariable @Positive(message = "customerId must be positive") Long customerId,
             @RequestParam(required = false) WorkOrderStatus status,
@@ -51,6 +67,12 @@ public class WorkOrderController {
     }
 
     @GetMapping("/{id}")
+    @Operation(
+            summary = "Get work order",
+            description = "Returns a single work order by id for the given customer.",
+            tags = {"Work Orders"},
+            security = {@SecurityRequirement(name = "basicAuth")}
+    )
     public WorkOrderResponse getById(
             @PathVariable @Positive(message = "customerId must be positive") Long customerId,
             @PathVariable Long id
@@ -59,6 +81,12 @@ public class WorkOrderController {
     }
 
     @PutMapping("/{id}")
+    @Operation(
+            summary = "Update work order",
+            description = "Updates an existing work order under the given customer.",
+            tags = {"Work Orders"},
+            security = {@SecurityRequirement(name = "basicAuth")}
+    )
     public WorkOrderResponse update(
             @PathVariable @Positive(message = "customerId must be positive") Long customerId,
             @PathVariable Long id,
@@ -69,6 +97,12 @@ public class WorkOrderController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(
+            summary = "Delete work order",
+            description = "Deletes a work order by id for the given customer.",
+            tags = {"Work Orders"},
+            security = {@SecurityRequirement(name = "basicAuth")}
+    )
     public void delete(
             @PathVariable @Positive(message = "customerId must be positive") Long customerId,
             @PathVariable Long id

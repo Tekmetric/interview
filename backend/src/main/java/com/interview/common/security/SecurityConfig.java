@@ -27,7 +27,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // TODO(prod): Move authorization to permission/scope-based method security for finer-grained control.
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**", "/actuator/health").permitAll()
+                        .requestMatchers(
+                                "/h2-console/**",
+                                "/actuator/health",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/**").hasRole("ADMIN")

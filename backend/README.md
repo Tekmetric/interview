@@ -38,6 +38,11 @@ curl -X GET http://localhost:8080/actuator/health
 - `GET /actuator/metrics`
 - Demo file: `demo/actuator-api-demo.http`
 
+## OpenAPI / Swagger
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+- OpenAPI endpoints are publicly accessible for documentation.
+
 ## API Security
 - HTTP Basic authentication is enabled.
 - `GET /api/**` requires `ROLE_USER` or `ROLE_ADMIN`.

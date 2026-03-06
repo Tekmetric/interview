@@ -30,6 +30,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException {
+        // TODO(prod): Emit authentication failure audit events (client IP, user-agent, principal if present).
         HttpStatus status = HttpStatus.UNAUTHORIZED;
         String message = resolveMessage(authException);
 

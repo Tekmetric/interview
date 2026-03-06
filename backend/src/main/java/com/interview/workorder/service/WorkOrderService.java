@@ -25,6 +25,7 @@ public class WorkOrderService {
     private final WorkOrderMapper mapper;
 
     public WorkOrderResponse create(Long customerId, WorkOrderRequest request) {
+        // TODO(prod): Enforce idempotency key for create requests to prevent duplicate writes on retries.
         WorkOrder workOrder = mapper.toEntity(request);
         workOrder.setCustomer(resolveCustomerById(customerId));
         return mapper.toResponse(repository.save(workOrder));

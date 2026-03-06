@@ -25,6 +25,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // TODO(prod): Move authorization to permission/scope-based method security for finer-grained control.
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**", "/actuator/health").permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
@@ -36,6 +37,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(restAuthenticationEntryPoint)
                         .accessDeniedHandler(restAccessDeniedHandler)
                 )
+                // TODO(prod): Add brute-force protection (rate limiting and temporary account lockout) for auth endpoints.
                 // TODO(prod): Replace HTTP Basic with token-based auth (OAuth2/OIDC, short-lived access token,
                 // refresh token rotation and revocation support).
                 .httpBasic(Customizer.withDefaults())

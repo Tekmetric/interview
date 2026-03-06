@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/customers/{customerId}/work-orders")
+// TODO(prod): Introduce explicit API versioning strategy before public release.
 @Validated
 @RequiredArgsConstructor
 public class WorkOrderController {

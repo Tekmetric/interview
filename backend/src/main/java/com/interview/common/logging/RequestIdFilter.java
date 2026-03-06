@@ -25,6 +25,7 @@ public class RequestIdFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        // TODO(prod): Support W3C trace context (`traceparent`) and OpenTelemetry correlation.
         String requestId = resolveRequestId(request.getHeader(REQUEST_ID_HEADER));
         MDC.put(REQUEST_ID_MDC_KEY, requestId);
         response.setHeader(REQUEST_ID_HEADER, requestId);

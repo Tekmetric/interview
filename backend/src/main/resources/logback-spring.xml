@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- TODO(prod): Ship logs to centralized storage with retention/alerting policies. -->
     <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"app":"tekmetric-interview-backend"}</customFields>

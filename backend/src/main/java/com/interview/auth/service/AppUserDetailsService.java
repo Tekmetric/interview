@@ -18,6 +18,7 @@ public class AppUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // TODO(prod): Add account lock/expiry/password-rotation checks and MFA integration hooks.
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 

@@ -3,9 +3,8 @@ package com.interview.repository;
 import static com.interview.test.QueryAssert.assertThatQuery;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.interview.domain.Vin;
+import com.interview.domain.PhoneNumber;
 import com.interview.repository.entity.CustomerEntity;
-import com.interview.repository.entity.VehicleEntity;
 import java.util.Optional;
 import java.util.UUID;
 import org.hibernate.SessionFactory;
@@ -21,12 +20,10 @@ import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
 @Sql("/datasets/vehicle-data.sql")
-class VehicleRepositoryIT {
-
-    private static final UUID CUSTOMER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
+class CustomerRepositoryIT {
 
     @Autowired
-    VehicleRepository vehicleRepository;
+    CustomerRepository customerRepository;
 
     @Autowired
     TestEntityManager entityManager;
@@ -42,72 +39,65 @@ class VehicleRepositoryIT {
     }
 
     @Test
-    void savePersistsVehicle() {
-        final VehicleEntity entity = entityWith(new Vin("1HGBH41JXMN109186"));
+    void savePersistsCustomer() {
+        final CustomerEntity entity = customerEntity("Jane Doe", "(555) 123-4567");
 
         statistics.clear();
-        final VehicleEntity saved = vehicleRepository.save(entity);
+        final CustomerEntity saved = customerRepository.save(entity);
         entityManager.flush();
         assertThatQuery(statistics).hasInsertCount(1).hasNoOtherOperations();
 
         entityManager.clear();
 
-        final VehicleEntity found = entityManager.find(VehicleEntity.class, saved.getId());
-        assertThat(found).usingRecursiveComparison()
-                .ignoringFields("customer")
-                .isEqualTo(saved);
-        assertThat(found.getCustomer().getId()).isEqualTo(saved.getCustomer().getId());
+        final CustomerEntity found = entityManager.find(CustomerEntity.class, saved.getId());
+        assertThat(found).usingRecursiveComparison().isEqualTo(saved);
     }
 
     @Test
-    void findByIdReturnsVehicle() {
-        final VehicleEntity entity = entityWith(new Vin("1HGBH41JXMN109186"));
+    void findByIdReturnsCustomer() {
+        final CustomerEntity entity = customerEntity("Jane Doe", "(555) 123-4567");
         entityManager.persistAndFlush(entity);
         entityManager.clear();
 
         statistics.clear();
-        final Optional<VehicleEntity> result = vehicleRepository.findById(entity.getId());
+        final Optional<CustomerEntity> result = customerRepository.findById(entity.getId());
         assertThatQuery(statistics).hasQueryCount(0).hasNoOtherOperations();
 
-        assertThat(result).get().usingRecursiveComparison()
-                .ignoringFields("customer")
-                .isEqualTo(entity);
-        assertThat(result.get().getCustomer().getId()).isEqualTo(entity.getCustomer().getId());
+        assertThat(result).get().usingRecursiveComparison().isEqualTo(entity);
     }
 
     @Test
     void findAllReturnsPage() {
-        entityManager.persistAndFlush(entityWith(new Vin("1HGBH41JXMN109186")));
-        entityManager.persistAndFlush(entityWith(new Vin("2HGBH41JXMN109186")));
+        entityManager.persistAndFlush(customerEntity("Jane Doe", "(555) 123-4567"));
         entityManager.clear();
 
         statistics.clear();
-        final Page<VehicleEntity> page = vehicleRepository.findAll(PageRequest.of(0, 10));
+        final Page<CustomerEntity> page = customerRepository.findAll(PageRequest.of(0, 10));
         assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
 
-        assertThat(page.getContent()).hasSize(3);
+        assertThat(page.getContent()).hasSize(2);
     }
 
     @Test
-    void deleteRemovesVehicle() {
-        final VehicleEntity entity = entityWith(new Vin("1HGBH41JXMN109186"));
+    void deleteRemovesCustomer() {
+        final CustomerEntity entity = customerEntity("Jane Doe", "(555) 123-4567");
         entityManager.persistAndFlush(entity);
         final UUID id = entity.getId();
 
         statistics.clear();
-        vehicleRepository.delete(entity);
+        customerRepository.delete(entity);
         entityManager.flush();
         assertThatQuery(statistics).hasDeleteCount(1).hasNoOtherOperations();
 
         entityManager.clear();
 
-        assertThat(vehicleRepository.findById(id)).isEmpty();
+        assertThat(customerRepository.findById(id)).isEmpty();
     }
 
-    private VehicleEntity entityWith(Vin vin) {
-        final VehicleEntity entity = new VehicleEntity();
-        entity.setVin(vin);
-        entity.setCustomer(entityManager.find(CustomerEntity.class, CUSTOMER_ID));
+    private CustomerEntity customerEntity(String name, String phoneNumber) {
+        final CustomerEntity entity = new CustomerEntity();
+        entity.setName(name);
+        entity.setPhoneNumber(new PhoneNumber(phoneNumber));
         return entity;
     }
 }

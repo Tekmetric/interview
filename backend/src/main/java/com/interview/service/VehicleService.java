@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class VehicleService {
-    final VehicleEntityMapper vehicleEntityMapper;
-    final VehicleRepository vehicleRepository;
+    private final VehicleEntityMapper vehicleEntityMapper;
+    private final VehicleRepository vehicleRepository;
 
     public VehicleService(VehicleEntityMapper vehicleEntityMapper, VehicleRepository vehicleRepository) {
         this.vehicleEntityMapper = vehicleEntityMapper;

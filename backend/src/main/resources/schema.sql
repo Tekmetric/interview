@@ -15,12 +15,15 @@ CREATE TABLE IF NOT EXISTS work_order (
     id UUID PRIMARY KEY,
     customer_id UUID NOT NULL,
     vehicle_id UUID NOT NULL,
-    scheduled_start_date_time TIMESTAMP,
+    scheduled_start_date_time TIMESTAMP WITH TIME ZONE,
     CONSTRAINT fk_work_order_customer FOREIGN KEY (customer_id) REFERENCES customer(id),
     CONSTRAINT fk_work_order_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicle(id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_work_order_scheduled_start_date_time ON work_order(scheduled_start_date_time);
+CREATE INDEX IF NOT EXISTS idx_vehicle_customer_id ON vehicle(customer_id);
+CREATE INDEX IF NOT EXISTS idx_work_order_customer_id ON work_order(customer_id);
+CREATE INDEX IF NOT EXISTS idx_work_order_vehicle_id ON work_order(vehicle_id);
 
 CREATE TABLE IF NOT EXISTS part_line_item (
     id UUID PRIMARY KEY,
@@ -31,6 +34,8 @@ CREATE TABLE IF NOT EXISTS part_line_item (
     CONSTRAINT fk_part_line_item_work_order FOREIGN KEY (work_order_id) REFERENCES work_order(id) ON DELETE CASCADE
 );
 
+CREATE INDEX IF NOT EXISTS idx_part_line_item_work_order_id ON part_line_item(work_order_id);
+
 CREATE TABLE IF NOT EXISTS labor_line_item (
     id UUID PRIMARY KEY,
     work_order_id UUID NOT NULL,
@@ -39,3 +44,5 @@ CREATE TABLE IF NOT EXISTS labor_line_item (
     service_code UUID NOT NULL,
     CONSTRAINT fk_labor_line_item_work_order FOREIGN KEY (work_order_id) REFERENCES work_order(id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_labor_line_item_work_order_id ON labor_line_item(work_order_id);

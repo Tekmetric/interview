@@ -50,15 +50,16 @@ public class RestExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(DataIntegrityViolationException exception) {
         LOGGER.warn("Data integrity violation: {}", exception.getMessage());
+        // TODO message is pretty vague, could either implment deep exception translation or service validation
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("status", HttpStatus.CONFLICT, "error", "A conflicting record already exists"));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleUnexpected(Exception exception) {
+    public ResponseEntity<Map<String, Object>> handleUnexpected(Exception exception) {
         // Use a generic message to avoid leaking internal details (stack traces, class names, etc.)
         LOGGER.error("Unexpected error", exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred"));
+                .body(Map.of("status", HttpStatus.INTERNAL_SERVER_ERROR, "error", "An unexpected error occurred"));
     }
 }

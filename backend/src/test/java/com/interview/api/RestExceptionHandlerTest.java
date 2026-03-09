@@ -106,9 +106,11 @@ class RestExceptionHandlerTest {
 
     @Test
     void unexpectedExceptionReturns500() {
-        final ResponseEntity<Map<String, String>> response = handler.handleUnexpected(new RuntimeException("boom"));
+        final ResponseEntity<Map<String, Object>> response = handler.handleUnexpected(new RuntimeException("boom"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-        assertThat(response.getBody()).containsEntry("error", "An unexpected error occurred");
+        assertThat(response.getBody())
+                .containsEntry("status", HttpStatus.INTERNAL_SERVER_ERROR)
+                .containsEntry("error", "An unexpected error occurred");
     }
 }

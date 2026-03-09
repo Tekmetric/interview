@@ -19,9 +19,8 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrderEntity, UUID
     @Query("SELECT w FROM work_order w LEFT JOIN FETCH w.laborLineItems WHERE w.id = :id")
     Optional<WorkOrderEntity> findByIdWithLaborLineItems(@Param("id") UUID id);
 
-    Page<WorkOrderEntity> findAllByCustomerId(UUID customerId, Pageable pageable);
-
-    Page<WorkOrderEntity> findAllByVehicleId(UUID vehicleId, Pageable pageable);
-
-    Page<WorkOrderEntity> findAllByCustomerIdAndVehicleId(UUID customerId, UUID vehicleId, Pageable pageable);
+    @Query(
+            "SELECT w FROM work_order w WHERE (:customerId IS NULL OR w.customer.id = :customerId) AND (:vehicleId IS NULL OR w.vehicle.id = :vehicleId)")
+    Page<WorkOrderEntity> findAll(
+            @Param("customerId") UUID customerId, @Param("vehicleId") UUID vehicleId, Pageable pageable);
 }

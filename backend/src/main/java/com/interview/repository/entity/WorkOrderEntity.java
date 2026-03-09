@@ -11,7 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +24,7 @@ public class WorkOrderEntity implements Identifiable {
     private UUID id = UuidCreator.getTimeOrderedEpoch();
 
     @Column(name = "scheduled_start_date_time")
-    private LocalDateTime scheduledStartDateTime;
+    private Instant scheduledStartDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
@@ -48,11 +48,11 @@ public class WorkOrderEntity implements Identifiable {
         this.id = id;
     }
 
-    public LocalDateTime getScheduledStartDateTime() {
+    public Instant getScheduledStartDateTime() {
         return scheduledStartDateTime;
     }
 
-    public void setScheduledStartDateTime(LocalDateTime scheduledStartDateTime) {
+    public void setScheduledStartDateTime(Instant scheduledStartDateTime) {
         this.scheduledStartDateTime = scheduledStartDateTime;
     }
 
@@ -77,7 +77,11 @@ public class WorkOrderEntity implements Identifiable {
     }
 
     public void setPartLineItems(Set<PartLineItemEntity> partLineItems) {
-        this.partLineItems = partLineItems;
+        this.partLineItems.forEach(item -> item.setWorkOrder(null));
+        this.partLineItems.clear();
+        if (partLineItems != null) {
+            partLineItems.forEach(this::addPartLineItem);
+        }
     }
 
     public Set<LaborLineItemEntity> getLaborLineItems() {
@@ -85,7 +89,11 @@ public class WorkOrderEntity implements Identifiable {
     }
 
     public void setLaborLineItems(Set<LaborLineItemEntity> laborLineItems) {
-        this.laborLineItems = laborLineItems;
+        this.laborLineItems.forEach(item -> item.setWorkOrder(null));
+        this.laborLineItems.clear();
+        if (laborLineItems != null) {
+            laborLineItems.forEach(this::addLaborLineItem);
+        }
     }
 
     public void addPartLineItem(PartLineItemEntity item) {

@@ -3,6 +3,7 @@ package com.interview.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.interview.domain.Vin;
+import com.interview.repository.entity.CustomerEntity;
 import com.interview.repository.entity.VehicleEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +11,16 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @DataJpaTest
+@Sql("/datasets/vehicle-data.sql")
 class VehicleRepositoryIT {
+
+    private static final UUID CUSTOMER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
     @Autowired
     VehicleRepository vehicleRepository;
@@ -32,7 +37,10 @@ class VehicleRepositoryIT {
         entityManager.clear();
 
         final VehicleEntity found = entityManager.find(VehicleEntity.class, saved.getId());
-        assertThat(found).usingRecursiveComparison().isEqualTo(saved);
+        assertThat(found).usingRecursiveComparison()
+                .ignoringFields("customer")
+                .isEqualTo(saved);
+        assertThat(found.getCustomer().getId()).isEqualTo(saved.getCustomer().getId());
     }
 
     @Test
@@ -44,7 +52,10 @@ class VehicleRepositoryIT {
         final Optional<VehicleEntity> result = vehicleRepository.findById(entity.getId());
 
         assertThat(result).isPresent();
-        assertThat(result.get()).usingRecursiveComparison().isEqualTo(entity);
+        assertThat(result.get()).usingRecursiveComparison()
+                .ignoringFields("customer")
+                .isEqualTo(entity);
+        assertThat(result.get().getCustomer().getId()).isEqualTo(entity.getCustomer().getId());
     }
 
     @Test
@@ -55,7 +66,7 @@ class VehicleRepositoryIT {
 
         final Page<VehicleEntity> page = vehicleRepository.findAll(PageRequest.of(0, 10));
 
-        assertThat(page.getContent()).hasSize(2);
+        assertThat(page.getContent()).hasSize(3);
     }
 
     @Test
@@ -71,9 +82,10 @@ class VehicleRepositoryIT {
         assertThat(vehicleRepository.findById(id)).isEmpty();
     }
 
-    private static VehicleEntity entityWith(Vin vin) {
+    private VehicleEntity entityWith(Vin vin) {
         final VehicleEntity entity = new VehicleEntity();
         entity.setVin(vin);
+        entity.setCustomer(entityManager.find(CustomerEntity.class, CUSTOMER_ID));
         return entity;
     }
 }

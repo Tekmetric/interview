@@ -2,7 +2,6 @@ package com.interview.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,10 +16,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,12 +27,13 @@ import org.springframework.data.domain.PageRequest;
 class VehicleServiceTest {
 
     static final Vin VIN = new Vin("1HGBH41JXMN109186");
+    static final UUID CUSTOMER_ID = UUID.randomUUID();
 
     @Mock
     VehicleRepository vehicleRepository;
 
-    @Spy
-    final VehicleEntityMapper vehicleEntityMapper = Mappers.getMapper(VehicleEntityMapper.class);
+    @Mock
+    VehicleEntityMapper vehicleEntityMapper;
 
     @InjectMocks
     VehicleService vehicleService;
@@ -43,10 +41,12 @@ class VehicleServiceTest {
     @Test
     void findAllReturnsPageOfVehicles() {
         final VehicleEntity entity = entityWith(UUID.randomUUID(), VIN);
+        final Vehicle vehicle = new Vehicle(entity.getId(), VIN, CUSTOMER_ID);
         final PageRequest pageable = PageRequest.of(0, 20);
         when(vehicleRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(entity)));
+        when(vehicleEntityMapper.toDomain(entity)).thenReturn(vehicle);
 
-        final Page<Vehicle> result = vehicleService.findAll(pageable);
+        final Page<Vehicle> result = vehicleService.findAll(null, pageable);
 
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getContent().getFirst().vin()).isEqualTo(VIN);
@@ -58,20 +58,37 @@ class VehicleServiceTest {
         final PageRequest pageable = PageRequest.of(0, 20);
         when(vehicleRepository.findAll(pageable)).thenReturn(Page.empty());
 
-        final Page<Vehicle> result = vehicleService.findAll(pageable);
+        final Page<Vehicle> result = vehicleService.findAll(null, pageable);
 
         assertThat(result.getContent()).isEmpty();
+    }
+
+    @Test
+    void findAllByCustomerIdReturnsFilteredPage() {
+        final VehicleEntity entity = entityWith(UUID.randomUUID(), VIN);
+        final Vehicle vehicle = new Vehicle(entity.getId(), VIN, CUSTOMER_ID);
+        final PageRequest pageable = PageRequest.of(0, 20);
+        when(vehicleRepository.findAllByCustomerId(CUSTOMER_ID, pageable)).thenReturn(new PageImpl<>(List.of(entity)));
+        when(vehicleEntityMapper.toDomain(entity)).thenReturn(vehicle);
+
+        final Page<Vehicle> result = vehicleService.findAll(CUSTOMER_ID, pageable);
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().getFirst().vin()).isEqualTo(VIN);
+        verify(vehicleRepository).findAllByCustomerId(CUSTOMER_ID, pageable);
     }
 
     @Test
     void findByIdReturnsVehicle() {
         final UUID id = UUID.randomUUID();
         final VehicleEntity entity = entityWith(id, VIN);
+        final Vehicle vehicle = new Vehicle(id, VIN, CUSTOMER_ID);
         when(vehicleRepository.findById(id)).thenReturn(Optional.of(entity));
+        when(vehicleEntityMapper.toDomain(entity)).thenReturn(vehicle);
 
         final Vehicle result = vehicleService.findById(id);
 
-        assertThat(result).isEqualTo(new Vehicle(id, VIN));
+        assertThat(result).isEqualTo(vehicle);
         verify(vehicleEntityMapper).toDomain(entity);
     }
 
@@ -88,31 +105,36 @@ class VehicleServiceTest {
     @Test
     void createSavesAndReturnsVehicle() {
         final UUID savedId = UUID.randomUUID();
-        when(vehicleRepository.save(any())).thenAnswer(invocation -> {
-            final VehicleEntity e = invocation.getArgument(0);
-            e.setId(savedId);
-            return e;
-        });
+        final Vehicle input = new Vehicle(null, VIN, CUSTOMER_ID);
+        final VehicleEntity entity = new VehicleEntity();
+        final VehicleEntity savedEntity = entityWith(savedId, VIN);
+        final Vehicle expected = new Vehicle(savedId, VIN, CUSTOMER_ID);
 
-        final Vehicle vehicle = new Vehicle(null, VIN);
-        final Vehicle result = vehicleService.create(vehicle);
+        when(vehicleEntityMapper.toEntity(input)).thenReturn(entity);
+        when(vehicleRepository.save(entity)).thenReturn(savedEntity);
+        when(vehicleEntityMapper.toDomain(savedEntity)).thenReturn(expected);
 
-        assertThat(result).isEqualTo(new Vehicle(savedId, VIN));
-        verify(vehicleEntityMapper).toEntity(vehicle);
+        final Vehicle result = vehicleService.create(input);
+
+        assertThat(result).isEqualTo(expected);
+        verify(vehicleEntityMapper).toEntity(input);
     }
 
     @Test
     void updateUpdatesAndReturnsVehicle() {
         final UUID id = UUID.randomUUID();
         final VehicleEntity existingEntity = entityWith(id, new Vin("2HGBH41JXMN109186"));
+        final Vehicle input = new Vehicle(id, VIN, CUSTOMER_ID);
+        final Vehicle expected = new Vehicle(id, VIN, CUSTOMER_ID);
+
         when(vehicleRepository.findById(id)).thenReturn(Optional.of(existingEntity));
         when(vehicleRepository.save(existingEntity)).thenReturn(existingEntity);
+        when(vehicleEntityMapper.toDomain(existingEntity)).thenReturn(expected);
 
-        final Vehicle vehicle = new Vehicle(id, VIN);
-        final Vehicle result = vehicleService.update(id, vehicle);
+        final Vehicle result = vehicleService.update(id, input);
 
-        assertThat(result).isEqualTo(new Vehicle(id, VIN));
-        verify(vehicleEntityMapper).updateEntity(vehicle, existingEntity);
+        assertThat(result).isEqualTo(expected);
+        verify(vehicleEntityMapper).updateEntity(input, existingEntity);
         verify(vehicleEntityMapper).toDomain(existingEntity);
     }
 
@@ -121,7 +143,7 @@ class VehicleServiceTest {
         final UUID id = UUID.randomUUID();
         when(vehicleRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> vehicleService.update(id, new Vehicle(id, VIN)))
+        assertThatThrownBy(() -> vehicleService.update(id, new Vehicle(id, VIN, CUSTOMER_ID)))
                 .isInstanceOf(VehicleNotFound.class)
                 .hasMessageContaining(id.toString());
     }

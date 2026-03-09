@@ -1,111 +1,120 @@
 package com.interview.api.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.interview.api.mapper.VehicleApiMapperImpl;
-import com.interview.config.SecurityConfig;
-import com.interview.domain.Vehicle;
 import com.interview.domain.Vin;
-import com.interview.service.VehicleService;
-import java.util.List;
+import com.interview.repository.VehicleRepository;
+import com.interview.repository.entity.VehicleEntity;
+import com.jayway.jsonpath.JsonPath;
+import jakarta.persistence.EntityManager;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-@WebMvcTest(VehicleRestController.class)
-@Import({SecurityConfig.class, VehicleApiMapperImpl.class})
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@AutoConfigureMockMvc
+@Transactional
+@Sql("/datasets/vehicle-data.sql")
 class VehicleRestControllerIT {
 
-    private static final UUID TEST_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
-    private static final Vin TEST_VIN = new Vin("1HGBH41JXMN109186");
-    private static final Vehicle TEST_VEHICLE = new Vehicle(TEST_ID, TEST_VIN);
-
-    @MockitoBean
-    private VehicleService vehicleService;
+    private static final String CUSTOMER_ID = "00000000-0000-0000-0000-000000000001";
+    private static final String VEHICLE_ID = "00000000-0000-0000-0000-000000000011";
+    private static final String VEHICLE_VIN = "JH4KA8260MC000001";
 
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private VehicleRepository vehicleRepository;
+
     @Test
     void getAllVehiclesReturnsOk() throws Exception {
-        when(vehicleService.findAll(any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(TEST_VEHICLE)));
-
         mockMvc.perform(get("/vehicles"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(TEST_ID.toString()))
-                .andExpect(jsonPath("$.content[0].vin").value(TEST_VIN.vinString()));
+                .andExpect(content().json("""
+                        {"content":[{"id":"%s","vin":"%s","customerId":"%s"}],"page":{"totalElements":1}}"""
+                        .formatted(VEHICLE_ID, VEHICLE_VIN, CUSTOMER_ID)));
+    }
+
+    @Test
+    void getAllVehiclesByCustomerIdReturnsOk() throws Exception {
+        mockMvc.perform(get("/vehicles").param("customerId", CUSTOMER_ID))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        {"content":[{"id":"%s","vin":"%s","customerId":"%s"}],"page":{"totalElements":1}}"""
+                        .formatted(VEHICLE_ID, VEHICLE_VIN, CUSTOMER_ID)));
     }
 
     @Test
     void getVehicleByIdReturnsOk() throws Exception {
-        when(vehicleService.findById(TEST_ID)).thenReturn(TEST_VEHICLE);
-
-        mockMvc.perform(get("/vehicles/{id}", TEST_ID))
+        mockMvc.perform(get("/vehicles/{id}", VEHICLE_ID))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(TEST_ID.toString()))
-                .andExpect(jsonPath("$.vin").value(TEST_VIN.vinString()));
+                .andExpect(content().json("""
+                        {"id":"%s","vin":"%s","customerId":"%s"}"""
+                        .formatted(VEHICLE_ID, VEHICLE_VIN, CUSTOMER_ID)));
     }
 
     @Test
     void createVehicleReturnsCreated() throws Exception {
-        when(vehicleService.create(any(Vehicle.class))).thenReturn(TEST_VEHICLE);
-
-        mockMvc.perform(post("/vehicles")
+        final String body = mockMvc.perform(post("/vehicles")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"vin":"1HGBH41JXMN109186"}
-                                """))
+                                {"vin":"1HGBH41JXMN109186","customerId":"%s"}"""
+                                .formatted(CUSTOMER_ID)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/vehicles/" + TEST_ID))
-                .andExpect(jsonPath("$.id").value(TEST_ID.toString()))
-                .andExpect(jsonPath("$.vin").value(TEST_VIN.vinString()));
-    }
+                .andExpect(header().exists("Location"))
+                .andReturn().getResponse().getContentAsString();
 
-    @Test
-    void createVehicleWithInvalidBeanReturnsBadRequest() throws Exception {
-        //intentionally not exhaustive, serves to guarantee that bean validation is wired correctly
-        mockMvc.perform(post("/vehicles")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"vin":"INVALID"}
-                                """))
-                .andExpect(status().isBadRequest());
+        final UUID id = UUID.fromString(JsonPath.read(body, "$.id"));
+        entityManager.flush();
+        entityManager.clear();
+
+        final VehicleEntity persisted = vehicleRepository.findById(id).orElseThrow();
+        assertThat(persisted.getVin()).isEqualTo(new Vin("1HGBH41JXMN109186"));
+        assertThat(persisted.getCustomer().getId()).isEqualTo(UUID.fromString(CUSTOMER_ID));
     }
 
     @Test
     void updateVehicleReturnsOk() throws Exception {
-        when(vehicleService.update(any(UUID.class), any(Vehicle.class))).thenReturn(TEST_VEHICLE);
-
-        mockMvc.perform(put("/vehicles/{id}", TEST_ID)
+        mockMvc.perform(put("/vehicles/{id}", VEHICLE_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"vin":"1HGBH41JXMN109186"}
-                                """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(TEST_ID.toString()))
-                .andExpect(jsonPath("$.vin").value(TEST_VIN.vinString()));
+                                {"vin":"2HGBH41JXMN109186","customerId":"%s"}"""
+                                .formatted(CUSTOMER_ID)))
+                .andExpect(status().isOk());
+
+        entityManager.flush();
+        entityManager.clear();
+
+        final VehicleEntity updated = vehicleRepository.findById(UUID.fromString(VEHICLE_ID)).orElseThrow();
+        assertThat(updated.getVin()).isEqualTo(new Vin("2HGBH41JXMN109186"));
     }
 
     @Test
     void deleteVehicleReturnsNoContent() throws Exception {
-        mockMvc.perform(delete("/vehicles/{id}", TEST_ID))
+        mockMvc.perform(delete("/vehicles/{id}", VEHICLE_ID))
                 .andExpect(status().isNoContent());
-    }
 
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(vehicleRepository.findById(UUID.fromString(VEHICLE_ID))).isEmpty();
+    }
 }

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -37,6 +38,13 @@ public class RestExceptionHandler {
                 .toList();
         LOGGER.warn("Validation failed: {}", errors);
         return ResponseEntity.badRequest().body(Map.of("status", HttpStatus.BAD_REQUEST, "errors", errors));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, Object>> handleMessageNotReadable(HttpMessageNotReadableException exception) {
+        LOGGER.warn("Malformed request body: {}", exception.getMessage());
+        return ResponseEntity.badRequest()
+                .body(Map.of("status", HttpStatus.BAD_REQUEST, "error", "Malformed request body"));
     }
 
     @ExceptionHandler

@@ -11,7 +11,7 @@ import jakarta.persistence.ManyToOne;
 import java.util.UUID;
 
 @Entity(name = "vehicle")
-public class VehicleEntity {
+public class VehicleEntity implements Identifiable {
     @Id
     private UUID id = UuidCreator.getTimeOrderedEpoch();
 
@@ -47,7 +47,7 @@ public class VehicleEntity {
     }
 
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (!(o instanceof VehicleEntity that)) return false;
 
         return id.equals(that.id);

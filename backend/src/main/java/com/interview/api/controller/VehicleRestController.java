@@ -2,6 +2,7 @@ package com.interview.api.controller;
 
 import com.interview.api.mapper.VehicleApiMapper;
 import com.interview.api.request.VehicleRequest;
+import com.interview.api.request.VehicleSearchRequest;
 import com.interview.api.response.VehicleResponse;
 import com.interview.domain.Vehicle;
 import com.interview.service.VehicleService;
@@ -33,8 +34,10 @@ public class VehicleRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<VehicleResponse>> getAllVehicles(@PageableDefault(size = 20) Pageable pageable) {
-        final Page<VehicleResponse> vehicles = vehicleService.findAll(pageable).map(vehicleApiMapper::toResponse);
+    public ResponseEntity<Page<VehicleResponse>> getAllVehicles(
+            VehicleSearchRequest searchRequest, @PageableDefault(size = 20) Pageable pageable) {
+        final Page<VehicleResponse> vehicles =
+                vehicleService.findAll(searchRequest.customerId(), pageable).map(vehicleApiMapper::toResponse);
         return ResponseEntity.ok(vehicles);
     }
 

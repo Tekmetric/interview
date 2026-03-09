@@ -22,8 +22,12 @@ public class VehicleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Vehicle> findAll(Pageable pageable) {
-        return vehicleRepository.findAll(pageable).map(vehicleEntityMapper::toDomain);
+    public Page<Vehicle> findAll(UUID customerId, Pageable pageable) {
+        // would use jpa spec if params grew beyond a couple different options
+        final Page<VehicleEntity> page = customerId != null
+                ? vehicleRepository.findAllByCustomerId(customerId, pageable)
+                : vehicleRepository.findAll(pageable);
+        return page.map(vehicleEntityMapper::toDomain);
     }
 
     @Transactional(readOnly = true)

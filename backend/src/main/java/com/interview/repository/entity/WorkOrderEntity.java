@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Entity(name = "work_order")
 @Table(indexes = @Index(name = "idx_work_order_scheduled_start_date_time", columnList = "scheduled_start_date_time"))
-public class WorkOrderEntity {
+public class WorkOrderEntity implements Identifiable {
     @Id
     private UUID id = UuidCreator.getTimeOrderedEpoch();
 
@@ -86,6 +86,26 @@ public class WorkOrderEntity {
 
     public void setLaborLineItems(Set<LaborLineItemEntity> laborLineItems) {
         this.laborLineItems = laborLineItems;
+    }
+
+    public void addPartLineItem(PartLineItemEntity item) {
+        item.setWorkOrder(this);
+        partLineItems.add(item);
+    }
+
+    public void removePartLineItem(PartLineItemEntity item) {
+        partLineItems.remove(item);
+        item.setWorkOrder(null);
+    }
+
+    public void addLaborLineItem(LaborLineItemEntity item) {
+        item.setWorkOrder(this);
+        laborLineItems.add(item);
+    }
+
+    public void removeLaborLineItem(LaborLineItemEntity item) {
+        laborLineItems.remove(item);
+        item.setWorkOrder(null);
     }
 
     @Override

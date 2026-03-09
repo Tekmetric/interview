@@ -34,8 +34,9 @@ etc.
 ## Design choices
 
 ### Layered architecture
-* api -> service/domain -> persistence
+* api -> service -> persistence
 * mapping between layers via MapStruct or manual mapping if needed.
+* domain shared, pragmatic choice to avoid mapping value types between layers.
 
 ### UUID v7 for primary keys
 
@@ -48,6 +49,7 @@ etc.
 * PartLineItem and LaborLineItem are separate objects to allow better scaling and flexibility.
   * Intentionally not using MappedSuperclass.
   * Intentionally not exposing a Repository for these entities.
+* Customer id FK on Vehicle and WorkOrder to allow independent lookup, flexible business logic (change in ownership)
 
 ### Domain & Api design
 * Traditional REST API would expose vehicles and work orders on the customer controller.
@@ -57,6 +59,7 @@ etc.
   * Related resources are fetched via query parameter filters rather than nested routes.
   * Ex. /vehicles?customerId={id}, /work-orders?vehicleId={id}
   * This keeps controllers independent and makes it straightforward to split into separate services later if needed.
+* Customer id 
 
 ### Thin domain and responses
 * Responses return IDs for related resources rather than embedding full objects.

@@ -3,6 +3,8 @@ package com.interview.repository;
 import com.interview.repository.entity.WorkOrderEntity;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +18,10 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrderEntity, UUID
 
     @Query("SELECT w FROM work_order w LEFT JOIN FETCH w.laborLineItems WHERE w.id = :id")
     Optional<WorkOrderEntity> findByIdWithLaborLineItems(@Param("id") UUID id);
+
+    Page<WorkOrderEntity> findAllByCustomerId(UUID customerId, Pageable pageable);
+
+    Page<WorkOrderEntity> findAllByVehicleId(UUID vehicleId, Pageable pageable);
+
+    Page<WorkOrderEntity> findAllByCustomerIdAndVehicleId(UUID customerId, UUID vehicleId, Pageable pageable);
 }

@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import java.util.UUID;
 
 @Entity(name = "labor_line_item")
-public class LaborLineItemEntity {
+public class LaborLineItemEntity implements Identifiable {
     @Id
     private UUID id = UuidCreator.getTimeOrderedEpoch();
 
@@ -68,7 +68,7 @@ public class LaborLineItemEntity {
     }
 
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (!(o instanceof LaborLineItemEntity that)) return false;
 
         return id.equals(that.id);

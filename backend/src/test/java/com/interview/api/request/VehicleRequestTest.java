@@ -8,6 +8,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class VehicleRequestTest {
@@ -23,19 +24,28 @@ class VehicleRequestTest {
     @Test
     void testHappyPath() {
         final Set<ConstraintViolation<VehicleRequest>> violations =
-                validator.validate(new VehicleRequest(new Vin("1HGBH41JXMN109186")));
+                validator.validate(new VehicleRequest(new Vin("1HGBH41JXMN109186"), UUID.randomUUID()));
         assertThat(violations).isEmpty();
     }
 
     @Test
     void testNullVin() {
-        final Set<ConstraintViolation<VehicleRequest>> violations = validator.validate(new VehicleRequest(null));
+        final Set<ConstraintViolation<VehicleRequest>> violations =
+                validator.validate(new VehicleRequest(null, UUID.randomUUID()));
+        assertThat(violations).extracting(ConstraintViolation::getMessage).contains("must not be null");
+    }
+
+    @Test
+    void testNullCustomerId() {
+        final Set<ConstraintViolation<VehicleRequest>> violations =
+                validator.validate(new VehicleRequest(new Vin("1HGBH41JXMN109186"), null));
         assertThat(violations).extracting(ConstraintViolation::getMessage).contains("must not be null");
     }
 
     @Test
     void testInvalidVinPropagatesViolation() {
-        final Set<ConstraintViolation<VehicleRequest>> violations = validator.validate(new VehicleRequest(new Vin("")));
+        final Set<ConstraintViolation<VehicleRequest>> violations =
+                validator.validate(new VehicleRequest(new Vin(""), UUID.randomUUID()));
         assertThat(violations).extracting(ConstraintViolation::getMessage).contains("VIN must not be blank");
     }
 }

@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -46,7 +47,7 @@ class RestExceptionHandlerTest {
     @Test
     void validationExceptionReturnsBadRequest() {
         final BeanPropertyBindingResult bindingResult =
-                new BeanPropertyBindingResult(new VehicleRequest(null), "vehicleRequest");
+                new BeanPropertyBindingResult(Mockito.mock(VehicleRequest.class), "vehicleRequest");
         bindingResult.rejectValue("vin", "NotNull", "VIN must not be blank");
         final MethodArgumentNotValidException exception =
                 new MethodArgumentNotValidException(Mockito.mock(), bindingResult);
@@ -64,7 +65,7 @@ class RestExceptionHandlerTest {
     @Test
     void validationExceptionReturnsMultipleErrors() {
         final BeanPropertyBindingResult bindingResult =
-                new BeanPropertyBindingResult(new VehicleRequest(null), "vehicleRequest");
+                new BeanPropertyBindingResult(Mockito.mock(VehicleRequest.class), "vehicleRequest");
         bindingResult.rejectValue("vin", "NotNull", "VIN must not be blank");
         bindingResult.rejectValue("vin", "Size", "VIN must be exactly 17 characters");
         final MethodArgumentNotValidException exception =
@@ -76,6 +77,19 @@ class RestExceptionHandlerTest {
         assertThat(response.getBody())
                 .extractingByKey("errors", as(InstanceOfAssertFactories.LIST))
                 .containsExactlyInAnyOrder("vin: VIN must not be blank", "vin: VIN must be exactly 17 characters");
+    }
+
+    @Test
+    void messageNotReadableReturnsBadRequest() {
+        final ResponseEntity<Map<String, Object>> response =
+                handler.handleMessageNotReadable(new HttpMessageNotReadableException(
+                        "JSON parse error", Mockito.mock(org.springframework.http.HttpInputMessage.class)));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody())
+                .containsEntry("status", HttpStatus.BAD_REQUEST)
+                .extractingByKey("error", as(InstanceOfAssertFactories.STRING))
+                .contains("Malformed request body");
     }
 
     @Test

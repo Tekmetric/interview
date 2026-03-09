@@ -13,6 +13,10 @@ Content-Type: application/json
 %}
 
 ###
+GET http://localhost:8080/vehicles?customerId=00000000-0000-0000-0000-000000000001
+Content-Type: application/json
+
+###
 GET http://localhost:8080/vehicles/{{id}}
 Content-Type: application/json
 
@@ -22,7 +26,8 @@ Content-Type: application/json
 #X-XSRF-TOKEN: {{xsrf_token}}
 
 {
-  "vin": "{{vin}}"
+  "vin": "{{vin}}",
+  "customerId": "00000000-0000-0000-0000-000000000001"
 }
 
 ###
@@ -31,7 +36,8 @@ Content-Type: application/json
 #X-XSRF-TOKEN: {{xsrf_token}}
 
 {
- "vin": "{{vin}}"
+ "vin": "{{vin}}",
+ "customerId": "00000000-0000-0000-0000-000000000001"
 }
 
 ###

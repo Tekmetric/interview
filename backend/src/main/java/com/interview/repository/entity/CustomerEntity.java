@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import java.util.UUID;
 
 @Entity(name = "customer")
-public class CustomerEntity {
+public class CustomerEntity implements Identifiable {
     @Id
     private UUID id = UuidCreator.getTimeOrderedEpoch();
 
@@ -43,7 +43,7 @@ public class CustomerEntity {
     }
 
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (!(o instanceof CustomerEntity that)) return false;
 
         return id.equals(that.id);

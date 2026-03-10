@@ -1,6 +1,16 @@
 package com.interview.repository;
 
-import static com.interview.test.QueryAssert.assertThatQuery;
+import static com.interview.assertion.QueryAssert.assertThatQuery;
+import static com.interview.fixture.VehicleDataFixture.CUSTOMER_1_ID;
+import static com.interview.fixture.VehicleDataFixture.VEHICLE_1_ID;
+import static com.interview.fixture.WorkOrderDataFixture.LABOR_1_ID;
+import static com.interview.fixture.WorkOrderDataFixture.LABOR_2_ID;
+import static com.interview.fixture.WorkOrderDataFixture.LABOR_3_ID;
+import static com.interview.fixture.WorkOrderDataFixture.PART_1_ID;
+import static com.interview.fixture.WorkOrderDataFixture.PART_2_ID;
+import static com.interview.fixture.WorkOrderDataFixture.PART_3_ID;
+import static com.interview.fixture.WorkOrderDataFixture.WORK_ORDER_1_ID;
+import static com.interview.fixture.WorkOrderDataFixture.WORK_ORDER_2_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.interview.repository.entity.CustomerEntity;
@@ -25,12 +35,6 @@ import org.springframework.test.context.jdbc.Sql;
 @DataJpaTest
 @Sql({"/datasets/vehicle-data.sql", "/datasets/work-order-data.sql"})
 class WorkOrderRepositoryIT {
-
-    private static final UUID CUSTOMER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
-    private static final UUID VEHICLE_ID = UUID.fromString("00000000-0000-0000-0000-000000000011");
-    private static final UUID WORK_ORDER_ID = UUID.fromString("00000000-0000-0000-0000-000000000021");
-    private static final UUID PART_LINE_ITEM_ID = UUID.fromString("00000000-0000-0000-0000-000000000031");
-    private static final UUID LABOR_LINE_ITEM_ID = UUID.fromString("00000000-0000-0000-0000-000000000041");
 
     @Autowired
     WorkOrderRepository workOrderRepository;
@@ -94,7 +98,7 @@ class WorkOrderRepositoryIT {
         final Page<WorkOrderEntity> page = workOrderRepository.findAll(PageRequest.of(0, 10));
         assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
 
-        assertThat(page.getContent()).hasSize(3);
+        assertThat(page.getContent()).hasSize(6);
     }
 
     @Test
@@ -123,19 +127,19 @@ class WorkOrderRepositoryIT {
                 workOrderRepository.findAll(null, null, PageRequest.of(0, 10));
         assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
 
-        assertThat(page.getContent()).hasSize(2);
+        assertThat(page.getContent()).hasSize(5);
     }
 
     @Test
     void findAllFiltersByCustomerId() {
         statistics.clear();
         final Page<WorkOrderEntity> page =
-                workOrderRepository.findAll(CUSTOMER_ID, null, PageRequest.of(0, 10));
+                workOrderRepository.findAll(UUID.fromString(CUSTOMER_1_ID), null, PageRequest.of(0, 10));
         assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
 
         assertThat(page.getContent())
                 .extracting(WorkOrderEntity::getId)
-                .containsExactly(WORK_ORDER_ID);
+                .containsExactlyInAnyOrder(UUID.fromString(WORK_ORDER_1_ID), UUID.fromString(WORK_ORDER_2_ID));
     }
 
     @Test
@@ -152,36 +156,36 @@ class WorkOrderRepositoryIT {
     void findAllFiltersByVehicleId() {
         statistics.clear();
         final Page<WorkOrderEntity> page =
-                workOrderRepository.findAll(null, VEHICLE_ID, PageRequest.of(0, 10));
+                workOrderRepository.findAll(null, UUID.fromString(VEHICLE_1_ID), PageRequest.of(0, 10));
         assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
 
         assertThat(page.getContent())
                 .extracting(WorkOrderEntity::getId)
-                .containsExactly(WORK_ORDER_ID);
+                .containsExactly(UUID.fromString(WORK_ORDER_1_ID));
     }
 
     @Test
     void findAllFiltersByCustomerIdAndVehicleId() {
         statistics.clear();
         final Page<WorkOrderEntity> page =
-                workOrderRepository.findAll(CUSTOMER_ID, VEHICLE_ID, PageRequest.of(0, 10));
+                workOrderRepository.findAll(UUID.fromString(CUSTOMER_1_ID), UUID.fromString(VEHICLE_1_ID), PageRequest.of(0, 10));
         assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
 
         assertThat(page.getContent())
                 .extracting(WorkOrderEntity::getId)
-                .containsExactly(WORK_ORDER_ID);
+                .containsExactly(UUID.fromString(WORK_ORDER_1_ID));
     }
 
     @Test
     void findByIdWithPartLineItemsReturnsWorkOrderWithParts() {
         statistics.clear();
-        final Optional<WorkOrderEntity> result = workOrderRepository.findByIdWithPartLineItems(WORK_ORDER_ID);
+        final Optional<WorkOrderEntity> result = workOrderRepository.findByIdWithPartLineItems(UUID.fromString(WORK_ORDER_1_ID));
         assertThatQuery(statistics).hasQueryCount(1).hasCollectionFetchCount(0).hasNoOtherOperations();
 
         assertThat(result).isPresent();
         assertThat(result.get().getPartLineItems())
                 .extracting(PartLineItemEntity::getId)
-                .containsExactly(PART_LINE_ITEM_ID);
+                .containsExactlyInAnyOrder(UUID.fromString(PART_1_ID), UUID.fromString(PART_2_ID), UUID.fromString(PART_3_ID));
     }
 
     @Test
@@ -194,13 +198,13 @@ class WorkOrderRepositoryIT {
     @Test
     void findByIdWithLaborLineItemsReturnsWorkOrderWithLabor() {
         statistics.clear();
-        final Optional<WorkOrderEntity> result = workOrderRepository.findByIdWithLaborLineItems(WORK_ORDER_ID);
+        final Optional<WorkOrderEntity> result = workOrderRepository.findByIdWithLaborLineItems(UUID.fromString(WORK_ORDER_1_ID));
         assertThatQuery(statistics).hasQueryCount(1).hasCollectionFetchCount(0).hasNoOtherOperations();
 
         assertThat(result).isPresent();
         assertThat(result.get().getLaborLineItems())
                 .extracting(LaborLineItemEntity::getId)
-                .containsExactly(LABOR_LINE_ITEM_ID);
+                .containsExactlyInAnyOrder(UUID.fromString(LABOR_1_ID), UUID.fromString(LABOR_2_ID), UUID.fromString(LABOR_3_ID));
     }
 
     @Test
@@ -259,7 +263,7 @@ class WorkOrderRepositoryIT {
     @Test
     void deleteOrphansPartLineItem() {
         final WorkOrderEntity workOrder =
-                workOrderRepository.findByIdWithPartLineItems(WORK_ORDER_ID).orElseThrow();
+                workOrderRepository.findByIdWithPartLineItems(UUID.fromString(WORK_ORDER_1_ID)).orElseThrow();
         final PartLineItemEntity partLineItem = workOrder.getPartLineItems().iterator().next();
         workOrder.removePartLineItem(partLineItem);
 
@@ -271,14 +275,14 @@ class WorkOrderRepositoryIT {
         entityManager.clear();
 
         final WorkOrderEntity found =
-                workOrderRepository.findByIdWithPartLineItems(WORK_ORDER_ID).orElseThrow();
-        assertThat(found.getPartLineItems()).isEmpty();
+                workOrderRepository.findByIdWithPartLineItems(UUID.fromString(WORK_ORDER_1_ID)).orElseThrow();
+        assertThat(found.getPartLineItems()).hasSize(2);
     }
 
     @Test
     void deleteOrphansLaborLineItem() {
         final WorkOrderEntity workOrder =
-                workOrderRepository.findByIdWithLaborLineItems(WORK_ORDER_ID).orElseThrow();
+                workOrderRepository.findByIdWithLaborLineItems(UUID.fromString(WORK_ORDER_1_ID)).orElseThrow();
         final LaborLineItemEntity laborLineItem = workOrder.getLaborLineItems().iterator().next();
         workOrder.removeLaborLineItem(laborLineItem);
 
@@ -290,15 +294,15 @@ class WorkOrderRepositoryIT {
         entityManager.clear();
 
         final WorkOrderEntity found =
-                workOrderRepository.findByIdWithLaborLineItems(WORK_ORDER_ID).orElseThrow();
-        assertThat(found.getLaborLineItems()).isEmpty();
+                workOrderRepository.findByIdWithLaborLineItems(UUID.fromString(WORK_ORDER_1_ID)).orElseThrow();
+        assertThat(found.getLaborLineItems()).hasSize(2);
     }
 
     private WorkOrderEntity workOrderEntity() {
         final WorkOrderEntity entity = new WorkOrderEntity();
         entity.setScheduledStartDateTime(Instant.parse("2026-04-01T09:00:00Z"));
-        entity.setCustomer(entityManager.find(CustomerEntity.class, CUSTOMER_ID));
-        entity.setVehicle(entityManager.find(VehicleEntity.class, VEHICLE_ID));
+        entity.setCustomer(entityManager.find(CustomerEntity.class, UUID.fromString(CUSTOMER_1_ID)));
+        entity.setVehicle(entityManager.find(VehicleEntity.class, UUID.fromString(VEHICLE_1_ID)));
         return entity;
     }
 }

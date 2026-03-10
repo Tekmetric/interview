@@ -1,4 +1,4 @@
-package com.interview.test;
+package com.interview.assertion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

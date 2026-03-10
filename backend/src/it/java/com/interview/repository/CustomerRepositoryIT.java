@@ -1,6 +1,6 @@
 package com.interview.repository;
 
-import static com.interview.test.QueryAssert.assertThatQuery;
+import static com.interview.assertion.QueryAssert.assertThatQuery;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.interview.domain.PhoneNumber;
@@ -75,7 +75,7 @@ class CustomerRepositoryIT {
         final Page<CustomerEntity> page = customerRepository.findAll(PageRequest.of(0, 10));
         assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
 
-        assertThat(page.getContent()).hasSize(2);
+        assertThat(page.getContent()).hasSize(4);
     }
 
     @Test

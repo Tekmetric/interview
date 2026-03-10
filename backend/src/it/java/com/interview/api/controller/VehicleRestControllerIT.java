@@ -1,6 +1,9 @@
 package com.interview.api.controller;
 
-import static com.interview.test.QueryAssert.assertThatQuery;
+import static com.interview.assertion.QueryAssert.assertThatQuery;
+import static com.interview.fixture.VehicleDataFixture.CUSTOMER_1_ID;
+import static com.interview.fixture.VehicleDataFixture.VEHICLE_1_ID;
+import static com.interview.fixture.VehicleDataFixture.VEHICLE_1_VIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -35,10 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Sql("/datasets/vehicle-data.sql")
 class VehicleRestControllerIT {
 
-    private static final String CUSTOMER_ID = "00000000-0000-0000-0000-000000000001";
-    private static final String VEHICLE_ID = "00000000-0000-0000-0000-000000000011";
-    private static final String VEHICLE_VIN = "JH4KA8260MC000001";
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -70,30 +69,39 @@ class VehicleRestControllerIT {
         mockMvc.perform(get("/vehicles"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
-                        {"content":[{"id":"%s","vin":"%s","customerId":"%s"}],"page":{"totalElements":1}}"""
-                        .formatted(VEHICLE_ID, VEHICLE_VIN, CUSTOMER_ID)));
+                        {"content":[
+                            {"id":"00000000-0000-0000-0000-000000000011","vin":"JH4KA8260MC000001","customerId":"%1$s"},
+                            {"id":"00000000-0000-0000-0000-000000000012","vin":"JH4KA8260MC000002","customerId":"%1$s"},
+                            {"id":"00000000-0000-0000-0000-000000000013","vin":"JH4KA8260MC000003","customerId":"00000000-0000-0000-0000-000000000002"},
+                            {"id":"00000000-0000-0000-0000-000000000014","vin":"1HGCG5655WA041389","customerId":"00000000-0000-0000-0000-000000000002"},
+                            {"id":"00000000-0000-0000-0000-000000000015","vin":"2T1BR32E05C412345","customerId":"00000000-0000-0000-0000-000000000003"}
+                        ],"page":{"totalElements":5}}"""
+                        .formatted(CUSTOMER_1_ID)));
         assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
     }
 
     @Test
     void getAllVehiclesByCustomerIdReturnsOk() throws Exception {
         prepareForQuery();
-        mockMvc.perform(get("/vehicles").param("customerId", CUSTOMER_ID))
+        mockMvc.perform(get("/vehicles").param("customerId", CUSTOMER_1_ID))
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
-                        {"content":[{"id":"%s","vin":"%s","customerId":"%s"}],"page":{"totalElements":1}}"""
-                        .formatted(VEHICLE_ID, VEHICLE_VIN, CUSTOMER_ID)));
+                        {"content":[
+                            {"id":"00000000-0000-0000-0000-000000000011","vin":"JH4KA8260MC000001","customerId":"%1$s"},
+                            {"id":"00000000-0000-0000-0000-000000000012","vin":"JH4KA8260MC000002","customerId":"%1$s"}
+                        ],"page":{"totalElements":2}}"""
+                        .formatted(CUSTOMER_1_ID)));
         assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
     }
 
     @Test
     void getVehicleByIdReturnsOk() throws Exception {
         prepareForQuery();
-        mockMvc.perform(get("/vehicles/{id}", VEHICLE_ID))
+        mockMvc.perform(get("/vehicles/{id}", VEHICLE_1_ID))
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
                         {"id":"%s","vin":"%s","customerId":"%s"}"""
-                        .formatted(VEHICLE_ID, VEHICLE_VIN, CUSTOMER_ID)));
+                        .formatted(VEHICLE_1_ID, VEHICLE_1_VIN, CUSTOMER_1_ID)));
         assertThatQuery(statistics).hasQueryCount(0).hasNoOtherOperations();
     }
 
@@ -104,7 +112,7 @@ class VehicleRestControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"vin":"1HGBH41JXMN109186","customerId":"%s"}"""
-                                .formatted(CUSTOMER_ID)))
+                                .formatted(CUSTOMER_1_ID)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andReturn().getResponse().getContentAsString();
@@ -116,37 +124,37 @@ class VehicleRestControllerIT {
 
         final VehicleEntity persisted = vehicleRepository.findById(id).orElseThrow();
         assertThat(persisted.getVin()).isEqualTo(new Vin("1HGBH41JXMN109186"));
-        assertThat(persisted.getCustomer().getId()).isEqualTo(UUID.fromString(CUSTOMER_ID));
+        assertThat(persisted.getCustomer().getId()).isEqualTo(UUID.fromString(CUSTOMER_1_ID));
     }
 
     @Test
     void updateVehicleReturnsOk() throws Exception {
         prepareForQuery();
-        mockMvc.perform(put("/vehicles/{id}", VEHICLE_ID)
+        mockMvc.perform(put("/vehicles/{id}", VEHICLE_1_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"vin":"2HGBH41JXMN109186","customerId":"%s"}"""
-                                .formatted(CUSTOMER_ID)))
+                                .formatted(CUSTOMER_1_ID)))
                 .andExpect(status().isOk());
 
         entityManager.flush();
         entityManager.clear();
         assertThatQuery(statistics).hasUpdateCount(1).hasNoOtherOperations();
 
-        final VehicleEntity updated = vehicleRepository.findById(UUID.fromString(VEHICLE_ID)).orElseThrow();
+        final VehicleEntity updated = vehicleRepository.findById(UUID.fromString(VEHICLE_1_ID)).orElseThrow();
         assertThat(updated.getVin()).isEqualTo(new Vin("2HGBH41JXMN109186"));
     }
 
     @Test
     void deleteVehicleReturnsNoContent() throws Exception {
         prepareForQuery();
-        mockMvc.perform(delete("/vehicles/{id}", VEHICLE_ID))
+        mockMvc.perform(delete("/vehicles/{id}", VEHICLE_1_ID))
                 .andExpect(status().isNoContent());
 
         entityManager.flush();
         entityManager.clear();
         assertThatQuery(statistics).hasDeleteCount(1).hasNoOtherOperations();
 
-        assertThat(vehicleRepository.findById(UUID.fromString(VEHICLE_ID))).isEmpty();
+        assertThat(vehicleRepository.findById(UUID.fromString(VEHICLE_1_ID))).isEmpty();
     }
 }

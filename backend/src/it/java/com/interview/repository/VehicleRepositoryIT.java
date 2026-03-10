@@ -1,6 +1,7 @@
 package com.interview.repository;
 
-import static com.interview.test.QueryAssert.assertThatQuery;
+import static com.interview.assertion.QueryAssert.assertThatQuery;
+import static com.interview.fixture.VehicleDataFixture.CUSTOMER_1_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.interview.domain.Vin;
@@ -22,8 +23,6 @@ import org.springframework.test.context.jdbc.Sql;
 @DataJpaTest
 @Sql("/datasets/vehicle-data.sql")
 class VehicleRepositoryIT {
-
-    private static final UUID CUSTOMER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
     @Autowired
     VehicleRepository vehicleRepository;
@@ -85,7 +84,7 @@ class VehicleRepositoryIT {
         final Page<VehicleEntity> page = vehicleRepository.findAll(PageRequest.of(0, 10));
         assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
 
-        assertThat(page.getContent()).hasSize(3);
+        assertThat(page.getContent()).hasSize(7);
     }
 
     @Test
@@ -107,7 +106,7 @@ class VehicleRepositoryIT {
     private VehicleEntity entityWith(Vin vin) {
         final VehicleEntity entity = new VehicleEntity();
         entity.setVin(vin);
-        entity.setCustomer(entityManager.find(CustomerEntity.class, CUSTOMER_ID));
+        entity.setCustomer(entityManager.find(CustomerEntity.class, UUID.fromString(CUSTOMER_1_ID)));
         return entity;
     }
 }

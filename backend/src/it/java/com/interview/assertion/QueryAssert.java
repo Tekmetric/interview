@@ -10,7 +10,7 @@ import org.hibernate.stat.Statistics;
 public final class QueryAssert extends AbstractAssert<QueryAssert, Statistics> {
 
     private enum StatType {
-        QUERY, INSERT, UPDATE, DELETE, COLLECTION_FETCH
+        QUERY, INSERT, UPDATE, DELETE, COLLECTION_FETCH, ENTITY_LOAD
     }
 
     private final Set<StatType> asserted = EnumSet.noneOf(StatType.class);
@@ -58,6 +58,13 @@ public final class QueryAssert extends AbstractAssert<QueryAssert, Statistics> {
         return myself;
     }
 
+    public QueryAssert hasEntityLoadCount(long expected) {
+        isNotNull();
+        asserted.add(StatType.ENTITY_LOAD);
+        assertThat(actual.getEntityLoadCount()).as("entity load count").isEqualTo(expected);
+        return myself;
+    }
+
     public QueryAssert hasNoOtherOperations() {
         isNotNull();
         if (!asserted.contains(StatType.QUERY)) {
@@ -74,6 +81,9 @@ public final class QueryAssert extends AbstractAssert<QueryAssert, Statistics> {
         }
         if (!asserted.contains(StatType.COLLECTION_FETCH)) {
             assertThat(actual.getCollectionFetchCount()).as("unexpected collection fetches").isZero();
+        }
+        if (!asserted.contains(StatType.ENTITY_LOAD)) {
+            assertThat(actual.getEntityLoadCount()).as("unexpected entity loads").isZero();
         }
         return myself;
     }

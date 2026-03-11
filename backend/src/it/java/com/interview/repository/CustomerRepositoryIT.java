@@ -61,7 +61,7 @@ class CustomerRepositoryIT {
 
         statistics.clear();
         final Optional<CustomerEntity> result = customerRepository.findById(entity.getId());
-        assertThatQuery(statistics).hasQueryCount(0).hasNoOtherOperations();
+        assertThatQuery(statistics).hasEntityLoadCount(1).hasNoOtherOperations();
 
         assertThat(result).get().usingRecursiveComparison().isEqualTo(entity);
     }
@@ -73,7 +73,7 @@ class CustomerRepositoryIT {
 
         statistics.clear();
         final Page<CustomerEntity> page = customerRepository.findAll(PageRequest.of(0, 10));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(4).hasNoOtherOperations();
 
         assertThat(page.getContent()).hasSize(4);
     }

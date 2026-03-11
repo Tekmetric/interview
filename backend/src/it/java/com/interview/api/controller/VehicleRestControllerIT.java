@@ -77,7 +77,7 @@ class VehicleRestControllerIT {
                             {"id":"00000000-0000-0000-0000-000000000015","vin":"2T1BR32E05C412345","customerId":"00000000-0000-0000-0000-000000000003"}
                         ],"page":{"totalElements":5}}"""
                         .formatted(CUSTOMER_1_ID)));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(5).hasNoOtherOperations();
     }
 
     @Test
@@ -91,7 +91,7 @@ class VehicleRestControllerIT {
                             {"id":"00000000-0000-0000-0000-000000000012","vin":"JH4KA8260MC000002","customerId":"%1$s"}
                         ],"page":{"totalElements":2}}"""
                         .formatted(CUSTOMER_1_ID)));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(2).hasNoOtherOperations();
     }
 
     @Test
@@ -102,7 +102,7 @@ class VehicleRestControllerIT {
                 .andExpect(content().json("""
                         {"id":"%s","vin":"%s","customerId":"%s"}"""
                         .formatted(VEHICLE_1_ID, VEHICLE_1_VIN, CUSTOMER_1_ID)));
-        assertThatQuery(statistics).hasQueryCount(0).hasNoOtherOperations();
+        assertThatQuery(statistics).hasEntityLoadCount(1).hasNoOtherOperations();
     }
 
     @Test
@@ -139,7 +139,7 @@ class VehicleRestControllerIT {
 
         entityManager.flush();
         entityManager.clear();
-        assertThatQuery(statistics).hasUpdateCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasUpdateCount(1).hasEntityLoadCount(1).hasNoOtherOperations();
 
         final VehicleEntity updated = vehicleRepository.findById(UUID.fromString(VEHICLE_1_ID)).orElseThrow();
         assertThat(updated.getVin()).isEqualTo(new Vin("2HGBH41JXMN109186"));
@@ -153,7 +153,7 @@ class VehicleRestControllerIT {
 
         entityManager.flush();
         entityManager.clear();
-        assertThatQuery(statistics).hasDeleteCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasDeleteCount(1).hasEntityLoadCount(1).hasNoOtherOperations();
 
         assertThat(vehicleRepository.findById(UUID.fromString(VEHICLE_1_ID))).isEmpty();
     }

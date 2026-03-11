@@ -79,7 +79,7 @@ class WorkOrderRepositoryIT {
 
         statistics.clear();
         final Optional<WorkOrderEntity> result = workOrderRepository.findById(entity.getId());
-        assertThatQuery(statistics).hasQueryCount(0).hasNoOtherOperations();
+        assertThatQuery(statistics).hasEntityLoadCount(1).hasNoOtherOperations();
 
         assertThat(result).get().usingRecursiveComparison()
                 .ignoringFields("customer", "vehicle", "partLineItems", "laborLineItems")
@@ -96,7 +96,7 @@ class WorkOrderRepositoryIT {
 
         statistics.clear();
         final Page<WorkOrderEntity> page = workOrderRepository.findAll(PageRequest.of(0, 10));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(6).hasNoOtherOperations();
 
         assertThat(page.getContent()).hasSize(6);
     }
@@ -125,7 +125,7 @@ class WorkOrderRepositoryIT {
         statistics.clear();
         final Page<WorkOrderEntity> page =
                 workOrderRepository.findAll(null, null, PageRequest.of(0, 10));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(5).hasNoOtherOperations();
 
         assertThat(page.getContent()).hasSize(5);
     }
@@ -135,7 +135,7 @@ class WorkOrderRepositoryIT {
         statistics.clear();
         final Page<WorkOrderEntity> page =
                 workOrderRepository.findAll(UUID.fromString(CUSTOMER_1_ID), null, PageRequest.of(0, 10));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(2).hasNoOtherOperations();
 
         assertThat(page.getContent())
                 .extracting(WorkOrderEntity::getId)
@@ -157,7 +157,7 @@ class WorkOrderRepositoryIT {
         statistics.clear();
         final Page<WorkOrderEntity> page =
                 workOrderRepository.findAll(null, UUID.fromString(VEHICLE_1_ID), PageRequest.of(0, 10));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(1).hasNoOtherOperations();
 
         assertThat(page.getContent())
                 .extracting(WorkOrderEntity::getId)
@@ -169,7 +169,7 @@ class WorkOrderRepositoryIT {
         statistics.clear();
         final Page<WorkOrderEntity> page =
                 workOrderRepository.findAll(UUID.fromString(CUSTOMER_1_ID), UUID.fromString(VEHICLE_1_ID), PageRequest.of(0, 10));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(1).hasNoOtherOperations();
 
         assertThat(page.getContent())
                 .extracting(WorkOrderEntity::getId)
@@ -180,7 +180,7 @@ class WorkOrderRepositoryIT {
     void findByIdWithPartLineItemsReturnsWorkOrderWithParts() {
         statistics.clear();
         final Optional<WorkOrderEntity> result = workOrderRepository.findByIdWithPartLineItems(UUID.fromString(WORK_ORDER_1_ID));
-        assertThatQuery(statistics).hasQueryCount(1).hasCollectionFetchCount(0).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasCollectionFetchCount(0).hasEntityLoadCount(4).hasNoOtherOperations();
 
         assertThat(result).isPresent();
         assertThat(result.get().getPartLineItems())
@@ -199,7 +199,7 @@ class WorkOrderRepositoryIT {
     void findByIdWithLaborLineItemsReturnsWorkOrderWithLabor() {
         statistics.clear();
         final Optional<WorkOrderEntity> result = workOrderRepository.findByIdWithLaborLineItems(UUID.fromString(WORK_ORDER_1_ID));
-        assertThatQuery(statistics).hasQueryCount(1).hasCollectionFetchCount(0).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasCollectionFetchCount(0).hasEntityLoadCount(4).hasNoOtherOperations();
 
         assertThat(result).isPresent();
         assertThat(result.get().getLaborLineItems())

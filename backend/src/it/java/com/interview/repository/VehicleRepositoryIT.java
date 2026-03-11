@@ -66,7 +66,7 @@ class VehicleRepositoryIT {
 
         statistics.clear();
         final Optional<VehicleEntity> result = vehicleRepository.findById(entity.getId());
-        assertThatQuery(statistics).hasQueryCount(0).hasNoOtherOperations();
+        assertThatQuery(statistics).hasEntityLoadCount(1).hasNoOtherOperations();
 
         assertThat(result).get().usingRecursiveComparison()
                 .ignoringFields("customer")
@@ -82,7 +82,7 @@ class VehicleRepositoryIT {
 
         statistics.clear();
         final Page<VehicleEntity> page = vehicleRepository.findAll(PageRequest.of(0, 10));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(7).hasNoOtherOperations();
 
         assertThat(page.getContent()).hasSize(7);
     }

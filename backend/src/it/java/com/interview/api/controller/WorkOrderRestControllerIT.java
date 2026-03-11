@@ -82,7 +82,7 @@ class WorkOrderRestControllerIT {
                             {"id":"00000000-0000-0000-0000-000000000024","customerId":"00000000-0000-0000-0000-000000000003","vehicleId":"00000000-0000-0000-0000-000000000015"}
                         ],"page":{"totalElements":4}}"""
                         .formatted(CUSTOMER_1_ID)));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(4).hasNoOtherOperations();
     }
 
     @Test
@@ -96,7 +96,7 @@ class WorkOrderRestControllerIT {
                             {"id":"00000000-0000-0000-0000-000000000022","customerId":"%1$s","vehicleId":"00000000-0000-0000-0000-000000000012"}
                         ],"page":{"totalElements":2}}"""
                         .formatted(CUSTOMER_1_ID)));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(2).hasNoOtherOperations();
     }
 
     @Test
@@ -107,7 +107,7 @@ class WorkOrderRestControllerIT {
                 .andExpect(content().json("""
                         {"content":[{"id":"%s","customerId":"%s","vehicleId":"%s"}],"page":{"totalElements":1}}"""
                         .formatted(WORK_ORDER_1_ID, CUSTOMER_1_ID, VEHICLE_1_ID)));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(1).hasNoOtherOperations();
     }
 
     @Test
@@ -118,7 +118,7 @@ class WorkOrderRestControllerIT {
                 .andExpect(content().json("""
                         {"content":[{"id":"%s","customerId":"%s","vehicleId":"%s"}],"page":{"totalElements":1}}"""
                         .formatted(WORK_ORDER_1_ID, CUSTOMER_1_ID, VEHICLE_1_ID)));
-        assertThatQuery(statistics).hasQueryCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasEntityLoadCount(1).hasNoOtherOperations();
     }
 
     @Test
@@ -142,7 +142,7 @@ class WorkOrderRestControllerIT {
                                 WORK_ORDER_1_ID, CUSTOMER_1_ID, VEHICLE_1_ID,
                                 PART_1_ID, PART_2_ID, PART_3_ID,
                                 LABOR_1_ID, LABOR_2_ID, LABOR_3_ID)));
-        assertThatQuery(statistics).hasQueryCount(2).hasCollectionFetchCount(0).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(2).hasCollectionFetchCount(0).hasEntityLoadCount(7).hasNoOtherOperations();
     }
 
     @Test
@@ -180,7 +180,7 @@ class WorkOrderRestControllerIT {
 
         entityManager.flush();
         entityManager.clear();
-        assertThatQuery(statistics).hasUpdateCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasUpdateCount(1).hasEntityLoadCount(1).hasNoOtherOperations();
 
         final WorkOrderEntity updated = workOrderRepository.findById(UUID.fromString(WORK_ORDER_1_ID)).orElseThrow();
         assertThat(updated.getScheduledStartDateTime()).isEqualTo(Instant.parse("2026-05-01T14:00:00Z"));
@@ -194,7 +194,7 @@ class WorkOrderRestControllerIT {
 
         entityManager.flush();
         entityManager.clear();
-        assertThatQuery(statistics).hasDeleteCount(7).hasCollectionFetchCount(2).hasNoOtherOperations();
+        assertThatQuery(statistics).hasDeleteCount(7).hasCollectionFetchCount(2).hasEntityLoadCount(7).hasNoOtherOperations();
 
         assertThat(workOrderRepository.findById(UUID.fromString(WORK_ORDER_1_ID))).isEmpty();
     }
@@ -214,7 +214,7 @@ class WorkOrderRestControllerIT {
         entityManager.flush();
         entityManager.clear();
         // collection fetch from addPartLineItem — acceptable, collection should be relatively small
-        assertThatQuery(statistics).hasInsertCount(1).hasCollectionFetchCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasInsertCount(1).hasCollectionFetchCount(1).hasEntityLoadCount(4).hasNoOtherOperations();
 
         final WorkOrderEntity workOrder = workOrderRepository.findByIdWithPartLineItems(UUID.fromString(WORK_ORDER_1_ID)).orElseThrow();
         assertThat(workOrder.getPartLineItems()).anyMatch(item ->
@@ -229,7 +229,7 @@ class WorkOrderRestControllerIT {
 
         entityManager.flush();
         entityManager.clear();
-        assertThatQuery(statistics).hasQueryCount(1).hasDeleteCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasDeleteCount(1).hasEntityLoadCount(4).hasNoOtherOperations();
 
         final WorkOrderEntity workOrder = workOrderRepository.findByIdWithPartLineItems(UUID.fromString(WORK_ORDER_1_ID)).orElseThrow();
         assertThat(workOrder.getPartLineItems()).hasSize(2);
@@ -253,7 +253,7 @@ class WorkOrderRestControllerIT {
         entityManager.flush();
         entityManager.clear();
         // collection fetch from addLaborLineItem — acceptable, collection should be relatively small
-        assertThatQuery(statistics).hasInsertCount(1).hasCollectionFetchCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasInsertCount(1).hasCollectionFetchCount(1).hasEntityLoadCount(4).hasNoOtherOperations();
 
         final WorkOrderEntity workOrder = workOrderRepository.findByIdWithLaborLineItems(UUID.fromString(WORK_ORDER_1_ID)).orElseThrow();
         assertThat(workOrder.getLaborLineItems()).anyMatch(item ->
@@ -268,7 +268,7 @@ class WorkOrderRestControllerIT {
 
         entityManager.flush();
         entityManager.clear();
-        assertThatQuery(statistics).hasQueryCount(1).hasDeleteCount(1).hasNoOtherOperations();
+        assertThatQuery(statistics).hasQueryCount(1).hasDeleteCount(1).hasEntityLoadCount(4).hasNoOtherOperations();
 
         final WorkOrderEntity workOrder = workOrderRepository.findByIdWithLaborLineItems(UUID.fromString(WORK_ORDER_1_ID)).orElseThrow();
         assertThat(workOrder.getLaborLineItems()).hasSize(2);

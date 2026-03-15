@@ -1,0 +1,50 @@
+package com.interview.controller;
+
+import com.interview.error.RequestValidationException;
+import com.interview.model.request.GetRedemptionActivityRequest;
+import com.interview.model.request.PostTransactionRequest;
+import com.interview.service.RewardsTransactionService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/transactions")
+public class RewardsTransactionController {
+
+    private static final Logger logger = LoggerFactory.getLogger(RewardsTransactionController.class);
+    private final RewardsTransactionService rewardsTransactionService;
+
+    @Autowired
+    public RewardsTransactionController(RewardsTransactionService rewardsTransactionService){
+        this.rewardsTransactionService = rewardsTransactionService;
+    }
+
+    @GetMapping
+    public List<UUID> getRedemptionActivity(@Valid @ModelAttribute GetRedemptionActivityRequest request, BindingResult bindingResult){
+        logger.info("Received get last rewards transaction request: {}", request);
+        if(bindingResult.hasErrors()){
+            logger.error("GetLastRewardsTransactionRequest validation failed during parsing: {}", bindingResult);
+            throw new RequestValidationException("Failed to parse GetRedemptionActivityRequest");
+        }
+        return rewardsTransactionService.getRedemptionActivity();
+    }
+
+    @PostMapping
+    public UUID postTransaction(@Valid @RequestBody PostTransactionRequest request, BindingResult bindingResult){
+        logger.info("Received post transaction request: {}", request);
+        if(bindingResult.hasErrors()){
+            logger.error("PostTransactionRequest validation failed during parsing: {}", bindingResult);
+            throw new RequestValidationException("Failed to parse PostTransactionRequest");
+        }
+        return rewardsTransactionService.postTransaction(request);
+    }
+
+
+}

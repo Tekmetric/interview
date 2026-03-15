@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:rewardsdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password: password
+  sql:
+    init:
+      data-locations: 'classpath:database/data.sql'
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    defer-datasource-initialization: true
+  h2:
+    console:
+      enabled: true
+rewards:
+  rate: 0.02

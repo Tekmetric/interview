@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,7 +34,17 @@ public class SQLCustomerRepository implements CustomerRepository {
     @Override
     public void updateCustomerRewardsAccount(UUID customerId, UUID rewardsAccountId){
         Customer customer = Optional.ofNullable(entityManager.find(Customer.class, customerId)).orElseThrow(() -> new NotFoundException("Customer not found when attempting to update with rewards account!"));
-        customer.setRewardsAccount(entityManager.getReference(RewardsAccount.class, rewardsAccountId));
+        if(rewardsAccountId == null){
+            customer.setRewardsAccount(null);
+        } else {
+            customer.setRewardsAccount(entityManager.getReference(RewardsAccount.class, rewardsAccountId));
+        }
+    }
+
+    @Override
+    public List<UUID> getActiveUsersForRewardsAccount(UUID rewardsAccountId){
+        String activeUsersQuery = "SELECT c.id FROM Customer c WHERE rewardsAccount.id = :id";
+        return entityManager.createQuery(activeUsersQuery, UUID.class).setParameter("id", rewardsAccountId).getResultList();
     }
 
 }

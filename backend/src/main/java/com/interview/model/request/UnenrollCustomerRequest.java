@@ -6,9 +6,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class EnrollCustomerRequest {
+public class UnenrollCustomerRequest {
     @NotNull
     private UUID customerId;
-
-    private UUID rewardsAccountId;
 }

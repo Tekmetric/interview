@@ -37,4 +37,10 @@ public class SQLRewardsAccountRepository implements RewardsAccountRepository {
         RewardsAccount rewardsAccount = Optional.ofNullable(entityManager.find(RewardsAccount.class, rewardsAccountId)).orElseThrow(() -> new NotFoundException("Rewards account not found when attempting to update account balance!"));
         rewardsAccount.setBalance(newBalance);
     }
+
+    @Override
+    public void deleteRewardsAccount(UUID rewardsAccountId){
+        RewardsAccount rewardsAccount = Optional.ofNullable(entityManager.find(RewardsAccount.class, rewardsAccountId)).orElseThrow(() -> new NotFoundException("Rewards account not found when attempting to delete!"));
+        entityManager.remove(rewardsAccount);
+    }
 }

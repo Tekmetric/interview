@@ -3,6 +3,7 @@ package com.interview.controller;
 import com.interview.error.RequestValidationException;
 import com.interview.model.request.EnrollCustomerRequest;
 import com.interview.model.request.GetCustomerRewardsAccountRequest;
+import com.interview.model.request.UnenrollCustomerRequest;
 import com.interview.service.RewardsEnrollmentService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class RewardsEnrollmentController {
     }
 
     // TODO: allow enrolling additional customers onto existing account
-    @PostMapping(path = "/{customerId}/enroll")
+    @PostMapping(path = {"/{customerId}/enroll", "/{customerId}/enroll/{rewardsAccountId}"})
     public UUID enrollCustomer(@Valid @ModelAttribute EnrollCustomerRequest request, BindingResult bindingResult){
         logger.info("Received enrollment request: {}", request);
         if(bindingResult.hasErrors()){
@@ -46,5 +47,13 @@ public class RewardsEnrollmentController {
         return rewardsEnrollmentService.enrollCustomer(request);
     }
 
-    // TODO: add un-enrollment workflow that removes an account from a customer, and deletes the account if no customers remain linked
+    @DeleteMapping(path = "/{customerId}/unenroll")
+    public UUID unenrollCustomer(@Valid @ModelAttribute UnenrollCustomerRequest request, BindingResult bindingResult){
+        logger.info("Received unenroll request: {}", request);
+        if(bindingResult.hasErrors()){
+            logger.error("UnenrollCustomerRequest validation failed during parsing: {}", bindingResult);
+            throw new RequestValidationException("Failed to parse UnenrollCustomerRequest");
+        }
+        return rewardsEnrollmentService.unenrollCustomer(request);
+    }
 }

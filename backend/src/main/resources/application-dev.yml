@@ -1,0 +1,18 @@
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        jdbc:
+          bind: TRACE
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+  jackson:
+    serialization:
+      indent-output: true

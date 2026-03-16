@@ -1,14 +1,14 @@
 package com.interview.repository.impl;
 
-import com.interview.model.domain.RewardsAccount;
-import com.interview.model.domain.RewardsTransaction;
-import com.interview.model.domain.RewardsTransactionType;
+import com.interview.model.RewardsTransactionSummary;
+import com.interview.model.RewardsTransactionType;
+import com.interview.model.entity.RewardsAccount;
+import com.interview.model.entity.RewardsTransaction;
 import com.interview.repository.RewardsTransactionRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,8 +29,10 @@ public class SQLRewardsTransactionRepository implements RewardsTransactionReposi
         return transaction.getId();
     }
 
-    // TODO: placeholder impl, connect this to db
-    public List<UUID> getTransactionsByRewardsAccount(){
-        return new ArrayList<>();
+    public List<RewardsTransactionSummary> getTransactionsByRewardsAccount(UUID rewardsAccountId){
+        String transactionsQuery = "SELECT new RewardsTransactionSummary(t.created, t.rewardsTransactionType, t.transactionAmount, t.rewardsRate) FROM RewardsTransaction t WHERE rewardsAccount.id = :id";
+        // TODO: handle account not found
+        // TODO: handle pagination here, or at least make the max configurable
+        return entityManager.createQuery(transactionsQuery, RewardsTransactionSummary.class).setParameter("id", rewardsAccountId).setMaxResults(15).getResultList();
     }
 }

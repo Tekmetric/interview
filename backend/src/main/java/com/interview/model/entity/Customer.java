@@ -1,4 +1,4 @@
-package com.interview.model.domain;
+package com.interview.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.interview.model.domain;
+package com.interview.model;
 
 public enum RewardsTransactionType {
     PURCHASE,

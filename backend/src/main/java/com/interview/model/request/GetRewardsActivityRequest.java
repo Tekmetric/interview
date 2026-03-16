@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class GetRedemptionActivityRequest {
+public class GetRewardsActivityRequest {
     @NotNull
     private UUID rewardsAccountId;
 }

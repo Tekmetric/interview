@@ -9,6 +9,11 @@
 - Remove points from a customer's rewards account if a purchase is refunded
 - Remove points from a customer's rewards account if points are used for a purchase
 
+## Future Enhancements
+- enable pagination and filtering for transaction summary views
+- enable customer id as an input for rewards activity summary
+- include metrics like total redemption over time period in transaction summary
+
 ## Testing
 - This project was developed in a hackathon style, so automated unit and integration tests are absent. Instead, periodic manual validation was performed via scripts. Future work to productionize this service would include automated unit and BDD test suites
 

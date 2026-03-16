@@ -1,6 +1,8 @@
 package com.interview.service;
 
-import com.interview.model.domain.RewardsTransactionType;
+import com.interview.model.RewardsTransactionSummary;
+import com.interview.model.RewardsTransactionType;
+import com.interview.model.request.GetRewardsActivityRequest;
 import com.interview.model.request.PostTransactionRequest;
 import com.interview.repository.RewardsAccountRepository;
 import com.interview.repository.RewardsTransactionRepository;
@@ -26,8 +28,8 @@ public class RewardsTransactionService {
         this.rewardsTransactionRepository = rewardsTransactionRepository;
     }
 
-    public List<UUID> getRedemptionActivity(){
-        return rewardsTransactionRepository.getTransactionsByRewardsAccount();
+    public List<RewardsTransactionSummary> getRewardsActivity(GetRewardsActivityRequest request){
+        return rewardsTransactionRepository.getTransactionsByRewardsAccount(request.getRewardsAccountId());
     }
 
     @Transactional

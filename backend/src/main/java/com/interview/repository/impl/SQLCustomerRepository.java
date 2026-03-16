@@ -1,8 +1,8 @@
 package com.interview.repository.impl;
 
 import com.interview.error.NotFoundException;
-import com.interview.model.domain.Customer;
-import com.interview.model.domain.RewardsAccount;
+import com.interview.model.entity.Customer;
+import com.interview.model.entity.RewardsAccount;
 import com.interview.repository.CustomerRepository;
 import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;

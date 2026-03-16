@@ -8,10 +8,7 @@ spring:
       data-locations: 'classpath:database/data.sql'
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     defer-datasource-initialization: true
-  h2:
-    console:
-      enabled: true
 rewards:
   rate: 0.02

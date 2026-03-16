@@ -1,7 +1,7 @@
 package com.interview.repository.impl;
 
 import com.interview.error.NotFoundException;
-import com.interview.model.domain.RewardsAccount;
+import com.interview.model.entity.RewardsAccount;
 import com.interview.repository.RewardsAccountRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;

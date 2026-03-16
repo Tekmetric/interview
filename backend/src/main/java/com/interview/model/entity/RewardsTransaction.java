@@ -1,5 +1,6 @@
-package com.interview.model.domain;
+package com.interview.model.entity;
 
+import com.interview.model.RewardsTransactionType;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;

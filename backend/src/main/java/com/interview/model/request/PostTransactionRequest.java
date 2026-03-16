@@ -1,6 +1,6 @@
 package com.interview.model.request;
 
-import com.interview.model.domain.RewardsTransactionType;
+import com.interview.model.RewardsTransactionType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

@@ -7,11 +7,12 @@ logging:
           bind: TRACE
 spring:
   jpa:
-    hibernate:
-      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+  h2:
+    console:
+      enabled: true
   jackson:
     serialization:
       indent-output: true

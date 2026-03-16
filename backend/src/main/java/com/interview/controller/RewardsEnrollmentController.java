@@ -36,7 +36,6 @@ public class RewardsEnrollmentController {
         return  rewardsEnrollmentService.getCustomerRewardsAccount(request);
     }
 
-    // TODO: allow enrolling additional customers onto existing account
     @PostMapping(path = {"/{customerId}/enroll", "/{customerId}/enroll/{rewardsAccountId}"})
     public UUID enrollCustomer(@Valid @ModelAttribute EnrollCustomerRequest request, BindingResult bindingResult){
         logger.info("Received enrollment request: {}", request);

@@ -37,3 +37,178 @@ This is an open ended exercise for you to showcase what you know! We encourage y
 
 ### Submitting your coding exercise
 Once you have finished the coding exercise please create a PR into Tekmetric/interview
+
+---
+
+## Application Overview
+
+This application implements a RESTful API for an automotive service domain, focusing on managing **Customers**, their **Vehicles**, and associated **Service Jobs**. It demonstrates a robust backend architecture using Spring Boot, JPA, and an in-memory H2 database.
+
+Key features and architectural choices include:
+
+*   **Domain-Driven Design:** Clear separation of concerns with dedicated entities (`Customer`, `Vehicle`, `ServiceJob`), DTOs (Data Transfer Objects), and service layers.
+*   **RESTful API Design:** Adherence to REST principles with resource-oriented URLs (e.g., `/api/customers`), appropriate HTTP methods (GET, POST, PUT, PATCH, DELETE), and meaningful status codes.
+*   **Data Persistence:** Utilizes Spring Data JPA for seamless interaction with the H2 database, including `@GeneratedValue(strategy = GenerationType.IDENTITY)` for automatic ID assignment and proper handling of one-to-many relationships.
+*   **Relationship Management:** Enforces data integrity by validating the existence of parent entities when creating or updating child entities (e.g., a `ServiceJob` requires an existing `Vehicle`).
+*   **Global Exception Handling:** Implements a `@ControllerAdvice` to centralize error handling, providing consistent and informative JSON error responses for exceptions like `ResourceNotFoundException`.
+*   **Layered Architecture:** Clear division into controller, service, repository, and model layers to promote maintainability and testability.
+*   **Comprehensive Unit Testing:** Extensive unit tests for service and mapper layers, and `MockMvc`-based tests for the web layer, ensuring high code quality and reliability.
+*   **Development-Friendly Setup:** Uses an in-memory H2 database with pre-loaded sample data via `data.sql` for easy local development and testing, accessible via an H2 console.
+
+---
+
+## API Usage with cURL Examples
+
+The application exposes a RESTful API on `http://localhost:8080`. Ensure the application is running (`mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`) before trying these commands.
+
+The H2 Console is available at `http://localhost:8080/h2-console` with JDBC URL `jdbc:h2:mem:testdb`, Username `sa`, and Password `password`.
+
+**Note on Pagination:** All endpoints that return a list of objects are paginated. You can use the following query parameters to control the response:
+*   `page`: The page number to retrieve (0-indexed).
+*   `size`: The number of items per page.
+*   `sort`: A comma-separated list of properties to sort by, e.g., `sort=lastName,asc&sort=firstName,desc`.
+
+The response will be a JSON object containing the list of items under the `content` key, along with pagination metadata like `totalPages`, `totalElements`, etc.
+
+---
+
+**Sample cURLs:**
+
+*(Note: IDs for existing resources are based on the `data.sql` script. For new resources, replace placeholders like `{NEW_CUSTOMER_ID}` with actual IDs returned from `POST` requests.)*
+
+**A. Customer Endpoints (`/api/customers`)**
+
+*   **Get all Customers (with pagination):**
+    ```bash
+    curl -X GET 'http://localhost:8080/api/customers?page=0&size=5&sort=lastName,asc'
+    ```
+*   **Get Customer by ID (e.g., ID 1):**
+    ```bash
+    curl -X GET http://localhost:8080/api/customers/1
+    ```
+*   **Get all Vehicles for a Customer (e.g., Customer ID 1):**
+    ```bash
+    curl -X GET 'http://localhost:8080/api/customers/1/vehicles?page=0&size=5'
+    ```
+*   **Get all Service Jobs for a Customer (e.g., Customer ID 1):**
+    ```bash
+    curl -X GET 'http://localhost:8080/api/customers/1/service-jobs?sort=creationDate,desc'
+    ```
+*   **Create a new Customer:**
+    ```bash
+    curl -X POST http://localhost:8080/api/customers \
+         -H "Content-Type: application/json" \
+         -d \
+             '{
+               "firstName": "Alice",
+               "lastName": "Johnson",
+               "email": "alice.j@example.com"
+             }'
+    ```
+*   **Update an existing Customer (e.g., ID 1):**
+    ```bash
+    curl -X PUT http://localhost:8080/api/customers/1 \
+         -H "Content-Type: application/json" \
+         -d \
+             '{
+               "id": 1,
+               "firstName": "John",
+               "lastName": "D. Doe",
+               "email": "john.doe@example.com"
+             }'
+    ```
+*   **Partially update a Customer (e.g., ID 1):**
+    ```bash
+    curl -X PATCH http://localhost:8080/api/customers/1 \
+         -H "Content-Type: application/json" \
+         -d \
+             '{
+               "lastName": "Smith-Doe"
+             }'
+    ```
+*   **Delete a Customer (e.g., ID 1):**
+    ```bash
+    curl -X DELETE http://localhost:8080/api/customers/1
+    ```
+*   **Test Non-Existent Customer (Expect 404):**
+    ```bash
+    curl -X GET http://localhost:8080/api/customers/999
+    ```
+
+**B. Vehicle Endpoints (`/api/vehicles`)**
+
+*   **Get all Vehicles (with pagination):**
+    ```bash
+    curl -X GET 'http://localhost:8080/api/vehicles?page=0&size=5&sort=modelYear,desc'
+    ```
+*   **Get Vehicle by ID (e.g., ID 1):**
+    ```bash
+    curl -X GET http://localhost:8080/api/vehicles/1
+    ```
+*   **Get all Service Jobs for a Vehicle (e.g., Vehicle ID 1):**
+    ```bash
+    curl -X GET 'http://localhost:8080/api/vehicles/1/service-jobs?page=0&size=5'
+    ```
+*   **Create a new Vehicle (for Customer ID 1):**
+    ```bash
+    curl -X POST http://localhost:8080/api/vehicles \
+         -H "Content-Type: application/json" \
+         -d \
+             '{
+               "vin": "1G1FY2D37A7123456",
+               "make": "Nissan",
+               "model": "Altima",
+               "modelYear": 2023,
+               "customerId": 1
+             }'
+    ```
+*   **Test Create Vehicle with Non-Existent Customer (Expect 404):**
+    ```bash
+    curl -X POST http://localhost:8080/api/vehicles \
+         -H "Content-Type: application/json" \
+         -d \
+             '{
+               "vin": "VINBADID123456789",
+               "make": "Chevy",
+               "model": "Malibu",
+               "modelYear": 2020,
+               "customerId": 999
+             }'
+    ```
+
+**C. Service Job Endpoints (`/api/service-jobs`)**
+
+*   **Get all Service Jobs (with pagination):**
+    ```bash
+    curl -X GET 'http://localhost:8080/api/service-jobs?page=0&size=10'
+    ```
+*   **Get Service Job by ID (e.g., ID 1):**
+    ```bash
+    curl -X GET http://localhost:8080/api/service-jobs/1
+    ```
+*   **Create a new Service Job (for Vehicle ID 1):**
+    ```bash
+    curl -X POST http://localhost:8080/api/service-jobs \
+         -H "Content-Type: application/json" \
+         -d \
+             '{
+               "description": "Brake pad replacement",
+               "creationDate": "2024-01-22T10:00:00Z",
+               "status": "PENDING",
+               "cost": 350.75,
+               "vehicleId": 1
+             }'
+    ```
+*   **Test Create Service Job with Non-Existent Vehicle (Expect 404):**
+    ```bash
+    curl -X POST http://localhost:8080/api/service-jobs \
+         -H "Content-Type: application/json" \
+         -d \
+             '{
+               "description": "Oil Change",
+               "creationDate": "2024-01-22T11:00:00Z",
+               "status": "IN_PROGRESS",
+               "cost": 120.00,
+               "vehicleId": 999
+             }'
+    ```

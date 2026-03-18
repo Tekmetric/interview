@@ -8,6 +8,7 @@ import com.interview.model.Wish;
 import com.interview.repository.WishRepository;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,22 +32,21 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class WishServiceTest {
 
-    @Mock
     private MeterRegistry meterRegistry;
-
-    @Mock
-    private Counter counter;
 
     @Mock
     private WishRepository wishRepository;
 
-    private WishService wishService;
+    private WishService underTest;
 
     private Wish wish;
     private WishDTO wishDTO;
 
     @BeforeEach
     void setUp() {
+        meterRegistry = new SimpleMeterRegistry();
+        underTest = new WishService(wishRepository, meterRegistry);
+
         wish = new Wish();
         wish.setId(1L);
         wish.setName("Test Wish");
@@ -63,10 +63,6 @@ class WishServiceTest {
         wishDTO.setLink("http://test.com");
         wishDTO.setCreatedAt(wish.getCreatedAt());
         wishDTO.setUpdatedAt(wish.getUpdatedAt());
-
-        when(meterRegistry.counter(MetricsConstants.WISHES_CAME_TRUE_COUNT)).thenReturn(counter);
-        
-        wishService = new WishService(wishRepository, meterRegistry);
     }
 
     @Test
@@ -82,7 +78,7 @@ class WishServiceTest {
         when(wishRepository.findAllByDeletedFalse(pageable)).thenReturn(wishPage);
 
         // Act
-        Page<WishLightDTO> result = wishService.getAllWishes(pageable);
+        Page<WishLightDTO> result = underTest.getAllWishes(pageable);
 
         // Assert
         assertThat(result.getContent()).hasSize(2);
@@ -100,7 +96,7 @@ class WishServiceTest {
         when(wishRepository.findById(1L)).thenReturn(Optional.of(wish));
 
         // Act
-        WishDTO result = wishService.getWishById(1L);
+        WishDTO result = underTest.getWishById(1L);
 
         // Assert
         assertThat(result).isNotNull();
@@ -115,7 +111,7 @@ class WishServiceTest {
         when(wishRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThatThrownBy(() -> wishService.getWishById(1L))
+        assertThatThrownBy(() -> underTest.getWishById(1L))
                 .isInstanceOf(WishNotFoundException.class)
                 .hasMessageContaining("Wish not found with id: 1");
     }
@@ -127,7 +123,7 @@ class WishServiceTest {
         when(wishRepository.findById(1L)).thenReturn(Optional.of(wish));
 
         // Act & Assert
-        assertThatThrownBy(() -> wishService.getWishById(1L))
+        assertThatThrownBy(() -> underTest.getWishById(1L))
                 .isInstanceOf(WishNotFoundException.class)
                 .hasMessageContaining("Wish not found with id: 1");
     }
@@ -142,7 +138,7 @@ class WishServiceTest {
         });
 
         // Act
-        WishDTO result = wishService.createWish(wishDTO);
+        WishDTO result = underTest.createWish(wishDTO);
 
         // Assert
         assertThat(result).isNotNull();
@@ -163,7 +159,7 @@ class WishServiceTest {
         updateDTO.setLink("http://updated.com");
 
         // Act
-        WishDTO result = wishService.updateWish(1L, updateDTO);
+        WishDTO result = underTest.updateWish(1L, updateDTO);
 
         // Assert
         assertThat(result).isNotNull();
@@ -179,7 +175,7 @@ class WishServiceTest {
         when(wishRepository.findById(1L)).thenReturn(Optional.of(wish));
 
         // Act
-        wishService.deleteWish(1L);
+        underTest.deleteWish(1L);
 
         // Assert
         assertThat(wish.isDeleted()).isTrue();
@@ -188,18 +184,39 @@ class WishServiceTest {
     }
 
     @Test
-    void markAsCameTrue_ShouldSetCameTrueFlag() {
+    void markAsCameTrue_ShouldSetCameTrueFlagAndIncrementCounter() {
         // Arrange
         when(wishRepository.findById(1L)).thenReturn(Optional.of(wish));
         when(wishRepository.save(any(Wish.class))).thenReturn(wish);
 
         // Act
-        WishDTO result = wishService.markAsCameTrue(1L);
+        WishDTO result = underTest.markAsCameTrue(1L);
 
         // Assert
         assertThat(result.isCameTrue()).isTrue();
         assertThat(wish.isCameTrue()).isTrue();
+
+        Counter counter = meterRegistry.find(MetricsConstants.WISHES_CAME_TRUE_COUNT).counter();
+        assertThat(counter).isNotNull();
+        assertThat(counter.count()).isEqualTo(1.0);
+
         verify(wishRepository, times(1)).findById(1L);
         verify(wishRepository, times(1)).save(wish);
+    }
+
+    @Test
+    void markAsCameTrue_AlreadyCameTrue_ShouldNotIncrementCounter() {
+        // Arrange
+        wish.setCameTrue(true);
+        when(wishRepository.findById(1L)).thenReturn(Optional.of(wish));
+        when(wishRepository.save(any(Wish.class))).thenReturn(wish);
+
+        // Act
+        underTest.markAsCameTrue(1L);
+
+        // Assert
+        Counter counter = meterRegistry.find(MetricsConstants.WISHES_CAME_TRUE_COUNT).counter();
+        assertThat(counter).isNotNull();
+        assertThat(counter.count()).isEqualTo(0.0);
     }
 }

@@ -1,10 +1,13 @@
 package com.interview.service;
 
+import com.interview.constant.MetricsConstants;
 import com.interview.dto.WishDTO;
 import com.interview.dto.WishLightDTO;
 import com.interview.exception.WishNotFoundException;
 import com.interview.model.Wish;
 import com.interview.repository.WishRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,9 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class WishService {
 
     private final WishRepository wishRepository;
+    private final Counter wishesCameTrueCounter;
 
-    public WishService(WishRepository wishRepository) {
+    public WishService(WishRepository wishRepository, MeterRegistry meterRegistry) {
         this.wishRepository = wishRepository;
+        this.wishesCameTrueCounter = meterRegistry.counter(MetricsConstants.WISHES_CAME_TRUE_COUNT);
     }
 
     public Page<WishLightDTO> getAllWishes(Pageable pageable) {
@@ -70,7 +75,10 @@ public class WishService {
         Wish wish = wishRepository.findById(id)
                 .filter(w -> !w.isDeleted())
                 .orElseThrow(() -> new WishNotFoundException("Wish not found with id: " + id));
-        wish.setCameTrue(true);
+        if (!wish.isCameTrue()) {
+            wish.setCameTrue(true);
+            wishesCameTrueCounter.increment();
+        }
         return mapToDTO(wishRepository.save(wish));
     }
 

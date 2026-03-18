@@ -1,14 +1,16 @@
 package com.interview.service;
 
+import com.interview.constant.MetricsConstants;
 import com.interview.dto.WishDTO;
 import com.interview.dto.WishLightDTO;
 import com.interview.exception.WishNotFoundException;
 import com.interview.model.Wish;
 import com.interview.repository.WishRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
@@ -30,9 +32,14 @@ import static org.mockito.Mockito.*;
 class WishServiceTest {
 
     @Mock
+    private MeterRegistry meterRegistry;
+
+    @Mock
+    private Counter counter;
+
+    @Mock
     private WishRepository wishRepository;
 
-    @InjectMocks
     private WishService wishService;
 
     private Wish wish;
@@ -56,6 +63,10 @@ class WishServiceTest {
         wishDTO.setLink("http://test.com");
         wishDTO.setCreatedAt(wish.getCreatedAt());
         wishDTO.setUpdatedAt(wish.getUpdatedAt());
+
+        when(meterRegistry.counter(MetricsConstants.WISHES_CAME_TRUE_COUNT)).thenReturn(counter);
+        
+        wishService = new WishService(wishRepository, meterRegistry);
     }
 
     @Test

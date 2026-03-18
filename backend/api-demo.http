@@ -1,0 +1,63 @@
+### Wish Management API Demo
+# Variables
+@host = http://localhost:8080/api
+
+### 1. Welcome Endpoint
+# Verify the API is running.
+GET {{host}}/welcome
+
+### 2. Create a New Wish
+# Add a new wish to the list.
+POST {{host}}/wishes
+Content-Type: application/json
+
+{
+  "name": "New Laptop",
+  "comment": "MacBook Pro M3 Max",
+  "link": "https://www.apple.com/macbook-pro/",
+  "cameTrue": false
+}
+
+> {%
+    client.global.set("wish_id", response.body.id);
+%}
+
+### 3. Get All Wishes (Paginated & Sorted)
+# Retrieve a list of wishes. Supports page, size, sortBy, and direction parameters.
+
+# Default call (page 0, size 10, sortBy updatedAt, direction DESC)
+GET {{host}}/wishes?page=0&size=10&sortBy=updatedAt&direction=DESC
+
+### 4. Get Wishes (Sorting by Name, Ascending)
+GET {{host}}/wishes?page=0&size=5&sortBy=name&direction=ASC
+
+### 5. Get Wishes (Second Page, Smaller Size)
+GET {{host}}/wishes?page=1&size=2&sortBy=createdAt&direction=DESC
+
+### 6. Get a Single Wish by ID
+# Use the ID from the previous 'Create' request.
+GET {{host}}/wishes/{{wish_id}}
+
+### 7. Update an Existing Wish
+# Update the wish created in step 2.
+PUT {{host}}/wishes/{{wish_id}}
+Content-Type: application/json
+
+{
+  "name": "New Laptop",
+  "comment": "MacBook Pro M3 Max (Space Black)",
+  "link": "https://www.apple.com/macbook-pro/",
+  "cameTrue": false
+}
+
+### 8. Mark a Wish as Came True
+# Specialized PATCH endpoint to update the status.
+PATCH {{host}}/wishes/{{wish_id}}/came-true
+
+### 9. Delete a Wish
+# Soft-deletes the wish by ID.
+DELETE {{host}}/wishes/{{wish_id}}
+
+### 10. Health Check
+# Check the application health via Spring Boot Actuator.
+GET http://localhost:8080/actuator/health

@@ -2,6 +2,7 @@ package com.interview.service;
 
 import com.interview.dto.WishDTO;
 import com.interview.dto.WishLightDTO;
+import com.interview.exception.WishNotFoundException;
 import com.interview.model.Wish;
 import com.interview.repository.WishRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,7 +91,7 @@ class WishServiceTest {
 
         // Act & Assert
         assertThatThrownBy(() -> wishService.getWishById(1L))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(WishNotFoundException.class)
                 .hasMessageContaining("Wish not found with id: 1");
     }
 
@@ -102,7 +103,7 @@ class WishServiceTest {
 
         // Act & Assert
         assertThatThrownBy(() -> wishService.getWishById(1L))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(WishNotFoundException.class)
                 .hasMessageContaining("Wish not found with id: 1");
     }
 

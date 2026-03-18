@@ -2,6 +2,7 @@ package com.interview.controller;
 
 import com.interview.dto.WishDTO;
 import com.interview.dto.WishLightDTO;
+import com.interview.exception.WishNotFoundException;
 import com.interview.service.WishService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -74,7 +74,7 @@ class WishControllerTest {
 
     @Test
     void getWishById_NotFound_ShouldReturn404() throws Exception {
-        when(wishService.getWishById(1L)).thenThrow(new RuntimeException("Wish not found with id: 1"));
+        when(wishService.getWishById(1L)).thenThrow(new WishNotFoundException("Wish not found with id: 1"));
 
         mockMvc.perform(get("/api/wishes/1"))
                 .andExpect(status().isNotFound())

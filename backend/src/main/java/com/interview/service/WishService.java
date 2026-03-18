@@ -2,6 +2,7 @@ package com.interview.service;
 
 import com.interview.dto.WishDTO;
 import com.interview.dto.WishLightDTO;
+import com.interview.exception.WishNotFoundException;
 import com.interview.model.Wish;
 import com.interview.repository.WishRepository;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class WishService {
     public WishDTO getWishById(Long id) {
         Wish wish = wishRepository.findById(id)
                 .filter(w -> !w.isDeleted())
-                .orElseThrow(() -> new RuntimeException("Wish not found with id: " + id));
+                .orElseThrow(() -> new WishNotFoundException("Wish not found with id: " + id));
         return mapToDTO(wish);
     }
 
@@ -47,7 +48,7 @@ public class WishService {
     public WishDTO updateWish(Long id, WishDTO wishDTO) {
         Wish wish = wishRepository.findById(id)
                 .filter(w -> !w.isDeleted())
-                .orElseThrow(() -> new RuntimeException("Wish not found with id: " + id));
+                .orElseThrow(() -> new WishNotFoundException("Wish not found with id: " + id));
         
         wish.setName(wishDTO.getName());
         wish.setComment(wishDTO.getComment());
@@ -60,7 +61,7 @@ public class WishService {
     public void deleteWish(Long id) {
         Wish wish = wishRepository.findById(id)
                 .filter(w -> !w.isDeleted())
-                .orElseThrow(() -> new RuntimeException("Wish not found with id: " + id));
+                .orElseThrow(() -> new WishNotFoundException("Wish not found with id: " + id));
         wish.setDeleted(true);
         wishRepository.save(wish);
     }
@@ -69,7 +70,7 @@ public class WishService {
     public WishDTO markAsCameTrue(Long id) {
         Wish wish = wishRepository.findById(id)
                 .filter(w -> !w.isDeleted())
-                .orElseThrow(() -> new RuntimeException("Wish not found with id: " + id));
+                .orElseThrow(() -> new WishNotFoundException("Wish not found with id: " + id));
         wish.setCameTrue(true);
         return mapToDTO(wishRepository.save(wish));
     }

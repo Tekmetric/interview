@@ -1,1 +1,8 @@
--- Provide SQL scripts here
+CREATE TABLE wish (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    comment TEXT,
+    link VARCHAR(2048),
+    came_true BOOLEAN DEFAULT FALSE,
+    deleted BOOLEAN DEFAULT FALSE
+);

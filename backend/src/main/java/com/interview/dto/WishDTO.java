@@ -20,5 +20,5 @@ public class WishDTO {
     private String link;
 
     private boolean cameTrue;
-
+    private Integer version;
 }

@@ -2,6 +2,7 @@ package com.interview.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,6 +19,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(WishNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleWishNotFoundException(WishNotFoundException ex) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<Map<String, String>> handleOptimisticLockingFailureException(ObjectOptimisticLockingFailureException ex) {
+        return buildErrorResponse(HttpStatus.CONFLICT, "The wish has been updated by another user. Please refresh and try again.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

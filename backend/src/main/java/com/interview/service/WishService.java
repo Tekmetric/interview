@@ -54,6 +54,7 @@ public class WishService {
         wish.setName(wishDTO.getName());
         wish.setComment(wishDTO.getComment());
         wish.setLink(wishDTO.getLink());
+        wish.setVersion(wishDTO.getVersion());
         
         return mapToDTO(wishRepository.save(wish));
     }
@@ -83,6 +84,7 @@ public class WishService {
         dto.setComment(wish.getComment());
         dto.setLink(wish.getLink());
         dto.setCameTrue(wish.isCameTrue());
+        dto.setVersion(wish.getVersion());
         return dto;
     }
 }

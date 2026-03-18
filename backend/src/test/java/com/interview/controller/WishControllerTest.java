@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -140,5 +141,17 @@ class WishControllerTest {
         mockMvc.perform(patch("/api/wishes/1/came-true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cameTrue").value(true));
+    }
+
+    @Test
+    void updateWish_OptimisticLockingFailure_ShouldReturn409() throws Exception {
+        when(wishService.updateWish(eq(1L), any(WishDTO.class)))
+                .thenThrow(new ObjectOptimisticLockingFailureException("Wish", 1L));
+
+        mockMvc.perform(put("/api/wishes/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonMapper.writeValueAsString(wishDTO)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("The wish has been updated by another user. Please refresh and try again."));
     }
 }

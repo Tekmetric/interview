@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +51,7 @@ class WishControllerTest {
 
     @Test
     void getAllWishes_ShouldReturnList() throws Exception {
-        List<WishLightDTO> wishes = Arrays.asList(wishLightDTO);
+        List<WishLightDTO> wishes = Collections.singletonList(wishLightDTO);
         when(wishService.getAllWishes()).thenReturn(wishes);
 
         mockMvc.perform(get("/api/wishes"))

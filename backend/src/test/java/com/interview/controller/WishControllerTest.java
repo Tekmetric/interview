@@ -8,6 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,15 +54,22 @@ class WishControllerTest {
     }
 
     @Test
-    void getAllWishes_ShouldReturnList() throws Exception {
+    void getAllWishes_ShouldReturnPaginatedList() throws Exception {
         List<WishLightDTO> wishes = Collections.singletonList(wishLightDTO);
-        when(wishService.getAllWishes()).thenReturn(wishes);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<WishLightDTO> wishPage = new PageImpl<>(wishes, pageable, 1);
+        
+        when(wishService.getAllWishes(any(Pageable.class))).thenReturn(wishPage);
 
-        mockMvc.perform(get("/api/wishes"))
+        mockMvc.perform(get("/api/wishes")
+                .param("page", "0")
+                .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].name").value("Test Wish"))
-                .andExpect(jsonPath("$[0].cameTrue").value(false));
+                .andExpect(jsonPath("$.content[0].name").value("Test Wish"))
+                .andExpect(jsonPath("$.content[0].cameTrue").value(false))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1));
     }
 
     @Test

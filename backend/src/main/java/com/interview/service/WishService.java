@@ -5,6 +5,8 @@ import com.interview.dto.WishLightDTO;
 import com.interview.exception.WishNotFoundException;
 import com.interview.model.Wish;
 import com.interview.repository.WishRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +22,9 @@ public class WishService {
         this.wishRepository = wishRepository;
     }
 
-    public List<WishLightDTO> getAllWishes() {
-        return wishRepository.findAllByDeletedFalse().stream()
-                .map(wish -> new WishLightDTO(wish.getName(), wish.isCameTrue()))
-                .collect(Collectors.toList());
+    public Page<WishLightDTO> getAllWishes(Pageable pageable) {
+        return wishRepository.findAllByDeletedFalse(pageable)
+                .map(wish -> new WishLightDTO(wish.getName(), wish.isCameTrue()));
     }
 
     public WishDTO getWishById(Long id) {

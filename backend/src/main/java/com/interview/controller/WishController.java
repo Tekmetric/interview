@@ -4,6 +4,9 @@ import com.interview.dto.WishDTO;
 import com.interview.dto.WishLightDTO;
 import com.interview.service.WishService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +23,11 @@ public class WishController {
     }
 
     @GetMapping
-    public List<WishLightDTO> getAllWishes() {
-        return wishService.getAllWishes();
+    public Page<WishLightDTO> getAllWishes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return wishService.getAllWishes(pageable);
     }
 
     @GetMapping("/{id}")

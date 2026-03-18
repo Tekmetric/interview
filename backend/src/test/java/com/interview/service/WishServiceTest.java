@@ -11,6 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,23 +54,28 @@ class WishServiceTest {
     }
 
     @Test
-    void getAllWishes_ShouldReturnLightweightDTOs() {
+    void getAllWishes_Paginated_ShouldReturnLightweightDTOs() {
         // Arrange
         Wish wish2 = new Wish();
         wish2.setName("Wish 2");
         wish2.setCameTrue(true);
-        when(wishRepository.findAllByDeletedFalse()).thenReturn(Arrays.asList(wish, wish2));
+        List<Wish> wishes = Arrays.asList(wish, wish2);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Wish> wishPage = new PageImpl<>(wishes, pageable, 2);
+        
+        when(wishRepository.findAllByDeletedFalse(pageable)).thenReturn(wishPage);
 
         // Act
-        List<WishLightDTO> result = wishService.getAllWishes();
+        Page<WishLightDTO> result = wishService.getAllWishes(pageable);
 
         // Assert
-        assertThat(result).hasSize(2);
-        assertThat(result.get(0).getName()).isEqualTo("Test Wish");
-        assertThat(result.get(0).isCameTrue()).isFalse();
-        assertThat(result.get(1).getName()).isEqualTo("Wish 2");
-        assertThat(result.get(1).isCameTrue()).isTrue();
-        verify(wishRepository, times(1)).findAllByDeletedFalse();
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getContent().get(0).getName()).isEqualTo("Test Wish");
+        assertThat(result.getContent().get(0).isCameTrue()).isFalse();
+        assertThat(result.getContent().get(1).getName()).isEqualTo("Wish 2");
+        assertThat(result.getContent().get(1).isCameTrue()).isTrue();
+        assertThat(result.getTotalElements()).isEqualTo(2);
+        verify(wishRepository, times(1)).findAllByDeletedFalse(pageable);
     }
 
     @Test

@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -46,11 +47,15 @@ class WishServiceTest {
         wish.setLink("http://test.com");
         wish.setCameTrue(false);
         wish.setDeleted(false);
+        wish.setCreatedAt(LocalDateTime.now());
+        wish.setUpdatedAt(LocalDateTime.now());
 
         wishDTO = new WishDTO();
         wishDTO.setName("Test Wish");
         wishDTO.setComment("Test Comment");
         wishDTO.setLink("http://test.com");
+        wishDTO.setCreatedAt(wish.getCreatedAt());
+        wishDTO.setUpdatedAt(wish.getUpdatedAt());
     }
 
     @Test

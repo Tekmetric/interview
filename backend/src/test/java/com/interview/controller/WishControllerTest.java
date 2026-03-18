@@ -8,16 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,8 +48,10 @@ class WishControllerTest {
         wishDTO.setComment("Test Comment");
         wishDTO.setLink("http://test.com");
         wishDTO.setCameTrue(false);
+        wishDTO.setCreatedAt(LocalDateTime.now());
+        wishDTO.setUpdatedAt(LocalDateTime.now());
 
-        wishLightDTO = new WishLightDTO("Test Wish", false);
+        wishLightDTO = new WishLightDTO("Test Wish", false, LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
@@ -71,6 +71,38 @@ class WishControllerTest {
                 .andExpect(jsonPath("$.content[0].cameTrue").value(false))
                 .andExpect(jsonPath("$.totalElements").value(1))
                 .andExpect(jsonPath("$.totalPages").value(1));
+    }
+
+    @Test
+    void getAllWishes_ShouldReturnSortedPaginatedList() throws Exception {
+        List<WishLightDTO> wishes = Collections.singletonList(wishLightDTO);
+        
+        when(wishService.getAllWishes(any(Pageable.class))).thenAnswer(invocation -> {
+            Pageable p = invocation.getArgument(0);
+            if (p.getSort().isSorted() && 
+                p.getSort().getOrderFor("name") != null && 
+                p.getSort().getOrderFor("name").getDirection() == Sort.Direction.DESC) {
+                return new PageImpl<>(wishes, p, 1);
+            }
+            return Page.empty();
+        });
+
+        mockMvc.perform(get("/api/wishes")
+                .param("page", "0")
+                .param("size", "10")
+                .param("sortBy", "name")
+                .param("direction", "DESC"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].name").value("Test Wish"))
+                .andExpect(jsonPath("$.totalElements").value(1));
+    }
+
+    @Test
+    void getAllWishes_InvalidSortField_ShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(get("/api/wishes")
+                .param("sortBy", "id"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Sorting is allowed only for: name, createdAt, updatedAt"));
     }
 
     @Test

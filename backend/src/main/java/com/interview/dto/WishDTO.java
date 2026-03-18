@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -21,4 +22,6 @@ public class WishDTO {
 
     private boolean cameTrue;
     private Integer version;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

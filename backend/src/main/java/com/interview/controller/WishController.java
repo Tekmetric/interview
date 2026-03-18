@@ -10,9 +10,11 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -30,8 +32,17 @@ public class WishController {
     @Operation(summary = "Get all wishes", description = "Retrieves a paginated list of wishes in a lightweight format")
     public Page<WishLightDTO> getAllWishes(
             @Parameter(description = "Zero-based page index (0..N)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "The size of the page to be returned") @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+            @Parameter(description = "The size of the page to be returned") @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "The field to sort by") @RequestParam(defaultValue = "updatedAt") String sortBy,
+            @Parameter(description = "The direction of the sort") @RequestParam(defaultValue = "DESC") String direction) {
+        
+        List<String> allowedSortFields = Arrays.asList("name", "createdAt", "updatedAt");
+        if (!allowedSortFields.contains(sortBy)) {
+            throw new IllegalArgumentException("Sorting is allowed only for: " + String.join(", ", allowedSortFields));
+        }
+
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
         return wishService.getAllWishes(pageable);
     }
 

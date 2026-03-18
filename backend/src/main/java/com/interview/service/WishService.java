@@ -10,9 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class WishService {
 
@@ -24,7 +21,7 @@ public class WishService {
 
     public Page<WishLightDTO> getAllWishes(Pageable pageable) {
         return wishRepository.findAllByDeletedFalse(pageable)
-                .map(wish -> new WishLightDTO(wish.getName(), wish.isCameTrue()));
+                .map(wish -> new WishLightDTO(wish.getName(), wish.isCameTrue(), wish.getCreatedAt(), wish.getUpdatedAt()));
     }
 
     public WishDTO getWishById(Long id) {
@@ -85,6 +82,8 @@ public class WishService {
         dto.setLink(wish.getLink());
         dto.setCameTrue(wish.isCameTrue());
         dto.setVersion(wish.getVersion());
+        dto.setCreatedAt(wish.getCreatedAt());
+        dto.setUpdatedAt(wish.getUpdatedAt());
         return dto;
     }
 }

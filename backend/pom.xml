@@ -45,7 +45,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
-<!--            <version>4.0.0</version> &lt;!&ndash; Use the appropriate Spring Boot 4 version &ndash;&gt;-->
             <scope>test</scope>
         </dependency>
         <dependency>

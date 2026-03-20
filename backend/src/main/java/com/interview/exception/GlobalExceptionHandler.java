@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -22,7 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiErrorDto> handleNotFound(NotFoundException ex, HttpServletRequest request) {
-        log.error("api_error code={} status={} path={} message={}",
+        log.warn("api_error code={} status={} path={} message={}",
                 "not_found",
                 HttpStatus.NOT_FOUND.value(),
                 request.getRequestURI(),
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ApiErrorDto> handleConflict(ConflictException ex, HttpServletRequest request) {
-        log.error("api_error code={} status={} path={} message={}",
+        log.warn("api_error code={} status={} path={} message={}",
                 "conflict",
                 HttpStatus.CONFLICT.value(),
                 request.getRequestURI(),
@@ -71,7 +72,7 @@ public class GlobalExceptionHandler {
                         (a, b) -> a
                 ));
 
-        log.error("api_error code={} status={} path={} validationErrors={}",
+        log.warn("api_error code={} status={} path={} validationErrors={}",
                 "validation_error",
                 HttpStatus.BAD_REQUEST.value(),
                 request.getRequestURI(),
@@ -91,7 +92,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiErrorDto> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
-        log.error("api_error code={} status={} path={} message={}",
+        log.warn("api_error code={} status={} path={} message={}",
                 "forbidden",
                 HttpStatus.FORBIDDEN.value(),
                 request.getRequestURI(),
@@ -102,6 +103,20 @@ public class GlobalExceptionHandler {
                         "forbidden",
                         "Access denied",
                         HttpStatus.FORBIDDEN.value(),
+                        request.getRequestURI(),
+                        Instant.now(),
+                        null
+                )
+        );
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorDto> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ApiErrorDto(
+                        "unauthorized",
+                        "Authentication required",
+                        HttpStatus.UNAUTHORIZED.value(),
                         request.getRequestURI(),
                         Instant.now(),
                         null

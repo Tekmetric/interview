@@ -1,6 +1,7 @@
 package com.interview.exception;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class ApiErrorDto {
@@ -9,8 +10,15 @@ public class ApiErrorDto {
     private String message;
     private int status;
     private String path;
-    private Instant timestamp;
+    /**
+     * (ISO-8601), e.g. "2026-03-20T12:34:56.789Z".
+     */
+    private String timestamp;
     private Map<String, String> validationErrors;
+
+    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ISO_INSTANT;
+
+    public ApiErrorDto() {}
 
     public ApiErrorDto(
             String code,
@@ -24,7 +32,7 @@ public class ApiErrorDto {
         this.message = message;
         this.status = status;
         this.path = path;
-        this.timestamp = timestamp;
+        this.timestamp = timestamp == null ? null : TIMESTAMP_FORMATTER.format(timestamp);
         this.validationErrors = validationErrors;
     }
 
@@ -60,11 +68,11 @@ public class ApiErrorDto {
         this.path = path;
     }
 
-    public Instant getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Instant timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 

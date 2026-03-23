@@ -1,4 +1,4 @@
-package com.interview.model;
+package com.interview.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;

@@ -1,6 +1,6 @@
 package com.interview.exception;
 
-import com.interview.model.FieldValidationError;
+import com.interview.dto.FieldValidationError;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
 import lombok.extern.slf4j.Slf4j;

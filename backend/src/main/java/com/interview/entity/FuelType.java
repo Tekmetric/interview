@@ -1,4 +1,4 @@
-package com.interview.model;
+package com.interview.entity;
 
 public enum FuelType {
     GASOLINE,

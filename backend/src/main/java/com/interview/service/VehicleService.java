@@ -1,7 +1,7 @@
 package com.interview.service;
 
 import com.interview.dto.VehicleSearchCriteria;
-import com.interview.model.Vehicle;
+import com.interview.entity.Vehicle;
 import com.interview.repository.VehicleRepository;
 import com.interview.repository.VehicleSpecification;
 import jakarta.persistence.EntityNotFoundException;

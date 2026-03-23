@@ -1,7 +1,10 @@
 package com.interview.controller;
 
+import com.interview.dto.VehicleRequest;
+import com.interview.dto.VehicleResponse;
 import com.interview.dto.VehicleSearchCriteria;
-import com.interview.model.Vehicle;
+import com.interview.mapper.VehicleMapper;
+import com.interview.entity.Vehicle;
 import com.interview.service.VehicleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,29 +25,32 @@ public class VehicleController {
 
     @GetMapping
     @ResponseBody
-    public Page<Vehicle> getVehicles(@Valid @ModelAttribute VehicleSearchCriteria criteria, Pageable pageable) {
+    public Page<VehicleResponse> getVehicles(@Valid @ModelAttribute VehicleSearchCriteria criteria, Pageable pageable) {
         if (pageable.getPageSize() > MAX_PAGE_SIZE) {
             throw new IllegalArgumentException("Page size must not exceed " + MAX_PAGE_SIZE);
         }
 
-        return vehicleService.findAll(criteria, pageable);
+        return vehicleService.findAll(criteria, pageable)
+                .map(VehicleMapper::toResponse);
     }
 
     @GetMapping("/{id}")
     @ResponseBody
-    public Vehicle getVehicle(@PathVariable Long id) {
-        return vehicleService.findById(id);
+    public VehicleResponse getVehicle(@PathVariable Long id) {
+        return VehicleMapper.toResponse(vehicleService.findById(id));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Vehicle createVehicle(@Valid @RequestBody Vehicle vehicle) {
-        return vehicleService.create(vehicle);
+    public VehicleResponse createVehicle(@Valid @RequestBody VehicleRequest request) {
+        Vehicle vehicle = VehicleMapper.toEntity(request);
+        return VehicleMapper.toResponse(vehicleService.create(vehicle));
     }
 
     @PutMapping("/{id}")
-    public Vehicle updateVehicle(@PathVariable Long id, @Valid @RequestBody Vehicle vehicle) {
-        return vehicleService.update(id, vehicle);
+    public VehicleResponse updateVehicle(@PathVariable Long id, @Valid @RequestBody VehicleRequest request) {
+        Vehicle vehicle = VehicleMapper.toEntity(request);
+        return VehicleMapper.toResponse(vehicleService.update(id, vehicle));
     }
 
     @DeleteMapping("/{id}")

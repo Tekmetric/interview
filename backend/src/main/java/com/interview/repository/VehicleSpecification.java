@@ -1,7 +1,7 @@
 package com.interview.repository;
 
 import com.interview.dto.VehicleSearchCriteria;
-import com.interview.model.Vehicle;
+import com.interview.entity.Vehicle;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 

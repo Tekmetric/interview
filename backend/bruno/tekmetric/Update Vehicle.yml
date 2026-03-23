@@ -1,0 +1,29 @@
+info:
+  name: Update Vehicle
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: http://localhost:8080/api/vehicles/4
+  body:
+    type: json
+    data: |-
+      {
+        "color": "Gold",
+        "doors": 2,
+        "fuelType": "ELECTRIC",
+        "licensePlate": "SIXSEVEN",
+        "make": "Tesla",
+        "mileage": 67,
+        "model": "Cybercab",
+        "modelYear": 2026,
+        "vin": "JTDB4MEE9L1234567"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

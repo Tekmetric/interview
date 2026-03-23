@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -18,6 +21,13 @@ public class Vehicle {
     )
     private Long id;
 
+    @Version
+    private Long version;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Instant createdAt;
+
     @Min(1900)
     @NotNull
     private Integer modelYear;
@@ -29,6 +39,8 @@ public class Vehicle {
     private String model;
 
     private String color;
+
+    @Pattern(regexp = "^[A-Z0-9 -]{1,8}$")
     private String licensePlate;
 
     @NotBlank

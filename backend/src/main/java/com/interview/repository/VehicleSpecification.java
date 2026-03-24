@@ -21,6 +21,14 @@ public final class VehicleSpecification {
         return specification;
     }
 
+    public static Specification<Vehicle> ownedBy(Long ownerId) {
+        if (ownerId == null) {
+            return Specification.unrestricted();
+        }
+
+        return (root, query, builder) -> builder.equal(root.get("owner").get("id"), ownerId);
+    }
+
     private static Specification<Vehicle> equalsIfPresent(String fieldName, Object value) {
         if (value == null) {
             return null;

@@ -1,5 +1,7 @@
 # Java Spring Boot API Coding Exercise
 
+This implementation models a self-service vehicle portal. Authenticated `VEHICLE_OWNER` users can manage only their own vehicles, while `ADMIN` users can manage all vehicle records.
+
 ## Steps to get started:
 
 #### Prerequisites
@@ -63,8 +65,11 @@ If I continued evolving this project beyond the exercise, these are the next add
 - Concurrency contract at the API boundary
   - The application already uses optimistic locking internally. A next step would be to expose that more explicitly to clients through a version field, then add integration tests that prove stale updates are rejected with `409 Conflict`.
 
-- Security and rate limiting
-  - If this moved beyond a coding exercise, I would add authentication/authorization with Spring Security and introduce basic rate limiting at the edge.
+- Rate limiting
+  - If this moved beyond a coding exercise, I would add introduce basic rate limiting at the edge.
 
 - Observability
   - Add request correlation, structured logs, and metrics that surface key behaviors such as request counts, error rates, and latency. That would pair well with Actuator and make the service easier to operate and troubleshoot.
+
+
+

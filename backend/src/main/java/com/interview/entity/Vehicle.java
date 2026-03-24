@@ -28,6 +28,10 @@ public class Vehicle {
     @Column(updatable = false)
     private Instant createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "owner_user_id", nullable = false)
+    private AppUser owner;
+
     @Min(1900)
     @NotNull
     private Integer modelYear;
@@ -45,7 +49,6 @@ public class Vehicle {
 
     @NotBlank
     @Pattern(regexp = "^[A-Z0-9]{17}$")
-    @Column(unique = true)
     private String vin;
 
     @NotNull
@@ -58,3 +61,4 @@ public class Vehicle {
     @Min(0)
     private Integer mileage;
 }
+

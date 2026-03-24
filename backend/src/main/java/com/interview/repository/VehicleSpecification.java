@@ -8,10 +8,11 @@ import org.springframework.util.StringUtils;
 public final class VehicleSpecification {
     public static Specification<Vehicle> fromCriteria(VehicleSearchCriteria criteria) {
         if (criteria == null) {
-            return null;
+            return Specification.unrestricted();
         }
 
-        Specification<Vehicle> specification = equalsIfPresent("vin", criteria.getVin());
+        Specification<Vehicle> specification = Specification.unrestricted();
+        specification = append(specification, equalsIfPresent("vin", criteria.getVin()));
         specification = append(specification, equalsIfPresent("licensePlate", criteria.getLicensePlate()));
         specification = append(specification, equalsIfPresent("make", criteria.getMake()));
         specification = append(specification, equalsIfPresent("model", criteria.getModel()));

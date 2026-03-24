@@ -5,12 +5,13 @@ import com.interview.entity.Vehicle;
 import com.interview.repository.VehicleRepository;
 import com.interview.repository.VehicleSpecification;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -27,7 +28,8 @@ public class VehicleService {
                 .orElseThrow(EntityNotFoundException::new);
     }
 
-    @Transactional
+    // Use REQUIRES_NEW to force hibernate to flush, otherwise state like createdAt will be null when this participates in existing transactions
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Vehicle create(Vehicle vehicle) {
         Vehicle createdVehicle = vehicleRepository.save(vehicle);
         log.info("Created vehicle id={} vin={}", createdVehicle.getId(), createdVehicle.getVin());

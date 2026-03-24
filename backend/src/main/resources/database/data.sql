@@ -1,25 +1,3 @@
--- Start at 4 to skip the 3 inserts below
-CREATE SEQUENCE vehicle_id_seq START WITH 4 INCREMENT BY 50;
-
-CREATE TABLE vehicle (
-    id BIGINT NOT NULL,
-    model_year INTEGER NOT NULL, -- "year" is a reserved keyword
-    make VARCHAR NOT NULL,
-    model VARCHAR NOT NULL,
-    color VARCHAR,
-    license_plate VARCHAR,
-    vin VARCHAR NOT NULL,
-    fuel_type VARCHAR NOT NULL,
-    doors INTEGER,
-    mileage INTEGER,
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT vehicle_pkey PRIMARY KEY (id),
-    CONSTRAINT vehicle_year_check CHECK (model_year >= 1900),
-    CONSTRAINT vehicle_doors_check CHECK (doors >= 0),
-    CONSTRAINT vehicle_mileage_check CHECK (mileage >= 0)
-);
-
 INSERT INTO vehicle (id, model_year, make, model, color, license_plate, vin, fuel_type, doors, mileage)
 VALUES
     (1, 2020, 'Toyota', 'Corolla', 'Silver', 'ABC123', 'JTDB4MEE9L1234566', 'GASOLINE', 4, 45000),

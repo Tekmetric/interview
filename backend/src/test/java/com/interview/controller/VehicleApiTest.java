@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItems;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class VehicleApiTest {
     @Autowired
     private MockMvc mockMvc;
@@ -157,7 +159,7 @@ class VehicleApiTest {
     @Test
     void deleteVehicleRemovesVehicle() throws Exception {
         mockMvc.perform(delete("/api/vehicles/{id}", 2L))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         assertThat(vehicleRepository.findById(2L)).isEmpty();
     }

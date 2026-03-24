@@ -45,6 +45,7 @@ public class Vehicle {
 
     @NotBlank
     @Pattern(regexp = "^[A-Z0-9]{17}$")
+    @Column(unique = true)
     private String vin;
 
     @NotNull

@@ -31,7 +31,6 @@ public class VehicleController {
     private final VehicleService vehicleService;
 
     @GetMapping
-    @ResponseBody
     @Operation(summary = "List vehicles", description = "Returns a pageable list of vehicles filtered by optional search criteria.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Vehicle page returned"),
@@ -50,7 +49,6 @@ public class VehicleController {
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     @Operation(summary = "Get a vehicle", description = "Returns a single vehicle by its identifier.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Vehicle returned"),
@@ -88,9 +86,10 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete a vehicle", description = "Deletes an existing vehicle by identifier.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Vehicle deleted"),
+            @ApiResponse(responseCode = "204", description = "Vehicle deleted"),
             @ApiResponse(responseCode = "404", description = "Vehicle not found")
     })
     public void deleteVehicle(@Parameter(description = "Vehicle identifier", example = "1") @PathVariable Long id) {

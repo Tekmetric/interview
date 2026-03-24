@@ -117,6 +117,30 @@ class VehicleApiTest {
     }
 
     @Test
+    void createVehicleReturnsConflictWhenVinAlreadyExists() throws Exception {
+        String duplicateVinRequestJson = """
+            {
+              "modelYear": 2024,
+              "make": "Subaru",
+              "model": "Outback",
+              "color": "Green",
+              "licensePlate": "ABC124",
+              "vin": "JTDB4MEE9L1234566",
+              "fuelType": "GASOLINE",
+              "doors": 4,
+              "mileage": 12000
+            }
+            """;
+
+        mockMvc.perform(post("/api/vehicles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(duplicateVinRequestJson))
+                .andExpect(status().isConflict())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.detail").value("Request conflicts with existing data"));
+    }
+
+    @Test
     void updateVehiclePersistsChanges() throws Exception {
         String updatedVehicleRequestJson = """
             {

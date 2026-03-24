@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -28,10 +27,10 @@ public class VehicleService {
                 .orElseThrow(EntityNotFoundException::new);
     }
 
-    // Use REQUIRES_NEW to force hibernate to flush, otherwise state like createdAt will be null when this participates in existing transactions
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public Vehicle create(Vehicle vehicle) {
-        Vehicle createdVehicle = vehicleRepository.save(vehicle);
+        // We need to flush the changes to ensure createdAt is populated
+        Vehicle createdVehicle = vehicleRepository.saveAndFlush(vehicle);
         log.info("Created vehicle id={} vin={}", createdVehicle.getId(), createdVehicle.getVin());
         return createdVehicle;
     }

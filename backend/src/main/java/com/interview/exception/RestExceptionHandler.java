@@ -4,6 +4,7 @@ import com.interview.dto.FieldValidationError;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.validation.BindException;
@@ -24,6 +25,12 @@ public class RestExceptionHandler {
     public ProblemDetail handleConflict(OptimisticLockException ex) {
         log.warn("Optimistic locking conflict");
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Resource was modified by another request");
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        log.warn("Data integrity violation");
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Request conflicts with existing data");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

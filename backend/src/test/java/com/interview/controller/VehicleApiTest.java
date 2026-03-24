@@ -33,6 +33,25 @@ class VehicleApiTest {
     private VehicleRepository vehicleRepository;
 
     @Test
+    void getVehiclesReturnsStablePaginationContract() throws Exception {
+        mockMvc.perform(get("/api/vehicles")
+                        .queryParam("page", "0")
+                        .queryParam("size", "2"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.items.length()").value(2))
+                .andExpect(jsonPath("$.items[0].id").value(1))
+                .andExpect(jsonPath("$.items[0].vin").value("JTDB4MEE9L1234566"))
+                .andExpect(jsonPath("$.page").value(0))
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.itemCount").value(2))
+                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.first").value(true))
+                .andExpect(jsonPath("$.last").value(false));
+    }
+
+    @Test
     void getVehicleReturnsExistingVehicle() throws Exception {
         mockMvc.perform(get("/api/vehicles/{id}", 1L))
                 .andExpect(status().isOk())

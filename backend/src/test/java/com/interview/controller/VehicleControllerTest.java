@@ -1,5 +1,6 @@
 package com.interview.controller;
 
+import com.interview.dto.PageResponse;
 import com.interview.dto.VehicleResponse;
 import com.interview.dto.VehicleSearchCriteria;
 import com.interview.service.VehicleService;
@@ -49,9 +50,16 @@ class VehicleControllerTest {
         Pageable pageable = PageRequest.of(0, 50);
         when(vehicleService.findAll(same(criteria), same(pageable))).thenReturn(Page.empty(pageable));
 
-        Page<VehicleResponse> result = vehicleController.getVehicles(criteria, pageable);
+        PageResponse<VehicleResponse> result = vehicleController.getVehicles(criteria, pageable);
 
-        assertTrue(result.isEmpty());
+        assertTrue(result.items().isEmpty());
+        assertEquals(0, result.page());
+        assertEquals(50, result.size());
+        assertEquals(0, result.itemCount());
+        assertEquals(0, result.totalElements());
+        assertEquals(0, result.totalPages());
+        assertTrue(result.first());
+        assertTrue(result.last());
         verify(vehicleService).findAll(criteria, pageable);
     }
 }

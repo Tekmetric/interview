@@ -48,9 +48,6 @@ If I continued evolving this project beyond the exercise, these are the next add
 - Production database parity
   - Add a PostgreSQL profile and run persistence-focused integration tests against PostgreSQL with Testcontainers. That closes the gap between the in-memory H2 development setup and a more realistic production database.
 
-- Stable pagination contract
-  - Spring currently warns about returning `Page` directly. I would introduce an explicit paginated response DTO so the JSON contract is stable and intentional rather than depending on framework internals.
-
 - Better operational readiness
   - Expand Actuator usage with health, readiness, liveness, and build/info endpoints, then document which endpoints should be exposed in each environment. I would also disable development-only features such as the H2 console outside local use.
 

@@ -1,5 +1,6 @@
 package com.interview.controller;
 
+import com.interview.dto.PageResponse;
 import com.interview.dto.VehicleRequest;
 import com.interview.dto.VehicleResponse;
 import com.interview.dto.VehicleSearchCriteria;
@@ -36,7 +37,7 @@ public class VehicleController {
             @ApiResponse(responseCode = "200", description = "Vehicle page returned"),
             @ApiResponse(responseCode = "400", description = "Invalid filter values or page size")
     })
-    public Page<VehicleResponse> getVehicles(
+    public PageResponse<VehicleResponse> getVehicles(
             @Valid @ModelAttribute @ParameterObject VehicleSearchCriteria criteria,
             @ParameterObject Pageable pageable
     ) {
@@ -44,8 +45,10 @@ public class VehicleController {
             throw new IllegalArgumentException("Page size must not exceed " + MAX_PAGE_SIZE);
         }
 
-        return vehicleService.findAll(criteria, pageable)
+        Page<VehicleResponse> vehiclePage = vehicleService.findAll(criteria, pageable)
                 .map(VehicleMapper::toResponse);
+
+        return PageResponse.from(vehiclePage);
     }
 
     @GetMapping("/{id}")

@@ -37,3 +37,14 @@ This is an open ended exercise for you to showcase what you know! We encourage y
 
 ### Submitting your coding exercise
 Once you have finished the coding exercise please create a PR into Tekmetric/interview
+
+
+# CarShop - App usage and validation
+
+## OpenAPI
+- APIs specification can be seen by accessing http://localhost:8080/swagger-ui/index.html#/;
+- Testing of the APIs can also be done by accessing the above URL. 
+
+## Data
+- At startup, the database is pre-populated with 5 car entities
+- The data is present in resources/database/data.sql 

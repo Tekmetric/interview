@@ -37,3 +37,16 @@ This is an open ended exercise for you to showcase what you know! We encourage y
 
 ### Submitting your coding exercise
 Once you have finished the coding exercise please create a PR into Tekmetric/interview
+
+
+### Future improvements
+- automated logging via AOP
+- tracing
+- observability (metrics + alerts)
+- security (auth + roles)
+- extend audit for mechanicShopHistory
+- integration tests
+- increase code coverage - unit tests
+- sorting/pageable for the list of elements
+
+### APIs can be tested at http://localhost:8080/swagger-ui.html

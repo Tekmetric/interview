@@ -168,14 +168,104 @@ class CarControllerTest {
                 .transmission("Automatic").basePrice(new BigDecimal("25000.00"))
                 .status(CarStatus.RESERVED).sellingPrice(null).build();
 
-        when(carService.create(any(CarRequest.class)))
-                .thenThrow(new InvalidCarDataException("Selling price is required when status is RESERVED"));
+        doThrow(new InvalidCarDataException("Selling price is required when status is RESERVED"))
+                .when(validator).validate(any());
 
         mockMvc.perform(post("/carshop/v1/cars")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Selling price is required when status is RESERVED"));
+    }
+
+    @Test
+    void givenSoldStatusWithoutSellingPrice_whenCreate_thenReturns400() throws Exception {
+        CarRequest request = CarRequest.builder()
+                .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
+                .manufacturedYear(2023).color("Blue").fuelType(FuelType.GASOLINE)
+                .transmission("Automatic").basePrice(new BigDecimal("25000.00"))
+                .status(CarStatus.SOLD).sellingPrice(null).build();
+
+        doThrow(new InvalidCarDataException("Selling price is required when status is SOLD"))
+                .when(validator).validate(any());
+
+        mockMvc.perform(post("/carshop/v1/cars")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Selling price is required when status is SOLD"));
+    }
+
+    @Test
+    void givenAvailableStatusWithSellingPrice_whenCreate_thenReturns400() throws Exception {
+        CarRequest request = CarRequest.builder()
+                .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
+                .manufacturedYear(2023).color("Blue").fuelType(FuelType.GASOLINE)
+                .transmission("Automatic").basePrice(new BigDecimal("25000.00"))
+                .status(CarStatus.AVAILABLE).sellingPrice(new BigDecimal("24000.00")).build();
+
+        doThrow(new InvalidCarDataException("Selling price must be null when status is AVAILABLE"))
+                .when(validator).validate(any());
+
+        mockMvc.perform(post("/carshop/v1/cars")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Selling price must be null when status is AVAILABLE"));
+    }
+
+    @Test
+    void givenReservedStatusWithoutSellingPrice_whenUpdate_thenReturns400() throws Exception {
+        CarRequest request = CarRequest.builder()
+                .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
+                .manufacturedYear(2023).color("Blue").fuelType(FuelType.GASOLINE)
+                .transmission("Automatic").basePrice(new BigDecimal("25000.00"))
+                .status(CarStatus.RESERVED).sellingPrice(null).build();
+
+        doThrow(new InvalidCarDataException("Selling price is required when status is RESERVED"))
+                .when(validator).validate(any());
+
+        mockMvc.perform(put("/carshop/v1/cars/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Selling price is required when status is RESERVED"));
+    }
+
+    @Test
+    void givenSoldStatusWithoutSellingPrice_whenUpdate_thenReturns400() throws Exception {
+        CarRequest request = CarRequest.builder()
+                .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
+                .manufacturedYear(2023).color("Blue").fuelType(FuelType.GASOLINE)
+                .transmission("Automatic").basePrice(new BigDecimal("25000.00"))
+                .status(CarStatus.SOLD).sellingPrice(null).build();
+
+        doThrow(new InvalidCarDataException("Selling price is required when status is SOLD"))
+                .when(validator).validate(any());
+
+        mockMvc.perform(put("/carshop/v1/cars/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Selling price is required when status is SOLD"));
+    }
+
+    @Test
+    void givenAvailableStatusWithSellingPrice_whenUpdate_thenReturns400() throws Exception {
+        CarRequest request = CarRequest.builder()
+                .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
+                .manufacturedYear(2023).color("Blue").fuelType(FuelType.GASOLINE)
+                .transmission("Automatic").basePrice(new BigDecimal("25000.00"))
+                .status(CarStatus.AVAILABLE).sellingPrice(new BigDecimal("24000.00")).build();
+
+        doThrow(new InvalidCarDataException("Selling price must be null when status is AVAILABLE"))
+                .when(validator).validate(any());
+
+        mockMvc.perform(put("/carshop/v1/cars/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Selling price must be null when status is AVAILABLE"));
     }
 
     @Test

@@ -1,0 +1,178 @@
+{
+  "info": {
+    "name": "Tekmetric Interview API",
+    "description": "Vehicle CRUD + welcome. Protected routes use header X-API-Key (see collection variables). Seed key from data.sql: test-secret-123. Import alongside your own collection; merge folders as needed.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "apiKey",
+      "value": "test-secret-123"
+    },
+    {
+      "key": "vehicleId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Welcome",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/welcome"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vehicles",
+      "item": [
+        {
+          "name": "List vehicles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles?make=&year=&customerName=&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles"],
+              "query": [
+                {
+                  "key": "make",
+                  "value": "",
+                  "description": "optional filter"
+                },
+                {
+                  "key": "year",
+                  "value": "",
+                  "description": "optional filter"
+                },
+                {
+                  "key": "customerName",
+                  "value": "",
+                  "description": "optional filter (case-insensitive match)"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get vehicle by id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}"
+          }
+        },
+        {
+          "name": "Create vehicle (minimal)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2020,\n  \"mileage\": 15000,\n  \"fuelType\": null,\n  \"customerName\": null,\n  \"licensePlate\": null,\n  \"vin\": null,\n  \"metadata\": null\n}"
+            },
+            "url": "{{baseUrl}}/api/vehicles"
+          }
+        },
+        {
+          "name": "Create vehicle (full example)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2020,\n  \"mileage\": 15000,\n  \"fuelType\": \"GASOLINE\",\n  \"customerName\": \"Jane Doe\",\n  \"licensePlate\": \"ABC123\",\n  \"vin\": \"4T1B11HK0KU800099\",\n  \"metadata\": {\n    \"shopTag\": \"vip\",\n    \"source\": \"walk-in\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/vehicles"
+          }
+        },
+        {
+          "name": "Update vehicle",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2021,\n  \"mileage\": 18000,\n  \"fuelType\": \"HYBRID\",\n  \"customerName\": \"Jane Doe\",\n  \"licensePlate\": \"XYZ789\",\n  \"vin\": \"4T1B11HK0KU800099\",\n  \"metadata\": null\n}"
+            },
+            "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}"
+          }
+        },
+        {
+          "name": "Delete vehicle",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}"
+          }
+        }
+      ]
+    }
+  ]
+}

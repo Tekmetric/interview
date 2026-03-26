@@ -2,14 +2,16 @@ package com.interview.repository;
 
 import com.interview.dto.JobPostingFilter;
 import com.interview.dto.JobPostingRequest;
+import com.interview.mapper.JobPostingMapper;
 import com.interview.model.JobPosting;
-import com.interview.model.enums.JobStatus;
 import com.interview.util.JobPostingFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.data.jpa.domain.Specification;
+
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -110,23 +112,6 @@ class JobPostingSpecificationTest {
     // ── Helper ────────────────────────────────────────────────
 
     private JobPosting persist(JobPostingRequest req) {
-        // Build entity manually — avoids pulling in the full Spring context
-        JobPosting p = JobPosting.builder()
-                .title(req.title())
-                .company(req.company())
-                .department(req.department())
-                .location(req.location())
-                .remote(req.remote() != null ? req.remote() : false)
-                .jobType(req.jobType())
-                .experienceLevel(req.experienceLevel())
-                .status(req.status() != null ? req.status() : JobStatus.DRAFT)
-                .salaryMin(req.salaryMin())
-                .salaryMax(req.salaryMax())
-                .currency(req.currency() != null ? req.currency() : "USD")
-                .description(req.description())
-                .requirements(req.requirements())
-                .benefits(req.benefits())
-                .build();
-        return repository.save(p);
+        return repository.save(Mappers.getMapper(JobPostingMapper.class).toEntity(req));
     }
 }

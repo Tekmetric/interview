@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,5 +67,24 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getBody().message()).isEqualTo("Validation failed");
         assertThat(response.getBody().errors()).containsEntry(
                 "vin", "VIN must be 17 alphanumeric characters");
+    }
+
+    @Test
+    void shouldReturn400ForNonFieldObjectErrors() {
+        MethodParameter methodParameter = Mockito.mock(MethodParameter.class);
+        BindingResult bindingResult = Mockito.mock(BindingResult.class);
+
+        ObjectError objectError = new ObjectError("vehicleRequest", "cross-field rule failed");
+
+        when(bindingResult.getAllErrors()).thenReturn(List.of(objectError));
+
+        MethodArgumentNotValidException ex =
+                new MethodArgumentNotValidException(methodParameter, bindingResult);
+
+        ResponseEntity<GlobalExceptionHandler.ErrorResponse> response = handler.handleValidationErrors(ex);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody().errors())
+                .containsEntry("vehicleRequest", "cross-field rule failed");
     }
 }

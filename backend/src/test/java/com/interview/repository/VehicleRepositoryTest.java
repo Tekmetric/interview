@@ -39,7 +39,7 @@ class VehicleRepositoryTest {
     }
 
     @Test
-    void existsByVin_reflectsPersistedRows() {
+    void shouldDetectExistingVinAfterPersist() {
         vehicleRepository.save(
                 vehicle("Toyota", "Camry", 2020, "4T1B11HK0KU800099", 1000));
 
@@ -48,7 +48,7 @@ class VehicleRepositoryTest {
     }
 
     @Test
-    void findAll_filtersByMakeAndYear() {
+    void shouldFilterFindAllByMakeAndYear() {
         vehicleRepository.save(
                 vehicle("Toyota", "Camry", 2020, "4T1B11HK0KU800001", 1000));
         vehicleRepository.save(

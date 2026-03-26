@@ -3,6 +3,7 @@ package com.interview.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,11 +34,14 @@ public class GlobalExceptionHandler {
 
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String field = ((FieldError) error).getField();
+        for (ObjectError error : ex.getBindingResult().getAllErrors()) {
+            String key =
+                    error instanceof FieldError fieldError
+                            ? fieldError.getField()
+                            : error.getObjectName();
             String message = error.getDefaultMessage();
-            errors.put(field, message);
-        });
+            errors.merge(key, message, (existing, incoming) -> existing + "; " + incoming);
+        }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(

@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -23,9 +22,20 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository;
     }
 
+    public VehicleResponse findById(UUID id) {
+        return vehicleRepository.findById(id)
+                .map(VehicleService::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
+    }
+
+    public Page<VehicleResponse> findAll(String make, Integer year, Pageable pageable) {
+        return vehicleRepository.findAll(make, year, pageable)
+                .map(VehicleService::toResponse);
+    }
+
     @Transactional
     public VehicleResponse create(VehicleRequest request) {
-        if (vehicleRepository.existsByVinAndDeletedAtIsNull(request.vin())) {
+        if (vehicleRepository.existsByVin(request.vin())) {
             throw new ResourceAlreadyExistsException("Vehicle", "vin", request.vin());
         }
 
@@ -35,24 +45,13 @@ public class VehicleService {
         return toResponse(vehicleRepository.save(entity));
     }
 
-    public Page<VehicleResponse> findAll(String make, Integer year, Pageable pageable) {
-        return vehicleRepository.findAll(make, year, pageable)
-                .map(VehicleService::toResponse);
-    }
-
-    public VehicleResponse findById(UUID id) {
-        return vehicleRepository.findByIdAndDeletedAtIsNull(id)
-                .map(VehicleService::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
-    }
-
     @Transactional
     public VehicleResponse update(UUID id, VehicleRequest request) {
-        Vehicle existing = vehicleRepository.findByIdAndDeletedAtIsNull(id)
+        Vehicle existing = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
 
         if (!existing.getVin().equals(request.vin()) &&
-                vehicleRepository.existsByVinAndDeletedAtIsNull(request.vin())) {
+                vehicleRepository.existsByVin(request.vin())) {
             throw new ResourceAlreadyExistsException("Vehicle", "vin", request.vin());
         }
 
@@ -62,10 +61,9 @@ public class VehicleService {
 
     @Transactional
     public void deleteById(UUID id) {
-        Vehicle existing = vehicleRepository.findByIdAndDeletedAtIsNull(id)
+        Vehicle existing = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
-        existing.setDeletedAt(Instant.now());
-        vehicleRepository.save(existing);
+        vehicleRepository.delete(existing);
     }
 
     private static void applyRequest(Vehicle entity, VehicleRequest request) {

@@ -44,9 +44,6 @@ public class Vehicle {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    @Column
-    private Instant deletedAt;
-
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 
@@ -70,7 +67,4 @@ public class Vehicle {
 
     public Instant getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
-
-    public Instant getDeletedAt() { return deletedAt; }
-    public void setDeletedAt(Instant deletedAt) { this.deletedAt = deletedAt; }
 }

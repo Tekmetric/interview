@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS vehicle (
     mileage         INTEGER         NOT NULL,
     created_at      TIMESTAMP       NOT NULL,
     updated_at      TIMESTAMP       NOT NULL,
-    deleted_at      TIMESTAMP,
     CONSTRAINT pk_vehicle PRIMARY KEY (id)
 );
 
@@ -27,7 +26,6 @@ CREATE TABLE IF NOT EXISTS vehicle (
 CREATE INDEX IF NOT EXISTS idx_vehicle_make ON vehicle(make);
 CREATE INDEX IF NOT EXISTS idx_vehicle_year ON vehicle(vehicle_year);
 CREATE INDEX IF NOT EXISTS idx_vehicle_vin ON vehicle(vin);
-CREATE INDEX IF NOT EXISTS idx_vehicle_deleted_at ON vehicle(deleted_at);
 
 -- Seed API keys
 INSERT INTO api_key (id, name, api_key, active) VALUES

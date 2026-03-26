@@ -220,7 +220,7 @@ class VehicleIntegrationTest {
     class DeleteVehicle {
 
         @Test
-        void shouldSoftDeleteVehicle() throws Exception {
+        void shouldDeleteVehicle() throws Exception {
             MvcResult result = mockMvc.perform(post("/api/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("X-API-Key", TEST_API_KEY)

@@ -8,6 +8,8 @@ import com.interview.exception.DuplicateVinException;
 import com.interview.exception.InvalidCarDataException;
 import com.interview.model.CarStatus;
 import com.interview.model.FuelType;
+import com.interview.config.TestSecurityConfig;
+import com.interview.security.JwtHelper;
 import com.interview.service.CarService;
 import com.interview.validator.CarRequestValidator;
 
@@ -15,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -37,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CarController.class)
+@Import(TestSecurityConfig.class)
 class CarControllerTest {
 
     @Autowired
@@ -50,6 +55,9 @@ class CarControllerTest {
 
     @MockBean
     private CarRequestValidator validator;
+
+    @MockBean
+    private JwtHelper jwtHelper;
 
     private CarResponse buildResponse() {
         return CarResponse.builder()
@@ -82,6 +90,7 @@ class CarControllerTest {
 
     // --- GET /carshop/v1/cars/{id} ---
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenExistingCar_whenGetById_thenReturns200() throws Exception {
         when(carService.getById(1L)).thenReturn(buildResponse());
 
@@ -93,6 +102,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenNonExistingCar_whenGetById_thenReturns404() throws Exception {
         when(carService.getById(999L)).thenThrow(new CarNotFoundException(999L));
 
@@ -103,6 +113,7 @@ class CarControllerTest {
 
     // --- GET /carshop/v1/cars ---
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenNoCriteria_whenGetAll_thenReturnsPageOfCars() throws Exception {
         Page<CarResponse> page = new PageImpl<>(List.of(buildResponse()));
         when(carService.getAll(any(), any(), any(), any(), any(Pageable.class))).thenReturn(page);
@@ -114,6 +125,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenFilterParams_whenGetAll_thenReturns200() throws Exception {
         Page<CarResponse> page = new PageImpl<>(List.of(buildResponse()));
         when(carService.getAll(any(), any(), any(), any(), any(Pageable.class))).thenReturn(page);
@@ -131,6 +143,7 @@ class CarControllerTest {
 
     // --- POST /carshop/v1/cars ---
     @Test
+    @WithMockUser(roles = "ADMIN")
     void givenValidRequest_whenCreate_thenReturns201WithLocation() throws Exception {
         CarResponse response = buildResponse();
         when(carService.create(any(CarRequest.class))).thenReturn(response);
@@ -144,6 +157,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void givenMissingRequiredFields_whenCreate_thenReturns400() throws Exception {
         String invalidJson = """
                 {
@@ -161,6 +175,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void givenReservedStatusWithoutSellingPrice_whenCreate_thenReturns400() throws Exception {
         CarRequest request = CarRequest.builder()
                 .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
@@ -179,6 +194,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void givenSoldStatusWithoutSellingPrice_whenCreate_thenReturns400() throws Exception {
         CarRequest request = CarRequest.builder()
                 .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
@@ -197,6 +213,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void givenAvailableStatusWithSellingPrice_whenCreate_thenReturns400() throws Exception {
         CarRequest request = CarRequest.builder()
                 .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
@@ -215,6 +232,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenReservedStatusWithoutSellingPrice_whenUpdate_thenReturns400() throws Exception {
         CarRequest request = CarRequest.builder()
                 .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
@@ -233,6 +251,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenSoldStatusWithoutSellingPrice_whenUpdate_thenReturns400() throws Exception {
         CarRequest request = CarRequest.builder()
                 .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
@@ -251,6 +270,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenAvailableStatusWithSellingPrice_whenUpdate_thenReturns400() throws Exception {
         CarRequest request = CarRequest.builder()
                 .vin("1HGBH41JXMN109186").brand("Honda").model("Civic")
@@ -269,6 +289,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void givenDuplicateVin_whenCreate_thenReturns409() throws Exception {
         when(carService.create(any(CarRequest.class)))
                 .thenThrow(new DuplicateVinException("1HGBH41JXMN109186"));
@@ -282,6 +303,7 @@ class CarControllerTest {
 
     // --- PUT /carshop/v1/cars/{id} ---
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenValidRequest_whenUpdate_thenReturns200() throws Exception {
         CarResponse response = buildResponse();
         when(carService.update(eq(1L), any(CarRequest.class))).thenReturn(response);
@@ -294,6 +316,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenNonExistingCar_whenUpdate_thenReturns404() throws Exception {
         when(carService.update(eq(999L), any(CarRequest.class)))
                 .thenThrow(new CarNotFoundException(999L));
@@ -305,6 +328,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenInvalidRequest_whenUpdate_thenReturns400() throws Exception {
         String invalidJson = """
                 {
@@ -321,6 +345,7 @@ class CarControllerTest {
 
     // --- Invalid enum value handling ---
     @Test
+    @WithMockUser(roles = "ADMIN")
     void givenInvalidFuelTypeInBody_whenCreate_thenReturns400WithHelpfulMessage() throws Exception {
         String json = """
                 {
@@ -338,6 +363,7 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "EMPLOYEE")
     void givenInvalidStatusQueryParam_whenGetAll_thenReturns400WithHelpfulMessage() throws Exception {
         mockMvc.perform(get("/carshop/v1/cars")
                         .param("status", "DAMAGED"))
@@ -348,6 +374,7 @@ class CarControllerTest {
 
     // --- DELETE /carshop/v1/cars/{id} ---
     @Test
+    @WithMockUser(roles = "ADMIN")
     void givenExistingCar_whenDelete_thenReturns204() throws Exception {
         doNothing().when(carService).delete(1L);
 
@@ -356,10 +383,20 @@ class CarControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void givenNonExistingCar_whenDelete_thenReturns404() throws Exception {
         doThrow(new CarNotFoundException(999L)).when(carService).delete(999L);
 
         mockMvc.perform(delete("/carshop/v1/cars/999"))
                 .andExpect(status().isNotFound());
+    }
+
+    // --- Security test ---
+    @Test
+    void givenNoToken_whenCreate_thenReturns401() throws Exception {
+        mockMvc.perform(post("/carshop/v1/cars")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(buildRequest())))
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -105,6 +107,22 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(), "Bad Request", message, null, null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
+        log.warn("Authentication failed: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.UNAUTHORIZED.value(), "Unauthorized", "Invalid username or password", null, null);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        log.warn("Access denied: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.FORBIDDEN.value(), "Forbidden", "Access denied", null, null);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

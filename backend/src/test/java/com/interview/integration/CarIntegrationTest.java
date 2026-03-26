@@ -2,9 +2,11 @@ package com.interview.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.interview.dto.CarRequest;
+import com.interview.dto.LoginRequest;
 import com.interview.model.CarStatus;
 import com.interview.model.FuelType;
 import com.interview.repository.CarRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,6 +22,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.emptyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -42,6 +46,26 @@ class CarIntegrationTest {
     @Autowired
     private CarRepository carRepository;
 
+    private String adminToken;
+    private String employeeToken;
+
+    @BeforeEach
+    void authenticate() throws Exception {
+        adminToken = login("admin", "adm123");
+        employeeToken = login("employee", "emp123");
+    }
+
+    private String login(String username, String password) throws Exception {
+        LoginRequest loginRequest = new LoginRequest(username, password);
+        MvcResult result = mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readTree(result.getResponse().getContentAsString())
+                .get("token").asText();
+    }
+
     private CarRequest buildCreateRequest(String vin) {
         return CarRequest.builder()
                 .vin(vin)
@@ -63,6 +87,7 @@ class CarIntegrationTest {
         // Create
         CarRequest createRequest = buildCreateRequest("2T1BURHE0JC043821");
         MvcResult createResult = mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createRequest)))
                 .andExpect(status().isCreated())
@@ -75,7 +100,8 @@ class CarIntegrationTest {
         Long carId = objectMapper.readTree(responseBody).get("id").asLong();
 
         // Read
-        mockMvc.perform(get(BASE_URL + "/" + carId))
+        mockMvc.perform(get(BASE_URL + "/" + carId)
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(carId))
                 .andExpect(jsonPath("$.vin").value("2T1BURHE0JC043821"));
@@ -95,6 +121,7 @@ class CarIntegrationTest {
                 .build();
 
         mockMvc.perform(put(BASE_URL + "/" + carId)
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
@@ -102,11 +129,13 @@ class CarIntegrationTest {
                 .andExpect(jsonPath("$.sellingPrice").value(33000.00));
 
         // Delete
-        mockMvc.perform(delete(BASE_URL + "/" + carId))
+        mockMvc.perform(delete(BASE_URL + "/" + carId)
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNoContent());
 
         // Verify deleted
-        mockMvc.perform(get(BASE_URL + "/" + carId))
+        mockMvc.perform(get(BASE_URL + "/" + carId)
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNotFound());
     }
 
@@ -115,6 +144,7 @@ class CarIntegrationTest {
     @Test
     void givenPaginationParams_whenGetAll_thenReturnsCorrectPage() throws Exception {
         mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .param("page", "0")
                         .param("pageSize", "2"))
                 .andExpect(status().isOk())
@@ -125,7 +155,8 @@ class CarIntegrationTest {
 
     @Test
     void givenDefaultParams_whenGetAll_thenUsesPage0AndPageSize20() throws Exception {
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.number").value(0))
                 .andExpect(jsonPath("$.size").value(20));
@@ -134,6 +165,7 @@ class CarIntegrationTest {
     @Test
     void givenCustomPageSize_whenGetAll_thenReturnsCorrectNumberOfItems() throws Exception {
         mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .param("page", "0")
                         .param("pageSize", "2"))
                 .andExpect(status().isOk())
@@ -143,6 +175,7 @@ class CarIntegrationTest {
     @Test
     void givenSecondPage_whenGetAll_thenReturnsNextItems() throws Exception {
         MvcResult firstPageResult = mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .param("page", "0")
                         .param("pageSize", "2"))
                 .andExpect(status().isOk())
@@ -150,6 +183,7 @@ class CarIntegrationTest {
                 .andReturn();
 
         MvcResult secondPageResult = mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .param("page", "1")
                         .param("pageSize", "2"))
                 .andExpect(status().isOk())
@@ -169,6 +203,7 @@ class CarIntegrationTest {
     @Test
     void givenStatusFilter_whenGetAll_thenReturnsFilteredCars() throws Exception {
         mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .param("status", "AVAILABLE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[*].status")
@@ -178,6 +213,7 @@ class CarIntegrationTest {
     @Test
     void givenBrandFilter_whenGetAll_thenReturnsFilteredCars() throws Exception {
         mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .param("brand", "Honda"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].brand").value("Honda"));
@@ -186,6 +222,7 @@ class CarIntegrationTest {
     @Test
     void givenPriceRangeFilter_whenGetAll_thenReturnsFilteredCars() throws Exception {
         mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .param("minPrice", "20000")
                         .param("maxPrice", "30000"))
                 .andExpect(status().isOk())
@@ -195,6 +232,7 @@ class CarIntegrationTest {
     @Test
     void givenMinPriceFilter_whenGetAll_thenReturnsFilteredCars() throws Exception {
         mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .param("minPrice", "60000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(2)); // Tesla 89990, Corvette 65000
@@ -203,6 +241,7 @@ class CarIntegrationTest {
     @Test
     void givenMaxPriceFilter_whenGetAll_thenReturnsFilteredCars() throws Exception {
         mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .param("maxPrice", "30000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(2)); // Honda 25000, VW 28500
@@ -211,6 +250,7 @@ class CarIntegrationTest {
     @Test
     void givenCombinedFilters_whenGetAll_thenReturnsFilteredCars() throws Exception {
         mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .param("status", "AVAILABLE")
                         .param("minPrice", "50000"))
                 .andExpect(status().isOk())
@@ -228,6 +268,7 @@ class CarIntegrationTest {
                 .status(CarStatus.RESERVED).sellingPrice(null).build();
 
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -243,6 +284,7 @@ class CarIntegrationTest {
                 .status(CarStatus.AVAILABLE).sellingPrice(new BigDecimal("30000.00")).build();
 
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -258,6 +300,7 @@ class CarIntegrationTest {
                 .status(CarStatus.SOLD).sellingPrice(new BigDecimal("32000.00")).build();
 
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -273,6 +316,7 @@ class CarIntegrationTest {
         CarRequest request = buildCreateRequest("1HGBH41JXMN109186");
 
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
@@ -284,6 +328,7 @@ class CarIntegrationTest {
     @Test
     void givenEmptyBody_whenCreate_thenReturns400WithFieldErrors() throws Exception {
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest())
@@ -295,11 +340,10 @@ class CarIntegrationTest {
                 .andExpect(jsonPath("$.fieldErrors.basePrice").exists());
     }
 
-    // --- Not found ---
-
     @Test
     void givenNonExistingId_whenGetById_thenReturns404() throws Exception {
-        mockMvc.perform(get(BASE_URL + "/99999"))
+        mockMvc.perform(get(BASE_URL + "/99999")
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Car not found with id: 99999"));
     }
@@ -309,6 +353,7 @@ class CarIntegrationTest {
         CarRequest request = buildCreateRequest("1N4AL3AP7FC201234");
 
         mockMvc.perform(put(BASE_URL + "/99999")
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
@@ -316,12 +361,12 @@ class CarIntegrationTest {
 
     @Test
     void givenNonExistingId_whenDelete_thenReturns404() throws Exception {
-        mockMvc.perform(delete(BASE_URL + "/99999"))
+        mockMvc.perform(delete(BASE_URL + "/99999")
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNotFound());
     }
 
     // --- Invalid enum value handling ---
-
     @Test
     void givenInvalidFuelTypeInBody_whenCreate_thenReturns400WithHelpfulMessage() throws Exception {
         String json = """
@@ -332,6 +377,7 @@ class CarIntegrationTest {
                 }""";
 
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isBadRequest())
@@ -342,18 +388,44 @@ class CarIntegrationTest {
 
     @Test
     void givenInvalidStatusQueryParam_whenGetAll_thenReturns400WithHelpfulMessage() throws Exception {
-        mockMvc.perform(get(BASE_URL).param("status", "DAMAGED"))
+        mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + adminToken)
+                        .param("status", "DAMAGED"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(containsString("DAMAGED")))
                 .andExpect(jsonPath("$.message").value(containsString("status")))
                 .andExpect(jsonPath("$.message").value(containsString("AVAILABLE")));
     }
 
-    // --- Seed data verification ---
-
     @Test
     void givenSeedData_whenCountCars_thenReturnsAtLeastFive() throws Exception {
         long count = carRepository.count();
         assertThat(count).isGreaterThanOrEqualTo(5);
+    }
+
+    // --- Authentication and authorization ---
+    @Test
+    void givenNoToken_whenCreateCar_thenReturns401() throws Exception {
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(buildCreateRequest("9NEWVIN1234567890"))))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void givenEmployeeToken_whenCreateCar_thenReturns403() throws Exception {
+        mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + employeeToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(buildCreateRequest("9NEWVIN1234567890"))))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void givenEmployeeToken_whenGetCars_thenReturns200() throws Exception {
+        mockMvc.perform(get(BASE_URL)
+                        .header("Authorization", "Bearer " + employeeToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
     }
 }

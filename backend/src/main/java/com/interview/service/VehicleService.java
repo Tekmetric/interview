@@ -10,6 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class VehicleService {
+
+    private static final Logger log = LoggerFactory.getLogger(VehicleService.class);
 
     static final int MAX_METADATA_KEY_LENGTH = 64;
     static final int MAX_METADATA_VALUE_LENGTH = 256;
@@ -28,13 +32,22 @@ public class VehicleService {
     }
 
     public VehicleResponse findById(UUID id) {
+        log.debug("Get vehicle by id={}", id);
         return vehicleRepository.findById(id)
                 .map(VehicleService::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     public Page<VehicleResponse> findAll(String make, Integer year, String customerName, Pageable pageable) {
-        return vehicleRepository.findAll(make, year, blankToNull(customerName), pageable)
+        String customer = blankToNull(customerName);
+        log.debug(
+                "List vehicles make={} year={} customerName={} page={} size={}",
+                make,
+                year,
+                customer,
+                pageable.getPageNumber(),
+                pageable.getPageSize());
+        return vehicleRepository.findAll(make, year, customer, pageable)
                 .map(VehicleService::toResponse);
     }
 
@@ -48,7 +61,9 @@ public class VehicleService {
         Vehicle entity = new Vehicle();
         entity.setId(UUID.randomUUID());
         applyRequest(entity, request, vin);
-        return toResponse(vehicleRepository.save(entity));
+        Vehicle saved = vehicleRepository.save(entity);
+        log.info("Created vehicle id={}", saved.getId());
+        return toResponse(saved);
     }
 
     @Transactional
@@ -67,7 +82,9 @@ public class VehicleService {
         }
 
         applyRequest(existing, request, newVin);
-        return toResponse(vehicleRepository.save(existing));
+        Vehicle saved = vehicleRepository.save(existing);
+        log.info("Updated vehicle id={}", id);
+        return toResponse(saved);
     }
 
     @Transactional
@@ -75,6 +92,7 @@ public class VehicleService {
         Vehicle existing = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
         vehicleRepository.delete(existing);
+        log.info("Deleted vehicle id={}", id);
     }
 
     private static void applyRequest(Vehicle entity, VehicleRequest request, String normalizedVin) {

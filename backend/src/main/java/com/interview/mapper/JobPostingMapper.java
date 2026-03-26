@@ -38,8 +38,6 @@ public interface JobPostingMapper {
     /** Map an entity → response DTO. */
     JobPostingResponse toResponse(JobPosting entity);
 
-    // ── Named qualifiers ──────────────────────────────────────
-
     @Named("resolveStatus")
     default JobStatus resolveStatus(JobPostingRequest request) {
         return request.status() != null ? request.status() : JobStatus.DRAFT;
@@ -54,10 +52,6 @@ public interface JobPostingMapper {
     default String resolveCurrency(JobPostingRequest request) {
         return request.currency() != null ? request.currency().toUpperCase() : "USD";
     }
-
-    //todo check
-
-    // ── AfterMapping: set postedAt when transitioning to ACTIVE ──
 
     @AfterMapping
     default void handlePostedAt(JobPostingRequest request, @MappingTarget JobPosting entity) {

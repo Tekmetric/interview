@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "job_postings")
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class JobPosting {

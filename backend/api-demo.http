@@ -1,0 +1,62 @@
+### Variable Definition
+@baseUrl = http://localhost:8080/api/job-postings
+
+### 1. Create a Job Posting
+# This mimics the JobPostingRequest DTO
+# @name createJob
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "title": "Lead Java Developer",
+  "company": "Tekmetric",
+  "department": "Engineering",
+  "location": "Houston, TX",
+  "remote": true,
+  "jobType": "FULL_TIME",
+  "experienceLevel": "SENIOR",
+  "salaryMin": 140000,
+  "salaryMax": 180000,
+  "currency": "USD",
+  "description": "Building the future of auto repair software.",
+  "requirements": "Java 21, Spring Boot 4",
+  "benefits": "Generous PTO, Health, 401k",
+  "expiresAt": "2026-12-31T23:59:59"
+}
+
+### Capture the ID from the previous response
+@createdId = {{createJob.response.body.id}}
+
+### 2. Get the Created Job by ID
+# Uses the dynamic ID from the create step
+GET {{baseUrl}}/{{createdId}}
+
+### 3. Filter Jobs (Search)
+# Demonstrates the JobPostingFilter logic
+GET {{baseUrl}}?location=houston&remote=true&page=0&size=5
+
+### 4. Update the Job
+# Demonstrates the update logic and guard checks
+PUT {{baseUrl}}/{{createdId}}
+Content-Type: application/json
+
+{
+  "title": "Lead Platform Engineer",
+  "company": "Tekmetric",
+  "department": "Platform",
+  "location": "Remote",
+  "remote": true,
+  "jobType": "FULL_TIME",
+  "experienceLevel": "EXECUTIVE",
+  "salaryMin": 160000,
+  "salaryMax": 200000,
+  "currency": "USD",
+  "description": "Updated description",
+  "requirements": "Updated requirements",
+  "benefits": "Unlimited PTO",
+  "expiresAt": "2026-12-31T23:59:59"
+}
+
+### 5. Delete the Job
+# Final cleanup in the demo
+DELETE {{baseUrl}}/{{createdId}}

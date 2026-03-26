@@ -1,47 +1,117 @@
-# Site Reliability Engineering Interview Guidelines
+---
+# Backend Service – Kubernetes Productionization Demo
+This project shows how Java Spring Backend Service can be built, containerized, and deployed to Kubernetes using Docker and Helm.
 
-Welcome to the Site Reliability Engineer take-home coding challenge! 
+The focus is on creating a setup that is easy to run while reflecting common production considerations such as health checks, resource management, scaling, and observability.
 
-This project is designed to evaluate your skills in `productionizing applications`, `managing container orchestration`, and ensuring the `reliability` and `observability` of services in a `Kubernetes production environment`.
 
-## Overview:
+## Quick Start
 
-Your goal is to create a containerized deployment strategy using Docker and deploy the application(s) on Kubernetes (K8s) with Helm charts.
+The application can be built either locally using Docker **or** via the included GitHub Actions pipeline.
 
-Make sure you to include a minimal CI/CD pipeline to help you out.
+The GitHub workflow runs on pushes and pull requests and performs the same container build automatically, which mirrors a typical CI setup.  
+For local testing or demo purposes, the steps below can be used.
 
-The application to be containerized is bundled in this repository:
-- [Backend Service](../backend/README.md) - Backend Application (BE)
+```bash
+# -----------------------------
+# Build Docker Image
+# -----------------------------
+docker build -t docker.io/<youruser>/tekmetric-backend:local .
 
-This assignment will give us insight into your technical expertise, problem-solving skills, and ability to work with modern infrastructure tools.
+# Optional local run
+docker run --rm -p 8080:8080 docker.io/<youruser>/tekmetric-backend:local
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+# Push image if your cluster cannot pull local images
+docker login
+docker push docker.io/<youruser>/tekmetric-backend:local
 
-#### Import project into IDE
-- Project root is located in `sre` folder
+# -----------------------------
+# Install Monitoring Stack
+# -----------------------------
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
 
-#### After finishing the goals listed below create a PR
+helm upgrade \
+  --install kube-prometheus prometheus-community/kube-prometheus-stack \
+  -n monitoring --create-namespace \
+  -f ./helm/kube-prom-stack/values.yaml
 
-- if you've forked the repository, create a PR from your fork to `Tekmetric/interview` repository
-# Goals
-1. Create a Dockerfile to containerize the application.
-2. Create a minimal CI/CD pipeline to demonstrate building and pushing Docker images to a container registry (e.g., Docker Hub, AWS ECR, etc.).
-3. Develop a Helm chart to deploy the application on a K8s or K3s cluster.
-   1. Make sure that whatever you implement in the Helm chart is `as close as possible to production-ready`.
-4. Add relevant observability
-5. Provide clear instructions on how to build and deploy the application, including any prerequisites.
+# -----------------------------
+# Install Spring Boot Dashboards
+# (Dashboards can also be imported manually via Grafana UI)
+# -----------------------------
+helm upgrade \
+  --install springboot-dashboards ./helm/springboot-grafana-dashboards \
+  -n monitoring --create-namespace
 
-# Considerations
-This is an open-ended exercise for you to showcase what you know!
+# -----------------------------
+# Deploy Application
+# -----------------------------
+helm upgrade \
+  --install backend ./backend \
+  -n backend --create-namespace \
+  --set image.repository=docker.io/<youruser>/tekmetric-backend \
+  --set image.tag=local
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+# -----------------------------
+# Access Grafana
+# -----------------------------
+kubectl -n monitoring port-forward svc/kube-prometheus-grafana 3000:80
 
-### Excited to see what you build! 🚀
+# Open browser:
+# http://localhost:3000
+# Default credentials: admin / admin
+# Dashboard location:
+# Home → Dashboards → Home assignment - Spring Boot Backend
+```
 
-For the interview, make sure you have the following ready:
-- An IDE with your submission code
-- A running K8s or K3s cluster (local or cloud-based) to demonstrate your Helm chart deployment
-- Make sure you can explain your design choices and answer any questions related to the exercise.
-- You will have only 10 minutes to showcase your submission during the interview, so please be concise and focus on the key aspects of your implementation.
+
+## Notes & Design
+
+### Observability
+
+Spring Boot Actuator is enabled to expose metrics required by Prometheus.
+
+The necessary Actuator and Micrometer dependencies are included, and the application is configured to expose the relevant endpoints via `application.properties`.
+
+Monitoring is included directly in the deployment.
+
+Prometheus discovers application metrics using a ServiceMonitor, and Grafana dashboards are provided via ConfigMaps.  
+This allows the service to be observable immediately after deployment.
+
+---
+
+### Dockerfile
+
+The Dockerfile uses a multi-stage build.
+
+The application is built with Maven and then executed using small JRE image.  
+This keeps the runtime container lightweight.
+
+Dependencies are resolved separately for faster rebuilds.
+The container runs as a non-root user.
+
+Basic JVM flags are included to ensure stable behavior inside k8s.
+
+---
+
+### CI/CD
+
+A minimal GitHub Actions workflow is included.
+
+The pipeline runs manually as well as on push/pull requests and builds the Docker image using the same Dockerfile.  
+Builds are consistent between local and CI environments.
+
+---
+
+### Deployment
+
+The Helm chart includes basic production considerations:
+
+- Resource requests and limits
+- Readiness/liveliness probes
+- Horizontal Pod Autoscaler (HPA)
+- Pod Disruption Budget (PDB) -  not enabled by default
+- ServiceMonitor integration
+
+The goal is a stable deployment while keeping the setup simple.

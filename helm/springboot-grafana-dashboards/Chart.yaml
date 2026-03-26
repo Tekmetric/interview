@@ -1,0 +1,7 @@
+apiVersion: v2
+name: springboot-grafana-dashboards
+description: Grafana dashboards for Spring Boot (Micrometer/Prometheus) via kube-prometheus-stack sidecar
+type: application
+version: 0.1.0
+appVersion: "1.0"
+

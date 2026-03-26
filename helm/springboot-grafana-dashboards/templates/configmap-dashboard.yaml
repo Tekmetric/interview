@@ -1,0 +1,15 @@
+{{- if .Values.dashboards.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "springboot-grafana-dashboards.fullname" . }}-6756
+  namespace: {{ .Values.dashboards.namespace | quote }}
+  labels:
+    {{ .Values.dashboards.labelKey }}: {{ .Values.dashboards.labelValue | quote }}
+  annotations:
+    grafana_folder: "INTERVIEW Spring Boot Backend"
+data:
+  spring-boot-6756-fixed.json: |
+{{ .Files.Get "dashboards/spring-boot-6756-fixed.json" | indent 4 }}
+{{- end }}
+

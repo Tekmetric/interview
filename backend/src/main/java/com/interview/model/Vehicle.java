@@ -3,13 +3,18 @@ package com.interview.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -30,11 +35,25 @@ public class Vehicle {
     @Column(name = "vehicle_year", nullable = false)
     private Integer year;
 
-    @Column(nullable = false, unique = true, length = 17)
+    @Column(unique = true, length = 17)
     private String vin;
 
     @Column(nullable = false)
     private Integer mileage;
+
+    @Column(name = "license_plate", length = 20)
+    private String licensePlate;
+
+    @Column(name = "customer_name", length = 100)
+    private String customerName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fuel_type", length = 20)
+    private FuelType fuelType;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "metadata", columnDefinition = "CLOB")
+    private Map<String, String> metadata;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -61,6 +80,18 @@ public class Vehicle {
 
     public Integer getMileage() { return mileage; }
     public void setMileage(Integer mileage) { this.mileage = mileage; }
+
+    public String getLicensePlate() { return licensePlate; }
+    public void setLicensePlate(String licensePlate) { this.licensePlate = licensePlate; }
+
+    public String getCustomerName() { return customerName; }
+    public void setCustomerName(String customerName) { this.customerName = customerName; }
+
+    public FuelType getFuelType() { return fuelType; }
+    public void setFuelType(FuelType fuelType) { this.fuelType = fuelType; }
+
+    public Map<String, String> getMetadata() { return metadata; }
+    public void setMetadata(Map<String, String> metadata) { this.metadata = metadata; }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

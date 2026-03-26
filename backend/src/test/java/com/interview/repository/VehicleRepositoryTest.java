@@ -59,11 +59,27 @@ class VehicleRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         Page<Vehicle> honda2020 =
-                vehicleRepository.findAll("Honda", 2020, pageable);
+                vehicleRepository.findAll("Honda", 2020, null, pageable);
         assertThat(honda2020.getContent()).hasSize(1);
         assertThat(honda2020.getContent().get(0).getModel()).isEqualTo("Civic");
 
-        Page<Vehicle> all = vehicleRepository.findAll(null, null, pageable);
+        Page<Vehicle> all = vehicleRepository.findAll(null, null, null, pageable);
         assertThat(all.getContent()).hasSize(3);
+    }
+
+    @Test
+    void shouldFilterFindAllByCustomerName() {
+        Vehicle toyota = vehicle("Toyota", "Camry", 2020, "4T1B11HK0KU800001", 1000);
+        toyota.setCustomerName("Jane Doe");
+        vehicleRepository.save(toyota);
+        Vehicle honda = vehicle("Honda", "Civic", 2020, "2HGFC2F59KH800002", 2000);
+        honda.setCustomerName("Other Person");
+        vehicleRepository.save(honda);
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Vehicle> byName =
+                vehicleRepository.findAll(null, null, "jane doe", pageable);
+        assertThat(byName.getContent()).hasSize(1);
+        assertThat(byName.getContent().get(0).getMake()).isEqualTo("Toyota");
     }
 }

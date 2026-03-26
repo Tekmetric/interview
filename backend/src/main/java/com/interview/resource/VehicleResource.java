@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,9 +48,10 @@ public class VehicleResource {
     public ResponseEntity<Page<VehicleResponse>> list(
             @RequestParam(required = false) String make,
             @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) String customerName,
             Pageable pageable) {
 
-        return ResponseEntity.ok(vehicleService.findAll(make, year, pageable));
+        return ResponseEntity.ok(vehicleService.findAll(make, year, customerName, pageable));
     }
 
     @GetMapping("/{id}")

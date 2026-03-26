@@ -16,8 +16,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle, UUID> {
             SELECT v FROM Vehicle v
             WHERE (:make IS NULL OR LOWER(v.make) = LOWER(:make))
             AND (:year IS NULL OR v.year = :year)
+            AND (:customerName IS NULL OR LOWER(v.customerName) = LOWER(:customerName))
             """)
     Page<Vehicle> findAll(@Param("make") String make,
                           @Param("year") Integer year,
+                          @Param("customerName") String customerName,
                           Pageable pageable);
 }

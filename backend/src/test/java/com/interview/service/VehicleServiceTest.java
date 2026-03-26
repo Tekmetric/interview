@@ -4,10 +4,12 @@ import com.interview.dto.VehicleRequest;
 import com.interview.dto.VehicleResponse;
 import com.interview.exception.ResourceAlreadyExistsException;
 import com.interview.exception.ResourceNotFoundException;
+import com.interview.model.FuelType;
 import com.interview.model.Vehicle;
 import com.interview.repository.VehicleRepository;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -39,7 +41,8 @@ class VehicleServiceTest {
     private VehicleService vehicleService;
 
     private VehicleRequest validRequest() {
-        return new VehicleRequest("Toyota", "Camry", 2020, "4T1B11HK0KU800001", 15000);
+        return new VehicleRequest(
+                "Toyota", "Camry", 2020, 15000, FuelType.GASOLINE, null, null, "4T1B11HK0KU800001", null);
     }
 
     @Test
@@ -75,6 +78,10 @@ class VehicleServiceTest {
         saved.setYear(request.year());
         saved.setVin(request.vin());
         saved.setMileage(request.mileage());
+        saved.setLicensePlate(request.licensePlate());
+        saved.setCustomerName(request.customerName());
+        saved.setFuelType(request.fuelType());
+        saved.setMetadata(request.metadata());
         saved.setCreatedAt(createdAt);
         saved.setUpdatedAt(updatedAt);
 
@@ -88,6 +95,10 @@ class VehicleServiceTest {
         assertThat(response.year()).isEqualTo(saved.getYear());
         assertThat(response.vin()).isEqualTo(saved.getVin());
         assertThat(response.mileage()).isEqualTo(saved.getMileage());
+        assertThat(response.licensePlate()).isEqualTo(saved.getLicensePlate());
+        assertThat(response.customerName()).isEqualTo(saved.getCustomerName());
+        assertThat(response.fuelType()).isEqualTo(saved.getFuelType());
+        assertThat(response.metadata()).isEqualTo(saved.getMetadata());
         assertThat(response.createdAt()).isEqualTo(saved.getCreatedAt());
         assertThat(response.updatedAt()).isEqualTo(saved.getUpdatedAt());
 
@@ -111,7 +122,8 @@ class VehicleServiceTest {
         existing.setVin(oldVin);
         existing.setMileage(32000);
 
-        VehicleRequest request = new VehicleRequest("Honda", "Accord", 2021, newVin, 20000);
+        VehicleRequest request =
+                new VehicleRequest("Honda", "Accord", 2021, 20000, FuelType.HYBRID, null, null, newVin, null);
 
         Instant createdAt = Instant.parse("2020-01-01T00:00:00Z");
         Instant updatedAt = Instant.parse("2020-01-02T00:00:00Z");
@@ -123,6 +135,10 @@ class VehicleServiceTest {
         saved.setYear(request.year());
         saved.setVin(request.vin());
         saved.setMileage(request.mileage());
+        saved.setLicensePlate(request.licensePlate());
+        saved.setCustomerName(request.customerName());
+        saved.setFuelType(request.fuelType());
+        saved.setMetadata(request.metadata());
         saved.setCreatedAt(createdAt);
         saved.setUpdatedAt(updatedAt);
 
@@ -138,6 +154,8 @@ class VehicleServiceTest {
         assertThat(response.year()).isEqualTo(request.year());
         assertThat(response.vin()).isEqualTo(request.vin());
         assertThat(response.mileage()).isEqualTo(request.mileage());
+        assertThat(response.licensePlate()).isEqualTo(request.licensePlate());
+        assertThat(response.fuelType()).isEqualTo(request.fuelType());
     }
 
     @Test
@@ -153,7 +171,8 @@ class VehicleServiceTest {
         existing.setYear(2020);
         existing.setMileage(15000);
 
-        VehicleRequest request = new VehicleRequest("Toyota", "Camry", 2021, vin, 18000);
+        VehicleRequest request =
+                new VehicleRequest("Toyota", "Camry", 2021, 18000, null, null, null, vin, null);
 
         when(vehicleRepository.findById(eq(id))).thenReturn(Optional.of(existing));
         when(vehicleRepository.save(any(Vehicle.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -174,6 +193,36 @@ class VehicleServiceTest {
 
         assertThrows(ResourceNotFoundException.class,
                 () -> vehicleService.update(id, validRequest()));
+    }
+
+    @Test
+    void shouldThrowWhenRemovingVin() {
+        UUID id = UUID.randomUUID();
+        Vehicle existing = new Vehicle();
+        existing.setId(id);
+        existing.setVin("4T1B11HK0KU800001");
+        existing.setMake("Toyota");
+        existing.setModel("Camry");
+        existing.setYear(2020);
+        existing.setMileage(15000);
+
+        VehicleRequest request =
+                new VehicleRequest("Toyota", "Camry", 2020, 18000, null, null, null, null, null);
+
+        when(vehicleRepository.findById(eq(id))).thenReturn(Optional.of(existing));
+
+        assertThrows(IllegalArgumentException.class, () -> vehicleService.update(id, request));
+        verify(vehicleRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowWhenMetadataKeyTooLong() {
+        String longKey = "x".repeat(VehicleService.MAX_METADATA_KEY_LENGTH + 1);
+        VehicleRequest request = new VehicleRequest(
+                "Toyota", "Camry", 2020, 15000, null, null, null, null, Map.of(longKey, "v"));
+
+        assertThrows(IllegalArgumentException.class, () -> vehicleService.create(request));
+        verify(vehicleRepository, never()).save(any());
     }
 
     @Test
@@ -200,16 +249,16 @@ class VehicleServiceTest {
         v1.setMake(make);
         v1.setModel("Camry");
         v1.setYear(year);
-        v1.setVin("VIN1");
+        v1.setVin("1HGBH41JXMN109186");
         v1.setMileage(15000);
 
         Page<Vehicle> page = new PageImpl<>(List.of(v1), pageable, 1);
-        when(vehicleRepository.findAll(eq(make), eq(year), eq(pageable))).thenReturn(page);
+        when(vehicleRepository.findAll(eq(make), eq(year), eq(null), eq(pageable))).thenReturn(page);
 
-        Page<VehicleResponse> response = vehicleService.findAll(make, year, pageable);
+        Page<VehicleResponse> response = vehicleService.findAll(make, year, null, pageable);
 
         assertThat(response.getTotalElements()).isEqualTo(1);
         assertThat(response.getContent()).hasSize(1);
-        assertThat(response.getContent().get(0).vin()).isEqualTo("VIN1");
+        assertThat(response.getContent().get(0).vin()).isEqualTo("1HGBH41JXMN109186");
     }
 }

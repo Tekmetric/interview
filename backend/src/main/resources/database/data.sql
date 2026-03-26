@@ -11,14 +11,18 @@ CREATE TABLE IF NOT EXISTS api_key (
 
 -- Vehicles
 CREATE TABLE IF NOT EXISTS vehicle (
-    id              UUID            NOT NULL,
-    make            VARCHAR(100)    NOT NULL,
-    model           VARCHAR(100)    NOT NULL,
-    vehicle_year    INTEGER         NOT NULL,
-    vin             VARCHAR(17)     NOT NULL UNIQUE,
-    mileage         INTEGER         NOT NULL,
-    created_at      TIMESTAMP       NOT NULL,
-    updated_at      TIMESTAMP       NOT NULL,
+    id                  UUID            NOT NULL,
+    make                VARCHAR(100)    NOT NULL,
+    model               VARCHAR(100)    NOT NULL,
+    vehicle_year        INTEGER         NOT NULL,
+    vin                 VARCHAR(17)     UNIQUE,
+    mileage             INTEGER         NOT NULL,
+    license_plate       VARCHAR(20),
+    customer_name       VARCHAR(100),
+    fuel_type           VARCHAR(20),
+    metadata            CLOB,
+    created_at          TIMESTAMP       NOT NULL,
+    updated_at          TIMESTAMP       NOT NULL,
     CONSTRAINT pk_vehicle PRIMARY KEY (id)
 );
 
@@ -26,6 +30,7 @@ CREATE TABLE IF NOT EXISTS vehicle (
 CREATE INDEX IF NOT EXISTS idx_vehicle_make ON vehicle(make);
 CREATE INDEX IF NOT EXISTS idx_vehicle_year ON vehicle(vehicle_year);
 CREATE INDEX IF NOT EXISTS idx_vehicle_vin ON vehicle(vin);
+CREATE INDEX IF NOT EXISTS idx_vehicle_customer_name ON vehicle(customer_name);
 
 -- Seed API keys
 MERGE INTO api_key (id, name, api_key, active) KEY(api_key) VALUES
@@ -33,9 +38,9 @@ MERGE INTO api_key (id, name, api_key, active) KEY(api_key) VALUES
     (RANDOM_UUID(), 'postman-client', 'postman-secret-456', TRUE);
 
 -- Seed vehicles
-MERGE INTO vehicle (id, make, model, vehicle_year, vin, mileage, created_at, updated_at) KEY(vin) VALUES
-    (RANDOM_UUID(), 'Toyota', 'Camry', 2020, '4T1B11HK0KU123456', 15000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (RANDOM_UUID(), 'Honda', 'Civic', 2019, '2HGFC2F59KH123456', 32000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (RANDOM_UUID(), 'Ford', 'F-150', 2021, '1FTFW1ET5DKF12345', 8000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (RANDOM_UUID(), 'Chevrolet', 'Silverado', 2018, '3GCUKSEC4JG123456', 45000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (RANDOM_UUID(), 'BMW', '3 Series', 2022, 'WBA5R1C50KAK12345', 5000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+MERGE INTO vehicle (id, make, model, vehicle_year, vin, mileage, license_plate, fuel_type, customer_name, metadata, created_at, updated_at) KEY(vin) VALUES
+    (RANDOM_UUID(), 'Toyota', 'Camry', 2020, '4T1B11HK0KU123456', 15000, NULL, 'GASOLINE', 'Alice Smith', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (RANDOM_UUID(), 'Honda', 'Civic', 2019, '2HGFC2F59KH123456', 32000, NULL, 'GASOLINE', 'Bob Jones', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (RANDOM_UUID(), 'Ford', 'F-150', 2021, '1FTFW1ET5DKF12345', 8000, NULL, 'GASOLINE', NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (RANDOM_UUID(), 'Chevrolet', 'Silverado', 2018, '3GCUKSEC4JG123456', 45000, NULL, 'GASOLINE', NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (RANDOM_UUID(), 'BMW', '3 Series', 2022, 'WBA5R1C50KAK12345', 5000, NULL, 'GASOLINE', NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

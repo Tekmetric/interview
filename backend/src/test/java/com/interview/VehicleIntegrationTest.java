@@ -10,12 +10,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -39,7 +39,7 @@ class VehicleIntegrationTest {
     private static final String ANOTHER_VIN = "2HGFC2F59KH800002";
 
     private VehicleRequest validRequest(String vin) {
-        return new VehicleRequest("Toyota", "Camry", 2020, vin, 15000);
+        return new VehicleRequest("Toyota", "Camry", 2020, 15000, null, null, null, vin, null);
     }
 
     @Nested
@@ -62,8 +62,21 @@ class VehicleIntegrationTest {
         }
 
         @Test
+        void shouldCreateVehicleWithFlatMetadata() throws Exception {
+            VehicleRequest withMeta = new VehicleRequest(
+                    "Toyota", "Camry", 2020, 15000, null, null, null, VALID_VIN, Map.of("shopTag", "vip"));
+
+            mockMvc.perform(post("/api/vehicles")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("X-API-Key", TEST_API_KEY)
+                            .content(objectMapper.writeValueAsString(withMeta)))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.metadata.shopTag").value("vip"));
+        }
+
+        @Test
         void shouldReturnBadRequestForInvalidVehicle() throws Exception {
-            VehicleRequest invalid = new VehicleRequest(null, null, null, null, null);
+            VehicleRequest invalid = new VehicleRequest(null, null, null, null, null, null, null, null, null);
             mockMvc.perform(post("/api/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("X-API-Key", TEST_API_KEY)
@@ -110,6 +123,19 @@ class VehicleIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content").isArray());
         }
+
+        @Test
+        void shouldFilterVehiclesByCustomerName() throws Exception {
+            mockMvc.perform(get("/api/vehicles")
+                            .header("X-API-Key", TEST_API_KEY)
+                            .param("customerName", "Alice Smith")
+                            .param("page", "0")
+                            .param("size", "10"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content.length()").value(1))
+                    .andExpect(jsonPath("$.content[0].make").value("Toyota"))
+                    .andExpect(jsonPath("$.content[0].customerName").value("Alice Smith"));
+        }
     }
 
     @Nested
@@ -154,7 +180,8 @@ class VehicleIntegrationTest {
 
             String location = result.getResponse().getHeader("Location");
 
-            VehicleRequest updated = new VehicleRequest("Honda", "Accord", 2021, ANOTHER_VIN, 20000);
+            VehicleRequest updated =
+                    new VehicleRequest("Honda", "Accord", 2021, 20000, null, null, null, ANOTHER_VIN, null);
 
             mockMvc.perform(put(location)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -164,6 +191,28 @@ class VehicleIntegrationTest {
                     .andExpect(jsonPath("$.make").value("Honda"))
                     .andExpect(jsonPath("$.model").value("Accord"))
                     .andExpect(jsonPath("$.vin").value(ANOTHER_VIN));
+        }
+
+        @Test
+        void shouldReturnBadRequestWhenRemovingVin() throws Exception {
+            MvcResult result = mockMvc.perform(post("/api/vehicles")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("X-API-Key", TEST_API_KEY)
+                            .content(objectMapper.writeValueAsString(validRequest(VALID_VIN))))
+                    .andExpect(status().isCreated())
+                    .andReturn();
+
+            String location = result.getResponse().getHeader("Location");
+
+            VehicleRequest withoutVin =
+                    new VehicleRequest("Toyota", "Camry", 2020, 15000, null, null, null, null, null);
+
+            mockMvc.perform(put(location)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("X-API-Key", TEST_API_KEY)
+                            .content(objectMapper.writeValueAsString(withoutVin)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("Cannot remove VIN once set"));
         }
     }
 

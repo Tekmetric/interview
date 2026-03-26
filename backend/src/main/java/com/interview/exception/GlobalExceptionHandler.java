@@ -3,6 +3,7 @@ package com.interview.exception;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.interview.dto.ErrorResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CarNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCarNotFound(CarNotFoundException ex) {
+        log.warn("Car not found: {}", ex.getMessage());
         ErrorResponse error = new ErrorResponse(
             HttpStatus.NOT_FOUND.value(), "Not Found", ex.getMessage(), null, null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -29,6 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCarDataException.class)
     public ResponseEntity<ErrorResponse> handleInvalidCarData(InvalidCarDataException ex) {
+        log.warn("Invalid car data: {}", ex.getMessage());
         ErrorResponse error = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(), "Bad Request", ex.getMessage(), null, null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -36,6 +40,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateVinException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateVin(DuplicateVinException ex) {
+        log.warn("Duplicate VIN: {}", ex.getMessage());
         ErrorResponse error = new ErrorResponse(
             HttpStatus.CONFLICT.value(), "Conflict", ex.getMessage(), null, null);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
@@ -43,6 +48,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
+        log.warn("Validation failure on {}: {}", ex.getBindingResult().getObjectName(), ex.getMessage());
         Map<String, String> fieldErrors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(fieldError ->
             fieldErrors.put(fieldError.getField(), fieldError.getDefaultMessage())
@@ -56,6 +62,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        log.warn("Unreadable request body: {}", ex.getMessage());
         Throwable cause = ex.getCause();
         if (cause instanceof InvalidFormatException ife
             && ife.getTargetType() != null
@@ -80,6 +87,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        log.warn("Type mismatch param={} value={}", ex.getName(), ex.getValue());
         String fieldName = ex.getName();
         String invalidValue = String.valueOf(ex.getValue());
         Class<?> requiredType = ex.getRequiredType();
@@ -101,6 +109,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex) {
+        log.error("Data integrity violation", ex);
         ErrorResponse error = new ErrorResponse(
             HttpStatus.CONFLICT.value(), "Conflict",
             "Data integrity violation: " + ex.getMostSpecificCause().getMessage(), null, null);

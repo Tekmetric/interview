@@ -4,19 +4,21 @@ import com.interview.dto.CarRequest;
 import com.interview.dto.CarResponse;
 import com.interview.exception.CarNotFoundException;
 import com.interview.exception.DuplicateVinException;
-import com.interview.exception.InvalidCarDataException;
 import com.interview.mapper.CarMapper;
 import com.interview.model.Car;
 import com.interview.model.CarStatus;
 import com.interview.model.FuelType;
 import com.interview.repository.CarRepository;
-import com.interview.validator.CarRequestValidator;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,11 +46,16 @@ class CarServiceTest {
     @Mock
     private CarMapper carMapper;
 
-    @Mock
-    private CarRequestValidator carRequestValidator;
+    @Spy
+    private SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
 
     @InjectMocks
     private CarService carService;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.invokeMethod(carService, "initMetrics");
+    }
 
     private Car buildCar() {
         return Car.builder()
@@ -122,7 +128,6 @@ class CarServiceTest {
     }
 
     // --- getAll tests ---
-
     @Test
     @SuppressWarnings("unchecked")
     void givenFilters_whenGetAll_thenDelegatesToRepository() {

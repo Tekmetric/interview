@@ -20,3 +20,21 @@ spring:
   h2:
     console:
       enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: carshop
+
+logging:
+  level:
+    com.interview: INFO
+  config: classpath:logback-spring.xml

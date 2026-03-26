@@ -10,7 +10,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Builder
+@Builder(toBuilder = true)
 @Schema(description = "A job posting returned by the API")
 public record JobPostingResponse(
         @Schema(description = "Unique identifier", example = "1")

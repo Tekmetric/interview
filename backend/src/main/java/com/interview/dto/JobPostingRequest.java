@@ -10,7 +10,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Builder
+@Builder(toBuilder = true)
 @Schema(description = "Payload for creating or updating a job posting")
 public record JobPostingRequest(
         @NotBlank(message = "Title is required")

@@ -1,3 +1,18 @@
+CREATE TYPE job_type_enum AS ENUM (
+    'FULL_TIME', 'PART_TIME', 'CONTRACT',
+    'INTERNSHIP', 'FREELANCE'
+);
+
+CREATE TYPE experience_level_enum AS ENUM (
+    'JUNIOR', 'MID', 'SENIOR',
+    'LEAD', 'EXECUTIVE'
+);
+
+CREATE TYPE status_enum AS ENUM (
+    'DRAFT', 'ACTIVE', 'CLOSED',
+    'ARCHIVED'
+);
+
 CREATE TABLE job_postings (
     id               BIGINT AUTO_INCREMENT PRIMARY KEY,
 
@@ -9,9 +24,9 @@ CREATE TABLE job_postings (
     remote           BOOLEAN         NOT NULL DEFAULT FALSE,
 
     -- Classification
-    job_type         VARCHAR(20)     NOT NULL,   -- FULL_TIME | PART_TIME | CONTRACT | INTERNSHIP | FREELANCE
-    experience_level VARCHAR(20)     NOT NULL,   -- JUNIOR | MID | SENIOR | LEAD | EXECUTIVE
-    status           VARCHAR(20)     NOT NULL DEFAULT 'DRAFT',  -- DRAFT | ACTIVE | CLOSED | ARCHIVED
+    job_type         job_type_enum     NOT NULL,   -- FULL_TIME | PART_TIME | CONTRACT | INTERNSHIP | FREELANCE
+    experience_level experience_level_enum    NOT NULL,   -- JUNIOR | MID | SENIOR | LEAD | EXECUTIVE
+    status           status_enum     NOT NULL DEFAULT 'DRAFT',  -- DRAFT | ACTIVE | CLOSED | ARCHIVED
 
     -- Compensation
     salary_min       DECIMAL(12, 2),
@@ -32,10 +47,7 @@ CREATE TABLE job_postings (
     -- Constraints
     CONSTRAINT chk_salary_range  CHECK (salary_min IS NULL OR salary_max IS NULL OR salary_min <= salary_max),
     CONSTRAINT chk_salary_min    CHECK (salary_min IS NULL OR salary_min >= 0),
-    CONSTRAINT chk_salary_max    CHECK (salary_max IS NULL OR salary_max >= 0),
-    CONSTRAINT chk_job_type      CHECK (job_type IN ('FULL_TIME','PART_TIME','CONTRACT','INTERNSHIP','FREELANCE')),
-    CONSTRAINT chk_exp_level     CHECK (experience_level IN ('JUNIOR','MID','SENIOR','LEAD','EXECUTIVE')),
-    CONSTRAINT chk_status        CHECK (status IN ('DRAFT','ACTIVE','CLOSED','ARCHIVED'))
+    CONSTRAINT chk_salary_max    CHECK (salary_max IS NULL OR salary_max >= 0)
 );
 
 CREATE INDEX idx_job_postings_status         ON job_postings (status);

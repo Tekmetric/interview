@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO" />
+    <logger name="org.hibernate.SQL" level="INFO" />
+    <logger name="org.hibernate.orm.jdbc.bind" level="INFO" />
+
+    <logger name="org.springframework.web.client" level="INFO" />
+    <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="DEBUG" />
+    <logger name="org.springframework.security" level="INFO" />
+
+    <logger name="com.interview" level="TRACE" />
+
+    <logger name="com.interview.aop.ExecutionTimeAspect" level="TRACE" />
+    <logger name="com.interview.aop.LoggingAspect" level="TRACE" />
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

@@ -4,7 +4,7 @@
 
 #### Prerequisites
 - Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
+- Java 21 (or higher, update version in pom.xml if needed)
 
 #### Fork the repository and clone it locally
 - https://github.com/Tekmetric/interview.git
@@ -15,15 +15,14 @@
 #### Build and run your app
 - `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
 
-#### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
+#### TODO Api Docs instructions
 
 #### After finishing the goals listed below create a PR
 
 ### Goals
 1. Design a CRUD API with data store using Spring Boot and in memory H2 database (pre-configured, see below)
 2. API should include one object with create, read, update, and delete operations. Read should include fetching a single item and list of items.
-3. Provide SQL create scripts for your object(s) in resources/data.sql
+3. Provide SQL create scripts for your object(s) in resources/schema.sql
 4. Demo API functionality using API client tool
 
 ### Considerations

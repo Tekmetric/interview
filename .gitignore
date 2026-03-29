@@ -12,3 +12,7 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+# Java (Maven) build output inside QA module
+qa/java-playwright/target/
+qa/java-playwright/*.iml
+qa/java-playwright/.idea/

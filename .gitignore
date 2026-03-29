@@ -2,6 +2,7 @@ frontend/node_modules
 backend/.idea/*
 backend/*.iml
 backend/target/**
+backend/build/**
 
 #ignore playwright resources
 qa/node_modules/
@@ -12,3 +13,5 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+
+**/.gradle

@@ -1,0 +1,82 @@
+replicaCount: 2
+
+image:
+  repository: your-dockerhub-username/your-image
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  fsGroup: 1001
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8080
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: backend.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+env:
+  - name: JAVA_TOOL_OPTIONS
+    value: "-Djava.io.tmpdir=/app/tmp -Dserver.tomcat.basedir=/app/tomcat"
+
+volumes:
+  - name: app-tmp
+    emptyDir: {}
+  - name: app-tomcat
+    emptyDir: {}
+
+volumeMounts:
+  - name: app-tmp
+    mountPath: /app/tmp
+  - name: app-tomcat
+    mountPath: /app/tomcat
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

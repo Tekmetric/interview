@@ -94,6 +94,18 @@ public class CreditApplicationController {
         return ResponseEntity.ok(creditApplicationService.update(id, request));
     }
 
+    @PostMapping("/{id}/confirm-documents")
+    @Operation(summary = "Confirm all documents have been uploaded",
+               description = "Verifies each expected document exists in S3 via HeadObject. Call this after completing all presigned PUT uploads.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "All documents confirmed in S3"),
+        @ApiResponse(responseCode = "404", description = "Application not found"),
+        @ApiResponse(responseCode = "422", description = "One or more documents have not been uploaded yet")
+    })
+    public ResponseEntity<CreditApplicationResponse> confirmDocuments(@PathVariable final UUID id) {
+        return ResponseEntity.ok(creditApplicationService.confirmDocumentsUploaded(id));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a credit application")
     @ApiResponses({

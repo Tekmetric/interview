@@ -8,9 +8,12 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.context.jdbc.Sql;
 
 import com.interview.persistence.entity.Customer;
@@ -24,6 +27,9 @@ class CustomerRepositoryIntegrationTest extends BaseIntegrationTest {
     private static final UUID JANE_ID   = UUID.fromString("c1000000-0000-7000-8000-000000000000");
     private static final UUID JOHN_ID   = UUID.fromString("c2000000-0000-7000-8000-000000000000");
     private static final UUID APP_1_ID  = UUID.fromString("a1000000-0000-7000-8000-000000000000");
+
+    @Autowired
+    private TestEntityManager entityManager;
 
     @Test
     void save_persistsCustomerAndGeneratesUuidV7Id() {
@@ -96,6 +102,20 @@ class CustomerRepositoryIntegrationTest extends BaseIntegrationTest {
         customerRepository.delete(john);
 
         assertThat(customerRepository.findById(JOHN_ID)).isEmpty();
+    }
+
+    @Test
+    void save_staleVersion_throwsOptimisticLockingFailure() {
+        Customer stale = customerRepository.findById(JANE_ID).orElseThrow();
+        entityManager.detach(stale);
+
+        Customer current = customerRepository.findById(JANE_ID).orElseThrow();
+        current.setFirstName("Concurrent Update");
+        customerRepository.saveAndFlush(current);
+
+        stale.setFirstName("Stale Update");
+        assertThatThrownBy(() -> customerRepository.saveAndFlush(stale))
+                .isInstanceOf(ObjectOptimisticLockingFailureException.class);
     }
 
     @Test

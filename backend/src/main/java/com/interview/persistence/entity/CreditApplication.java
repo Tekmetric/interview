@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.BatchSize;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -82,6 +83,7 @@ public class CreditApplication extends BaseEntity {
     private Instant decidedAt;
 
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 25)
     private List<SupportingDocument> documents = new ArrayList<>();
 
     @PrePersist

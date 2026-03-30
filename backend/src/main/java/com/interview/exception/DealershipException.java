@@ -4,7 +4,8 @@ public abstract sealed class DealershipException extends RuntimeException
     permits CustomerNotFoundException,
             CreditApplicationNotFoundException,
             InvalidApplicationStateException,
-            DuplicateResourceException {
+            DuplicateResourceException,
+            DocumentNotUploadedException {
 
     protected DealershipException(final String message) {
         super(message);

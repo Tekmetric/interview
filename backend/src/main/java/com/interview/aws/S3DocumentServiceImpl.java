@@ -10,16 +10,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 
 import com.interview.dto.request.embedded.SupportingDocumentRequest;
+import com.interview.exception.DocumentNotUploadedException;
+import com.interview.exception.S3DocumentDeleteException;
 import com.interview.exception.S3DocumentDownloadException;
 import com.interview.exception.S3DocumentUploadException;
 import com.interview.persistence.entity.SupportingDocument;
+import com.interview.persistence.enums.SupportingDocumentType;
 
 @Slf4j
 @Component
@@ -27,6 +34,7 @@ import com.interview.persistence.entity.SupportingDocument;
 @ConditionalOnProperty(name = "aws.enabled", havingValue = "true")
 public class S3DocumentServiceImpl implements S3DocumentService {
 
+    private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
     @Value("${aws.s3.bucket-name}")
@@ -48,6 +56,52 @@ public class S3DocumentServiceImpl implements S3DocumentService {
         return documents.stream()
                 .map(this::presignGet)
                 .toList();
+    }
+
+    @Override
+    public void verifyDocumentsUploaded(final List<SupportingDocument> documents) {
+        final List<SupportingDocumentType> missing = documents.stream()
+                .filter(doc -> !objectExists(doc.getObjectKey()))
+                .map(SupportingDocument::getDocumentType)
+                .toList();
+
+        if (!missing.isEmpty()) {
+            log.warn("Document verification failed — missing keys for types: {}", missing);
+            throw new DocumentNotUploadedException(missing);
+        }
+
+        log.info("All {} document(s) verified in S3", documents.size());
+    }
+
+    @Override
+    public void deleteDocuments(final List<SupportingDocument> documents) {
+        documents.forEach(doc -> {
+            try {
+                s3Client.deleteObject(DeleteObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(doc.getObjectKey())
+                        .build());
+                log.info("Deleted S3 object for type={} key={}", doc.getDocumentType(), doc.getObjectKey());
+            } catch (final SdkException e) {
+                log.error("Failed to delete S3 object for type={} key={}", doc.getDocumentType(), doc.getObjectKey(), e);
+                throw new S3DocumentDeleteException(doc.getDocumentType(), e);
+            }
+        });
+    }
+
+    private boolean objectExists(final String objectKey) {
+        try {
+            s3Client.headObject(HeadObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .build());
+            return true;
+        } catch (final NoSuchKeyException e) {
+            return false;
+        } catch (final SdkException e) {
+            log.error("HeadObject failed for key={}", objectKey, e);
+            throw e;
+        }
     }
 
     private DocumentUpload presignPut(final UUID customerId, final UUID applicationId,

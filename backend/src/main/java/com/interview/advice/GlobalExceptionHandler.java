@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.OptimisticLockException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -22,8 +23,10 @@ import com.interview.exception.AwsException;
 import com.interview.exception.CreditApplicationNotFoundException;
 import com.interview.exception.CustomerNotFoundException;
 import com.interview.exception.DealershipException;
+import com.interview.exception.DocumentNotUploadedException;
 import com.interview.exception.DuplicateResourceException;
 import com.interview.exception.InvalidApplicationStateException;
+import com.interview.exception.S3DocumentDeleteException;
 import com.interview.exception.S3DocumentDownloadException;
 import com.interview.exception.S3DocumentUploadException;
 import com.interview.exception.SqsPublishException;
@@ -40,6 +43,8 @@ public class GlobalExceptionHandler {
                     problem(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), "document-upload-failed");
             case S3DocumentDownloadException e ->
                     problem(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), "document-download-failed");
+            case S3DocumentDeleteException e ->
+                    problem(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), "document-delete-failed");
             case SqsPublishException e ->
                     problem(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), "sqs-publish-failed");
         };
@@ -56,6 +61,8 @@ public class GlobalExceptionHandler {
                     problem(HttpStatus.CONFLICT, e.getMessage(), "invalid-application-state");
             case DuplicateResourceException e ->
                     problem(HttpStatus.CONFLICT, e.getMessage(), "duplicate-resource");
+            case DocumentNotUploadedException e ->
+                    problem(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage(), "document-not-uploaded");
         };
     }
 
@@ -84,9 +91,9 @@ public class GlobalExceptionHandler {
         return problem(HttpStatus.CONFLICT, "A resource with the provided unique fields already exists", "duplicate-resource");
     }
 
-    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
-    public ProblemDetail handleOptimisticLock(final ObjectOptimisticLockingFailureException ex) {
-        log.warn("Optimistic locking failure on {}", ex.getPersistentClassName());
+    @ExceptionHandler({ObjectOptimisticLockingFailureException.class, OptimisticLockException.class})
+    public ProblemDetail handleOptimisticLock(final Exception ex) {
+        log.warn("Optimistic locking failure: {}", ex.getMessage());
         return problem(HttpStatus.CONFLICT,
                 "The resource was modified by another request. Please fetch the latest version and retry.",
                 "optimistic-locking-failure");

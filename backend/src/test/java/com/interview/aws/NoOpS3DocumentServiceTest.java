@@ -1,19 +1,28 @@
 package com.interview.aws;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.interview.dto.request.embedded.SupportingDocumentRequest;
+import com.interview.exception.DocumentNotUploadedException;
 import com.interview.persistence.entity.SupportingDocument;
 import com.interview.persistence.enums.SupportingDocumentType;
 
 class NoOpS3DocumentServiceTest {
 
-    private final NoOpS3DocumentService service = new NoOpS3DocumentService();
+    private NoOpS3DocumentService service;
+
+    @BeforeEach
+    void setUp() {
+        service = new NoOpS3DocumentService();
+    }
 
     @Test
     void generateDocumentUploads_returnsOneUploadPerDocument() {
@@ -71,6 +80,59 @@ class NoOpS3DocumentServiceTest {
     @Test
     void generateDocumentDownloadUrls_emptyList_returnsEmpty() {
         assertThat(service.generateDocumentDownloadUrls(List.of())).isEmpty();
+    }
+
+    @Test
+    void verifyDocumentsUploaded_afterGeneratingUploadUrls_doesNotThrow() {
+        UUID customerId    = UUID.randomUUID();
+        UUID applicationId = UUID.randomUUID();
+        SupportingDocumentType type = SupportingDocumentType.PROOF_OF_INCOME;
+
+        service.generateDocumentUploads(customerId, applicationId,
+                List.of(SupportingDocumentRequest.builder().documentType(type).build()));
+
+        String objectKey = S3DocumentService.buildObjectKey(customerId, applicationId, type);
+        assertThatNoException().isThrownBy(
+                () -> service.verifyDocumentsUploaded(List.of(buildDoc(type, objectKey))));
+    }
+
+    @Test
+    void verifyDocumentsUploaded_withoutPriorUploadRegistration_throwsDocumentNotUploadedException() {
+        UUID customerId    = UUID.randomUUID();
+        UUID applicationId = UUID.randomUUID();
+        SupportingDocumentType type = SupportingDocumentType.GOVERNMENT_ID;
+        String objectKey = S3DocumentService.buildObjectKey(customerId, applicationId, type);
+
+        assertThatThrownBy(() -> service.verifyDocumentsUploaded(List.of(buildDoc(type, objectKey))))
+                .isInstanceOf(DocumentNotUploadedException.class);
+    }
+
+    @Test
+    void verifyDocumentsUploaded_emptyList_doesNotThrow() {
+        assertThatNoException().isThrownBy(() -> service.verifyDocumentsUploaded(List.of()));
+    }
+
+    @Test
+    void deleteDocuments_removesRegisteredKeys_subsequentVerifyThrows() {
+        UUID customerId    = UUID.randomUUID();
+        UUID applicationId = UUID.randomUUID();
+        SupportingDocumentType type = SupportingDocumentType.PROOF_OF_INCOME;
+
+        service.generateDocumentUploads(customerId, applicationId,
+                List.of(SupportingDocumentRequest.builder().documentType(type).build()));
+
+        String objectKey = S3DocumentService.buildObjectKey(customerId, applicationId, type);
+        SupportingDocument doc = buildDoc(type, objectKey);
+
+        service.deleteDocuments(List.of(doc));
+
+        assertThatThrownBy(() -> service.verifyDocumentsUploaded(List.of(doc)))
+                .isInstanceOf(DocumentNotUploadedException.class);
+    }
+
+    @Test
+    void deleteDocuments_emptyList_doesNotThrow() {
+        assertThatNoException().isThrownBy(() -> service.deleteDocuments(List.of()));
     }
 
     private SupportingDocument buildDoc(SupportingDocumentType type, String objectKey) {

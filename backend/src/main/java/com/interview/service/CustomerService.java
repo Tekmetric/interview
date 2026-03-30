@@ -1,5 +1,6 @@
 package com.interview.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.interview.aws.S3DocumentService;
+import com.interview.persistence.entity.SupportingDocument;
 import com.interview.config.CacheNames;
 import com.interview.persistence.entity.Customer;
 import com.interview.exception.CustomerNotFoundException;
@@ -22,6 +25,7 @@ import com.interview.mapper.EntityMapper;
 import com.interview.dto.request.CreateCustomerRequest;
 import com.interview.dto.request.UpdateCustomerRequest;
 import com.interview.dto.response.CustomerResponse;
+import com.interview.repository.CreditApplicationRepository;
 import com.interview.repository.CustomerRepository;
 
 @Slf4j
@@ -30,6 +34,8 @@ import com.interview.repository.CustomerRepository;
 public class CustomerService extends AbstractCrudService<Customer, CustomerResponse, CreateCustomerRequest, UpdateCustomerRequest> {
 
     private final CustomerRepository customerRepository;
+    private final CreditApplicationRepository creditApplicationRepository;
+    private final S3DocumentService s3DocumentService;
     private final CustomerMapper customerMapper;
 
     @Override
@@ -90,6 +96,14 @@ public class CustomerService extends AbstractCrudService<Customer, CustomerRespo
     @CacheEvict(value = CacheNames.CUSTOMERS, key = "#id")
     public void delete(final UUID id) {
         log.info("Deleting customer: {}", id);
-        super.delete(id);
+        final Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id));
+
+        final List<SupportingDocument> documents = creditApplicationRepository.findByCustomerIdWithDocuments(id).stream()
+                .flatMap(app -> app.getDocuments().stream())
+                .toList();
+        s3DocumentService.deleteDocuments(documents);
+
+        customerRepository.delete(customer);
     }
 }

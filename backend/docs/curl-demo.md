@@ -103,7 +103,7 @@ Expected: 200 — annualIncome updated to 135000.00
 ### `05_delete.sh`
 `DELETE /api/v1/customers/:id`
 
-Deletes John Smith. Cascades to his credit application and all its supporting documents (`ON DELETE CASCADE` in schema).
+Deletes John Smith. Before removing the customer row, the service fetches all of John's credit applications, collects their supporting documents, and calls `S3DocumentService.deleteDocuments()` to purge those S3 objects. The customer row (and its cascaded application/document rows) is then deleted from the DB.
 
 ```
 Expected: 204 No Content
@@ -257,6 +257,23 @@ Expected (real AWS): HTTP 200, empty response body
 
 ---
 
+### `05c_confirm_documents.sh`
+`POST /api/v1/credit-applications/:id/confirm-documents`
+
+Verifies that all expected supporting documents have been uploaded to S3 by issuing a `HeadObject` call for each persisted document key. Call this after completing all presigned PUT uploads from `05b_upload_document.sh`.
+
+Set `APP_ID` to target a specific application, or it defaults to Jane's seeded application.
+
+```
+Expected (all docs present):  200 — application response with documentDownloadUrls[] populated
+Expected (doc missing):       422 — ProblemDetail with detail listing the missing document types
+Expected (app not found):     404 — ProblemDetail, CreditApplicationNotFoundException
+Expected (locally, new app):  200 — no-op registers keys at create time; confirm passes for the same session
+Expected (locally, seeded):   422 — seeded documents were never registered via create; use the happy-path walkthrough to exercise the full upload → confirm flow
+```
+
+---
+
 ### `06_advance_to_under_review.sh`
 `PATCH /api/v1/credit-applications/:id/status`
 
@@ -283,7 +300,7 @@ Expected: 200 — status=APPROVED, decidedAt populated, documentDownloadUrls[] p
 ### `08_delete.sh`
 `DELETE /api/v1/credit-applications/:id`
 
-Deletes Jane's application and all its supporting documents (cascade via `orphanRemoval = true`), without affecting her customer record.
+Deletes Jane's application. S3 objects for all supporting documents are deleted first (via `S3DocumentService.deleteDocuments()`), then the application and its document rows are removed from the DB. Does not affect her customer record.
 
 ```
 Expected: 204 No Content
@@ -379,14 +396,18 @@ echo "$RESPONSE" | jq -r '.documentUploadUrls[].presignedUrl' | while read -r ur
   UPLOAD_URL="$url" ./curl/credit_applications/05b_upload_document.sh
 done
 
-# 5. Fetch the application — documentDownloadUrls[] now contains fresh presigned GET URLs
+# 5. Confirm all documents are present in S3 — returns 200 with documentDownloadUrls[]
+APP_ID=$(echo "$RESPONSE" | jq -r '.id') \
+  ./curl/credit_applications/05c_confirm_documents.sh
+
+# 6. Fetch the application — documentDownloadUrls[] now contains fresh presigned GET URLs
 ./curl/credit_applications/03_get_by_id.sh
 
-# 6. Advance through the state machine (each response includes fresh documentDownloadUrls[])
+# 7. Advance through the state machine (each response includes fresh documentDownloadUrls[])
 ./curl/credit_applications/06_advance_to_under_review.sh
 ./curl/credit_applications/07_approve.sh
 
-# 7. Clean up
+# 8. Clean up
 ./curl/credit_applications/08_delete.sh
 ./curl/customers/05_delete.sh
 ```

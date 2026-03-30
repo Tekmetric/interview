@@ -19,6 +19,9 @@ import com.interview.dto.response.CustomerResponse;
 @Mapper(componentModel = "spring")
 public interface CustomerMapper extends EntityMapper<Customer, CustomerResponse, CreateCustomerRequest, UpdateCustomerRequest> {
 
+    String SSN_REGEX = "^\\d{3}-\\d{2}-\\d{4}$";
+    String SSN_MASK = "***-**-";
+
     @Mapping(target = "street",           source = "address.street")
     @Mapping(target = "city",             source = "address.city")
     @Mapping(target = "state",            source = "address.state")
@@ -33,8 +36,8 @@ public interface CustomerMapper extends EntityMapper<Customer, CustomerResponse,
     @AfterMapping
     default void maskSsn(@MappingTarget final CustomerResponse.CustomerResponseBuilder response, final Customer entity) {
         final String ssn = entity.getSsn();
-        if (ssn != null && ssn.length() == 11) {
-            response.ssn("***-**-" + ssn.substring(7));
+        if (ssn != null && ssn.matches(SSN_REGEX)) {
+            response.ssn(SSN_MASK + ssn.substring(7));
         }
     }
 
@@ -52,12 +55,14 @@ public interface CustomerMapper extends EntityMapper<Customer, CustomerResponse,
     EmploymentDetails toEmploymentDetails(final EmploymentDetailsRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "id",          ignore = true)
-    @Mapping(target = "dateCreated", ignore = true)
-    @Mapping(target = "dateUpdated", ignore = true)
-    @Mapping(target = "version",     ignore = true)
-    @Mapping(target = "ssn",         ignore = true)
-    @Mapping(target = "dateOfBirth", ignore = true)
+    @Mapping(target = "id",                ignore = true)
+    @Mapping(target = "dateCreated",       ignore = true)
+    @Mapping(target = "dateUpdated",       ignore = true)
+    @Mapping(target = "version",           ignore = true)
+    @Mapping(target = "ssn",               ignore = true)
+    @Mapping(target = "dateOfBirth",       ignore = true)
+    @Mapping(target = "address",           source = "address")
+    @Mapping(target = "employmentDetails", source = "employmentDetails")
     @Override
     void updateEntity(final UpdateCustomerRequest request, @MappingTarget final Customer entity);
 

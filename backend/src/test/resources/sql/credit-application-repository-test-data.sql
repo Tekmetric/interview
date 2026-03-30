@@ -27,3 +27,24 @@ VALUES
      'c1000000-0000-7000-8000-000000000000',
      'APPROVED', 30000.00, 'VEHICLE_PURCHASE', 400.00,
      NULL, NOW(), NOW(), NOW(), 0);
+
+INSERT INTO supporting_document (id, application_id, document_type, object_key, file_name,
+                                 date_created, date_updated, version)
+VALUES
+    ('d1000000-0000-7000-8000-000000000000',
+     'a1000000-0000-7000-8000-000000000000',
+     'PROOF_OF_INCOME',
+     'customers/c1000000-0000-7000-8000-000000000000/applications/a1000000-0000-7000-8000-000000000000/documents/proof_of_income',
+     'income.pdf', NOW(), NOW(), 0),
+
+    ('d2000000-0000-7000-8000-000000000000',
+     'a1000000-0000-7000-8000-000000000000',
+     'GOVERNMENT_ID',
+     'customers/c1000000-0000-7000-8000-000000000000/applications/a1000000-0000-7000-8000-000000000000/documents/government_id',
+     'license.pdf', NOW(), NOW(), 0),
+
+    ('d3000000-0000-7000-8000-000000000000',
+     'a2000000-0000-7000-8000-000000000000',
+     'TAX_RETURN',
+     'customers/c1000000-0000-7000-8000-000000000000/applications/a2000000-0000-7000-8000-000000000000/documents/tax_return',
+     'taxes.pdf', NOW(), NOW(), 0);

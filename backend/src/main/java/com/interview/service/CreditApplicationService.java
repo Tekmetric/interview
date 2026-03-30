@@ -135,10 +135,31 @@ public class CreditApplicationService
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<CreditApplicationResponse> findAll(final Pageable pageable) {
+        return findAll(null, pageable);
+    }
+
+    @Override
     @Transactional
     public void delete(final UUID id) {
         log.info("Deleting credit application: {}", id);
-        super.delete(id);
+        final CreditApplication application = creditApplicationRepository.findById(id)
+                .orElseThrow(() -> new CreditApplicationNotFoundException(id));
+        s3DocumentService.deleteDocuments(application.getDocuments());
+        creditApplicationRepository.delete(application);
+    }
+
+    @Transactional(readOnly = true)
+    public CreditApplicationResponse confirmDocumentsUploaded(final UUID id) {
+        log.info("Verifying document uploads for application: {}", id);
+        final CreditApplication application = creditApplicationRepository.findById(id)
+                .orElseThrow(() -> new CreditApplicationNotFoundException(id));
+
+        s3DocumentService.verifyDocumentsUploaded(application.getDocuments());
+
+        log.info("All documents verified for application: {}", id);
+        return withDownloadUrls(application);
     }
 
     private CreditApplicationResponse withDownloadUrls(final CreditApplication application) {

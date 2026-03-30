@@ -26,14 +26,15 @@ Fast, no Spring context, all dependencies mocked with Mockito.
 
 | Class | What it covers |
 |-------|---------------|
-| `CustomerServiceTest` | `CustomerService` business logic — create, find, update, delete; cache annotations; duplicate email handling |
-| `CreditApplicationServiceTest` | `CreditApplicationService` — create with S3 upload and document persistence, presigned GET URLs on reads, `findByCustomerId` pagination and 404, status state machine, SQS event published after commit, `decidedAt` stamping |
+| `CustomerServiceTest` | `CustomerService` business logic — create, find, update, delete; S3 documents fetched via `findByCustomerIdWithDocuments` (eager fetch join) and deleted before customer row; correct ordering enforced; no S3 call on missing customer; duplicate email handling |
+| `CreditApplicationServiceTest` | `CreditApplicationService` — create with S3 upload and document persistence, presigned GET URLs on reads, `findByCustomerId` pagination and 404, status state machine, SQS event published after commit, `decidedAt` stamping; `confirmDocumentsUploaded` — delegates to S3 verify, returns response with download URLs, throws on missing docs or unknown ID, never saves the application |
 | `SSNValidatorTest` | `@ValidSSN` — valid format, wrong format, null |
 | `AdultAgeValidatorTest` | `@ValidAdultAge` — exactly 18, under 18, null |
 | `CustomerTest` | `Customer` entity — UUID assigned at construction, two instances have distinct IDs, `equals`/`hashCode` stability |
 | `CreditApplicationTest` | `CreditApplication` entity — default status, `@PrePersist submittedAt`, audit fields |
-| `S3DocumentServiceImplTest` | `S3DocumentServiceImpl` — presigned PUT URL generation per document, presigned GET URL generation per persisted document, SDK invoked once per document |
-| `NoOpS3DocumentServiceTest` | `NoOpS3DocumentService` — upload and download URL generation, URL contains object key, empty list returns empty |
+| `S3DocumentServiceImplTest` | `S3DocumentServiceImpl` — presigned PUT URL generation per document, presigned GET URL generation per persisted document, SDK invoked once per document; `verifyDocumentsUploaded` — HeadObject called per document, throws `DocumentNotUploadedException` listing all missing types, propagates non-404 SDK exceptions; `deleteDocuments` — DeleteObject called per document, throws `S3DocumentDeleteException` on SDK failure |
+| `NoOpS3DocumentServiceTest` | `NoOpS3DocumentService` — upload and download URL generation, URL contains object key, empty list returns empty; `verifyDocumentsUploaded` passes after `generateDocumentUploads` registers the keys, throws `DocumentNotUploadedException` for keys that were never registered; `deleteDocuments` — removes keys from the in-memory registry so a subsequent `verifyDocumentsUploaded` throws, empty list does not throw |
+| `CreditApplicationEventListenerTest` | `CreditApplicationEventListener` — `onApplicationUnderReview` delegates to `SqsPublisher.publishApplicationUnderReview` with the correct application |
 | `NoOpSqsPublisherTest` | `NoOpSqsPublisher` — publish does not throw, logs correctly |
 | `SqsPublisherImplTest` | `SqsPublisherImpl` — message sent to correct queue, message body contains application ID |
 
@@ -52,10 +53,10 @@ Spin up a Spring context (full or slice) backed by H2. Slower but exercise wirin
 |-------|-------|---------------|
 | `CustomerServiceIntegrationTest` | `@SpringBootTest` | Cache population (`@Cacheable`), eviction (`@CacheEvict`), put-on-update (`@CachePut`) |
 | `CreditApplicationServiceIntegrationTest` | `@SpringBootTest` | Same cache lifecycle for credit applications; S3/SQS beans mocked via `@MockitoBean` |
-| `CustomerRepositoryIntegrationTest` | `@DataJpaTest` | JPA queries against H2 — save, find, pagination, duplicate email constraint |
-| `CreditApplicationRepositoryIntegrationTest` | `@DataJpaTest` | `findByCustomerId` (paginated), status filter via JPA Specification, pagination |
+| `CustomerRepositoryIntegrationTest` | `@DataJpaTest` | JPA queries against H2 — save, find, pagination, duplicate email constraint, optimistic locking (stale version throws `ObjectOptimisticLockingFailureException`), cascade delete to applications |
+| `CreditApplicationRepositoryIntegrationTest` | `@DataJpaTest` | `findByCustomerId` (paginated), `findByCustomerIdWithDocuments` (fetch join — documents eagerly loaded, DISTINCT prevents duplicates from join, empty list for unknown customer), status filter via JPA Specification |
 | `CustomerControllerIntegrationTest` | `@WebMvcTest` | Full HTTP layer — 201 create, 400 validation errors, 404 not found, 409 duplicate email; JSON response structure |
-| `CreditApplicationControllerIntegrationTest` | `@WebMvcTest` | 201 create (with `documentUploadUrls[]`), paginated `findByCustomer`, 400/404/409 scenarios, PATCH status transitions |
+| `CreditApplicationControllerIntegrationTest` | `@WebMvcTest` | 201 create (with `documentUploadUrls[]`), paginated `findByCustomer`, 400/404/409 scenarios, PATCH status transitions; `POST /{id}/confirm-documents` — 200 with download URLs, 422 for missing documents, 404 for unknown application |
 
 ```bash
 # Run only integration tests

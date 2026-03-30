@@ -132,7 +132,9 @@ aws.s3.bucket-name=<bucket>
 Supporting documents use presigned S3 URLs — the app server never handles file bytes:
 
 1. **Create** a credit application → `201` response includes `documentUploadUrls[]` — one presigned S3 `PUT` URL per document, valid **15 minutes**. The client uploads directly to S3.
-2. **Read** any application → response includes `documentDownloadUrls[]` — fresh presigned S3 `GET` URLs valid **60 minutes**, regenerated on every request.
+2. **Confirm uploads** → `POST /api/v1/credit-applications/{id}/confirm-documents` — issues a `HeadObject` call for each expected document. Returns `200` with `documentDownloadUrls[]` if all are present, or `422` listing the missing document types if any have not been uploaded yet.
+3. **Read** any application → response includes `documentDownloadUrls[]` — fresh presigned S3 `GET` URLs valid **60 minutes**, regenerated on every request.
+4. **Delete** a credit application or customer → S3 objects are deleted before the DB row(s) are removed. Deleting a customer purges S3 documents across all of that customer's applications before cascading the DB delete.
 
 ### SQS Events
 

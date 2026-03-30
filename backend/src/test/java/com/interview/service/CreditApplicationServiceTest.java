@@ -14,10 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Page;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,8 +21,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 
 import com.interview.aws.S3DocumentService;
 import com.interview.persistence.entity.CreditApplication;
@@ -40,6 +38,7 @@ import com.interview.dto.request.UpdateApplicationStatusRequest;
 import com.interview.dto.response.CreditApplicationResponse;
 import com.interview.exception.CreditApplicationNotFoundException;
 import com.interview.exception.CustomerNotFoundException;
+import com.interview.exception.DocumentNotUploadedException;
 import com.interview.exception.InvalidApplicationStateException;
 import com.interview.mapper.CreditApplicationMapper;
 import com.interview.repository.CreditApplicationRepository;
@@ -224,6 +223,85 @@ class CreditApplicationServiceTest {
 
         assertThatThrownBy(() -> applicationService.findById(id))
                 .isInstanceOf(CreditApplicationNotFoundException.class);
+    }
+
+    @Test
+    void confirmDocumentsUploaded_allPresent_returnsResponseWithDownloadUrls() {
+        UUID id = UUID.randomUUID();
+        CreditApplication app = buildApplication(ApplicationStatus.SUBMITTED);
+        S3DocumentService.DocumentDownload download =
+                new S3DocumentService.DocumentDownload(SupportingDocumentType.PROOF_OF_INCOME, "https://s3.example.com/get");
+
+        when(applicationRepository.findById(id)).thenReturn(Optional.of(app));
+        when(applicationMapper.toResponse(app)).thenReturn(buildResponse(ApplicationStatus.SUBMITTED));
+        when(s3DocumentService.generateDocumentDownloadUrls(app.getDocuments())).thenReturn(List.of(download));
+
+        CreditApplicationResponse result = applicationService.confirmDocumentsUploaded(id);
+
+        assertThat(result.getDocumentDownloadUrls()).containsExactly(download);
+        verify(s3DocumentService).verifyDocumentsUploaded(app.getDocuments());
+    }
+
+    @Test
+    void confirmDocumentsUploaded_missingDocument_throwsDocumentNotUploadedException() {
+        UUID id = UUID.randomUUID();
+        CreditApplication app = buildApplication(ApplicationStatus.SUBMITTED);
+
+        when(applicationRepository.findById(id)).thenReturn(Optional.of(app));
+        org.mockito.Mockito.doThrow(new DocumentNotUploadedException(List.of(SupportingDocumentType.PROOF_OF_INCOME)))
+                .when(s3DocumentService).verifyDocumentsUploaded(app.getDocuments());
+
+        assertThatThrownBy(() -> applicationService.confirmDocumentsUploaded(id))
+                .isInstanceOf(DocumentNotUploadedException.class)
+                .hasMessageContaining("PROOF_OF_INCOME");
+    }
+
+    @Test
+    void confirmDocumentsUploaded_unknownId_throwsCreditApplicationNotFoundException() {
+        UUID id = UUID.randomUUID();
+        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> applicationService.confirmDocumentsUploaded(id))
+                .isInstanceOf(CreditApplicationNotFoundException.class);
+    }
+
+    @Test
+    void delete_callsS3DeleteBeforeDatabaseDelete() {
+        UUID id = UUID.randomUUID();
+        CreditApplication app = buildApplication(ApplicationStatus.SUBMITTED);
+
+        when(applicationRepository.findById(id)).thenReturn(Optional.of(app));
+
+        applicationService.delete(id);
+
+        var order = inOrder(s3DocumentService, applicationRepository);
+        order.verify(s3DocumentService).deleteDocuments(app.getDocuments());
+        order.verify(applicationRepository).delete(app);
+    }
+
+    @Test
+    void delete_unknownId_throwsCreditApplicationNotFoundException() {
+        UUID id = UUID.randomUUID();
+        when(applicationRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> applicationService.delete(id))
+                .isInstanceOf(CreditApplicationNotFoundException.class);
+
+        verify(s3DocumentService, never()).deleteDocuments(any());
+    }
+
+    @Test
+    void confirmDocumentsUploaded_doesNotSaveApplication() {
+        UUID id = UUID.randomUUID();
+        CreditApplication app = buildApplication(ApplicationStatus.SUBMITTED);
+
+        when(applicationRepository.findById(id)).thenReturn(Optional.of(app));
+        when(applicationMapper.toResponse(app)).thenReturn(buildResponse(ApplicationStatus.SUBMITTED));
+        when(s3DocumentService.generateDocumentDownloadUrls(any())).thenReturn(List.of());
+
+        applicationService.confirmDocumentsUploaded(id);
+
+        verify(applicationRepository, never()).save(any());
     }
 
     private CreateCreditApplicationRequest buildCreateRequest(UUID customerId) {

@@ -17,10 +17,10 @@ import com.interview.validation.ValidPhone;
 @Schema(description = "Request payload to update an existing customer — only provided fields are changed")
 public class UpdateCustomerRequest {
 
-    @Size(max = 100)
+    @Size(min = 1, max = 100)
     String firstName;
 
-    @Size(max = 100)
+    @Size(min = 1, max = 100)
     String lastName;
 
     @Email

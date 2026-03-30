@@ -13,16 +13,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import com.interview.aws.S3DocumentService;
 import com.interview.persistence.entity.Customer;
 import com.interview.dto.request.UpdateCustomerRequest;
 import com.interview.dto.response.CustomerResponse;
 import com.interview.exception.CustomerNotFoundException;
 import com.interview.mapper.CustomerMapper;
+import com.interview.repository.CreditApplicationRepository;
 
 @SpringBootTest(
         classes = {CustomerService.class, BaseIntegrationTest.Config.class},
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class CustomerServiceIntegrationTest extends BaseIntegrationTest {
+
+    @MockitoBean
+    private CreditApplicationRepository creditApplicationRepository;
+
+    @MockitoBean
+    private S3DocumentService s3DocumentService;
 
     @MockitoBean
     private CustomerMapper customerMapper;

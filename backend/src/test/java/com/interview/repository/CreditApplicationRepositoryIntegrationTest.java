@@ -3,6 +3,7 @@ package com.interview.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import com.interview.persistence.entity.CreditApplication;
 import com.interview.persistence.enums.ApplicationStatus;
+import com.interview.persistence.enums.SupportingDocumentType;
 import com.interview.persistence.entity.Customer;
 import com.interview.repository.specification.CreditApplicationSpecification;
 
@@ -63,5 +65,41 @@ class CreditApplicationRepositoryIntegrationTest extends BaseIntegrationTest {
         Page<CreditApplication> page = applicationRepository.findAll(spec, PageRequest.of(0, 10));
 
         assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(2);
+    }
+
+    @Test
+    void findByCustomerIdWithDocuments_returnsAllApplicationsWithDocumentsLoaded() {
+        List<CreditApplication> results = applicationRepository.findByCustomerIdWithDocuments(CUSTOMER_1_ID);
+
+        assertThat(results).hasSize(2);
+        results.forEach(app -> assertThat(app.getCustomer().getId()).isEqualTo(CUSTOMER_1_ID));
+
+        CreditApplication a1 = results.stream()
+                .filter(a -> a.getId().equals(UUID.fromString("a1000000-0000-7000-8000-000000000000")))
+                .findFirst().orElseThrow();
+        assertThat(a1.getDocuments()).hasSize(2);
+        assertThat(a1.getDocuments()).extracting(d -> d.getDocumentType())
+                .containsExactlyInAnyOrder(SupportingDocumentType.PROOF_OF_INCOME, SupportingDocumentType.GOVERNMENT_ID);
+
+        CreditApplication a2 = results.stream()
+                .filter(a -> a.getId().equals(UUID.fromString("a2000000-0000-7000-8000-000000000000")))
+                .findFirst().orElseThrow();
+        assertThat(a2.getDocuments()).hasSize(1);
+        assertThat(a2.getDocuments().get(0).getDocumentType()).isEqualTo(SupportingDocumentType.TAX_RETURN);
+    }
+
+    @Test
+    void findByCustomerIdWithDocuments_noDuplicateApplicationsFromJoin() {
+        List<CreditApplication> results = applicationRepository.findByCustomerIdWithDocuments(CUSTOMER_1_ID);
+
+        long distinctIds = results.stream().map(CreditApplication::getId).distinct().count();
+        assertThat(distinctIds).isEqualTo(results.size());
+    }
+
+    @Test
+    void findByCustomerIdWithDocuments_unknownCustomer_returnsEmptyList() {
+        List<CreditApplication> results = applicationRepository.findByCustomerIdWithDocuments(UUID.randomUUID());
+
+        assertThat(results).isEmpty();
     }
 }

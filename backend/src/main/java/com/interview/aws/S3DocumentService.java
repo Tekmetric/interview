@@ -14,6 +14,10 @@ public interface S3DocumentService {
 
     List<DocumentDownload> generateDocumentDownloadUrls(final List<SupportingDocument> documents);
 
+    void verifyDocumentsUploaded(final List<SupportingDocument> documents);
+
+    void deleteDocuments(final List<SupportingDocument> documents);
+
     static String buildObjectKey(final UUID customerId, final UUID applicationId,
             final SupportingDocumentType documentType) {
         return "customers/" + customerId

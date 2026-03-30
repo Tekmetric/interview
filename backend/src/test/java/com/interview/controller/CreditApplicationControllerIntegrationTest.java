@@ -37,7 +37,9 @@ import com.interview.persistence.entity.Customer;
 import com.interview.persistence.entity.embedded.EmploymentDetails;
 import com.interview.exception.CreditApplicationNotFoundException;
 import com.interview.exception.CustomerNotFoundException;
+import com.interview.exception.DocumentNotUploadedException;
 import com.interview.exception.InvalidApplicationStateException;
+import com.interview.persistence.enums.SupportingDocumentType;
 import com.interview.service.CreditApplicationService;
 import com.interview.util.TestFixtureLoader;
 import com.interview.util.TestFixtures;
@@ -201,6 +203,38 @@ class CreditApplicationControllerIntegrationTest extends BaseIntegrationTest {
                         .content(TestFixtureLoader.load(
                                 "credit_application/update_application_status_request_under_review.json")))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void confirmDocuments_allUploaded_returns200WithDownloadUrls() throws Exception {
+        when(creditApplicationService.confirmDocumentsUploaded(APPLICATION_ID))
+                .thenReturn(TestFixtures.creditApplicationResponseSubmitted());
+
+        mockMvc.perform(post(ENDPOINT + "/{id}/confirm-documents", APPLICATION_ID))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(APPLICATION_ID.toString()));
+
+        verify(creditApplicationService).confirmDocumentsUploaded(APPLICATION_ID);
+    }
+
+    @Test
+    void confirmDocuments_missingDocument_returns422() throws Exception {
+        when(creditApplicationService.confirmDocumentsUploaded(APPLICATION_ID))
+                .thenThrow(new DocumentNotUploadedException(List.of(SupportingDocumentType.PROOF_OF_INCOME)));
+
+        mockMvc.perform(post(ENDPOINT + "/{id}/confirm-documents", APPLICATION_ID))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.detail").value(containsString("PROOF_OF_INCOME")));
+    }
+
+    @Test
+    void confirmDocuments_unknownApplication_returns404() throws Exception {
+        var unknownId = UUID.randomUUID();
+        when(creditApplicationService.confirmDocumentsUploaded(unknownId))
+                .thenThrow(new CreditApplicationNotFoundException(unknownId));
+
+        mockMvc.perform(post(ENDPOINT + "/{id}/confirm-documents", unknownId))
+                .andExpect(status().isNotFound());
     }
 
     @Test

@@ -1,0 +1,129 @@
+# Assumptions:
+# 1. We are using docker:27.4.1-cli for building Docker images.
+# 2. The build environment has the required AWS credentials.
+# 3. The build environment has network access and RBAC permissions for EKS.
+# 4. Ingress is not configured, as the LB part is unknown.
+# 5. Assuming the development workflow involves building and deploying on every push to a feature branch.
+
+stages:
+  - build
+  - deploy
+  - post-deploy
+  - rollback
+
+# Run on every push to feature branches
+workflow:
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+variables:
+  # Specify your AWS region
+  AWS_REGION: us-east-1
+  # Specify your AWS account
+  AWS_ACCOUNT_ID: "123456789012"
+  # Specify your IAM role to assume
+  AWS_ROLE_ARN: arn:aws:iam::123456789012:role/CICD_GITOPS
+  # Specify your EKS cluster
+  EKS_CLUSTER_NAME: my-eks-cluster
+  K8S_NAMESPACE: backend
+
+  ECR_REPOSITORY: backend
+  HELM_RELEASE: backend
+  HELM_CHART_PATH: charts/backend
+
+  IMAGE_URI: "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY"
+  # We need to distinguish between images
+  IMAGE_TAG: "$CI_COMMIT_SHA"
+  # This is specific for DnD
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_HOST: "tcp://docker:2376"
+  DOCKER_DRIVER: overlay2
+
+# Assuming the role
+.default_aws_auth:
+  before_script:
+    - apk add --no-cache aws-cli kubectl curl bash python3 py3-pip
+    - >
+      aws_sts_output=$(aws sts assume-role-with-web-identity
+      --role-arn "$AWS_ROLE_ARN"
+      --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+      --duration-seconds 3600
+      --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+      --output text)
+    - export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s" $aws_sts_output)
+
+.eks_kubeconfig:
+  script:
+    - aws eks update-kubeconfig --name "$EKS_CLUSTER_NAME" --region "$AWS_REGION"
+
+build_push:
+  stage: build
+  image: docker:27.4.1-cli
+  services:
+    - name: docker:27.4.1-dind
+      alias: docker
+  extends: .default_aws_auth
+  script:
+    - aws ecr describe-repositories --repository-names "$ECR_REPOSITORY" >/dev/null 2>&1 || aws ecr create-repository --repository-name "$ECR_REPOSITORY" --image-scanning-configuration scanOnPush=true
+    - aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+    - docker buildx create --use
+    # Building for amd64
+    - docker buildx build --platform linux/amd64 -t "$IMAGE_URI:$IMAGE_TAG" --push .
+
+deploy:
+  stage: deploy
+  image: docker:27.4.1-cli
+  services:
+    - name: docker:27.4.1-dind
+      alias: docker
+  extends: .default_aws_auth
+  script:
+    # Need to install helm
+    - curl -fsSL https://get.helm.sh/helm-v3.16.4-linux-amd64.tar.gz -o /tmp/helm.tgz
+    - tar -xzf /tmp/helm.tgz -C /tmp
+    - mv /tmp/linux-amd64/helm /usr/local/bin/helm
+    # Getting kubeconfig
+    - aws eks update-kubeconfig --name "$EKS_CLUSTER_NAME" --region "$AWS_REGION"
+    # Wait for up to 5 minutes for liveness probes; roll back on failure
+    - helm upgrade --install "$HELM_RELEASE" "$HELM_CHART_PATH" --namespace "$K8S_NAMESPACE" --create-namespace --set image.repository="$IMAGE_URI" --set image.tag="$IMAGE_TAG" --atomic --wait --timeout 5m
+
+smoke:
+  stage: post-deploy
+  image: docker:27.4.1-cli
+  services:
+    - name: docker:27.4.1-dind
+      alias: docker
+  extends: .default_aws_auth
+  script:
+    - !reference [.eks_kubeconfig, script]
+    # This is a dummy test, since the LB design is unknown
+    - kubectl port-forward deployment/"$HELM_RELEASE" 18080:8080 -n "$K8S_NAMESPACE" >/tmp/port-forward.log 2>&1 &
+    - PF_PID=$!
+    - trap 'kill $PF_PID >/dev/null 2>&1 || true' EXIT
+    - |
+      for i in $(seq 1 30); do
+        if curl -fsS http://127.0.0.1:18080/api/welcome; then
+          exit 0
+        fi
+        sleep 2
+      done
+    - exit 1
+
+# This job handles cases where functionality is broken even though health checks pass
+rollback:
+  stage: rollback
+  image: docker:27.4.1-cli
+  services:
+    - name: docker:27.4.1-dind
+      alias: docker
+  extends: .default_aws_auth
+  when: on_failure
+  script:
+    - apk add --no-cache kubectl
+    - curl -fsSL https://get.helm.sh/helm-v3.16.4-linux-amd64.tar.gz -o /tmp/helm.tgz
+    - tar -xzf /tmp/helm.tgz -C /tmp
+    - mv /tmp/linux-amd64/helm /usr/local/bin/helm
+    - !reference [.eks_kubeconfig, script]
+    - helm rollback "$HELM_RELEASE" 0 --namespace "$K8S_NAMESPACE" --cleanup-on-fail

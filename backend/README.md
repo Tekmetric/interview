@@ -1,39 +1,43 @@
-# Java Spring Boot API Coding Exercise
+# Backend Build and Deployment
 
-## Steps to get started:
+## Prerequisites
 
-#### Prerequisites
-- Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
+- Docker is installed and configured.
+- Helm is installed.
+- Kubectl is installed.
+- You have valid AWS credentials configured (e.g., via `aws configure` or environment variables).
+- You have access to the EKS cluster, and `kubectl` is configured to communicate with it (e.g., via `aws eks update-kubeconfig`).
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+## Build Docker Image
 
-#### Import project into IDE
-- Project root is located in `backend` folder
+```bash
+docker build --platform linux/amd64 \
+    -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/backend:${IMAGE_TAG} .
+```
 
-#### Build and run your app
-- `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
+## Deploy with Helm
 
-#### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
+```bash
+helm upgrade --install backend ./charts/backend \
+  --namespace backend \
+  --create-namespace \
+  --set image.repository=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/backend \
+  --set image.tag=${IMAGE_TAG} \
+  --wait --timeout 5m \
+  --atomic
+```
 
-#### After finishing the goals listed below create a PR
+## Post-deployment Validation
 
-### Goals
-1. Design a CRUD API with data store using Spring Boot and in memory H2 database (pre-configured, see below)
-2. API should include one object with create, read, update, and delete operations. Read should include fetching a single item and list of items.
-3. Provide SQL create scripts for your object(s) in resources/data.sql
-4. Demo API functionality using API client tool
-
-### Considerations
-This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
-
-#### H2 Configuration
-- Console: http://localhost:8080/h2-console 
-- JDBC URL: jdbc:h2:mem:testdb
-- Username: sa
-- Password: password
-
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+Forward a local port to the application:
+```bash
+kubectl port-forward deployment/backend 8080:8080 -n backend
+```
+In another terminal, test the endpoint:
+```bash
+curl http://127.0.0.1:8080/api/welcome
+```
+You should receive a successful response. If not, check the pod logs:
+```bash
+kubectl logs -n backend deployment/backend
+```

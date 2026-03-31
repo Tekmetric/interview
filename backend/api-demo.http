@@ -1,0 +1,73 @@
+### Tekmetric interview — RepairOrder CRUD (run app: mvn spring-boot:run)
+### Use IntelliJ HTTP Client, VS Code REST Client, or similar.
+
+# Note: Some editors may warn about numeric types for totalCost,
+# but the API correctly accepts numeric values (mapped to BigDecimal)
+
+@baseUrl = http://localhost:8080
+
+### List all repair orders
+GET {{baseUrl}}/api/repair-orders
+
+### Get one repair order by id
+GET {{baseUrl}}/api/repair-orders/1
+
+### Create a repair order (201 Created)
+POST {{baseUrl}}/api/repair-orders
+Content-Type: application/json
+
+{
+  "customerName": "Alex Carter",
+  "vehicleVin": "JM1BK32F581234567",
+  "description": "Check engine light diagnosis",
+  "status": "OPEN",
+  "totalCost": 149.99
+}
+
+### Update a repair order
+PUT {{baseUrl}}/api/repair-orders/1
+Content-Type: application/json
+
+{
+  "customerName": "Jane Doe",
+  "vehicleVin": "1HGCM82633A004352",
+  "description": "Brake pad replacement completed",
+  "status": "COMPLETED",
+  "totalCost": 350.00
+}
+
+### Delete a repair order
+DELETE {{baseUrl}}/api/repair-orders/2
+
+### Validation failure example (400 Bad Request)
+POST {{baseUrl}}/api/repair-orders
+Content-Type: application/json
+
+# Note: status is intentionally set to null to trigger validation error
+{
+  "customerName": "",
+  "vehicleVin": "short",
+  "description": "",
+  "status": null,
+  "totalCost": -5.00
+}
+
+### Duplicate VIN example (409 Conflict)
+POST {{baseUrl}}/api/repair-orders
+Content-Type: application/json
+
+{
+  "customerName": "Duplicate Test",
+  "vehicleVin": "1HGCM82633A004352",
+  "description": "Attempt to create duplicate repair order",
+  "status": "OPEN",
+  "totalCost": 99.99
+}
+
+### Welcome (original endpoint)
+GET {{baseUrl}}/api/welcome
+
+### H2 Console (browser): http://localhost:8080/h2-console
+### JDBC URL: jdbc:h2:mem:testdb
+### Username: sa
+### Password: password

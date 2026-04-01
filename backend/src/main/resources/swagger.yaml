@@ -1,0 +1,54 @@
+api:
+  repairOrders:
+    tag: "Repair Orders"
+    tagDesc: >
+      API for creating, reading, listing, updating, and deleting repair orders.
+      Uses ETags (via If-Match) for optimistic concurrency.
+
+    create:
+      summary: "Create a repair order"
+      desc: >
+        Creates a new repair order and returns the representation.
+        The response includes an ETag header containing the entity version.
+
+    get:
+      summary: "Get a repair order"
+      desc: >
+        Returns the current state of a repair order by ID.
+        The ETag header contains the entity version for concurrency control.
+
+    list:
+      summary: "List repair orders"
+      desc: >
+        Returns a paginated list of repair orders.
+        You may filter by status, VIN substring, make/model, and createdAt date range.
+
+    update:
+      summary: "Update a repair order"
+      desc: >
+        Updates mutable fields of a repair order.
+        Requires the If-Match header containing the current ETag/version.
+        Returns the updated representation and a new ETag.
+
+    delete:
+      summary: "Delete a repair order"
+      desc: >
+        Deletes a repair order by ID.
+        Requires the If-Match header containing the current ETag/version.
+        Returns 204 No Content on success.
+
+    audit:
+      summary: "Trigger audit totals"
+      desc: >
+        Triggers a background audit to recompute and record financial totals for repair orders.
+        Intended for maintenance tasks; requires SERVICE role.
+
+    params:
+      status: "Filter by repair order status"
+      vinContains: "Filter by VIN substring"
+      make: "Filter by vehicle make"
+      model: "Filter by vehicle model"
+      from: "Created from (inclusive). ISO-8601 date-time."
+      to: "Created to (inclusive). ISO-8601 date-time."
+      ifMatch: "ETag from last GET response (quoted), e.g. \"5\""
+      pageable: "Pagination and sorting parameters (size, page, sort)"

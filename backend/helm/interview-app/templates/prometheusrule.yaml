@@ -1,0 +1,78 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "interview-app.fullname" . }}
+  namespace: {{ default .Release.Namespace .Values.serviceMonitor.namespace }}
+  labels:
+    {{- include "interview-app.labels" . | nindent 4 }}
+    {{- with .Values.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  groups:
+    - name: interview-app.availability
+      rules:
+        - alert: AppDown
+          expr: up{job="{{ include "interview-app.fullname" . }}"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Interview app is down"
+            description: "No healthy pods have been scraped for more than 1 minute."
+
+        - alert: HighErrorRate
+          expr: |
+            sum(rate(http_server_requests_seconds_count{application="{{ .Values.spring.applicationName }}",status=~"5.."}[5m]))
+            /
+            sum(rate(http_server_requests_seconds_count{application="{{ .Values.spring.applicationName }}"}[5m]))
+            > 0.05
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High 5xx error rate"
+            description: "More than 5% of requests are returning 5xx for 2 minutes."
+
+    - name: interview-app.latency
+      rules:
+        - alert: HighP99Latency
+          expr: |
+            histogram_quantile(0.99,
+              sum(rate(http_server_requests_seconds_bucket{application="{{ .Values.spring.applicationName }}"}[5m])) by (le)
+            ) > 2
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "P99 latency above 2 s"
+            description: "The 99th-percentile response time has exceeded 2 seconds for 5 minutes."
+
+    - name: interview-app.jvm
+      rules:
+        - alert: HighHeapUsage
+          expr: |
+            jvm_memory_used_bytes{application="{{ .Values.spring.applicationName }}", area="heap"}
+            /
+            jvm_memory_max_bytes{application="{{ .Values.spring.applicationName }}", area="heap"}
+            > 0.85
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "JVM heap above 85%"
+            description: "Heap utilization has been above 85% for 5 minutes — risk of OOM."
+
+    - name: interview-app.database
+      rules:
+        - alert: DBConnectionPoolExhausted
+          expr: |
+            hikaricp_connections_pending{application="{{ .Values.spring.applicationName }}"} > 0
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "DB connection pool has pending requests"
+            description: "Threads are waiting for a DB connection — pool may be undersized."
+{{- end }}

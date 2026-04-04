@@ -345,11 +345,11 @@ docker run -d -p 8080:8080 --name interview-app interview-app
 | H2 In-Memory Database | ✅ Required | Configured in `application.properties` |
 | `data.sql` Seed Scripts | ✅ Required | Sample users pre-loaded on startup |
 | API Versioning (`/api/v1/`) | ⭐ Nice to Have | URI path versioning |
-| Structured Logging (Log4j2) | ⭐ Nice to Have | Request/response logging per endpoint |
+| Structured Logging (Log4j2) | ✅ Required | Request/response logging per endpoint |
 | Swagger / OpenAPI Docs | ⭐ Nice to Have | Springdoc 2.3.0, UI + JSON spec |
 | Spring Security (RBAC) | ⭐ Nice to Have | `@PreAuthorize` USER role on all endpoints |
 | Spring Boot Actuator | ⭐ Nice to Have | Health, metrics, info endpoints |
-| Unit Tests (Mockito) | ⭐ Nice to Have | Controller layer tested |
+| Unit Tests (Mockito) | ✅ Required | Controller layer tested |
 | Docker Support | ⭐ Nice to Have | `eclipse-temurin:21-jdk-jammy` base image |
 
 

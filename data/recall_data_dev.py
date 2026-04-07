@@ -1,5 +1,5 @@
 """
-NASA NeoWs ETL script — dev variant (Polars).
+NASA NeoWs ETL script — Polars (dev) variant.
 
 Fetches Near Earth Objects from the NeoWs Browse API, writes raw records
 as a single Parquet file, and computes two close-approach aggregations.
@@ -12,179 +12,12 @@ Usage:
     uv run python recall_data_dev.py [--count N]
 """
 
-import argparse
-import asyncio
-import math
 import os
-from datetime import datetime, timezone
 
-import aiohttp
 import polars as pl
-import requests
 from dotenv import load_dotenv
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
-API_BASE = "https://api.nasa.gov/neo/rest/v1/neo/browse"
-PAGE_SIZE = 20
-ASYNC_SEMAPHORE = 10
-
-# ---------------------------------------------------------------------------
-# Configuration
-# ---------------------------------------------------------------------------
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="NASA NeoWs ETL (dev)")
-    parser.add_argument(
-        "--count",
-        type=int,
-        default=int(os.environ.get("NEO_COUNT", 200)),
-        help="Number of NEOs to fetch (default: 200)",
-    )
-    return parser.parse_args()
-
-
-# ---------------------------------------------------------------------------
-# Extraction helpers
-# ---------------------------------------------------------------------------
-
-
-def extract_neo_record(neo: dict, processed_at: str) -> dict:
-    diameter = neo.get("estimated_diameter", {}).get("meters", {})
-
-    closest = min(
-        neo.get("close_approach_data", []),
-        key=lambda a: float(a["miss_distance"]["kilometers"]),
-        default=None,
-    )
-
-    orbital = neo.get("orbital_data", {})
-
-    return {
-        "id": neo.get("id"),
-        "neo_reference_id": neo.get("neo_reference_id"),
-        "name": neo.get("name"),
-        "name_limited": neo.get("name_limited"),
-        "designation": neo.get("designation"),
-        "nasa_jpl_url": neo.get("nasa_jpl_url"),
-        "absolute_magnitude_h": neo.get("absolute_magnitude_h"),
-        "is_potentially_hazardous_asteroid": neo.get("is_potentially_hazardous_asteroid"),
-        "min_estimated_diameter_m": diameter.get("estimated_diameter_min"),
-        "max_estimated_diameter_m": diameter.get("estimated_diameter_max"),
-        "closest_miss_distance_km": float(closest["miss_distance"]["kilometers"]) if closest else None,
-        "closest_approach_date": closest["close_approach_date"] if closest else None,
-        "closest_approach_velocity_kps": float(closest["relative_velocity"]["kilometers_per_second"]) if closest else None,
-        "first_observation_date": orbital.get("first_observation_date"),
-        "last_observation_date": orbital.get("last_observation_date"),
-        "observations_used": orbital.get("observations_used"),
-        "orbital_period": orbital.get("orbital_period"),
-        "_processed_at": processed_at,
-    }
-
-
-def extract_close_approaches(neo: dict) -> list[dict]:
-    return [
-        {
-            "close_approach_date": a["close_approach_date"],
-            "miss_distance_au": float(a["miss_distance"]["astronomical"]),
-            "miss_distance_km": float(a["miss_distance"]["kilometers"]),
-        }
-        for a in neo.get("close_approach_data", [])
-    ]
-
-
-# ---------------------------------------------------------------------------
-# Ingestion — sync path (count <= 500)
-# ---------------------------------------------------------------------------
-
-
-def fetch_page_sync(session: requests.Session, page: int, size: int, api_key: str) -> list[dict]:
-    resp = session.get(API_BASE, params={"page": page, "size": size, "api_key": api_key})
-    resp.raise_for_status()
-    return resp.json().get("near_earth_objects", [])
-
-
-def _ingest_sync(count: int, api_key: str) -> tuple[list[dict], list[dict]]:
-    neo_records, all_approaches = [], []
-    processed_at = datetime.now(timezone.utc).isoformat()
-    pages = math.ceil(count / PAGE_SIZE)
-
-    with requests.Session() as session:
-        fetched = 0
-        for page in range(pages):
-            neos = fetch_page_sync(session, page, PAGE_SIZE, api_key)
-            for neo in neos:
-                if fetched >= count:
-                    break
-                neo_records.append(extract_neo_record(neo, processed_at))
-                all_approaches.extend(extract_close_approaches(neo))
-                fetched += 1
-
-    return neo_records, all_approaches
-
-
-# ---------------------------------------------------------------------------
-# Ingestion — async path (count > 500)
-# ---------------------------------------------------------------------------
-
-
-async def fetch_page_async(
-    session: aiohttp.ClientSession,
-    semaphore: asyncio.Semaphore,
-    page: int,
-    size: int,
-    api_key: str,
-) -> list[dict]:
-    async with semaphore:
-        async with session.get(
-            API_BASE, params={"page": page, "size": size, "api_key": api_key}
-        ) as resp:
-            resp.raise_for_status()
-            data = await resp.json()
-            return data.get("near_earth_objects", [])
-
-
-async def _async_ingest(count: int, api_key: str) -> tuple[list[dict], list[dict]]:
-    pages = math.ceil(count / PAGE_SIZE)
-    semaphore = asyncio.Semaphore(ASYNC_SEMAPHORE)
-    processed_at = datetime.now(timezone.utc).isoformat()
-
-    async with aiohttp.ClientSession() as session:
-        coroutines = [
-            fetch_page_async(session, semaphore, page, PAGE_SIZE, api_key)
-            for page in range(pages)
-        ]
-        results = await asyncio.gather(*coroutines)
-
-    neo_records, all_approaches = [], []
-    fetched = 0
-    for page_neos in results:
-        for neo in page_neos:
-            if fetched >= count:
-                break
-            neo_records.append(extract_neo_record(neo, processed_at))
-            all_approaches.extend(extract_close_approaches(neo))
-            fetched += 1
-        if fetched >= count:
-            break
-
-    return neo_records, all_approaches
-
-
-# ---------------------------------------------------------------------------
-# Ingestion dispatcher
-# ---------------------------------------------------------------------------
-
-
-def ingest(count: int, api_key: str) -> tuple[list[dict], list[dict]]:
-    "Utility function to choose sync vs async ingestion based on count. Returns (neo_records, all_approaches)."
-    if count <= 500:
-        return _ingest_sync(count, api_key)
-    return asyncio.run(_async_ingest(count, api_key))
-
+from neo_ingest import ingest, parse_args
 
 # ---------------------------------------------------------------------------
 # Main
@@ -193,7 +26,7 @@ def ingest(count: int, api_key: str) -> tuple[list[dict], list[dict]]:
 
 def main() -> None:
     load_dotenv()
-    args = parse_args()
+    args = parse_args("NASA NeoWs ETL (dev)")
 
     api_key = os.environ.get("NASA_API_KEY")
     if not api_key:

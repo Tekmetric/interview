@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: balazs
+      changes:
+        - sqlFile:
+            path: database/V1_initial_schema.sql
+            relativeToChangelogFile: false
+
+  - changeSet:
+      id: 2
+      author: balazs
+      changes:
+        - sqlFile:
+            path: database/V2_dummy_data.sql
+            relativeToChangelogFile: false

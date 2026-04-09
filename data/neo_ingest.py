@@ -8,7 +8,6 @@ recall_data.py (Spark) and recall_data_dev.py (Polars).
 
 import argparse
 import asyncio
-import math
 import os
 from datetime import datetime, timezone
 
@@ -22,10 +21,23 @@ import requests
 API_BASE = "https://api.nasa.gov/neo/rest/v1/neo/browse"
 PAGE_SIZE = 20
 ASYNC_SEMAPHORE = 10
+DEMO_KEY_MAX_RECORDS = 5
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
+
+
+def get_api_key(count: int) -> tuple[str, int]:
+    key = os.environ.get("NASA_API_KEY") or "DEMO_KEY"
+    if key == "DEMO_KEY":
+        print("WARNING: no NASA_API_KEY set — using DEMO_KEY (rate limited to 30 req/hour)")
+        max_count = DEMO_KEY_MAX_RECORDS
+        if count > max_count:
+            print(f"WARNING: DEMO_KEY caps records to {DEMO_KEY_MAX_RECORDS} — reducing count from {count} to {max_count}")
+            count = max_count
+    print(f"Fetching {count} NEOs (api_key: {key})")
+    return key, count
 
 
 def parse_args(description: str = "NASA NeoWs ETL") -> argparse.Namespace:
@@ -99,23 +111,26 @@ def fetch_page_sync(session: requests.Session, page: int, size: int, api_key: st
     return resp.json().get("near_earth_objects", [])
 
 
-def _ingest_sync(count: int, api_key: str) -> tuple[list[dict], list[dict]]:
+def _ingest_sync(count: int, api_key: str) -> tuple[list[dict], list[dict], bool]:
     neo_records, all_approaches = [], []
     processed_at = datetime.now(timezone.utc).isoformat()
-    pages = math.ceil(count / PAGE_SIZE)
+    page = 0
+    fetched = 0
 
     with requests.Session() as session:
-        fetched = 0
-        for page in range(pages):
+        while fetched < count:
             neos = fetch_page_sync(session, page, PAGE_SIZE, api_key)
+            if not neos:
+                return neo_records, all_approaches, True  # API exhausted
             for neo in neos:
                 if fetched >= count:
                     break
                 neo_records.append(extract_neo_record(neo, processed_at))
                 all_approaches.extend(extract_close_approaches(neo))
                 fetched += 1
+            page += 1
 
-    return neo_records, all_approaches
+    return neo_records, all_approaches, False
 
 
 # ---------------------------------------------------------------------------
@@ -139,31 +154,38 @@ async def fetch_page_async(
             return data.get("near_earth_objects", [])
 
 
-async def _async_ingest(count: int, api_key: str) -> tuple[list[dict], list[dict]]:
-    pages = math.ceil(count / PAGE_SIZE)
+async def _async_ingest(count: int, api_key: str) -> tuple[list[dict], list[dict], bool]:
     semaphore = asyncio.Semaphore(ASYNC_SEMAPHORE)
     processed_at = datetime.now(timezone.utc).isoformat()
-
-    async with aiohttp.ClientSession() as session:
-        coroutines = [
-            fetch_page_async(session, semaphore, page, PAGE_SIZE, api_key)
-            for page in range(pages)
-        ]
-        results = await asyncio.gather(*coroutines)
-
     neo_records, all_approaches = [], []
     fetched = 0
-    for page_neos in results:
-        for neo in page_neos:
-            if fetched >= count:
-                break
-            neo_records.append(extract_neo_record(neo, processed_at))
-            all_approaches.extend(extract_close_approaches(neo))
-            fetched += 1
-        if fetched >= count:
-            break
+    page = 0
 
-    return neo_records, all_approaches
+    async with aiohttp.ClientSession() as session:
+        while fetched < count:
+            batch = [
+                fetch_page_async(session, semaphore, page + i, PAGE_SIZE, api_key)
+                for i in range(ASYNC_SEMAPHORE)
+            ]
+            results = await asyncio.gather(*batch)
+            exhausted = False
+            for page_neos in results:
+                if not page_neos:
+                    exhausted = True
+                    break
+                for neo in page_neos:
+                    if fetched >= count:
+                        break
+                    neo_records.append(extract_neo_record(neo, processed_at))
+                    all_approaches.extend(extract_close_approaches(neo))
+                    fetched += 1
+                if exhausted or fetched >= count:
+                    break
+            page += ASYNC_SEMAPHORE
+            if exhausted:
+                return neo_records, all_approaches, True
+
+    return neo_records, all_approaches, False
 
 
 # ---------------------------------------------------------------------------
@@ -174,5 +196,16 @@ async def _async_ingest(count: int, api_key: str) -> tuple[list[dict], list[dict
 def ingest(count: int, api_key: str) -> tuple[list[dict], list[dict]]:
     """Choose sync vs async ingestion based on count. Returns (neo_records, all_approaches)."""
     if count <= 500:
-        return _ingest_sync(count, api_key)
-    return asyncio.run(_async_ingest(count, api_key))
+        neo_records, all_approaches, exhausted = _ingest_sync(count, api_key)
+    else:
+        neo_records, all_approaches, exhausted = asyncio.run(_async_ingest(count, api_key))
+
+    if exhausted:
+        print(f"WARNING: API exhausted after {len(neo_records)} records (requested {count})")
+    elif len(neo_records) != count:
+        raise ValueError(
+            f"Expected {count} NEO records but got {len(neo_records)}. "
+            "API returned inconsistent results."
+        )
+
+    return neo_records, all_approaches

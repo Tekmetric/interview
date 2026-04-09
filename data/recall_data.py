@@ -11,6 +11,7 @@ Usage:
 """
 
 import os
+from datetime import datetime, timezone
 
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
@@ -55,7 +56,6 @@ def main() -> None:
     spark = build_spark_session()
 
     # --- Raw NEO records ---
-    from datetime import datetime, timezone
     now = datetime.now(timezone.utc)
 
     neo_df = spark.createDataFrame(neo_records)

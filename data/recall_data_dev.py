@@ -17,7 +17,7 @@ import os
 import polars as pl
 from dotenv import load_dotenv
 
-from neo_ingest import ingest, parse_args
+from neo_ingest import get_api_key, ingest, parse_args
 
 # ---------------------------------------------------------------------------
 # Main
@@ -28,12 +28,8 @@ def main() -> None:
     load_dotenv()
     args = parse_args("NASA NeoWs ETL (dev)")
 
-    api_key = os.environ.get("NASA_API_KEY")
-    if not api_key:
-        raise ValueError("NASA_API_KEY is not set. Add it to .env or export it.")
-
-    print(f"Fetching {args.count} NEOs...")
-    neo_records, all_approaches = ingest(args.count, api_key)
+    api_key, count = get_api_key(args.count)
+    neo_records, all_approaches = ingest(count, api_key)
     print(f"Fetched {len(neo_records)} NEO records, {len(all_approaches)} close approaches.")
 
     os.makedirs("neo/raw", exist_ok=True)

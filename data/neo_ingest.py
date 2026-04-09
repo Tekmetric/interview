@@ -19,8 +19,8 @@ import requests
 # ---------------------------------------------------------------------------
 
 API_BASE = "https://api.nasa.gov/neo/rest/v1/neo/browse"
-PAGE_SIZE = 20
-ASYNC_SEMAPHORE = 10
+PAGE_SIZE = 20 # Maximum number of neos per page  
+ASYNC_SEMAPHORE = 10  # max concurrent requests; also controls batch size (ASYNC_SEMAPHORE * PAGE_SIZE records per batch)
 DEMO_KEY_MAX_RECORDS = 5
 
 # ---------------------------------------------------------------------------
@@ -105,9 +105,17 @@ def extract_close_approaches(neo: dict) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 
-def fetch_page_sync(session: requests.Session, page: int, size: int, api_key: str) -> list[dict]:
-    resp = session.get(API_BASE, params={"page": page, "size": size, "api_key": api_key})
+def _log_rate_limit(headers: dict) -> None:
+    remaining = headers.get("X-RateLimit-Remaining")
+    limit = headers.get("X-RateLimit-Limit")
+    if remaining is not None and limit is not None:
+        print(f"Rate limit: {remaining}/{limit} requests remaining")
+
+
+def fetch_page_sync(session: requests.Session, page: int, api_key: str) -> list[dict]:
+    resp = session.get(API_BASE, params={"page": page, "size": PAGE_SIZE, "api_key": api_key})
     resp.raise_for_status()
+    _log_rate_limit(resp.headers)
     return resp.json().get("near_earth_objects", [])
 
 
@@ -119,7 +127,7 @@ def _ingest_sync(count: int, api_key: str) -> tuple[list[dict], list[dict], bool
 
     with requests.Session() as session:
         while fetched < count:
-            neos = fetch_page_sync(session, page, PAGE_SIZE, api_key)
+            neos = fetch_page_sync(session, page, api_key)
             if not neos:
                 return neo_records, all_approaches, True  # API exhausted
             for neo in neos:
@@ -142,14 +150,14 @@ async def fetch_page_async(
     session: aiohttp.ClientSession,
     semaphore: asyncio.Semaphore,
     page: int,
-    size: int,
     api_key: str,
 ) -> list[dict]:
     async with semaphore:
         async with session.get(
-            API_BASE, params={"page": page, "size": size, "api_key": api_key}
+            API_BASE, params={"page": page, "size": PAGE_SIZE, "api_key": api_key}
         ) as resp:
             resp.raise_for_status()
+            _log_rate_limit(resp.headers)
             data = await resp.json()
             return data.get("near_earth_objects", [])
 
@@ -164,7 +172,7 @@ async def _async_ingest(count: int, api_key: str) -> tuple[list[dict], list[dict
     async with aiohttp.ClientSession() as session:
         while fetched < count:
             batch = [
-                fetch_page_async(session, semaphore, page + i, PAGE_SIZE, api_key)
+                fetch_page_async(session, semaphore, page + i, api_key)
                 for i in range(ASYNC_SEMAPHORE)
             ]
             results = await asyncio.gather(*batch)

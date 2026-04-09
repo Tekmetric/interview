@@ -114,7 +114,18 @@ def _log_rate_limit(headers: dict) -> None:
 
 def fetch_page_sync(session: requests.Session, page: int, api_key: str) -> list[dict]:
     resp = session.get(API_BASE, params={"page": page, "size": PAGE_SIZE, "api_key": api_key})
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        if resp.status_code == 429:
+            remaining = resp.headers.get("X-RateLimit-Remaining", "unknown")
+            limit = resp.headers.get("X-RateLimit-Limit", "unknown")
+            retry_after = resp.headers.get("Retry-After", "unknown")
+            raise RuntimeError(
+                f"NASA API rate limit exceeded ({remaining}/{limit} remaining). "
+                f"Retry after: {retry_after}s."
+            ) from e
+        raise
     _log_rate_limit(resp.headers)
     return resp.json().get("near_earth_objects", [])
 
@@ -156,7 +167,18 @@ async def fetch_page_async(
         async with session.get(
             API_BASE, params={"page": page, "size": PAGE_SIZE, "api_key": api_key}
         ) as resp:
-            resp.raise_for_status()
+            try:
+                resp.raise_for_status()
+            except aiohttp.ClientResponseError as e:
+                if e.status == 429:
+                    remaining = resp.headers.get("X-RateLimit-Remaining", "unknown")
+                    limit = resp.headers.get("X-RateLimit-Limit", "unknown")
+                    retry_after = resp.headers.get("Retry-After", "unknown")
+                    raise RuntimeError(
+                        f"NASA API rate limit exceeded ({remaining}/{limit} remaining). "
+                        f"Retry after: {retry_after}s."
+                    ) from e
+                raise
             _log_rate_limit(resp.headers)
             data = await resp.json()
             return data.get("near_earth_objects", [])

@@ -85,6 +85,10 @@ mvn verify        # static analysis + all tests + merged coverage report
 - [ADR-005: Code-First OpenAPI](docs/adr/005-code-first-openapi.md)
 - [ADR-006: Observability with OpenTelemetry Agent](docs/adr/006-observability-with-opentelemetry-agent.md)
 
+## Database Migrations
+
+Schema management uses [Flyway](https://flywaydb.org/). Migrations are located in `src/main/resources/db/migration/` and follow the naming convention `V{version}__{description}.sql`. Flyway runs automatically on startup; Hibernate is set to `validate` to ensure the schema matches the entity mappings.
+
 ## H2 Console
 
 - URL: http://localhost:8080/h2-console

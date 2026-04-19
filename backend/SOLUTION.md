@@ -20,14 +20,22 @@ mvn spring-boot:build-image
 docker run -p 8080:8080 interview:1.0-SNAPSHOT
 ```
 
-The container image is built using Paketo Buildpacks (no Dockerfile) and includes the OpenTelemetry Java agent via the `paketo-buildpacks/opentelemetry` buildpack. To enable collecting Telemetry signals at runtime:
+The container image is built using Paketo Buildpacks (no Dockerfile) and includes the OpenTelemetry Java agent via the `paketo-buildpacks/opentelemetry` buildpack.
 
+### Full Stack with Observability
 ```bash
-docker run -p 8080:8080 \
-  -e OTEL_SERVICE_NAME=repair-order-api \
-  -e OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:4317 \
-  interview:1.0-SNAPSHOT
+docker compose -f infra/docker-compose.yaml up
 ```
+
+This starts the app with a full Grafana observability stack:
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| App | http://localhost:8080 | Spring Boot API |
+| Grafana | http://localhost:3000 | Dashboards (datasources auto-provisioned) |
+| Prometheus | http://localhost:9090 | Metrics |
+
+Traces (Tempo), logs (Loki), and metrics (Prometheus) are collected via an OTel Collector and available in Grafana.
 
 ## API Overview
 

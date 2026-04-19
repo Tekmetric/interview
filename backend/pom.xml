@@ -78,8 +78,8 @@
                 <configuration>
                     <image>
                         <buildpacks>
-                            <buildpack>paketo-buildpacks/java</buildpack>
-                            <buildpack>paketo-buildpacks/opentelemetry</buildpack>
+                            <buildpack>docker.io/paketobuildpacks/java</buildpack>
+                            <buildpack>docker.io/paketobuildpacks/opentelemetry</buildpack>
                         </buildpacks>
                         <env>
                             <BP_OPENTELEMETRY_ENABLED>true</BP_OPENTELEMETRY_ENABLED>

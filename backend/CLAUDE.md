@@ -65,7 +65,7 @@ Customer (1) ──── (N) RepairOrder (1) ──── (N) LineItem
 
 ### Pagination
 - Use Spring's `Page<>` and `Pageable` on list endpoints
-- Spring types acceptable at controller level (controller is already a Spring component)
+- Spring types acceptable at controller level
 
 ### Testing Strategy
 - **Unit tests (`src/test/`):** Service logic with mocked dependencies. Run via `maven-surefire-plugin` (`*Test.java`).

@@ -1,10 +1,10 @@
-# ADR-004: Testing Strategy — Unit, Slice, and Integration Tests
+# ADR-004: Testing Strategy — Testing Trophy over Test Pyramid
 
 ## Context
-We need a testing approach that gives confidence in correctness without overinvesting in test infrastructure for a small CRUD application. We considered relying solely on integration tests (`@SpringBootTest`) for simplicity, or adding granular tests at each layer.
+We need a testing approach that gives confidence in correctness without overinvesting in test infrastructure for a small CRUD application. We follow the **testing trophy** model rather than the traditional test pyramid — emphasizing integration and slice tests over a heavy base of unit tests, complemented by static analysis (Checkstyle, SpotBugs) as the foundation.
 
 ## Decision
-We test at three levels:
+We combine static analysis with three levels of tests:
 - **Unit tests:** Service logic with mocked dependencies (repository, etc.). Fast, isolated, focused on business rules.
 - **Slice tests:** `@WebMvcTest` for controllers (HTTP layer, serialization, validation, error handling) and `@DataJpaTest` for repositories (queries, entity mappings, relationships). These load only the relevant Spring context slice.
 - **Integration tests:** `@SpringBootTest` with full context, hitting actual endpoints end-to-end against the H2 database.
@@ -15,8 +15,8 @@ We test at three levels:
 - **Unit + integration (no slice tests):** covers both ends but leaves a gap — controller serialization and repository query correctness are only caught by the slow integration tests.
 
 ## Consequences
-- **Fast feedback loop:** unit and slice tests run in seconds, catching most issues before the heavier integration tests.
-- **Each layer is tested in isolation:** a controller test failing points to the controller, not a buried service bug.
-- **Slice tests validate Spring wiring** (validation, serialization, JPA mappings) that unit tests with mocks would miss.
-- **Integration tests are the safety net** — they prove the full stack works together but are not the primary debugging tool.
+- **Static analysis as the foundation:** Checkstyle and SpotBugs catch style violations and common bugs before any test runs — the base of the trophy.
+- **Slice tests carry the most weight:** they validate real Spring behavior (validation, serialization, JPA mappings) without the cost of a full application context. This is where most confidence comes from.
+- **Unit tests are targeted, not exhaustive:** we unit-test meaningful business logic, not trivial delegation. Mocking everything for the sake of coverage is avoided.
+- **Integration tests are the safety net:** they prove the full stack works together but are not the primary debugging tool.
 - **More test files:** three test levels for three entities means more files, but each is small and focused.

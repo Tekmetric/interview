@@ -34,7 +34,7 @@ mvn package && java -jar target/interview-1.0-SNAPSHOT.jar
 - Pragmatic choice for scope — document awareness of hexagonal in ADRs
 
 ### Naming
-- Controllers use `*Controller` (rename existing `WelcomeResource` to `WelcomeController`)
+- Controllers use `*Controller`
 - API prefix: `/api/`
 
 ### DTOs

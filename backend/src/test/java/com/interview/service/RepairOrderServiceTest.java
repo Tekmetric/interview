@@ -206,7 +206,7 @@ class RepairOrderServiceTest {
           .set(field(RepairOrder::getVersion), expectedVersion)
           .create();
       var command = new UpdateRepairOrderCommand(
-          "Updated description", RepairOrderStatus.IN_PROGRESS,
+          "Updated description",
           "Honda", "Civic", 2022, "XYZ-9999");
       var detailDto = Instancio.create(RepairOrderDetailDto.class);
 
@@ -235,7 +235,7 @@ class RepairOrderServiceTest {
           .set(field(RepairOrder::getVersion), 3)
           .create();
       var command = new UpdateRepairOrderCommand(
-          "Updated", RepairOrderStatus.IN_PROGRESS,
+          "Updated",
           "Honda", "Civic", 2022, null);
 
       given(repairOrderRepository.findByIdWithLineItems(orderId))
@@ -255,7 +255,7 @@ class RepairOrderServiceTest {
       // Given
       var orderId = UUID.randomUUID();
       var command = new UpdateRepairOrderCommand(
-          "Updated", RepairOrderStatus.IN_PROGRESS,
+          "Updated",
           "Honda", "Civic", 2022, null);
 
       given(repairOrderRepository.findByIdWithLineItems(orderId))

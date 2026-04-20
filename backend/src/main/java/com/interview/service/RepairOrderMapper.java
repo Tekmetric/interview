@@ -29,6 +29,7 @@ public interface RepairOrderMapper {
   RepairOrder toEntity(CreateRepairOrderCommand command);
 
   @Mapping(target = "id", ignore = true)
+  @Mapping(target = "status", ignore = true)
   @Mapping(target = "customer", ignore = true)
   @Mapping(target = "lineItems", ignore = true)
   @Mapping(target = "version", ignore = true)

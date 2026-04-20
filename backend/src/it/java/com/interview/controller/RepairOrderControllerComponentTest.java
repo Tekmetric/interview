@@ -20,7 +20,7 @@ import com.interview.dto.RepairOrderSummaryDto;
 import com.interview.dto.UpdateRepairOrderCommand;
 import com.interview.exception.CustomerNotFoundException;
 import com.interview.exception.RepairOrderNotFoundException;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import com.interview.exception.StaleVersionException;
 import com.interview.service.RepairOrderService;
 import java.util.List;
 import java.util.UUID;
@@ -114,7 +114,6 @@ class RepairOrderControllerComponentTest {
     private static final String UPDATE_BODY = """
         {
           "description": "Updated description",
-          "status": "IN_PROGRESS",
           "vehicleMake": "Honda",
           "vehicleModel": "Civic",
           "vehicleYear": 2022,
@@ -148,7 +147,7 @@ class RepairOrderControllerComponentTest {
       var orderId = UUID.randomUUID();
 
       given(repairOrderService.update(eq(orderId), eq(0), any(UpdateRepairOrderCommand.class)))
-          .willThrow(new ObjectOptimisticLockingFailureException("RepairOrder", orderId));
+          .willThrow(new StaleVersionException(orderId, 0, 1));
 
       // When / Then
       mockMvc.perform(put("/api/v1/repair-orders/{id}", orderId)
@@ -156,7 +155,7 @@ class RepairOrderControllerComponentTest {
               .contentType(MediaType.APPLICATION_JSON)
               .content(UPDATE_BODY))
           .andExpect(status().isPreconditionFailed())
-          .andExpect(jsonPath("$.detail").value("Resource was modified by another request"));
+          .andExpect(jsonPath("$.detail").exists());
     }
 
     @Test

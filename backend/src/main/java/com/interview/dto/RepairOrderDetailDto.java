@@ -1,13 +1,10 @@
 package com.interview.dto;
 
 import com.interview.model.RepairOrderStatus;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@SuppressFBWarnings(value = "EI_EXPOSE_REP",
-    justification = "Records are immutable; list contents are not mutated")
 public record RepairOrderDetailDto(
     UUID id,
     String description,
@@ -21,4 +18,9 @@ public record RepairOrderDetailDto(
     Integer version,
     Instant createdAt,
     Instant updatedAt
-) {}
+) {
+
+  public RepairOrderDetailDto {
+    lineItems = lineItems == null ? List.of() : List.copyOf(lineItems);
+  }
+}

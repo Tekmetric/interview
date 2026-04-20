@@ -222,8 +222,10 @@ class RepairOrderMapperTest {
       var originalCustomer = order.getCustomer();
       var originalVersion = order.getVersion();
 
+      var originalStatus = order.getStatus();
+
       var command = new UpdateRepairOrderCommand(
-          "Updated description", RepairOrderStatus.COMPLETED,
+          "Updated description",
           "Honda", "Civic", 2022, "NEW-PLATE");
 
       // When
@@ -232,7 +234,7 @@ class RepairOrderMapperTest {
       // Then
       BDDSoftAssertions.thenSoftly(softly -> {
         softly.then(order.getDescription()).isEqualTo("Updated description");
-        softly.then(order.getStatus()).isEqualTo(RepairOrderStatus.COMPLETED);
+        softly.then(order.getStatus()).isEqualTo(originalStatus);
         softly.then(order.getVehicleMake()).isEqualTo("Honda");
         softly.then(order.getVehicleModel()).isEqualTo("Civic");
         softly.then(order.getVehicleYear()).isEqualTo(2022);

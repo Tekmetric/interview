@@ -14,38 +14,6 @@ Customer (1) ──── (N) RepairOrder (1) ──── (N) LineItem
 - **RepairOrder**: description, status (PENDING/IN_PROGRESS/COMPLETED), vehicle info, timestamps
 - **LineItem**: description, unit price
 
-Foreign keys use `ON DELETE CASCADE` at the database level.
-
-## API Endpoints
-
-All endpoints are versioned under `/api/v1`.
-
-| Method | Path                               | Description                              | Status |
-|--------|----------------------------------  |------------------------------------------|--------|
-| POST   | `/api/v1/repair-orders`            | Create a repair order                    | 201    |
-| GET    | `/api/v1/repair-orders`            | List repair orders (paginated, sortable) | 200    |
-| GET    | `/api/v1/repair-orders/{id}`       | Get repair order with line items         | 200    |
-| PUT    | `/api/v1/repair-orders/{id}`       | Update a repair order                    | 200    |
-| DELETE | `/api/v1/repair-orders/{id}`       | Delete a repair order (idempotent)       | 204    |
-| POST   | `/api/v1/repair-orders/{id}/start` | Start order (PENDING -> IN_PROGRESS)     | 200    |
-| POST   | `/api/v1/repair-orders/{id}/close` | Close order (IN_PROGRESS -> COMPLETED)   | 200    |
-
-### Optimistic Concurrency
-
-PUT, start, and close require an `If-Match` header with the entity version. On conflict, returns `412 Precondition Failed`.
-
-### Status Transitions
-
-Orders follow a simplified linear flow: `PENDING -> IN_PROGRESS -> COMPLETED`. Invalid transitions return `409 Conflict`. A production system would use a proper state machine to support reopen/cancel and emit domain events.
-
-### Sort Validation
-
-The list endpoint validates the `sort` parameter against JPA static metamodel constants at compile time. Invalid fields return `400` with the list of allowed values.
-
-### Error Responses
-
-All errors use RFC 9457 Problem Detail format (`application/problem+json`).
-
 ## Demo
 
 API requests are in [`repair-orders.http`](../repair-orders.http) — runnable from IntelliJ or VS Code REST Client.
@@ -80,7 +48,7 @@ mvn verify
 
 ### Load Testing
 
-A standalone Gatling project is available in `gatling/` for load testing the POST endpoint.
+A simple, standalone Gatling project is available in `gatling/` for load testing the POST endpoint. Actually contains scenario only for the POST endpoint.
 
 ```bash
 cd gatling && mvn gatling:test

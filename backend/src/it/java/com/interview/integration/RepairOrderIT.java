@@ -193,7 +193,6 @@ class RepairOrderIT {
           .body("""
               {
                 "description": "Full engine overhaul",
-                "status": "IN_PROGRESS",
                 "vehicleMake": "Ford",
                 "vehicleModel": "F-150",
                 "vehicleYear": 2023,
@@ -208,7 +207,7 @@ class RepairOrderIT {
               softly.then(body.id())
                   .isEqualTo(UUID.fromString(ORDER_TO_UPDATE));
               softly.then(body.description()).isEqualTo("Full engine overhaul");
-              softly.then(body.status().name()).isEqualTo("IN_PROGRESS");
+              softly.then(body.status().name()).isEqualTo("PENDING");
               softly.then(body.licensePlate()).isEqualTo("UPD-0001");
               softly.then(body.version()).isNotNull();
             });
@@ -228,7 +227,6 @@ class RepairOrderIT {
           .body("""
               {
                 "description": "Should not exist",
-                "status": "PENDING",
                 "vehicleMake": "Toyota",
                 "vehicleModel": "Camry",
                 "vehicleYear": 2021

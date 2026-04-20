@@ -214,13 +214,6 @@ public class RepairOrderController {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler(StaleVersionException.class)
-    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
-    public ProblemDetail handleStaleVersion(StaleVersionException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.PRECONDITION_FAILED,
-                ex.getMessage());
-    }
-
     @ExceptionHandler(InvalidStatusTransitionException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ProblemDetail handleInvalidStatusTransition(InvalidStatusTransitionException ex) {

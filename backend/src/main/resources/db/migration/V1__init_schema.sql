@@ -26,7 +26,7 @@ CREATE TABLE repair_orders (
     version     INT       NOT NULL DEFAULT 0,
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_repair_order_customer FOREIGN KEY (customer_id) REFERENCES customers(id)
+    CONSTRAINT fk_repair_order_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_repair_order_customer_id ON repair_orders(customer_id);
@@ -44,7 +44,7 @@ CREATE TABLE line_items (
     version         INT       NOT NULL DEFAULT 0,
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_line_item_repair_order FOREIGN KEY (repair_order_id) REFERENCES repair_orders(id)
+    CONSTRAINT fk_line_item_repair_order FOREIGN KEY (repair_order_id) REFERENCES repair_orders(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_line_item_repair_order_id ON line_items(repair_order_id);

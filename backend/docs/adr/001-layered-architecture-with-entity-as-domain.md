@@ -14,5 +14,5 @@ We chose a standard layered architecture (controller, service, repository) over 
 ## Consequences
 - **Simple and readable:** fewer classes, straightforward data flow, easy to review quickly.
 - **Coupled to JPA:** the service layer is aware of JPA entities. In a larger system with complex business rules or multiple persistence backends, we would extract a domain layer.
-- **No mapping overhead:** no entity-to-domain mappers needed, reducing boilerplate.
+- **Mapping at the service boundary:** MapStruct handles entity-to-DTO conversion in the service layer. DTOs exist only at the API boundary — no separate domain POJO layer.
 - **Tradeoff acknowledged:** this is a deliberate scope-driven decision, not a lack of awareness. For a production system with richer domain logic, a hexagonal or ports-and-adapters approach would be more appropriate.

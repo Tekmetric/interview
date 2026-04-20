@@ -1,22 +1,22 @@
-# ADR-002: DTOs and Validation at Controller Boundary
+# ADR-002: DTOs, Mapping, and Service-Level Validation
 
 ## Context
-We need to define how data enters and exits the API, and where input validation occurs. Options included: exposing entities directly, using a single DTO for both directions, or using separate request/response DTOs. For validation, we considered Bean Validation on DTOs (controller level) versus validation in the service layer.
+We need to define how data enters and exits the API, where input validation occurs, and how entities map to DTOs. Options included: exposing entities directly, using a single DTO for both directions, or using separate DTOs. For validation, we considered the controller boundary versus the service layer.
 
 ## Decision
-- Separate request and response DTOs per operation (e.g. `CreateRepairOrderRequest`, `UpdateRepairOrderRequest`, `RepairOrderResponse`).
-- DTOs are Java records (immutable, concise).
-- Bean Validation annotations (`@NotNull`, `@Size`, etc.) on request DTOs, enforced at the controller via `@Valid`.
-- The controller maps between DTOs and entities.
+- **Naming:** command DTOs for writes (`CreateRepairOrderCommand`), Dto suffix for reads (`RepairOrderSummaryDto`, `RepairOrderDetailDto`). Separate summary/detail DTOs where list and get-by-id return different shapes.
+- **DTOs are Java records** (immutable, concise). `PageDto<T>` wraps paginated results with no Spring Data dependency.
+- **Validation at the service layer:** `@Validated` on service classes, Bean Validation annotations (`@PositiveOrZero`, `@Range`, `@NotBlank`, `@NotNull`) on service method parameters. Controllers stay thin and Spring Data agnostic.
+- **MapStruct for mapping:** mapper interfaces live in `service/`, annotated with `@Mapper(componentModel = "spring")`. Service owns the entity-to-DTO conversion.
+- **Controllers accept primitives** (`int page`, `String sort`) with `@RequestParam` defaults — no `Pageable` or `Page` types leak into the API layer.
 
 ## Alternatives Considered
-- **Expose entities directly:** no DTOs, entities serialized as-is. Simple but couples the API to the database schema and leaks internal structure.
-- **Single DTO for both directions:** one class for request and response. Simpler but create and update often have different required fields, and the response may include computed/read-only fields.
-- **Validation in the service layer:** validates domain objects rather than DTOs. More appropriate when a domain POJO layer exists, but in our architecture the controller is the system boundary.
+- **Validation at controller boundary:** `@Valid` on request DTOs. Simpler, but puts the validation contract on the API shape rather than the service contract. Service-level validation is more resilient to multiple entry points.
+- **Manual mapping in controllers:** controller maps between DTOs and entities. Works but scatters mapping logic and couples controllers to entity structure.
+- **Expose Spring `Page`/`Pageable` in controllers:** convenient but couples the API contract to Spring Data internals.
 
 ## Consequences
-- **Clear API contract:** request and response shapes are independent and can evolve separately.
-- **Entities are never exposed:** internal structure changes don't break the API.
-- **Validation at the boundary:** invalid input is rejected before reaching the service. The service can assume valid data.
-- **Controller has mapping responsibility:** this is a small overhead but keeps the service focused on business logic.
-- **In a larger system**, we would consider validating domain invariants in the service layer as well, especially for rules that go beyond field-level validation.
+- **Service is the validation boundary:** any caller (controller, event handler, scheduled task) gets the same validation guarantees.
+- **Controllers are thin:** they accept primitives, delegate to the service, and return DTOs. No mapping, no validation, no Spring Data types.
+- **MapStruct eliminates boilerplate:** compile-time code generation, type-safe, integrates with Lombok via `lombok-mapstruct-binding`.
+- **Clear API contract:** summary and detail DTOs can evolve independently. `PageDto` is a plain record decoupled from Spring.

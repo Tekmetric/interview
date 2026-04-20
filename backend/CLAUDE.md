@@ -69,7 +69,17 @@ Customer (1) ──── (N) RepairOrder (1) ──── (N) LineItem
 
 ### Testing Strategy
 - **Unit tests (`src/test/`):** Service logic with mocked dependencies. Run via `maven-surefire-plugin` (`*Test.java`).
-- **Slice + Integration tests (`src/it/`):** `@WebMvcTest`, `@DataJpaTest`, `@SpringBootTest`. Run via `maven-failsafe-plugin` (`*IT.java`).
+- **Component tests (`src/it/`):** `@WebMvcTest`, `@DataJpaTest`. Run via `maven-failsafe-plugin` (`*ComponentTest.java`).
+- **Integration tests (`src/it/`):** `@SpringBootTest`. Run via `maven-failsafe-plugin` (`*IT.java`).
+- BDD style: `// Given`, `// When`, `// Then` comments in every test
+- Test method names: `givenX_whenY_thenZ` (e.g. `givenOrderExists_whenFindingById_thenReturnsDetail`)
+- `@DisplayName` on test classes and methods — human-readable sentences
+- Mockito BDD: `given(...).willReturn(...)`, `org.mockito.BDDMockito.then(...).should()` (fully qualified to avoid AssertJ clash)
+- AssertJ BDD: `then(result).isEqualTo(...)`, `thenThrownBy(...)` from `BDDAssertions`
+- Soft assertions: `BDDSoftAssertions.thenSoftly(softly -> { softly.then(...); })` when a test has multiple assertions
+- Instancio for test data generation
+- **MockMvc** for component tests (`@WebMvcTest`) — no real network, tests the Spring MVC layer in-process
+- **RestTestClient** for integration tests (`@SpringBootTest`) — calls through the real network stack
 
 ### Documentation
 - ADRs in `docs/adr/` as plain markdown (no doc tooling)
@@ -80,6 +90,7 @@ Customer (1) ──── (N) RepairOrder (1) ──── (N) LineItem
 - Use Lombok `@Slf4j`
 - **Controller** (app entry point): `log.info` — `"GET /api/resource [page={}, size={}]", page, size`
 - **Service** (layer entry point): `log.debug` — `"Finding resource [id={}]", id`
+- **Service** (method exit): `log.trace` — `"Found resource [id={}, lineItems={}]", id, count`
 - Message format: `"Message [var={}, var={}]"` — natural language, params grouped in brackets
 
 ## Git Conventions

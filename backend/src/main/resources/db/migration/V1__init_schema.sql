@@ -33,6 +33,8 @@ CREATE INDEX idx_repair_order_customer_id ON repair_orders(customer_id);
 CREATE INDEX idx_repair_order_status ON repair_orders(status);
 CREATE INDEX idx_repair_order_vehicle_make ON repair_orders(vehicle_make);
 CREATE INDEX idx_repair_order_license_plate ON repair_orders(license_plate);
+CREATE INDEX idx_repair_order_created_at ON repair_orders(created_at);
+CREATE INDEX idx_repair_order_updated_at ON repair_orders(updated_at);
 
 CREATE TABLE line_items (
     id              UUID           DEFAULT RANDOM_UUID(7) PRIMARY KEY,

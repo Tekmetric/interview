@@ -1,15 +1,16 @@
 package com.interview.service;
 
-import com.interview.dto.LineItemDto;
+import com.interview.dto.CreateRepairOrderCommand;
 import com.interview.dto.RepairOrderDetailDto;
 import com.interview.dto.RepairOrderSummaryDto;
-import com.interview.model.LineItem;
+import com.interview.dto.UpdateRepairOrderCommand;
 import com.interview.model.RepairOrder;
-import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = LineItemMapper.class,
+    injectionStrategy = org.mapstruct.InjectionStrategy.CONSTRUCTOR)
 public interface RepairOrderMapper {
 
   @Mapping(source = "customer.id", target = "customerId")
@@ -18,7 +19,20 @@ public interface RepairOrderMapper {
   @Mapping(source = "customer.id", target = "customerId")
   RepairOrderDetailDto toDetailDto(RepairOrder order);
 
-  LineItemDto toLineItemDto(LineItem lineItem);
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "status", ignore = true)
+  @Mapping(target = "customer", ignore = true)
+  @Mapping(target = "lineItems", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  RepairOrder toEntity(CreateRepairOrderCommand command);
 
-  List<LineItemDto> toLineItemDtos(List<LineItem> lineItems);
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "customer", ignore = true)
+  @Mapping(target = "lineItems", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  void updateEntity(UpdateRepairOrderCommand command, @MappingTarget RepairOrder order);
 }

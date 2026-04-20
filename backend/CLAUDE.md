@@ -38,13 +38,12 @@ mvn package && java -jar target/interview-1.0-SNAPSHOT.jar
 - API prefix: `/api/`
 
 ### DTOs
-- Separate request and response classes:
-  - `CreateRepairOrderRequest`
-  - `UpdateRepairOrderRequest`
-  - `RepairOrderResponse`
-  - Same pattern for Customer and LineItem
+- Commands for writes (`CreateRepairOrderCommand`), Dto suffix for reads (`RepairOrderSummaryDto`)
+- Separate summary/detail DTOs where appropriate (e.g. list vs get-by-id)
 - Use Java records for DTOs (immutable, concise)
 - Use Lombok for JPA entities (need mutability)
+- `PageDto<T>` wraps paginated results — no Spring `Page`/`Pageable` in controllers
+- MapStruct for entity ↔ DTO mapping (mappers live in `service/`)
 
 ### Data Model
 ```
@@ -52,7 +51,7 @@ Customer (1) ──── (N) RepairOrder (1) ──── (N) LineItem
 ```
 - **Customer:** name, email, phone
 - **RepairOrder:** description, status (enum), timestamps — belongs to Customer
-- **LineItem:** description, quantity, unit price — belongs to RepairOrder
+- **LineItem:** description, unit price — belongs to RepairOrder
 
 ### Validation
 - Bean Validation (`@Valid`, `@NotNull`, `@Size`) on request DTOs at the controller level
@@ -64,8 +63,8 @@ Customer (1) ──── (N) RepairOrder (1) ──── (N) LineItem
 - Structured JSON error responses
 
 ### Pagination
-- Use Spring's `Page<>` and `Pageable` on list endpoints
-- Spring types acceptable at controller level
+- Service accepts primitives (`page`, `size`, `sort`, `direction`) and returns `PageDto<T>`
+- Spring `Page`/`Pageable` used internally in service — not exposed to controllers
 
 ### Testing Strategy
 - **Unit tests (`src/test/`):** Service logic with mocked dependencies. Run via `maven-surefire-plugin` (`*Test.java`).
@@ -75,6 +74,12 @@ Customer (1) ──── (N) RepairOrder (1) ──── (N) LineItem
 - ADRs in `docs/adr/` as plain markdown (no doc tooling)
 - Keep ADRs short (10-15 lines): title, context, decision, consequences
 - Document tradeoffs and what you'd do differently at scale
+
+### Logging
+- Use Lombok `@Slf4j`
+- **Controller** (app entry point): `log.info` — `"GET /api/resource [page={}, size={}]", page, size`
+- **Service** (layer entry point): `log.debug` — `"Finding resource [id={}]", id`
+- Message format: `"Message [var={}, var={}]"` — natural language, params grouped in brackets
 
 ## Git Conventions
 

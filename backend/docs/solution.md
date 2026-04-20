@@ -51,7 +51,7 @@ mvn spring-boot:run
 
 ### Docker (Cloud Native Buildpacks)
 
-No Dockerfile needed — Spring Boot's Maven plugin builds an OCI image directly:
+No Dockerfile needed — Spring Boot's Maven plugin builds an OCI image directly, including the OpenTelemetry Java Agent, using the corresponding buildpack.
 
 ```bash
 mvn spring-boot:build-image
@@ -93,9 +93,18 @@ Three tools run as part of `mvn verify`:
 
 ## Observability
 
-The application exposes Spring Boot Actuator health endpoints (`/actuator/health`) with Kubernetes liveness/readiness probes enabled. Structured logging follows a consistent pattern across layers — `log.info` at controller entry, `log.debug`/`log.trace` in services.
+The application exposes Spring Boot Actuator health endpoints (`/actuator/health`) with liveness/readiness probes enabled. Structured logging follows a consistent pattern across layers — `log.info` at controller entry, `log.debug`/`log.trace` in services.
 
-For distributed tracing and metrics, the approach is to attach the OpenTelemetry Java agent at runtime via the Paketo `opentelemetry` buildpack — no code dependencies or SDK wiring needed. The agent auto-instruments HTTP requests, JDBC queries, and JPA operations, exporting to any OTLP-compatible backend (Jaeger, Grafana Tempo, Datadog, etc.) through environment variables. This keeps observability as a deployment concern rather than an application concern. See [ADR-006](adr/006-observability-with-opentelemetry-agent.md) for the full rationale.
+For distributed tracing, metrics, and log collection, the approach is to attach the OpenTelemetry Java agent at runtime via the Paketo `opentelemetry` buildpack — no code dependencies or SDK wiring needed. The agent auto-instruments HTTP requests, JDBC queries, and JPA operations, exporting to any OTLP-compatible backend through environment variables. This keeps observability as a deployment concern rather than an application concern. See [ADR-006](adr/006-observability-with-opentelemetry-agent.md) for the full rationale.
+
+A Docker Compose setup in [`infra/`](../infra/) spins up the full observability stack locally: the app with OTel agent enabled, an OpenTelemetry Collector, Grafana Tempo (traces), Loki (logs), Prometheus (metrics), and Grafana for visualization. Build the image first, then bring it all up:
+
+```bash
+mvn spring-boot:build-image
+cd infra && docker compose up
+```
+
+Grafana is available at `http://localhost:3000` (no login required) with all datasources pre-provisioned.
 
 ## Architecture Decisions
 

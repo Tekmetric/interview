@@ -6,8 +6,10 @@ import com.interview.dto.RepairOrderDetailDto;
 import com.interview.dto.RepairOrderSummaryDto;
 import com.interview.dto.UpdateRepairOrderCommand;
 import com.interview.exception.CustomerNotFoundException;
+import com.interview.exception.InvalidStatusTransitionException;
 import com.interview.exception.RepairOrderNotFoundException;
 import com.interview.exception.StaleVersionException;
+import com.interview.model.RepairOrderStatus;
 import com.interview.repository.CustomerRepository;
 import com.interview.repository.RepairOrderRepository;
 import com.interview.model.RepairOrder_;
@@ -136,6 +138,56 @@ public class RepairOrderService {
     repairOrderRepository.deleteById(id);
 
     log.trace("Deleted repair order [id={}]", id);
+  }
+
+  // Simplified state checks — a production system would use a proper state machine
+  // (e.g. Spring Statemachine) to enforce transitions, support reopen/cancel, and
+  // emit domain events.
+
+  @Transactional
+  public RepairOrderDetailDto start(@NotNull UUID id, int expectedVersion) {
+    log.debug("Starting repair order [id={}, expectedVersion={}]", id, expectedVersion);
+
+    var order = repairOrderRepository.findByIdWithLineItems(id)
+        .orElseThrow(() -> new RepairOrderNotFoundException(id));
+
+    if (!order.getVersion().equals(expectedVersion)) {
+      throw new StaleVersionException(id, expectedVersion, order.getVersion());
+    }
+
+    if (order.getStatus() != RepairOrderStatus.PENDING) {
+      throw new InvalidStatusTransitionException(order.getStatus(), RepairOrderStatus.IN_PROGRESS);
+    }
+
+    order.setStatus(RepairOrderStatus.IN_PROGRESS);
+    var saved = repairOrderRepository.save(order);
+    var detail = repairOrderMapper.toDetailDto(saved);
+
+    log.trace("Started repair order [id={}, version={}]", detail.id(), detail.version());
+    return detail;
+  }
+
+  @Transactional
+  public RepairOrderDetailDto close(@NotNull UUID id, int expectedVersion) {
+    log.debug("Closing repair order [id={}, expectedVersion={}]", id, expectedVersion);
+
+    var order = repairOrderRepository.findByIdWithLineItems(id)
+        .orElseThrow(() -> new RepairOrderNotFoundException(id));
+
+    if (!order.getVersion().equals(expectedVersion)) {
+      throw new StaleVersionException(id, expectedVersion, order.getVersion());
+    }
+
+    if (order.getStatus() != RepairOrderStatus.IN_PROGRESS) {
+      throw new InvalidStatusTransitionException(order.getStatus(), RepairOrderStatus.COMPLETED);
+    }
+
+    order.setStatus(RepairOrderStatus.COMPLETED);
+    var saved = repairOrderRepository.save(order);
+    var detail = repairOrderMapper.toDetailDto(saved);
+
+    log.trace("Closed repair order [id={}, version={}]", detail.id(), detail.version());
+    return detail;
   }
 
   public RepairOrderDetailDto findById(

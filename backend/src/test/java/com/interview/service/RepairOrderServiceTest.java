@@ -12,6 +12,7 @@ import com.interview.dto.RepairOrderDetailDto;
 import com.interview.dto.RepairOrderSummaryDto;
 import com.interview.dto.UpdateRepairOrderCommand;
 import com.interview.exception.CustomerNotFoundException;
+import com.interview.exception.InvalidStatusTransitionException;
 import com.interview.exception.RepairOrderNotFoundException;
 import com.interview.exception.StaleVersionException;
 import com.interview.model.RepairOrderStatus;
@@ -332,6 +333,148 @@ class RepairOrderServiceTest {
       thenThrownBy(() -> repairOrderService.findById(orderId))
           .isInstanceOf(RepairOrderNotFoundException.class)
           .hasMessageContaining(orderId.toString());
+    }
+  }
+
+  @Nested
+  @DisplayName("start")
+  class Start {
+
+    @Test
+    @DisplayName("given pending order, when starting, then transitions to in progress")
+    void givenPendingOrder_whenStarting_thenTransitionsToInProgress() {
+      // Given
+      var orderId = UUID.randomUUID();
+      var expectedVersion = 0;
+      var order = Instancio.of(RepairOrder.class)
+          .set(field(RepairOrder::getId), orderId)
+          .set(field(RepairOrder::getVersion), expectedVersion)
+          .set(field(RepairOrder::getStatus), RepairOrderStatus.PENDING)
+          .create();
+      var detailDto = Instancio.create(RepairOrderDetailDto.class);
+
+      given(repairOrderRepository.findByIdWithLineItems(orderId))
+          .willReturn(Optional.of(order));
+      given(repairOrderRepository.save(order)).willReturn(order);
+      given(repairOrderMapper.toDetailDto(order)).willReturn(detailDto);
+
+      // When
+      var result = repairOrderService.start(orderId, expectedVersion);
+
+      // Then
+      then(result).isEqualTo(detailDto);
+      then(order.getStatus()).isEqualTo(RepairOrderStatus.IN_PROGRESS);
+    }
+
+    @Test
+    @DisplayName("given non-pending order, when starting, then throws invalid transition")
+    void givenNonPendingOrder_whenStarting_thenThrowsInvalidTransition() {
+      // Given
+      var orderId = UUID.randomUUID();
+      var order = Instancio.of(RepairOrder.class)
+          .set(field(RepairOrder::getId), orderId)
+          .set(field(RepairOrder::getVersion), 0)
+          .set(field(RepairOrder::getStatus), RepairOrderStatus.COMPLETED)
+          .create();
+
+      given(repairOrderRepository.findByIdWithLineItems(orderId))
+          .willReturn(Optional.of(order));
+
+      // When / Then
+      thenThrownBy(() -> repairOrderService.start(orderId, 0))
+          .isInstanceOf(InvalidStatusTransitionException.class)
+          .hasMessageContaining("COMPLETED")
+          .hasMessageContaining("IN_PROGRESS");
+    }
+
+    @Test
+    @DisplayName("given version mismatch, when starting, then throws stale version")
+    void givenVersionMismatch_whenStarting_thenThrowsStaleVersion() {
+      // Given
+      var orderId = UUID.randomUUID();
+      var order = Instancio.of(RepairOrder.class)
+          .set(field(RepairOrder::getId), orderId)
+          .set(field(RepairOrder::getVersion), 5)
+          .set(field(RepairOrder::getStatus), RepairOrderStatus.PENDING)
+          .create();
+
+      given(repairOrderRepository.findByIdWithLineItems(orderId))
+          .willReturn(Optional.of(order));
+
+      // When / Then
+      thenThrownBy(() -> repairOrderService.start(orderId, 0))
+          .isInstanceOf(StaleVersionException.class);
+    }
+  }
+
+  @Nested
+  @DisplayName("close")
+  class Close {
+
+    @Test
+    @DisplayName("given in-progress order, when closing, then transitions to completed")
+    void givenInProgressOrder_whenClosing_thenTransitionsToCompleted() {
+      // Given
+      var orderId = UUID.randomUUID();
+      var expectedVersion = 1;
+      var order = Instancio.of(RepairOrder.class)
+          .set(field(RepairOrder::getId), orderId)
+          .set(field(RepairOrder::getVersion), expectedVersion)
+          .set(field(RepairOrder::getStatus), RepairOrderStatus.IN_PROGRESS)
+          .create();
+      var detailDto = Instancio.create(RepairOrderDetailDto.class);
+
+      given(repairOrderRepository.findByIdWithLineItems(orderId))
+          .willReturn(Optional.of(order));
+      given(repairOrderRepository.save(order)).willReturn(order);
+      given(repairOrderMapper.toDetailDto(order)).willReturn(detailDto);
+
+      // When
+      var result = repairOrderService.close(orderId, expectedVersion);
+
+      // Then
+      then(result).isEqualTo(detailDto);
+      then(order.getStatus()).isEqualTo(RepairOrderStatus.COMPLETED);
+    }
+
+    @Test
+    @DisplayName("given non-in-progress order, when closing, then throws invalid transition")
+    void givenNonInProgressOrder_whenClosing_thenThrowsInvalidTransition() {
+      // Given
+      var orderId = UUID.randomUUID();
+      var order = Instancio.of(RepairOrder.class)
+          .set(field(RepairOrder::getId), orderId)
+          .set(field(RepairOrder::getVersion), 0)
+          .set(field(RepairOrder::getStatus), RepairOrderStatus.PENDING)
+          .create();
+
+      given(repairOrderRepository.findByIdWithLineItems(orderId))
+          .willReturn(Optional.of(order));
+
+      // When / Then
+      thenThrownBy(() -> repairOrderService.close(orderId, 0))
+          .isInstanceOf(InvalidStatusTransitionException.class)
+          .hasMessageContaining("PENDING")
+          .hasMessageContaining("COMPLETED");
+    }
+
+    @Test
+    @DisplayName("given version mismatch, when closing, then throws stale version")
+    void givenVersionMismatch_whenClosing_thenThrowsStaleVersion() {
+      // Given
+      var orderId = UUID.randomUUID();
+      var order = Instancio.of(RepairOrder.class)
+          .set(field(RepairOrder::getId), orderId)
+          .set(field(RepairOrder::getVersion), 3)
+          .set(field(RepairOrder::getStatus), RepairOrderStatus.IN_PROGRESS)
+          .create();
+
+      given(repairOrderRepository.findByIdWithLineItems(orderId))
+          .willReturn(Optional.of(order));
+
+      // When / Then
+      thenThrownBy(() -> repairOrderService.close(orderId, 0))
+          .isInstanceOf(StaleVersionException.class);
     }
   }
 }

@@ -55,7 +55,7 @@ Content-Type: application/json
 ### Update repair order (replace <id> and version)
 PUT {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000003
 Content-Type: application/json
-If-Match: 1
+If-Match: 0
 
 {
   "description": "Engine diagnostic — completed",
@@ -65,6 +65,14 @@ If-Match: 1
   "vehicleYear": 2023,
   "licensePlate": "DEF-9012"
 }
+
+### Start a pending repair order (PENDING -> IN_PROGRESS)
+POST {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000003/start
+If-Match: 0
+
+### Close an in-progress repair order (IN_PROGRESS -> COMPLETED)
+POST {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000002/close
+If-Match: 0
 
 ### Delete repair order
 DELETE {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000004
@@ -96,6 +104,14 @@ Content-Type: application/json
 {
   "description": ""
 }
+
+### Start an already completed order (409)
+POST {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000001/start
+If-Match: 0
+
+### Close a pending order (409)
+POST {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000003/close
+If-Match: 0
 
 ### Update with wrong version (412)
 PUT {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000001

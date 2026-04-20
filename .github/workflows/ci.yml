@@ -1,10 +1,13 @@
 name: CI
 
+# Manual-only trigger to avoid running on upstream repos (e.g. interview forks).
+# Uncomment the push/pull_request triggers below to enable automatic CI.
 on:
-  push:
-    branches: [master, feature/**]
-  pull_request:
-    branches: [master]
+  workflow_dispatch:
+  # push:
+  #   branches: [master, feature/**]
+  # pull_request:
+  #   branches: [master]
 
 jobs:
   compile:

@@ -6,6 +6,7 @@ import com.interview.dto.RepairOrderDetailDto;
 import com.interview.dto.RepairOrderSummaryDto;
 import com.interview.dto.UpdateRepairOrderCommand;
 import com.interview.exception.CustomerNotFoundException;
+import com.interview.exception.InvalidStatusTransitionException;
 import com.interview.exception.RepairOrderNotFoundException;
 import com.interview.exception.StaleVersionException;
 import com.interview.service.RepairOrderService;
@@ -153,6 +154,54 @@ public class RepairOrderController {
         repairOrderService.delete(id);
     }
 
+    @PostMapping("/{id}/start")
+    @Operation(summary = "Start a repair order",
+            description = "Transitions a PENDING repair order to IN_PROGRESS. Requires If-Match header for optimistic locking")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Repair order started"),
+            @ApiResponse(responseCode = "404", description = "Repair order not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "409", description = "Invalid status transition",
+                    content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "412", description = "Version mismatch",
+                    content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemDetail.class)))
+    })
+    public RepairOrderDetailDto start(
+            @Parameter(description = "Repair order UUID") @PathVariable UUID id,
+            @Parameter(description = "Expected version for optimistic locking")
+            @RequestHeader("If-Match") int ifMatch
+    ) {
+        log.info("POST /api/v1/repair-orders/{}/start [ifMatch={}]", id, ifMatch);
+        return repairOrderService.start(id, ifMatch);
+    }
+
+    @PostMapping("/{id}/close")
+    @Operation(summary = "Close a repair order",
+            description = "Transitions an IN_PROGRESS repair order to COMPLETED. Requires If-Match header for optimistic locking")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Repair order closed"),
+            @ApiResponse(responseCode = "404", description = "Repair order not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "409", description = "Invalid status transition",
+                    content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "412", description = "Version mismatch",
+                    content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemDetail.class)))
+    })
+    public RepairOrderDetailDto close(
+            @Parameter(description = "Repair order UUID") @PathVariable UUID id,
+            @Parameter(description = "Expected version for optimistic locking")
+            @RequestHeader("If-Match") int ifMatch
+    ) {
+        log.info("POST /api/v1/repair-orders/{}/close [ifMatch={}]", id, ifMatch);
+        return repairOrderService.close(id, ifMatch);
+    }
+
     @ExceptionHandler(RepairOrderNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ProblemDetail handleRepairOrderNotFound(RepairOrderNotFoundException ex) {
@@ -170,5 +219,11 @@ public class RepairOrderController {
     public ProblemDetail handleStaleVersion(StaleVersionException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.PRECONDITION_FAILED,
                 ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidStatusTransitionException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ProblemDetail handleInvalidStatusTransition(InvalidStatusTransitionException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 }

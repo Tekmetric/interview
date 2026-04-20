@@ -54,8 +54,9 @@ Customer (1) ──── (N) RepairOrder (1) ──── (N) LineItem
 - **LineItem:** description, unit price — belongs to RepairOrder
 
 ### Validation
-- Bean Validation (`@Valid`, `@NotNull`, `@Size`) on request DTOs at the controller level
-- Controller is the system boundary — service can assume valid data
+- Bean Validation (`@Valid`, `@NotNull`, `@Size`) on command DTOs at the service level
+- `@Validated` on service classes, `@Valid` on command parameters
+- Service is the validation boundary — keeps controllers thin
 
 ### Error Handling
 - `@ExceptionHandler` on controllers for domain-specific exceptions (e.g. `RepairOrderNotFoundException`)

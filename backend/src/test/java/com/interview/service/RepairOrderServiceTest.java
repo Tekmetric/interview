@@ -13,6 +13,7 @@ import com.interview.dto.RepairOrderSummaryDto;
 import com.interview.dto.UpdateRepairOrderCommand;
 import com.interview.exception.CustomerNotFoundException;
 import com.interview.exception.RepairOrderNotFoundException;
+import com.interview.exception.StaleVersionException;
 import com.interview.model.RepairOrderStatus;
 import com.interview.model.Customer;
 import com.interview.model.LineItem;
@@ -198,8 +199,10 @@ class RepairOrderServiceTest {
     void givenExistingOrder_whenUpdating_thenSetsVersionAndReturnsUpdatedDetail() {
       // Given
       var orderId = UUID.randomUUID();
+      var expectedVersion = 5;
       var order = Instancio.of(RepairOrder.class)
           .set(field(RepairOrder::getId), orderId)
+          .set(field(RepairOrder::getVersion), expectedVersion)
           .create();
       var command = new UpdateRepairOrderCommand(
           "Updated description", RepairOrderStatus.IN_PROGRESS,
@@ -212,13 +215,36 @@ class RepairOrderServiceTest {
       given(repairOrderMapper.toDetailDto(order)).willReturn(detailDto);
 
       // When
-      var result = repairOrderService.update(orderId, 5, command);
+      var result = repairOrderService.update(orderId, expectedVersion, command);
 
       // Then
       then(result).isEqualTo(detailDto);
-      then(order.getVersion()).isEqualTo(5);
       org.mockito.BDDMockito.then(repairOrderMapper).should()
           .updateEntity(command, order);
+    }
+
+    @Test
+    @DisplayName("given version mismatch, when updating, "
+        + "then throws stale version exception")
+    void givenVersionMismatch_whenUpdating_thenThrowsStaleVersionException() {
+      // Given
+      var orderId = UUID.randomUUID();
+      var order = Instancio.of(RepairOrder.class)
+          .set(field(RepairOrder::getId), orderId)
+          .set(field(RepairOrder::getVersion), 3)
+          .create();
+      var command = new UpdateRepairOrderCommand(
+          "Updated", RepairOrderStatus.IN_PROGRESS,
+          "Honda", "Civic", 2022, null);
+
+      given(repairOrderRepository.findByIdWithLineItems(orderId))
+          .willReturn(Optional.of(order));
+
+      // When / Then
+      thenThrownBy(() -> repairOrderService.update(orderId, 1, command))
+          .isInstanceOf(StaleVersionException.class)
+          .hasMessageContaining("expected version 1")
+          .hasMessageContaining("found 3");
     }
 
     @Test

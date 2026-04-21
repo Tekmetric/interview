@@ -1,0 +1,44 @@
+@host = http://localhost:8080
+@v1   = {{host}}/api/v1
+
+### 1. Create a new vehicle
+POST {{v1}}/vehicles
+Content-Type: application/json
+
+{
+  "vin": "ABCDE82633A008888",
+  "make": "Subaru",
+  "model": "Outback",
+  "year": 2022,
+  "licensePlate": "TEST001",
+  "mileage": 15000
+}
+
+> {%
+    client.global.set("vehicleId", response.body.id);
+    client.test("status is 201", () => client.assert(response.status === 201, "expected 201"));
+    client.test("Location header set", () => client.assert(response.headers.valueOf("Location") !== null));
+%}
+
+### 2. Fetch the created vehicle by id
+GET {{v1}}/vehicles/{{vehicleId}}
+
+> {%
+    client.test("status is 200", () => client.assert(response.status === 200, "expected 200"));
+    client.test("vin matches", () => client.assert(response.body.vin === "ABCDE82633A008888"));
+%}
+
+### 3. Paginated list — page 0, size 5, newest year first
+GET {{v1}}/vehicles?page=0&size=5&sort=year,desc
+
+> {%
+    client.test("status is 200", () => client.assert(response.status === 200));
+    client.test("has content array", () => client.assert(Array.isArray(response.body.content)));
+%}
+
+### 4. Delete the created vehicle
+DELETE {{v1}}/vehicles/{{vehicleId}}
+
+> {%
+    client.test("status is 204", () => client.assert(response.status === 204, "expected 204"));
+%}

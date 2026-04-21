@@ -1,0 +1,18 @@
+spring:
+  h2:
+    console:
+      enabled: false
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    root: INFO
+    com.interview: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus

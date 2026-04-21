@@ -7,15 +7,17 @@ import com.interview.dto.VehicleResponse;
 import com.interview.service.VehicleService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RestController
 @RequestMapping("/api/v1/vehicles")
@@ -50,7 +52,11 @@ public class VehicleResource {
             @RequestParam(required = false) String model,
             @RequestParam(required = false) Integer year,
             @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
-        return vehicleService.search(new VehicleFilter(make, model, year), cap(pageable));
+        if (pageable.getPageSize() > MAX_PAGE_SIZE) {
+            throw new ResponseStatusException(BAD_REQUEST,
+                    "size must be <= %d".formatted(MAX_PAGE_SIZE));
+        }
+        return vehicleService.search(new VehicleFilter(make, model, year), pageable);
     }
 
     @PatchMapping("/{id}")
@@ -62,10 +68,5 @@ public class VehicleResource {
     public ResponseEntity<Void> delete(@PathVariable long id) {
         vehicleService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private static Pageable cap(Pageable pageable) {
-        if (pageable.getPageSize() <= MAX_PAGE_SIZE) return pageable;
-        return PageRequest.of(pageable.getPageNumber(), MAX_PAGE_SIZE, pageable.getSort());
     }
 }

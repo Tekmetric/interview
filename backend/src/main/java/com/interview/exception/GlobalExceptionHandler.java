@@ -13,6 +13,9 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,7 +30,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(VehicleNotFoundException.class)
     public ProblemDetail notFound(VehicleNotFoundException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
-        pd.setTitle("Resource not found");
+        pd.setTitle("Not Found");
+        return pd;
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ProblemDetail noRoute(NoResourceFoundException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "No handler for " + ex.getResourcePath());
+        pd.setTitle("Not Found");
         return pd;
     }
 
@@ -66,7 +76,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail badBody(HttpMessageNotReadableException ex) {
         log.debug("Malformed request body", ex);
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Malformed request body");
-        pd.setTitle("Bad request");
+        pd.setTitle("Bad Request");
         return pd;
     }
 
@@ -75,7 +85,26 @@ public class GlobalExceptionHandler {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
                 "Unknown sort property: '%s'".formatted(ex.getPropertyName()));
-        pd.setTitle("Bad request");
+        pd.setTitle("Bad Request");
+        return pd;
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail typeMismatch(MethodArgumentTypeMismatchException ex) {
+        String expected = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "the expected type";
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Parameter '%s' must be %s".formatted(ex.getName(), expected));
+        pd.setTitle("Bad Request");
+        return pd;
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ProblemDetail responseStatus(ResponseStatusException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(
+                HttpStatus.valueOf(ex.getStatusCode().value()),
+                ex.getReason() != null ? ex.getReason() : ex.getStatusCode().toString());
+        pd.setTitle(HttpStatus.valueOf(ex.getStatusCode().value()).getReasonPhrase());
         return pd;
     }
 

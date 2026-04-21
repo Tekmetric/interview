@@ -84,7 +84,7 @@ class VehicleResourceTest {
 
         mvc.perform(get("/api/v1/vehicles/999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.title").value("Resource not found"))
+                .andExpect(jsonPath("$.title").value("Not Found"))
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.detail").value(containsString("999")));
     }

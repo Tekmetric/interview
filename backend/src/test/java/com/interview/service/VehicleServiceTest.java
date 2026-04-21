@@ -93,6 +93,7 @@ class VehicleServiceTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void searchComposesSpecificationFromFilter() {
         Vehicle v = sample();
         Page<Vehicle> page = new PageImpl<>(List.of(v));

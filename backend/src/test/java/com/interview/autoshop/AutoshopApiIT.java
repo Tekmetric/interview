@@ -48,4 +48,24 @@ class AutoshopApiIT {
                 .andExpect(jsonPath("$.type").value("/problems/not-found"))
                 .andExpect(jsonPath("$.title").value("Autoshop not found"));
     }
+
+    @Test
+    void lists_seeded_shops() throws Exception {
+        mvc.perform(get("/api/autoshops").param("sort", "id,asc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(3))
+                .andExpect(jsonPath("$.page.totalElements").value(3))
+                .andExpect(jsonPath("$.content[0].name").value(SEED_FIRST_NAME))
+                .andExpect(jsonPath("$.content[1].name").value("Maple St Auto"))
+                .andExpect(jsonPath("$.content[2].name").value("Gulf Coast Repair"));
+    }
+
+    @Test
+    void list_with_unknown_sort_property_returns_problem_400() throws Exception {
+        mvc.perform(get("/api/autoshops").param("sort", "doesNotExist,asc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.type").value("/problems/invalid-query-parameter"))
+                .andExpect(jsonPath("$.title").value("Invalid query parameter"))
+                .andExpect(jsonPath("$.property").value("doesNotExist"));
+    }
 }

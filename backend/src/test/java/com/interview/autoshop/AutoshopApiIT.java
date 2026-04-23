@@ -4,6 +4,7 @@ import static com.interview.autoshop.AutoshopResponseAssert.assertThatResponse;
 import static com.interview.autoshop.AutoshopTestFixtures.SEED_FIRST_ID;
 import static com.interview.autoshop.AutoshopTestFixtures.SEED_FIRST_NAME;
 import static com.interview.autoshop.AutoshopTestFixtures.SEED_MISSING_ID;
+import static com.interview.autoshop.AutoshopTestFixtures.createRequestJson;
 import static com.interview.autoshop.AutoshopTestFixtures.invalidCreateJson_blankName;
 import static com.interview.autoshop.AutoshopTestFixtures.validCreateJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,6 +12,7 @@ import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -108,5 +110,44 @@ class AutoshopApiIT {
                 .andExpect(jsonPath("$.type").value("/problems/validation"))
                 .andExpect(jsonPath("$.title").value("Invalid request"))
                 .andExpect(jsonPath("$.errors.name").exists());
+    }
+
+    @Test
+    void put_replaces_all_fields_and_preserves_id_and_createdAt() throws Exception {
+        AutoshopResponse before = getById(SEED_FIRST_ID);
+
+        MvcResult r = mvc.perform(put("/api/autoshops/" + SEED_FIRST_ID)
+                        .contentType(APPLICATION_JSON)
+                        .content(createRequestJson("Renamed", "2 New Rd", "555-1111")))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        AutoshopResponse after =
+                json.readValue(r.getResponse().getContentAsString(), AutoshopResponse.class);
+        assertThatResponse(after)
+                .hasId()
+                .hasName("Renamed")
+                .hasAddress("2 New Rd")
+                .hasPhone("555-1111")
+                .hasTimestamps();
+        assertThat(after.getId()).isEqualTo(before.getId());
+        assertThat(after.getCreatedAt()).isEqualTo(before.getCreatedAt());
+        assertThat(after.getUpdatedAt()).isAfterOrEqualTo(before.getUpdatedAt());
+    }
+
+    @Test
+    void put_returns_problem_404_for_missing_id() throws Exception {
+        mvc.perform(put("/api/autoshops/" + SEED_MISSING_ID)
+                        .contentType(APPLICATION_JSON)
+                        .content(createRequestJson("X", "Y", "Z")))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.type").value("/problems/not-found"));
+    }
+
+    private AutoshopResponse getById(long id) throws Exception {
+        MvcResult r = mvc.perform(get("/api/autoshops/" + id))
+                .andExpect(status().isOk())
+                .andReturn();
+        return json.readValue(r.getResponse().getContentAsString(), AutoshopResponse.class);
     }
 }

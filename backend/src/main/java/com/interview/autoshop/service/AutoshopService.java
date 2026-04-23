@@ -1,11 +1,12 @@
 package com.interview.autoshop.service;
 
-import com.interview.autoshop.service.domain.AutoshopMapper;
-import com.interview.error.exception.AutoshopNotFoundException;
+import com.interview.autoshop.controller.dto.CreateAutoshopRequest;
+import com.interview.autoshop.controller.dto.UpdateAutoshopRequest;
 import com.interview.autoshop.repository.AutoshopEntity;
 import com.interview.autoshop.repository.AutoshopRepository;
-import com.interview.autoshop.controller.dto.CreateAutoshopRequest;
 import com.interview.autoshop.service.domain.Autoshop;
+import com.interview.autoshop.service.domain.AutoshopMapper;
+import com.interview.error.exception.AutoshopNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,5 +37,12 @@ public class AutoshopService {
         Autoshop incoming = mapper.fromCreate(request);
         AutoshopEntity saved = repository.save(mapper.toDao(incoming));
         return mapper.toDomain(saved);
+    }
+
+    public Autoshop replace(Long id, UpdateAutoshopRequest request) {
+        AutoshopEntity managed = repository.findById(id)
+                .orElseThrow(() -> new AutoshopNotFoundException(id));
+        mapper.applyUpdate(request, managed);
+        return mapper.toDomain(repository.save(managed));
     }
 }

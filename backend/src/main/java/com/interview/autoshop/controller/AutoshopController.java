@@ -1,9 +1,10 @@
 package com.interview.autoshop.controller;
 
-import com.interview.autoshop.service.domain.AutoshopMapper;
 import com.interview.autoshop.controller.dto.AutoshopResponse;
 import com.interview.autoshop.controller.dto.CreateAutoshopRequest;
+import com.interview.autoshop.controller.dto.UpdateAutoshopRequest;
 import com.interview.autoshop.service.AutoshopService;
+import com.interview.autoshop.service.domain.AutoshopMapper;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,5 +49,12 @@ public class AutoshopController {
                 .buildAndExpand(created.getId())
                 .toUri();
         return ResponseEntity.created(location).body(created);
+    }
+
+    @PutMapping("/{id}")
+    public AutoshopResponse replace(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateAutoshopRequest request) {
+        return mapper.toResponse(service.replace(id, request));
     }
 }

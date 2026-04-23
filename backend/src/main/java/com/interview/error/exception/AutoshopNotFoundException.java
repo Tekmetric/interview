@@ -1,4 +1,4 @@
-package com.interview.autoshop;
+package com.interview.error.exception;
 
 public class AutoshopNotFoundException extends RuntimeException {
 

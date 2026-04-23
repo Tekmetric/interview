@@ -1,4 +1,4 @@
-package com.interview.autoshop.dao;
+package com.interview.autoshop.repository;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,7 +22,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class AutoshopDao {
+public class AutoshopEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

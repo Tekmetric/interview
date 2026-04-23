@@ -1,14 +1,12 @@
-package com.interview.autoshop.dto;
+package com.interview.autoshop.service.domain;
 
 import java.time.Instant;
 import lombok.Builder;
 import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
 
 @Value
-@Builder
-@Jacksonized
-public class AutoshopResponse {
+@Builder(toBuilder = true)
+public class Autoshop {
     Long id;
     String name;
     String address;

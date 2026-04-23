@@ -1,6 +1,11 @@
-package com.interview.autoshop;
+package com.interview.autoshop.service;
 
-import com.interview.autoshop.dao.AutoshopRepository;
+import com.interview.autoshop.service.domain.AutoshopMapper;
+import com.interview.error.exception.AutoshopNotFoundException;
+import com.interview.autoshop.repository.AutoshopEntity;
+import com.interview.autoshop.repository.AutoshopRepository;
+import com.interview.autoshop.controller.dto.CreateAutoshopRequest;
+import com.interview.autoshop.service.domain.Autoshop;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,5 +30,11 @@ public class AutoshopService {
     @Transactional(readOnly = true)
     public Page<Autoshop> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toDomain);
+    }
+
+    public Autoshop create(CreateAutoshopRequest request) {
+        Autoshop incoming = mapper.fromCreate(request);
+        AutoshopEntity saved = repository.save(mapper.toDao(incoming));
+        return mapper.toDomain(saved);
     }
 }

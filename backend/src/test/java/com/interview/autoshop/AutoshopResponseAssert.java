@@ -1,6 +1,6 @@
 package com.interview.autoshop;
 
-import com.interview.autoshop.dto.AutoshopResponse;
+import com.interview.autoshop.controller.dto.AutoshopResponse;
 import java.util.Objects;
 import org.assertj.core.api.AbstractAssert;
 
@@ -27,6 +27,22 @@ public class AutoshopResponseAssert
         isNotNull();
         if (!Objects.equals(actual.getName(), expected)) {
             failWithMessage("Expected name <%s> but was <%s>", expected, actual.getName());
+        }
+        return this;
+    }
+
+    public AutoshopResponseAssert hasAddress(String expected) {
+        isNotNull();
+        if (!Objects.equals(actual.getAddress(), expected)) {
+            failWithMessage("Expected address <%s> but was <%s>", expected, actual.getAddress());
+        }
+        return this;
+    }
+
+    public AutoshopResponseAssert hasPhone(String expected) {
+        isNotNull();
+        if (!Objects.equals(actual.getPhone(), expected)) {
+            failWithMessage("Expected phone <%s> but was <%s>", expected, actual.getPhone());
         }
         return this;
     }

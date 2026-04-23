@@ -4,12 +4,20 @@ import static com.interview.autoshop.AutoshopResponseAssert.assertThatResponse;
 import static com.interview.autoshop.AutoshopTestFixtures.SEED_FIRST_ID;
 import static com.interview.autoshop.AutoshopTestFixtures.SEED_FIRST_NAME;
 import static com.interview.autoshop.AutoshopTestFixtures.SEED_MISSING_ID;
+import static com.interview.autoshop.AutoshopTestFixtures.invalidCreateJson_blankName;
+import static com.interview.autoshop.AutoshopTestFixtures.validCreateJson;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.interview.autoshop.dto.AutoshopResponse;
+import com.interview.autoshop.repository.AutoshopRepository;
+import com.interview.autoshop.controller.dto.AutoshopResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,6 +33,7 @@ class AutoshopApiIT {
 
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper json;
+    @Autowired AutoshopRepository repo;
 
     @Test
     void get_by_id_returns_seed_row() throws Exception {
@@ -67,5 +76,37 @@ class AutoshopApiIT {
                 .andExpect(jsonPath("$.type").value("/problems/invalid-query-parameter"))
                 .andExpect(jsonPath("$.title").value("Invalid query parameter"))
                 .andExpect(jsonPath("$.property").value("doesNotExist"));
+    }
+
+    @Test
+    void creates_and_persists() throws Exception {
+        long before = repo.count();
+        MvcResult r = mvc.perform(post("/api/autoshops")
+                        .contentType(APPLICATION_JSON)
+                        .content(validCreateJson()))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", matchesPattern(".*/api/autoshops/\\d+")))
+                .andReturn();
+
+        AutoshopResponse created =
+                json.readValue(r.getResponse().getContentAsString(), AutoshopResponse.class);
+        assertThatResponse(created)
+                .hasId()
+                .hasName("New Shop")
+                .hasAddress("1 New Rd")
+                .hasPhone("555-0000")
+                .hasTimestamps();
+        assertThat(repo.count()).isEqualTo(before + 1);
+    }
+
+    @Test
+    void validation_rejects_blank_name() throws Exception {
+        mvc.perform(post("/api/autoshops")
+                        .contentType(APPLICATION_JSON)
+                        .content(invalidCreateJson_blankName()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.type").value("/problems/validation"))
+                .andExpect(jsonPath("$.title").value("Invalid request"))
+                .andExpect(jsonPath("$.errors.name").exists());
     }
 }

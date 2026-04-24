@@ -13,6 +13,7 @@ spring:
     init:
       mode: always
       platform: h2
+      data-locations: classpath:database/data.sql
   h2:
     console:
       enabled: true

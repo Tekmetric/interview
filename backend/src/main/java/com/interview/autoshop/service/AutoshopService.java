@@ -45,4 +45,11 @@ public class AutoshopService {
         mapper.applyUpdate(request, managed);
         return mapper.toDomain(repository.save(managed));
     }
+
+    public void delete(Long id) {
+        if (!repository.existsById(id)) {
+            throw new AutoshopNotFoundException(id);
+        }
+        repository.deleteById(id);
+    }
 }

@@ -10,6 +10,7 @@ import static com.interview.autoshop.AutoshopTestFixtures.validCreateJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -140,6 +141,23 @@ class AutoshopApiIT {
         mvc.perform(put("/api/autoshops/" + SEED_MISSING_ID)
                         .contentType(APPLICATION_JSON)
                         .content(createRequestJson("X", "Y", "Z")))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.type").value("/problems/not-found"));
+    }
+
+    @Test
+    void delete_removes_row_and_subsequent_get_is_404() throws Exception {
+        long before = repo.count();
+        mvc.perform(delete("/api/autoshops/" + SEED_FIRST_ID))
+                .andExpect(status().isNoContent());
+        mvc.perform(get("/api/autoshops/" + SEED_FIRST_ID))
+                .andExpect(status().isNotFound());
+        assertThat(repo.count()).isEqualTo(before - 1);
+    }
+
+    @Test
+    void delete_missing_id_returns_problem_404() throws Exception {
+        mvc.perform(delete("/api/autoshops/" + SEED_MISSING_ID))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.type").value("/problems/not-found"));
     }

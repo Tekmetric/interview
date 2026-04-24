@@ -1,0 +1,109 @@
+# Autoshop API — chronological demo for QA / reviewers.
+# Runs top-to-bottom against the app on http://localhost:8080.
+
+@host = http://localhost:8080
+
+
+### List — default paging (size=1000, sort=id,ASC). Returns the three seed rows.
+GET {{host}}/api/autoshops
+Accept: application/json
+
+
+### List — sorted by name descending.
+GET {{host}}/api/autoshops?sort=name,desc
+Accept: application/json
+
+
+### List — explicit pagination: second page of size 2.
+GET {{host}}/api/autoshops?size=2&page=1&sort=id,asc
+Accept: application/json
+
+
+### List — unknown sort property. 400 application/problem+json (invalid-query-parameter).
+GET {{host}}/api/autoshops?sort=notAField,asc
+Accept: application/json
+
+
+### Read one by id.
+GET {{host}}/api/autoshops/1
+Accept: application/json
+
+
+### Read one — missing id. 404 application/problem+json (not-found).
+GET {{host}}/api/autoshops/9999
+Accept: application/json
+
+
+### Create — happy path. Captures the assigned id into createdId for later steps.
+POST {{host}}/api/autoshops
+Content-Type: application/json
+
+{
+  "name": "Harbor Auto Works",
+  "address": "42 Pier Rd, Galveston, TX",
+  "phone": "555-0200"
+}
+
+> {% client.global.set("createdId", response.body.id); %}
+
+
+### Create — all required fields blank. 400 with every field in the errors map.
+POST {{host}}/api/autoshops
+Content-Type: application/json
+
+{
+  "name": "",
+  "address": "",
+  "phone": ""
+}
+
+
+### Read the row we just created.
+GET {{host}}/api/autoshops/{{createdId}}
+Accept: application/json
+
+
+### Full replace via PUT. id and createdAt preserved; updatedAt bumped.
+PUT {{host}}/api/autoshops/{{createdId}}
+Content-Type: application/json
+
+{
+  "name": "Harbor Auto & Marine",
+  "address": "42 Pier Rd, Galveston, TX",
+  "phone": "555-0201"
+}
+
+
+### PUT against a missing id. 404.
+PUT {{host}}/api/autoshops/9999
+Content-Type: application/json
+
+{
+  "name": "Ghost Shop",
+  "address": "Nowhere",
+  "phone": "000-0000"
+}
+
+
+### PUT with a required field blank. 400.
+PUT {{host}}/api/autoshops/{{createdId}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "address": "42 Pier Rd, Galveston, TX",
+  "phone": "555-0201"
+}
+
+
+### Delete the row we created.
+DELETE {{host}}/api/autoshops/{{createdId}}
+
+
+### Confirm the row is gone. 404.
+GET {{host}}/api/autoshops/{{createdId}}
+Accept: application/json
+
+
+### Delete a nonexistent id. 404.
+DELETE {{host}}/api/autoshops/9999

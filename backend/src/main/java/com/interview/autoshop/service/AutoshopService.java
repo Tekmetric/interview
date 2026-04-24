@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** CRUD service for the Autoshop aggregate. */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -21,6 +22,11 @@ public class AutoshopService {
     private final AutoshopRepository repository;
     private final AutoshopMapper mapper;
 
+    /**
+     * Loads a single autoshop by id.
+     *
+     * @throws AutoshopNotFoundException if no such row exists
+     */
     @Transactional(readOnly = true)
     public Autoshop findById(Long id) {
         return repository.findById(id)
@@ -28,17 +34,24 @@ public class AutoshopService {
                 .orElseThrow(() -> new AutoshopNotFoundException(id));
     }
 
+    /** Returns a paginated list of autoshops. */
     @Transactional(readOnly = true)
     public Page<Autoshop> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toDomain);
     }
 
+    /** Persists a new autoshop; id and timestamps are populated by the database. */
     public Autoshop create(CreateAutoshopRequest request) {
         Autoshop incoming = mapper.fromCreate(request);
-        AutoshopEntity saved = repository.save(mapper.toDao(incoming));
+        AutoshopEntity saved = repository.save(mapper.toEntity(incoming));
         return mapper.toDomain(saved);
     }
 
+    /**
+     * Replaces every mutable field of an existing autoshop; id and createdAt are preserved.
+     *
+     * @throws AutoshopNotFoundException if no such row exists
+     */
     public Autoshop replace(Long id, UpdateAutoshopRequest request) {
         AutoshopEntity managed = repository.findById(id)
                 .orElseThrow(() -> new AutoshopNotFoundException(id));
@@ -46,6 +59,11 @@ public class AutoshopService {
         return mapper.toDomain(repository.save(managed));
     }
 
+    /**
+     * Deletes an autoshop by id.
+     *
+     * @throws AutoshopNotFoundException if no such row exists
+     */
     public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new AutoshopNotFoundException(id);

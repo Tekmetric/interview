@@ -10,9 +10,9 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface AutoshopMapper {
 
-    Autoshop toDomain(AutoshopEntity dao);
+    Autoshop toDomain(AutoshopEntity entity);
 
-    AutoshopEntity toDao(Autoshop domain);
+    AutoshopEntity toEntity(Autoshop domain);
 
     Autoshop fromCreate(CreateAutoshopRequest dto);
 

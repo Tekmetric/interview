@@ -1,41 +1,47 @@
 package com.interview.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
 
 @Entity
-@Table(name="Athletes")
+@Table(name = "athletes")
 public class Athlete {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    @JsonProperty
     private UUID athleteId;
 
-    @Nonnull
+    @NotBlank
+    @Size(max = 100)
     @Column(name = "first_name")
     private String firstName;
 
-    @Nonnull
+    @NotBlank
+    @Size(max = 100)
     @Column(name = "last_name")
     private String lastName;
 
-    @Nonnull
+    @NotNull
     @Column(name = "position")
-    private String position;
+    @Enumerated(EnumType.STRING)
+    private Position position;
 
     @Column(name = "shoots")
-    private String shoots;
+    @Enumerated(EnumType.STRING)
+    private Shoots shoots;
 
     @Column(name = "number")
     private Integer number;
@@ -43,12 +49,17 @@ public class Athlete {
     public Athlete() {
     }
 
-    public Athlete(@NonNull String firstName, @NonNull String lastName, @NonNull String position, String shoots, Integer number) {
+    public Athlete(@NonNull String firstName, @NonNull String lastName, @NonNull Position position, Shoots shoots, Integer number) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.position = position;
         this.shoots = shoots;
         this.number = number;
+    }
+
+    @JsonProperty
+    public UUID getAthleteId() {
+        return athleteId;
     }
 
     public @NonNull String getFirstName() {
@@ -67,19 +78,19 @@ public class Athlete {
         this.lastName = lastName;
     }
 
-    public @NonNull String getPosition() {
+    public @NonNull Position getPosition() {
         return position;
     }
 
-    public void setPosition(@NonNull String position) {
+    public void setPosition(@NonNull Position position) {
         this.position = position;
     }
 
-    public String getShoots() {
+    public Shoots getShoots() {
         return shoots;
     }
 
-    public void setShoots(String shoots) {
+    public void setShoots(Shoots shoots) {
         this.shoots = shoots;
     }
 
@@ -97,8 +108,8 @@ public class Athlete {
                 "athleteId=" + athleteId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", position='" + position + '\'' +
-                ", shoots='" + shoots + '\'' +
+                ", position=" + position +
+                ", shoots=" + shoots +
                 ", number=" + number +
                 '}';
     }

@@ -52,6 +52,8 @@
 
     <properties>
         <java.version>17</java.version>
+        <!-- Ensure Maven compiles with Java 17 features (e.g., text blocks). -->
+        <maven.compiler.release>${java.version}</maven.compiler.release>
     </properties>
 
 

@@ -40,12 +40,12 @@ backend:
       memory: "128Mi"
   livenessProbe:
     httpGet:
-      path: api/health
-      port: http
+      path: /api/health
+      port: 8080
   readinessProbe:
     httpGet:
-      path: /
-      port: api/health
+      path: /api/health
+      port: 8080
   autoscaling:
     enabled: true
     minReplicas: 2

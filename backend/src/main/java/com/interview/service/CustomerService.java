@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.interview.dto.CustomerCriteria;
 import com.interview.dto.CustomerRequest;
@@ -26,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 public class CustomerService {
 
     private static final Set<String> SORTABLE_FIELDS = Set.of(
@@ -43,6 +45,7 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
+    @Transactional
     public CustomerResponse create(CustomerRequest request) {
         Customer customer = request.toEntity();
         Customer saved = customerRepository.save(customer);
@@ -85,6 +88,7 @@ public class CustomerService {
         return Sort.by(direction, criteria.getSortBy());
     }
 
+    @Transactional
     public CustomerResponse update(Long id, CustomerRequest request) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + id));
@@ -99,6 +103,7 @@ public class CustomerService {
         return CustomerResponse.fromEntity(saved);
     }
 
+    @Transactional
     public CustomerResponse updateStatus(Long id, CustomerStatus newStatus) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + id));
@@ -110,6 +115,7 @@ public class CustomerService {
         return CustomerResponse.fromEntity(saved);
     }
 
+    @Transactional
     public void delete(Long id) {
         if (!customerRepository.existsById(id)) {
             throw new ResourceNotFoundException("Customer not found: " + id);

@@ -9,6 +9,7 @@ import com.interview.repository.CustomerRepository;
 import com.interview.repository.VehicleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
@@ -30,6 +32,7 @@ public class VehicleService {
         this.customerRepository = customerRepository;
     }
 
+    @Transactional
     public VehicleResponse create(Long customerId, VehicleRequest request) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -60,6 +63,7 @@ public class VehicleService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public VehicleResponse update(Long id, VehicleRequest request) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + id));
@@ -71,6 +75,7 @@ public class VehicleService {
         return VehicleResponse.fromEntity(saved);
     }
 
+    @Transactional
     public VehicleResponse updateActive(Long id, boolean active) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + id));
@@ -82,6 +87,7 @@ public class VehicleService {
         return VehicleResponse.fromEntity(saved);
     }
 
+    @Transactional
     public void delete(Long id) {
         if (!vehicleRepository.existsById(id)) {
             throw new ResourceNotFoundException("Vehicle not found: " + id);

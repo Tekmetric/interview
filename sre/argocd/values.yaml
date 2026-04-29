@@ -3,7 +3,7 @@ backend:
   image:
     repository: ghcr.io/m-traco/backend-app
     pullPolicy: IfNotPresent
-    tag: "21d1c1614b3d9f0d18985e6c39b1b790a53f8995"
+    tag: "81f815527334363937a75920a79b14722f9106ab"
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""

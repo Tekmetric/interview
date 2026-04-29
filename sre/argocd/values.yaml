@@ -42,13 +42,13 @@ backend:
     httpGet:
       path: /api/health
       port: 8080
-    initialDelaySeconds: 15
+    initialDelaySeconds: 60
     periodSeconds: 5
   readinessProbe:
     httpGet:
       path: /api/health
       port: 8080
-    initialDelaySeconds: 15
+    initialDelaySeconds: 60
     periodSeconds: 5
   autoscaling:
     enabled: true

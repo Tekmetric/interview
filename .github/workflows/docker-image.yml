@@ -30,7 +30,7 @@ jobs:
         OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
         IMAGE_ID=ghcr.io/$OWNER_LC/backend-app
         
-        docker build . --file Dockerfile --tag $IMAGE_ID:${{ github.sha }}
+        docker build backend/ --file backend/Dockerfile --tag $IMAGE_ID:${{ github.sha }}
         
         if [ "${{ github.event_name }}" = "push" ]; then
           docker push $IMAGE_ID:${{ github.sha }}

@@ -1,0 +1,10 @@
+apiVersion: v2
+maintainers:
+- email: mmojica53@gmail.com
+  name: Marco Mojica
+name: backend
+version: 0.0.1
+dependencies:
+  - name: backend
+    version: 0.0.1
+    repository: "file://./charts"

@@ -1,58 +1,59 @@
-replicaCount: 1
-image:
-  repository: nginx
-  pullPolicy: IfNotPresent
-  tag: ""
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-serviceAccount:
-  create: true
-  automount: true
-  annotations: {}
-  name: ""
-podAnnotations: {}
-podLabels: {}
-podSecurityContext: {}
-securityContext: {}
-service:
-  type: ClusterIP
-  port: 8080
-ingress:
-  enabled: true
-  className: "traefik"
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: backend.local
-      paths:
-        - path: /api
-          pathType: ImplementationSpecific
-httpRoute:
-  enabled: false
-resources:
-  requests:
-    cpu: "250m"
-    memory: "64Mi"
-  limits:
-    memory: "128Mi"
-livenessProbe:
-  httpGet:
-    path: api/health
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: api/health
-autoscaling:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 50
-  targetMemoryUtilizationPercentage: 50
-volumes: []
-volumeMounts: []
-nodeSelector: {}
-tolerations: []
-affinity: {}
+backend:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/m-traco/backend-app
+    pullPolicy: IfNotPresent
+    tag: "21d1c1614b3d9f0d18985e6c39b1b790a53f8995"
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  service:
+    type: ClusterIP
+    port: 8080
+  ingress:
+    enabled: true
+    className: "traefik"
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: backend.local
+        paths:
+          - path: /api
+            pathType: ImplementationSpecific
+  httpRoute:
+    enabled: false
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "64Mi"
+    limits:
+      memory: "128Mi"
+  livenessProbe:
+    httpGet:
+      path: api/health
+      port: http
+  readinessProbe:
+    httpGet:
+      path: /
+      port: api/health
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+  volumes: []
+  volumeMounts: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tekmetric API Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    header h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.02em; }
+    header p  { font-size: 0.85rem; color: #aab; margin-top: 2px; }
+
+    .logo {
+      width: 38px; height: 38px;
+      background: #e63946;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.1rem; flex-shrink: 0;
+    }
+
+    main { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    .intro {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      border-left: 4px solid #1a1a2e;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .intro strong { color: #1a1a2e; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+
+    .step {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      transition: box-shadow 0.2s;
+    }
+
+    .step:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.11); }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #1a1a2e; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    .step-meta { flex: 1; }
+    .step-title { font-size: 0.95rem; font-weight: 600; }
+    .step-desc  { font-size: 0.8rem; color: #777; margin-top: 2px; }
+
+    .method-badge {
+      font-size: 0.7rem; font-weight: 700; padding: 3px 8px;
+      border-radius: 4px; letter-spacing: 0.05em; flex-shrink: 0;
+    }
+
+    .GET    { background: #e8f5e9; color: #2e7d32; }
+    .POST   { background: #e3f2fd; color: #1565c0; }
+    .PUT    { background: #fff8e1; color: #f57f17; }
+    .PATCH  { background: #f3e5f5; color: #6a1b9a; }
+    .DELETE { background: #fce4ec; color: #c62828; }
+
+    .chevron {
+      color: #aaa; font-size: 0.75rem; transition: transform 0.2s;
+    }
+
+    .step.open .chevron { transform: rotate(180deg); }
+
+    .step-body {
+      display: none;
+      padding: 0 20px 18px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .step.open .step-body { display: block; }
+
+    .url-display {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.8rem;
+      color: #555;
+      background: #f7f8fa;
+      border: 1px solid #e8e8e8;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin: 14px 0 10px;
+      word-break: break-all;
+    }
+
+    .url-display .method-text { font-weight: 700; margin-right: 8px; }
+    .GET-text    { color: #2e7d32; }
+    .POST-text   { color: #1565c0; }
+    .PUT-text    { color: #f57f17; }
+    .PATCH-text  { color: #6a1b9a; }
+    .DELETE-text { color: #c62828; }
+
+    .note {
+      font-size: 0.78rem;
+      color: #888;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+
+    label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #555;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    textarea {
+      width: 100%;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      resize: vertical;
+      background: #fafafa;
+      color: #333;
+      min-height: 90px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    textarea:focus { border-color: #1a1a2e; background: #fff; }
+
+    .run-btn {
+      margin-top: 12px;
+      padding: 9px 22px;
+      background: #1a1a2e;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .run-btn:hover   { background: #2d2d4e; }
+    .run-btn:active  { transform: scale(0.98); }
+    .run-btn:disabled { background: #999; cursor: not-allowed; }
+
+    .response-panel {
+      margin-top: 14px;
+      border-radius: 6px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .response-panel.visible { display: block; }
+
+    .response-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .response-meta.ok    { background: #e8f5e9; color: #2e7d32; }
+    .response-meta.error { background: #fce4ec; color: #c62828; }
+
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    .ok .status-dot    { background: #2e7d32; }
+    .error .status-dot { background: #c62828; }
+
+    .response-body {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.78rem;
+      background: #1e1e2e;
+      color: #cdd6f4;
+      padding: 14px;
+      overflow-x: auto;
+      white-space: pre;
+      max-height: 320px;
+      overflow-y: auto;
+      line-height: 1.5;
+    }
+
+    .id-captured {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: #1565c0;
+      background: #e3f2fd;
+      border-radius: 4px;
+      padding: 5px 10px;
+      display: none;
+    }
+
+    .id-captured.visible { display: block; }
+
+    .divider {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #aaa;
+      margin: 24px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">T</div>
+  <div>
+    <h1>Tekmetric API Demo</h1>
+    <p>Customer &amp; Vehicle CRUD walkthrough — <code style="font-size:0.8em">http://localhost:8080</code></p>
+  </div>
+</header>
+
+<main>
+  <div class="intro">
+    This page walks through every endpoint in sequence. Steps 1–4 explore the
+    <strong>110 seeded customers</strong>. Steps 5–11 create a brand-new customer,
+    attach a vehicle, exercise every mutation, and clean up via delete.
+    IDs are captured automatically from responses and wired into subsequent steps.
+  </div>
+
+  <div class="steps" id="steps"></div>
+</main>
+
+<script>
+// ─── shared state ────────────────────────────────────────────────────────────
+const state = { customerId: null };
+
+// ─── step definitions ────────────────────────────────────────────────────────
+const STEPS = [
+  {
+    num: 1, method: 'GET',
+    title: 'List Customers (default sort)',
+    desc:  'Returns page 0, 5 per page, sorted last_name → first_name ASC',
+    url:   () => '/api/customers?size=5',
+    note:  null,
+    body:  null,
+  },
+  {
+    num: 2, method: 'GET',
+    title: 'Search Customers',
+    desc:  'Full-name substring search — finds every customer whose first or last name contains "john"',
+    url:   () => '/api/customers?search=john&size=5',
+    note:  null,
+    body:  null,
+  },
+  {
+    num: 3, method: 'GET',
+    title: 'Filter by Status',
+    desc:  'Returns only INACTIVE customers, page 0',
+    url:   () => '/api/customers?status=INACTIVE&size=5',
+    note:  null,
+    body:  null,
+  },
+  {
+    num: 4, method: 'GET',
+    title: 'Sort by Most Recently Created',
+    desc:  'Newest customers first — demonstrates the createdAt sort field',
+    url:   () => '/api/customers?sortBy=createdAt&sortDirection=DESC&size=5',
+    note:  null,
+    body:  null,
+  },
+  {
+    num: 5, method: 'POST',
+    title: 'Create Customer',
+    desc:  'Creates a new customer. The returned ID is used in every step that follows.',
+    url:   () => '/api/customers',
+    note:  null,
+    body:  JSON.stringify({
+      firstName: 'Steve',
+      lastName:  'Demo',
+      phone:     '555-9999',
+      email:     'steve.demo@example.com'
+    }, null, 2),
+    captureId: true,
+  },
+  {
+    num: 6, method: 'GET',
+    title: 'Get Customer by ID',
+    desc:  'Fetches the customer created in step 5 by its generated ID',
+    url:   () => `/api/customers/${state.customerId ?? '{id}'}`,
+    note:  'Uses the ID captured in step 5',
+    body:  null,
+  },
+  {
+    num: 7, method: 'POST',
+    title: 'Add a Vehicle',
+    desc:  'Attaches a vehicle to the customer. VIN must be exactly 17 characters.',
+    url:   () => `/api/customers/${state.customerId ?? '{id}'}/vehicles`,
+    note:  'Uses the ID captured in step 5',
+    body:  JSON.stringify({
+      vin:   '2T1BURHE0JC012345',
+      make:  'Toyota',
+      model: 'Corolla',
+      year:  2018
+    }, null, 2),
+  },
+  {
+    num: 8, method: 'GET',
+    title: 'List Vehicles for Customer',
+    desc:  'Returns all vehicles belonging to the customer',
+    url:   () => `/api/customers/${state.customerId ?? '{id}'}/vehicles`,
+    note:  'Uses the ID captured in step 5',
+    body:  null,
+  },
+  {
+    num: 9, method: 'PUT',
+    title: 'Update Customer',
+    desc:  'Full replacement of the customer record — all fields required',
+    url:   () => `/api/customers/${state.customerId ?? '{id}'}`,
+    note:  'Uses the ID captured in step 5',
+    body:  JSON.stringify({
+      firstName: 'Steve',
+      lastName:  'Demo-Updated',
+      phone:     '555-0000',
+      email:     'steve.updated@example.com'
+    }, null, 2),
+  },
+  {
+    num: 10, method: 'PATCH',
+    title: 'Update Customer Status',
+    desc:  'Marks the customer INACTIVE without touching any other fields',
+    url:   () => `/api/customers/${state.customerId ?? '{id}'}/status`,
+    note:  'Uses the ID captured in step 5',
+    body:  JSON.stringify({ status: 'INACTIVE' }, null, 2),
+  },
+  {
+    num: 11, method: 'DELETE',
+    title: 'Delete Customer',
+    desc:  'Permanently removes the customer (and their vehicles via CASCADE). Returns 204 No Content.',
+    url:   () => `/api/customers/${state.customerId ?? '{id}'}`,
+    note:  'Uses the ID captured in step 5',
+    body:  null,
+  },
+];
+
+// ─── render ──────────────────────────────────────────────────────────────────
+function renderSteps() {
+  const container = document.getElementById('steps');
+
+  STEPS.forEach((step, idx) => {
+    // Section dividers
+    if (step.num === 5) {
+      const div = document.createElement('div');
+      div.className = 'divider';
+      div.textContent = 'Create & Mutate — steps 5–11 share a single new customer';
+      container.appendChild(div);
+    }
+
+    const el = document.createElement('div');
+    el.className = 'step';
+    el.id = `step-${step.num}`;
+
+    el.innerHTML = `
+      <div class="step-header" onclick="toggleStep(${step.num})">
+        <div class="step-num">${step.num}</div>
+        <div class="step-meta">
+          <div class="step-title">${step.title}</div>
+          <div class="step-desc">${step.desc}</div>
+        </div>
+        <span class="method-badge ${step.method}">${step.method}</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="step-body">
+        <div class="url-display">
+          <span class="method-text ${step.method}-text">${step.method}</span>
+          <span class="url-text">${step.url()}</span>
+        </div>
+        ${step.note ? `<div class="note">ℹ︎ ${step.note}</div>` : ''}
+        ${step.body != null ? `
+          <label>Request body</label>
+          <textarea id="body-${step.num}" rows="6">${step.body}</textarea>
+        ` : ''}
+        <button class="run-btn" id="btn-${step.num}" onclick="runStep(${step.num})">
+          ▶ Run
+        </button>
+        ${step.captureId ? `<div class="id-captured" id="captured-${step.num}"></div>` : ''}
+        <div class="response-panel" id="resp-${step.num}">
+          <div class="response-meta" id="resp-meta-${step.num}">
+            <div class="status-dot"></div>
+            <span id="resp-status-${step.num}"></span>
+          </div>
+          <div class="response-body" id="resp-body-${step.num}"></div>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(el);
+  });
+}
+
+// ─── toggle open/close ───────────────────────────────────────────────────────
+function toggleStep(num) {
+  const el = document.getElementById(`step-${num}`);
+  el.classList.toggle('open');
+}
+
+// ─── refresh dynamic URLs ────────────────────────────────────────────────────
+function refreshUrls() {
+  STEPS.forEach(step => {
+    const el = document.querySelector(`#step-${step.num} .url-text`);
+    if (el) el.textContent = step.url();
+  });
+}
+
+// ─── run a step ──────────────────────────────────────────────────────────────
+async function runStep(num) {
+  const step   = STEPS.find(s => s.num === num);
+  const btn    = document.getElementById(`btn-${num}`);
+  const panel  = document.getElementById(`resp-${num}`);
+  const meta   = document.getElementById(`resp-meta-${num}`);
+  const status = document.getElementById(`resp-status-${num}`);
+  const body   = document.getElementById(`resp-body-${num}`);
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Running…';
+
+  const options = {
+    method: step.method,
+    headers: {},
+  };
+
+  if (step.body != null) {
+    const rawBody = document.getElementById(`body-${num}`).value;
+    options.headers['Content-Type'] = 'application/json';
+    options.body = rawBody;
+  }
+
+  try {
+    const res  = await fetch(step.url(), options);
+    const text = await res.text();
+
+    let display = text;
+    try {
+      display = JSON.stringify(JSON.parse(text), null, 2);
+    } catch (_) { /* not JSON — keep as-is */ }
+
+    const ok = res.status >= 200 && res.status < 300;
+    meta.className = `response-meta ${ok ? 'ok' : 'error'}`;
+    status.textContent = `HTTP ${res.status} ${res.statusText}`;
+    body.textContent   = display || '(empty body)';
+
+    panel.classList.add('visible');
+
+    // capture ID from create response
+    if (step.captureId && ok) {
+      try {
+        const json = JSON.parse(text);
+        if (json.id) {
+          state.customerId = json.id;
+          const cap = document.getElementById(`captured-${num}`);
+          cap.textContent = `✓ Customer ID ${json.id} captured — wired into steps 6–11`;
+          cap.classList.add('visible');
+          refreshUrls();
+        }
+      } catch (_) {}
+    }
+
+  } catch (err) {
+    meta.className = 'response-meta error';
+    status.textContent = 'Network error';
+    body.textContent   = err.message;
+    panel.classList.add('visible');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '▶ Run';
+}
+
+// ─── init ─────────────────────────────────────────────────────────────────────
+renderSteps();
+// open step 1 by default
+document.getElementById('step-1').classList.add('open');
+</script>
+</body>
+</html>

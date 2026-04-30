@@ -28,7 +28,7 @@ backend:
     hosts:
       - host: backend.local
         paths:
-          - path: /api
+          - path: /
             pathType: ImplementationSpecific
   httpRoute:
     enabled: false
@@ -51,7 +51,7 @@ backend:
     initialDelaySeconds: 60
     periodSeconds: 5
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 2
     maxReplicas: 100
     targetCPUUtilizationPercentage: 50

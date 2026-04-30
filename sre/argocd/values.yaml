@@ -35,9 +35,9 @@ backend:
   resources:
     requests:
       cpu: "250m"
-      memory: "64Mi"
+      memory: "250Mi"
     limits:
-      memory: "128Mi"
+      memory: "250Mi"
   livenessProbe:
     httpGet:
       path: /api/health
@@ -51,11 +51,11 @@ backend:
     initialDelaySeconds: 60
     periodSeconds: 5
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 2
     maxReplicas: 100
     targetCPUUtilizationPercentage: 50
-    targetMemoryUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 90
   volumes: []
   volumeMounts: []
   nodeSelector: {}

@@ -4,15 +4,15 @@ on:
   workflow_run:
     workflows: [Trivy Code Scan]
     types: [completed]
-    branches: [main]
+    branches: [main, master]
     paths:
       - 'backend/**'
   pull_request:
-    branches: [main]
+    branches: [main, master]
     paths:
       - 'backend/**'
   push:
-    branches: [main]
+    branches: [main, master]
     paths:
       - 'backend/**'
   workflow_dispatch:

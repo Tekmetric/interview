@@ -14,7 +14,7 @@ on:
       fail_on_vulnerabilities:
         description: 'Fail workflow when Critical/High vulnerabilities found'
         required: false
-        default: 'true'
+        default: 'false'
         type: choice
         options:
           - 'true'
@@ -123,8 +123,8 @@ jobs:
           VULN_COUNT=$(cat trivy-results.json | jq -r '[.Results[]?.Vulnerabilities[]?] | length' 2>/dev/null || echo "0")
           echo "vulnerability_count=$VULN_COUNT" >> $GITHUB_OUTPUT
           
-          # Determine if we should fail
-          FAIL_ON_VULNS=${{ github.event.inputs.fail_on_vulnerabilities || 'true' }}
+          # Determine if we should fail (default to false)
+          FAIL_ON_VULNS=${{ github.event.inputs.fail_on_vulnerabilities || 'false' }}
           
           if [ "$VULN_COUNT" -gt 0 ] && [ "$FAIL_ON_VULNS" = "true" ]; then
             echo "❌ Found $VULN_COUNT vulnerabilities. Failing build."

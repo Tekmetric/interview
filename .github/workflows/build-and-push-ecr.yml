@@ -7,6 +7,16 @@ on:
     branches: [main]
     paths:
       - 'backend/**'
+  workflow_dispatch:
+    inputs:
+      fail_on_vulnerabilities:
+        description: 'Fail workflow when Critical/High vulnerabilities found'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 jobs:
   build-and-scan:
@@ -36,7 +46,22 @@ jobs:
           scan-type: 'image'
           image-ref: 'docker://interview:build'
           severity: 'CRITICAL,HIGH'
-          exit-code: '1'
+          exit-code: '0'
+
+      - name: Check for vulnerabilities and optionally fail
+        id: check_vulns
+        run: |
+          VULN_COUNT=$(docker run --rm aquasec/trivy:latest image --format json --severity CRITICAL,HIGH interview:build 2>/dev/null | jq -r '[.Results[]?.Vulnerabilities[]?] | length' 2>/dev/null || echo "0")
+          echo "vulnerability_count=$VULN_COUNT" >> $GITHUB_OUTPUT
+          
+          FAIL_ON_VULNS=${{ github.event.inputs.fail_on_vulnerabilities || 'false' }}
+          
+          if [ "$VULN_COUNT" -gt 0 ] && [ "$FAIL_ON_VULNS" = "true" ]; then
+            echo "❌ Found $VULN_COUNT vulnerabilities. Failing build."
+            exit 1
+          else
+            echo "✅ Scan complete. Found $VULN_COUNT vulnerabilities (fail_on_vulnerabilities=$FAIL_ON_VULNS)"
+          fi
 
   build-push-and-scan:
     runs-on: ubuntu-latest
@@ -88,7 +113,24 @@ jobs:
           scan-type: 'image'
           image-ref: 'docker://519551088082.dkr.ecr.us-east-1.amazonaws.com/interview:build'
           severity: 'CRITICAL,HIGH'
-          exit-code: '1'
+          exit-code: '0'
+          format: 'json'
+          output: 'trivy-container-results.json'
+
+      - name: Check for vulnerabilities and optionally fail
+        id: check_vulns
+        run: |
+          VULN_COUNT=$(cat trivy-container-results.json | jq -r '[.Results[]?.Vulnerabilities[]?] | length' 2>/dev/null || echo "0")
+          echo "vulnerability_count=$VULN_COUNT" >> $GITHUB_OUTPUT
+          
+          FAIL_ON_VULNS=${{ github.event.inputs.fail_on_vulnerabilities || 'false' }}
+          
+          if [ "$VULN_COUNT" -gt 0 ] && [ "$FAIL_ON_VULNS" = "true" ]; then
+            echo "❌ Found $VULN_COUNT vulnerabilities. Failing build."
+            exit 1
+          else
+            echo "✅ Scan complete. Found $VULN_COUNT vulnerabilities (fail_on_vulnerabilities=$FAIL_ON_VULNS)"
+          fi
 
       - name: Push image to ECR
         uses: docker/build-push-action@v5

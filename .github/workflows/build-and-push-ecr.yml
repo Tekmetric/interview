@@ -7,6 +7,14 @@ on:
     branches: [main]
     paths:
       - 'backend/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
   workflow_dispatch:
     inputs:
       fail_on_vulnerabilities:
@@ -21,7 +29,9 @@ on:
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.is_pr == 'true' }}
+    if: >-
+      (github.event_name == 'pull_request' && github.event.workflow_run.conclusion == '') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.is_pr == 'true')
     permissions:
       id-token: write
       contents: read
@@ -65,7 +75,9 @@ jobs:
 
   build-push-and-scan:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.is_pr == 'false' }}
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.is_pr == 'false')
     permissions:
       id-token: write
       contents: read

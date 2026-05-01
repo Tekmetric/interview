@@ -1,6 +1,6 @@
 # filepath: backend/Dockerfile
 # Build stage
-FROM maven:3.8-openjdk-8 AS build
+FROM maven:3.9-eclipse-temurin-8 AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
@@ -12,7 +12,7 @@ RUN mkdir -p /opt/opentelemetry \
     "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
 
 # Runtime stage
-FROM openjdk:8-jre-slim
+FROM eclipse-temurin:8-jre-jammy
 WORKDIR /app
 
 # Install curl for health checks and copy agent

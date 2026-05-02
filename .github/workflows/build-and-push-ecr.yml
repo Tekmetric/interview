@@ -5,8 +5,6 @@ on:
     workflows: [Trivy Code Scan]
     types: [completed]
     branches: [main, master]
-    paths:
-      - 'backend/**'
   pull_request:
     branches: [main, master]
     paths:
@@ -44,11 +42,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          load: true
-          tags: interview:build
+        run: docker build -t interview:build ./backend
 
       - name: Run Trivy container scan
         uses: aquasecurity/trivy-action@master

@@ -11,22 +11,12 @@ on:
       - 'sre/helm/**'
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  release:
+  helm-validate:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Configure Git
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Install Helm
         uses: azure/setup-helm@v4

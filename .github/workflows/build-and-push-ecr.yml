@@ -48,14 +48,14 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'image'
-          image-ref: 'docker://interview:build'
+          image-ref: 'interview:build'
           severity: 'CRITICAL,HIGH'
           exit-code: '0'
 
       - name: Check for vulnerabilities and optionally fail
         id: check_vulns
         run: |
-          VULN_COUNT=$(docker run --rm aquasec/trivy:latest image --format json --severity CRITICAL,HIGH interview:build 2>/dev/null | jq -r '[.Results[]?.Vulnerabilities[]?] | length' 2>/dev/null || echo "0")
+          VULN_COUNT=$(docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --format json --severity CRITICAL,HIGH interview:build 2>/dev/null | jq -r '[.Results[]?.Vulnerabilities[]?] | length' 2>/dev/null || echo "0")
           echo "vulnerability_count=$VULN_COUNT" >> $GITHUB_OUTPUT
           
           FAIL_ON_VULNS=${{ github.event.inputs.fail_on_vulnerabilities || 'false' }}
@@ -117,7 +117,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'image'
-          image-ref: 'docker://519551088082.dkr.ecr.us-east-1.amazonaws.com/interview:build'
+          image-ref: '519551088082.dkr.ecr.us-east-1.amazonaws.com/interview:build'
           severity: 'CRITICAL,HIGH'
           exit-code: '0'
           format: 'json'

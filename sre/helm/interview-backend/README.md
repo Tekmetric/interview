@@ -12,7 +12,7 @@ A Helm chart for deploying the Interview Backend Spring Boot application to Kube
 ### Add the repository
 
 ```bash
-helm repo add interview https://your-repo-url
+helm repo add interview "https://joetechholmes.github.io/interview/helm"
 helm repo update
 ```
 

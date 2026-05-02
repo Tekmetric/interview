@@ -2,9 +2,7 @@ name: Trivy Code Scan
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main, master]
     paths:
       - 'backend/**'
   pull_request:

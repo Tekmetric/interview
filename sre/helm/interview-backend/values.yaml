@@ -2,7 +2,7 @@
 replicaCount: 1
 
 image:
-  repository: interview-backend
+  repository: 519551088082.dkr.ecr.us-east-1.amazonaws.com/interview-backend
   pullPolicy: IfNotPresent
   tag: "latest"
 
@@ -14,19 +14,87 @@ serviceAccount:
   create: true
   annotations: {}
   name: ""
+  automountServiceAccountToken: true
 
-podAnnotations: {}
+podAnnotations: 
+  sidecar.opentelemetry.io/inject: "true"
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
+probes:
+  startupProbe:
+    httpGet:
+      path: /api/welcome
+      port: http
+    failureThreshold: 30
+    periodSeconds: 2
+  livenessProbe:
+    httpGet:
+      path: /api/welcome
+      port: http
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    failureThreshold: 3
+    timeoutSeconds: 1
+  readinessProbe:
+    httpGet:
+      path: /api/welcome
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    failureThreshold: 3
+    timeoutSeconds: 1
+
+configMap:
+  SPRING_PROFILES_ACTIVE: "default"
+  H2_CONSOLE_ENABLED: "true"
+  MANAGEMENT_SERVER_PORT: "8081"
+  SERVER_PORT: "8080"
+  OTEL_SERVICE_NAME: "interview-backend"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://localhost:4317"
+  JAVA_TOOL_OPTIONS: "-javaagent:/opt/opentelemetry/opentelemetry-javaagent.jar"
+
+externalSecrets:
+  enabled: false
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: aws-secretsmanager
+    kind: SecretStore
+  target:
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  data:
+  - secretKey: my_name
+    remoteRef:
+      key: friendslist
+      property: name.first # Tom
+  - secretKey: first_friend
+    remoteRef:
+      key: friendslist
+      property: friends.1.first # Roger
+
+networkPolicy:
+  enabled: false
+  ingressFrom: []
+  ingress: []
+  egress: []
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
 
 service:
   type: ClusterIP

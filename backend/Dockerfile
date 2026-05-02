@@ -25,5 +25,6 @@ ENV OTEL_SERVICE_NAME=interview-backend
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 ENV JAVA_TOOL_OPTIONS="-javaagent:/opt/opentelemetry/opentelemetry-javaagent.jar"
 
+# Expose application (8080)
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

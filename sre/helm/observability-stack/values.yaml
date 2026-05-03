@@ -14,6 +14,11 @@ prometheus:
     extraFlags:
       - web.enable-lifecycle
       - web.enable-remote-write-receiver
+    extraScrapeConfigs: |
+      - job_name: prometheus
+        static_configs:
+          - targets:
+              - localhost:9090
     service:
       annotations: {}
   alertmanager:
@@ -148,15 +153,12 @@ k8s-monitoring:
     name: minikube
   destinations:
     prometheus:
-      name: prometheus
       type: prometheus
       url: http://observability-stack-prometheus-server:80/api/v1/write
     loki:
-      name: loki
       type: loki
       url: http://loki:3100/loki/api/v1/push
     tempo:
-      name: tempo
       type: otlp
       url: http://tempo:4317
       protocol: grpc
@@ -175,26 +177,37 @@ k8s-monitoring:
         exporter:
           defaultClusterId: minikube
   collectors:
-    alloy:
-      enabled: true
-      presets: [daemonset, filesystem-log-reader, clustered]
+    alloy-metrics:
+      presets: [clustered, statefulset]
+    alloy-logs:
+      presets: [daemonset, filesystem-log-reader]
   clusterMetrics:
     enabled: true
+    collector: alloy-metrics
     destinations: [prometheus]
   hostMetrics:
     enabled: true
+    collector: alloy-metrics
     destinations: [prometheus]
+    linuxHosts:
+      enabled: true
+      metricsTuning:
+        useIntegrationAllowList: true
   costMetrics:
     enabled: true
+    collector: alloy-metrics
     destinations: [prometheus]
   clusterEvents:
     enabled: true
+    collector: alloy-logs
     destinations: [loki]
   podLogs:
     enabled: true
+    collector: alloy-logs
     destinations: [loki]
   applicationObservability:
     enabled: true
+    collector: alloy-metrics
     destinations: [tempo]
     receivers:
       otlp:

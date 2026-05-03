@@ -6,10 +6,12 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
+ENV JAVA_AGENT="v2.27.0"
+
 # Download OpenTelemetry Java agent
 RUN mkdir -p /opt/opentelemetry \
     && curl -L -o /opt/opentelemetry/opentelemetry-javaagent.jar \
-    "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.32.0/opentelemetry-javaagent.jar"
+    "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/${JAVA_AGENT}/opentelemetry-javaagent.jar"
 
 # Runtime stage
 FROM eclipse-temurin:8-jre-jammy

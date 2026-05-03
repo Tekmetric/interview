@@ -151,6 +151,61 @@ tolerations: []
 
 affinity: {}
 
+rollout:
+  enabled: true
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause:
+            duration: 30s
+        - setWeight: 50
+        - pause:
+            duration: 30s
+
+otelCollector:
+  mode: sidecar
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+    processors:
+      batch: {}
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 4000
+        spike_limit_mib: 800
+    exporters:
+      otlp/tempo:
+        endpoint: tempo.observability-stack.svc.cluster.local:4317
+        tls:
+          insecure: true
+      prometheusremotewrite:
+        endpoint: http://observability-stack-prometheus-server.observability-stack.svc.cluster.local:80/api/v1/write
+        tls:
+          insecure: true
+      loki:
+        endpoint: http://loki.observability-stack.svc.cluster.local:3100/loki/api/v1/push
+        default_labels_enabled:
+          exporter: false
+          job: true
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch, memory_limiter]
+          exporters: [otlp/tempo]
+        metrics:
+          receivers: [otlp]
+          processors: [batch, memory_limiter]
+          exporters: [prometheusremotewrite]
+        logs:
+          receivers: [otlp]
+          processors: [batch,memory_limiter]
+          exporters: [loki]
+
 istio:
   virtualService:
     enabled: true

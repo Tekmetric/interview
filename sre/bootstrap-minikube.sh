@@ -6,10 +6,17 @@ MINIKUBE_VERSION="${MINIKUBE_VERSION:-latest}"
 MINIKUBE_MEMORY="${MINIKUBE_MEMORY:-8192}"
 HELM_VERSION="${HELM_VERSION:-v3.14.0}"
 HELM_CHARTS_DIR="${SCRIPT_DIR}/helm"
+BACKEND_DIR="${SCRIPT_DIR}/../backend"
+BACKEND_IMAGE="interview-backend:latest"
 ISTIO_NAMESPACE="istio-system"
 GATEWAY_NAMESPACE="istio-ingress"
 CERT_MANAGER_NAMESPACE="cert-manager"
 ESO_NAMESPACE="eso"
+OTEL_OPERATOR_NAMESPACE="opentelemetry-operator-system"
+ARGOCD_NAMESPACE="argocd"
+ARGO_ROLLOUTS_NAMESPACE="argo-rollouts"
+OBSERVABILITY_NAMESPACE="observability-stack"
+Git_REPO_URL="git@github.com:joetechholmes/interview.git"
 
 info() {
   echo "[INFO] $*"
@@ -173,6 +180,68 @@ install_cert_manager() {
     --timeout 10m
 }
 
+build_and_load_interview_backend() {
+  command_exists docker || die "docker is required to build the interview-backend image"
+  info "Building interview-backend Docker image: ${BACKEND_IMAGE}"
+  docker build -t "${BACKEND_IMAGE}" "${BACKEND_DIR}"
+  info "Loading interview-backend image into minikube"
+  minikube image load "${BACKEND_IMAGE}"
+}
+
+install_argo_rollouts() {
+  info "Installing Argo Rollouts into namespace '${ARGO_ROLLOUTS_NAMESPACE}' via Helm chart"
+  helm dependency update "${HELM_CHARTS_DIR}/argo-rollouts-chart"
+  helm upgrade --install argo-rollouts "${HELM_CHARTS_DIR}/argo-rollouts-chart" \
+    --namespace "${ARGO_ROLLOUTS_NAMESPACE}" \
+    --create-namespace \
+    --wait \
+    --timeout 10m
+}
+
+configure_argocd_repo() {
+  local ssh_key_path="${HOME}/.ssh/id_ed25519"
+  [[ -f "${ssh_key_path}" ]] || ssh_key_path="${HOME}/.ssh/id_rsa"
+  [[ -f "${ssh_key_path}" ]] || die "No SSH key found at ~/.ssh/id_ed25519 or ~/.ssh/id_rsa — required for ArgoCD to clone the repo"
+
+  info "Configuring ArgoCD repository credentials from ${ssh_key_path}"
+  kubectl create secret generic argocd-repo-interview \
+    --namespace "${ARGOCD_NAMESPACE}" \
+    --from-literal=type=git \
+    --from-literal=url=${Git_REPO_URL} \
+    --from-file=sshPrivateKey="${ssh_key_path}" \
+    --dry-run=client -o yaml \
+    | kubectl apply -f -
+
+  kubectl label secret argocd-repo-interview \
+    --namespace "${ARGOCD_NAMESPACE}" \
+    argocd.argoproj.io/secret-type=repository \
+    --overwrite
+}
+
+install_argocd() {
+  local git_branch
+  git_branch="$(git -C "${SCRIPT_DIR}" rev-parse --abbrev-ref HEAD)"
+  info "Installing Argo CD into namespace '${ARGOCD_NAMESPACE}' via Helm chart (targeting branch: ${git_branch})"
+  helm dependency update "${HELM_CHARTS_DIR}/argocd-chart"
+  helm upgrade --install argocd "${HELM_CHARTS_DIR}/argocd-chart" \
+    --namespace "${ARGOCD_NAMESPACE}" \
+    --create-namespace \
+    --set "apps.interviewBackend.targetRevision=${git_branch}" \
+    --wait \
+    --timeout 10m
+}
+
+install_opentelemetry_operator() {
+  info "Installing OpenTelemetry Operator into namespace '${OTEL_OPERATOR_NAMESPACE}' via Helm chart"
+  helm dependency update "${HELM_CHARTS_DIR}/opentelemetry-operator-chart"
+  helm upgrade --install opentelemetry-operator "${HELM_CHARTS_DIR}/opentelemetry-operator-chart" \
+    --namespace "${OTEL_OPERATOR_NAMESPACE}" \
+    --create-namespace \
+    --skip-schema-validation \
+    --wait \
+    --timeout 10m
+}
+
 install_external_secrets_operator() {
   info "Installing External Secrets Operator into namespace '${ESO_NAMESPACE}' via Helm chart"
   helm dependency update "${HELM_CHARTS_DIR}/external-secrets-chart"
@@ -182,8 +251,6 @@ install_external_secrets_operator() {
     --wait \
     --timeout 10m
 }
-
-OBSERVABILITY_NAMESPACE="observability-stack"
 
 install_observability_stack() {
   info "Installing observability stack (Mimir, Loki, Tempo, Grafana, k8s-monitoring) via Helm chart"
@@ -195,17 +262,73 @@ install_observability_stack() {
     --timeout 20m
 }
 
+smoke_test_interview_backend() {
+  local namespace="interview-backend"
+  local rollout="interview-backend"
+  local service="interview-backend"
+  local port=18080
+
+  info "Waiting for ArgoCD to sync and create interview-backend workload"
+  local attempts=0
+  local use_rollout=false
+  until kubectl get rollout.argoproj.io "${rollout}" -n "${namespace}" >/dev/null 2>&1 || \
+        kubectl get deployment "${rollout}" -n "${namespace}" >/dev/null 2>&1; do
+    attempts=$((attempts + 1))
+    [[ ${attempts} -ge 60 ]] && die "Timed out waiting for interview-backend workload to be created by ArgoCD"
+    sleep 5
+  done
+
+  if kubectl get rollout.argoproj.io "${rollout}" -n "${namespace}" >/dev/null 2>&1; then
+    use_rollout=true
+  fi
+
+  if [[ "${use_rollout}" == "true" ]]; then
+    info "Waiting for interview-backend rollout to be available"
+    kubectl wait rollout.argoproj.io/"${rollout}" \
+      --namespace "${namespace}" \
+      --for=condition=Available \
+      --timeout=5m
+  else
+    info "Waiting for interview-backend deployment to be available"
+    kubectl wait deployment/"${rollout}" \
+      --namespace "${namespace}" \
+      --for=condition=available \
+      --timeout=5m
+  fi
+
+  info "Running smoke test against GET /api/welcome"
+  kubectl port-forward "svc/${service}" "${port}:8080" --namespace "${namespace}" &
+  local pf_pid=$!
+  sleep 3
+
+  local response
+  response=$(curl -sf "http://localhost:${port}/api/welcome" || true)
+  kill "${pf_pid}" 2>/dev/null || true
+
+  if [[ "${response}" == *"Welcome"* ]]; then
+    info "Smoke test passed: ${response}"
+  else
+    die "Smoke test failed: unexpected response '${response}'"
+  fi
+}
+
 up() {
   detect_platform
   ensure_minikube
   ensure_kubectl
   ensure_helm
   start_minikube
+  build_and_load_interview_backend
   install_istio
   install_gateway
   install_cert_manager
+  install_opentelemetry_operator
   install_external_secrets_operator
+  install_argo_rollouts
   install_observability_stack
+  install_argocd
+  configure_argocd_repo
+  smoke_test_interview_backend
   info "Bootstrap complete."
   info ""
   info "To access Grafana from a Windows browser (WSL2):"

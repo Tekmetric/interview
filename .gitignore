@@ -13,5 +13,13 @@ qa/playwright/.cache/
 # ignoring the .idea folder
 .idea
 
-#ignore dependent charts
-**/charts/*.tgz
+# Chart dependencies
+requirements.lock
+charts/
+
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

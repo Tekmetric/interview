@@ -3,11 +3,11 @@ name: istio
 description: A Helm chart for Istio service mesh
 type: application
 version: 1.0.0
-appVersion: "1.26.4"
+appVersion: "1.29.2"
 dependencies:
   - name: base
-    version: "1.26.4"
+    version: "1.29.2"
     repository: "https://istio-release.storage.googleapis.com/charts"
   - name: istiod
-    version: "1.26.4"
+    version: "1.29.2"
     repository: "https://istio-release.storage.googleapis.com/charts"

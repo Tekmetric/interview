@@ -1,0 +1,204 @@
+namespace:
+  labels:
+    istio-injection: enabled
+
+prometheus:
+  enabled: true
+  server:
+    podAnnotations:
+      sidecar.istio.io/inject: "true"
+    retention: 15d
+    persistentVolume:
+      enabled: true
+      size: 20Gi
+    extraFlags:
+      - web.enable-lifecycle
+      - web.enable-remote-write-receiver
+    service:
+      annotations: {}
+  alertmanager:
+    enabled: true
+    podAnnotations:
+      sidecar.istio.io/inject: "true"
+    persistence:
+      enabled: true
+      size: 2Gi
+    service:
+      annotations: {}
+  # Disable sub-charts already provided by k8s-monitoring
+  kube-state-metrics:
+    enabled: false
+  prometheus-node-exporter:
+    enabled: false
+  prometheus-pushgateway:
+    enabled: false
+
+loki:
+  enabled: true
+  fullnameOverride: loki
+  podAnnotations:
+    sidecar.istio.io/inject: "true"
+  service:
+    annotations: {}
+  deploymentMode: SingleBinary
+  loki:
+    auth_enabled: false
+    commonConfig:
+      replication_factor: 1
+    storage:
+      type: filesystem
+    schemaConfig:
+      configs:
+        - from: "2024-01-01"
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: index_
+            period: 24h
+  singleBinary:
+    replicas: 1
+    persistence:
+      enabled: true
+      size: 10Gi
+  read:
+    replicas: 0
+  write:
+    replicas: 0
+  backend:
+    replicas: 0
+
+tempo:
+  enabled: true
+  fullnameOverride: tempo
+  podAnnotations:
+    sidecar.istio.io/inject: "true"
+  tempo:
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /var/tempo/traces
+  persistence:
+    enabled: true
+    size: 10Gi
+
+grafana:
+  enabled: true
+  fullnameOverride: grafana
+  podAnnotations:
+    sidecar.istio.io/inject: "true"
+  adminPassword: admin
+  service:
+    type: LoadBalancer
+    annotations: {}
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://observability-stack-prometheus-server:80
+          access: proxy
+          isDefault: true
+        - name: Loki
+          type: loki
+          url: http://loki:3100
+          access: proxy
+        - name: Tempo
+          type: tempo
+          url: http://tempo:3200
+          access: proxy
+        - name: Alertmanager
+          type: alertmanager
+          url: http://observability-stack-alertmanager:9093
+          access: proxy
+          jsonData:
+            implementation: prometheus
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+  dashboards:
+    default:
+      kubernetes-cluster:
+        gnetId: 7249
+        revision: 1
+        datasource: Prometheus
+      kubernetes-pods:
+        gnetId: 6417
+        revision: 1
+        datasource: Prometheus
+      prometheus-stats:
+        gnetId: 2
+        revision: 2
+        datasource: Prometheus
+
+k8s-monitoring:
+  enabled: true
+  cluster:
+    name: minikube
+  destinations:
+    prometheus:
+      name: prometheus
+      type: prometheus
+      url: http://observability-stack-prometheus-server:80/api/v1/write
+    loki:
+      name: loki
+      type: loki
+      url: http://loki:3100/loki/api/v1/push
+    tempo:
+      name: tempo
+      type: otlp
+      url: http://tempo:4317
+      protocol: grpc
+  telemetryServices:
+    kube-state-metrics:
+      deploy: true
+    node-exporter:
+      deploy: true
+    opencost:
+      deploy: true
+      metricsSource: prometheus
+      opencost:
+        prometheus:
+          external:
+            url: http://observability-stack-prometheus-server.observability-stack.svc.cluster.local
+        exporter:
+          defaultClusterId: minikube
+  collectors:
+    alloy:
+      enabled: true
+      presets: [daemonset, filesystem-log-reader, clustered]
+  clusterMetrics:
+    enabled: true
+    destinations: [prometheus]
+  hostMetrics:
+    enabled: true
+    destinations: [prometheus]
+  costMetrics:
+    enabled: true
+    destinations: [prometheus]
+  clusterEvents:
+    enabled: true
+    destinations: [loki]
+  podLogs:
+    enabled: true
+    destinations: [loki]
+  applicationObservability:
+    enabled: true
+    destinations: [tempo]
+    receivers:
+      otlp:
+        grpc:
+          enabled: true
+        http:
+          enabled: true

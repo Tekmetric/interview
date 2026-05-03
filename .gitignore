@@ -12,3 +12,6 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+
+#ignore dependent charts
+**/charts/*.tgz

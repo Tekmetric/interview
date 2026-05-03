@@ -1,0 +1,18 @@
+dependencies:
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 25.27.0
+- name: loki
+  repository: https://grafana-community.github.io/helm-charts
+  version: 13.5.0
+- name: tempo
+  repository: https://grafana-community.github.io/helm-charts
+  version: 2.1.0
+- name: grafana
+  repository: https://grafana-community.github.io/helm-charts
+  version: 12.3.0
+- name: k8s-monitoring
+  repository: https://grafana.github.io/helm-charts
+  version: 4.0.4
+digest: sha256:a3b050684a0d1dd5fdfb1f77dd8c38258cd49afe0d3bef56c0b0d436159ecc10
+generated: "2026-05-02T23:49:08.233771534-04:00"

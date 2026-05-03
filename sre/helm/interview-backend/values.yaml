@@ -182,15 +182,14 @@ otelCollector:
         endpoint: tempo.observability-stack.svc.cluster.local:4317
         tls:
           insecure: true
-      prometheusremotewrite:
-        endpoint: http://observability-stack-prometheus-server.observability-stack.svc.cluster.local:80/api/v1/write
+      otlphttp/prometheus:
+        endpoint: http://observability-stack-prometheus-server.observability-stack.svc.cluster.local:80/api/v1/otlp
         tls:
           insecure: true
-      loki:
-        endpoint: http://loki.observability-stack.svc.cluster.local:3100/loki/api/v1/push
-        default_labels_enabled:
-          exporter: false
-          job: true
+      otlphttp/loki:
+        endpoint: http://loki.observability-stack.svc.cluster.local:3100/otlp
+        tls:
+          insecure: true
     service:
       pipelines:
         traces:
@@ -200,11 +199,11 @@ otelCollector:
         metrics:
           receivers: [otlp]
           processors: [batch, memory_limiter]
-          exporters: [prometheusremotewrite]
+          exporters: [otlphttp/prometheus]
         logs:
           receivers: [otlp]
-          processors: [batch,memory_limiter]
-          exporters: [loki]
+          processors: [batch, memory_limiter]
+          exporters: [otlphttp/loki]
 
 istio:
   virtualService:

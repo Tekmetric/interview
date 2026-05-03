@@ -14,6 +14,8 @@ prometheus:
     extraFlags:
       - web.enable-lifecycle
       - web.enable-remote-write-receiver
+      - enable-feature=otlp-write-receiver
+      - storage.tsdb.out_of_order_time_window=30m
     extraScrapeConfigs: |
       - job_name: prometheus
         static_configs:
@@ -21,6 +23,36 @@ prometheus:
               - localhost:9090
     service:
       annotations: {}
+  serverFiles:
+    prometheus.yml:
+      otlp:
+        promote_resource_attributes:
+          - service.instance.id
+          - service.name
+          - service.namespace
+          - service.version
+          - cloud.availability_zone
+          - cloud.region
+          - container.name
+          - deployment.environment
+          - deployment.environment.name
+          - k8s.cluster.name
+          - k8s.container.name
+          - k8s.cronjob.name
+          - k8s.daemonset.name
+          - k8s.deployment.name
+          - k8s.job.name
+          - k8s.namespace.name
+          - k8s.pod.name
+          - k8s.replicaset.name
+          - k8s.statefulset.name
+          - telemetry.sdk.name
+          - telemetry.sdk.language
+          - telemetry.sdk.version
+          - process.runtime.name
+          - process.runtime.version
+          - host.name
+          - os.type
   alertmanager:
     enabled: true
     podAnnotations:
@@ -179,6 +211,65 @@ k8s-monitoring:
   collectors:
     alloy-metrics:
       presets: [clustered, statefulset]
+      extraConfig: |
+        discovery.kubernetes "istiod_endpoints" {
+          role = "endpoints"
+          namespaces { names = ["istio-system"] }
+        }
+
+        discovery.relabel "istiod" {
+          targets = discovery.kubernetes.istiod_endpoints.targets
+          rule {
+            source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_endpoint_port_name"]
+            action        = "keep"
+            regex         = "istiod;http-monitoring"
+          }
+          rule { source_labels = ["__meta_kubernetes_namespace"] ; target_label = "namespace" }
+          rule { source_labels = ["__meta_kubernetes_pod_name"]  ; target_label = "pod" }
+        }
+
+        prometheus.scrape "istiod" {
+          targets        = discovery.relabel.istiod.output
+          forward_to     = [prometheus.remote_write.prometheus.receiver]
+          scrape_interval = "30s"
+        }
+
+        discovery.kubernetes "istio_pods" {
+          role = "pod"
+        }
+
+        discovery.relabel "istio_envoy" {
+          targets = discovery.kubernetes.istio_pods.targets
+          rule {
+            source_labels = ["__meta_kubernetes_pod_annotation_sidecar_istio_io_status"]
+            action        = "keep"
+            regex         = ".+"
+          }
+          rule {
+            source_labels = ["__address__"]
+            regex         = "([^:]+)(?::\\d+)?"
+            replacement   = "$1:15090"
+            target_label  = "__address__"
+          }
+          rule { action = "labelmap" ; regex = "__meta_kubernetes_pod_label_(.+)" }
+          rule { source_labels = ["__meta_kubernetes_namespace"] ; target_label = "namespace" }
+          rule { source_labels = ["__meta_kubernetes_pod_name"]  ; target_label = "pod" }
+        }
+
+        prometheus.relabel "istio_envoy" {
+          forward_to = [prometheus.remote_write.prometheus.receiver]
+          rule {
+            source_labels = ["__name__"]
+            regex         = "istio_.*|envoy_.*|pilot_.*"
+            action        = "keep"
+          }
+        }
+
+        prometheus.scrape "istio_envoy" {
+          targets         = discovery.relabel.istio_envoy.output
+          forward_to      = [prometheus.relabel.istio_envoy.receiver]
+          scrape_interval = "30s"
+        }
     alloy-logs:
       presets: [daemonset, filesystem-log-reader]
   clusterMetrics:
@@ -201,10 +292,12 @@ k8s-monitoring:
     enabled: true
     collector: alloy-logs
     destinations: [loki]
-  podLogs:
+  podLogsViaLoki:
     enabled: true
     collector: alloy-logs
     destinations: [loki]
+    excludeNamespaces:
+      - interview-backend
   applicationObservability:
     enabled: true
     collector: alloy-metrics

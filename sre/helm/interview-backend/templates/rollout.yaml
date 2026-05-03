@@ -58,7 +58,7 @@ spec:
           {{- if .Values.securityContext.readOnlyRootFilesystem }}
           volumeMounts:
             - name: tmp
-              mountPath: /app/tmp
+              mountPath: /tmp
       volumes:
         - name: tmp
           emptyDir: {}

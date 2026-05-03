@@ -14,8 +14,6 @@ prometheus:
     extraFlags:
       - web.enable-lifecycle
       - web.enable-remote-write-receiver
-      - enable-feature=otlp-write-receiver
-      - storage.tsdb.out_of_order_time_window=30m
     extraScrapeConfigs: |
       - job_name: prometheus
         static_configs:
@@ -346,7 +344,9 @@ k8s-monitoring:
       extraConfig: |
         discovery.kubernetes "istiod_endpoints" {
           role = "endpoints"
-          namespaces { names = ["istio-system"] }
+          namespaces {
+            names = ["istio-system"]
+          }
         }
 
         discovery.relabel "istiod" {
@@ -356,13 +356,19 @@ k8s-monitoring:
             action        = "keep"
             regex         = "istiod;http-monitoring"
           }
-          rule { source_labels = ["__meta_kubernetes_namespace"] ; target_label = "namespace" }
-          rule { source_labels = ["__meta_kubernetes_pod_name"]  ; target_label = "pod" }
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_name"]
+            target_label  = "pod"
+          }
         }
 
         prometheus.scrape "istiod" {
-          targets        = discovery.relabel.istiod.output
-          forward_to     = [prometheus.remote_write.prometheus.receiver]
+          targets         = discovery.relabel.istiod.output
+          forward_to      = [prometheus.remote_write.prometheus.receiver]
           scrape_interval = "30s"
         }
 
@@ -383,9 +389,18 @@ k8s-monitoring:
             replacement   = "$1:15090"
             target_label  = "__address__"
           }
-          rule { action = "labelmap" ; regex = "__meta_kubernetes_pod_label_(.+)" }
-          rule { source_labels = ["__meta_kubernetes_namespace"] ; target_label = "namespace" }
-          rule { source_labels = ["__meta_kubernetes_pod_name"]  ; target_label = "pod" }
+          rule {
+            action = "labelmap"
+            regex  = "__meta_kubernetes_pod_label_(.+)"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_name"]
+            target_label  = "pod"
+          }
         }
 
         prometheus.relabel "istio_envoy" {

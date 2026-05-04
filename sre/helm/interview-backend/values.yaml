@@ -188,15 +188,15 @@ otelCollector:
         check_interval: 1s
         limit_mib: 500
     exporters:
-      otlp/tempo:
+      otlp_grpc/tempo:
         endpoint: tempo.observability-stack.svc.cluster.local:4317
         tls:
           insecure: true
-      otlphttp/prometheus:
+      otlp_http/prometheus:
         endpoint: http://observability-stack-prometheus-server.observability-stack.svc.cluster.local:80/api/v1/otlp
         tls:
           insecure: true
-      otlphttp/loki:
+      otlp_http/loki:
         endpoint: http://loki.observability-stack.svc.cluster.local:3100/otlp
         tls:
           insecure: true
@@ -205,15 +205,15 @@ otelCollector:
         traces:
           receivers: [otlp]
           processors: [batch, memory_limiter]
-          exporters: [otlp/tempo]
+          exporters: [otlp_grpc/tempo]
         metrics:
           receivers: [otlp]
           processors: [batch, memory_limiter]
-          exporters: [otlphttp/prometheus]
+          exporters: [otlp_http/prometheus]
         logs:
           receivers: [otlp]
           processors: [batch, memory_limiter]
-          exporters: [otlphttp/loki]
+          exporters: [otlp_http/loki]
 
 istio:
   virtualService:

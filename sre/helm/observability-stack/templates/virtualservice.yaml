@@ -88,6 +88,13 @@ spec:
   hosts:
     - tempo
   http:
+    - match:
+        - port: 4317
+      route:
+        - destination:
+            host: tempo
+            port:
+              number: 4317
     - route:
         - destination:
             host: tempo

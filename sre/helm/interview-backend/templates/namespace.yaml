@@ -3,6 +3,10 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: {{ include "interview-backend.namespaceName" . }}
+  annotations:
+  {{- with .Values.namespace.annotations }}
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
   labels:
   {{- include "interview-backend.labels" . | nindent 4 }}
   {{- with .Values.namespace.labels }}

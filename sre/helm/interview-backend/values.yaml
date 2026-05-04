@@ -14,6 +14,10 @@ fullnameOverride: ""
 
 namespace:
   create: true
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": hook-failed
   nameOverride: "interview-backend"
   labels:
     team: "backend"
@@ -28,6 +32,7 @@ serviceAccount:
 podAnnotations:
   sidecar.opentelemetry.io/inject: "interview-backend"
   sidecar.istio.io/inject: "true"
+  proxy.istio.io/config: '{"holdApplicationUntilProxyStarts": true}'
 
 podSecurityContext:
   fsGroup: 1000
@@ -49,6 +54,7 @@ probes:
     httpGet:
       path: /api/welcome
       port: http
+    initialDelaySeconds: 5
     failureThreshold: 30
     periodSeconds: 2
   livenessProbe:
@@ -166,6 +172,10 @@ rollout:
 
 otelCollector:
   mode: sidecar
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-failed
   config:
     receivers:
       otlp:
@@ -176,8 +186,7 @@ otelCollector:
       batch: {}
       memory_limiter:
         check_interval: 1s
-        limit_mib: 4000
-        spike_limit_mib: 800
+        limit_mib: 500
     exporters:
       otlp/tempo:
         endpoint: tempo.observability-stack.svc.cluster.local:4317

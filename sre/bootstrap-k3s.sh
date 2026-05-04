@@ -2,8 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MINIKUBE_VERSION="${MINIKUBE_VERSION:-latest}"
-MINIKUBE_MEMORY="${MINIKUBE_MEMORY:-8192}"
+K3S_VERSION="${K3S_VERSION:-}"
 HELM_VERSION="${HELM_VERSION:-v3.14.0}"
 HELM_CHARTS_DIR="${SCRIPT_DIR}/helm"
 BACKEND_DIR="${SCRIPT_DIR}/../backend"
@@ -86,18 +85,19 @@ detect_platform() {
   fi
 }
 
-ensure_minikube() {
-  if command_exists minikube; then
-    info "Minikube already installed: $(minikube version | head -n1)"
+ensure_k3s() {
+  if command_exists k3s; then
+    info "k3s already installed: $(k3s --version | head -n1)"
     return
   fi
 
-  detect_platform
-  local minikube_url="https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-${os}-${arch}${ext}"
-  local install_path="/usr/local/bin/minikube${ext}"
+  [[ "$(uname -s)" == "Linux" ]] || die "k3s only runs on Linux (use k3d for macOS/Windows)"
 
-  info "Installing minikube ${MINIKUBE_VERSION} for ${os}/${arch}"
-  install_binary "$minikube_url" "$install_path"
+  info "Installing k3s ${K3S_VERSION:-latest}"
+  curl -sfL https://get.k3s.io | \
+    INSTALL_K3S_VERSION="${K3S_VERSION}" \
+    K3S_KUBECONFIG_MODE="644" \
+    sh -s - --disable=traefik
 }
 
 ensure_helm() {
@@ -140,14 +140,26 @@ ensure_kubectl() {
   fi
 }
 
-start_minikube() {
-  if command_exists minikube && minikube status >/dev/null 2>&1; then
-    info "Minikube cluster is already running"
-    return
+start_k3s() {
+  if sudo systemctl is-active --quiet k3s 2>/dev/null; then
+    info "k3s is already running"
+  else
+    info "Starting k3s"
+    sudo systemctl start k3s
   fi
 
-  info "Starting minikube"
-  minikube start --driver=docker --memory="${MINIKUBE_MEMORY}"
+  info "Waiting for k3s containerd socket to be ready"
+  local attempts=0
+  until sudo k3s ctr version >/dev/null 2>&1; do
+    attempts=$((attempts + 1))
+    [[ ${attempts} -ge 30 ]] && die "Timed out waiting for k3s containerd to be ready"
+    sleep 2
+  done
+
+  info "Configuring kubeconfig"
+  mkdir -p "${HOME}/.kube"
+  cp /etc/rancher/k3s/k3s.yaml "${HOME}/.kube/config"
+  export KUBECONFIG="${HOME}/.kube/config"
 }
 
 install_istio() {
@@ -184,8 +196,12 @@ build_and_load_interview_backend() {
   command_exists docker || die "docker is required to build the interview-backend image"
   info "Building interview-backend Docker image: ${BACKEND_IMAGE}"
   docker build -t "${BACKEND_IMAGE}" "${BACKEND_DIR}"
-  info "Loading interview-backend image into minikube"
-  minikube image load "${BACKEND_IMAGE}"
+  info "Loading interview-backend image into k3s containerd"
+  local tmptar
+  tmptar="$(mktemp --suffix=.tar)"
+  trap 'rm -f "${tmptar}"' RETURN
+  docker save "${BACKEND_IMAGE}" -o "${tmptar}"
+  sudo k3s ctr images import "${tmptar}"
 }
 
 install_argo_rollouts() {
@@ -313,11 +329,10 @@ smoke_test_interview_backend() {
 }
 
 up() {
-  detect_platform
-  ensure_minikube
+  ensure_k3s
   ensure_kubectl
   ensure_helm
-  start_minikube
+  start_k3s
   build_and_load_interview_backend
   install_istio
   install_gateway
@@ -340,21 +355,14 @@ up() {
   info "       127.0.0.1  grafana.local"
   info ""
   info "  3. Open: http://grafana.local:8080 (admin/admin)"
-  info ""
-  info "Note: minikube tunnel alone does not expose services to the Windows host"
-  info "because it only creates routes inside the WSL2 network namespace."
 }
 
 teardown() {
-  info "Deleting minikube cluster"
-  minikube delete
-
-  local kubeconfig="${KUBECONFIG:-${HOME}/.kube/config}"
-  if [[ -f "$kubeconfig" ]]; then
-    info "Removing minikube context and cluster from kubeconfig"
-    kubectl config delete-context minikube 2>/dev/null || true
-    kubectl config delete-cluster minikube 2>/dev/null || true
-    kubectl config unset users.minikube 2>/dev/null || true
+  info "Deleting k3s cluster"
+  if [[ -x /usr/local/bin/k3s-uninstall.sh ]]; then
+    sudo /usr/local/bin/k3s-uninstall.sh
+  else
+    die "k3s-uninstall.sh not found — was k3s installed via the official script?"
   fi
 
   info "Teardown complete"
@@ -363,8 +371,8 @@ teardown() {
 usage() {
   echo "Usage: $(basename "$0") [--up | --teardown]"
   echo ""
-  echo "  --up        Start minikube and install all Helm charts"
-  echo "  --teardown  Delete the minikube cluster and remove it from kubeconfig"
+  echo "  --up        Install k3s and deploy all Helm charts"
+  echo "  --teardown  Uninstall k3s and remove all cluster state"
   exit 1
 }
 

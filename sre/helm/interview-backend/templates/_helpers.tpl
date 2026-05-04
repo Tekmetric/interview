@@ -77,3 +77,17 @@ Creates the resource attribute Environment variable
 {{- define "interview-backend.otelResourceAttributes" -}}
 OTEL_RESOURCE_ATTRIBUTES: {{ print "service.version=" .Chart.AppVersion ",deployment.environment=" .Values.env  | quote }}
 {{- end -}}
+
+{{/*
+Downward API env vars that inject pod metadata into OTel resource attributes.
+The explicit OTEL_RESOURCE_ATTRIBUTES entry here overrides the ConfigMap value at runtime,
+adding k8s.pod.name which cannot be set statically in a ConfigMap.
+*/}}
+{{- define "interview-backend.otelK8sEnv" -}}
+- name: K8S_POD_NAME
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.name
+- name: OTEL_RESOURCE_ATTRIBUTES
+  value: {{ printf "k8s.pod.name=$(K8S_POD_NAME),service.version=%s,deployment.environment=%s" .Chart.AppVersion .Values.env | quote }}
+{{- end -}}

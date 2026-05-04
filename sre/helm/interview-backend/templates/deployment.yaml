@@ -41,6 +41,8 @@ spec:
             - secretRef:
                 name: {{ include "interview-backend.fullname" . }}-secrets
             {{- end }}
+          env:
+            {{- include "interview-backend.otelK8sEnv" . | nindent 12 }}
           {{- with .Values.probes.startupProbe }}
           startupProbe:
             {{- toYaml . | nindent 12 }}

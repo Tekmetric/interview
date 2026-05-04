@@ -319,6 +319,8 @@ k8s-monitoring:
     prometheus:
       type: prometheus
       url: http://observability-stack-prometheus-server:80/api/v1/write
+      openTelemetryConversion:
+        resourceToTelemetryConversion: true
     loki:
       type: loki
       url: http://loki:3100/loki/api/v1/push
@@ -332,14 +334,7 @@ k8s-monitoring:
     node-exporter:
       deploy: true
     opencost:
-      deploy: true
-      metricsSource: prometheus
-      opencost:
-        prometheus:
-          external:
-            url: http://observability-stack-prometheus-server.observability-stack.svc.cluster.local
-        exporter:
-          defaultClusterId: minikube
+      deploy: false
   collectors:
     alloy-metrics:
       presets: [clustered, statefulset]
@@ -423,10 +418,30 @@ k8s-monitoring:
       presets: [daemonset, filesystem-log-reader]
     receiver:
       presets: [daemonset]
+      controller:
+        podAnnotations:
+          k8s.grafana.com/logs.job: integrations/alloy
+          sidecar.istio.io/inject: "true"
+      alloy:
+        extraPorts:
+          - name: otlp-grpc
+            port: 4317
+            targetPort: 4317
+            protocol: TCP
+            appProtocol: grpc
+          - name: otlp-http
+            port: 4318
+            targetPort: 4318
+            protocol: TCP
+            appProtocol: http
   clusterMetrics:
     enabled: true
     collector: alloy-metrics
     destinations: [prometheus]
+    kube-state-metrics:
+      metricsTuning:
+        includeMetrics:
+          - kube_pod_status_ready
   hostMetrics:
     enabled: true
     collector: alloy-metrics
@@ -436,9 +451,7 @@ k8s-monitoring:
       metricsTuning:
         useIntegrationAllowList: true
   costMetrics:
-    enabled: true
-    collector: alloy-metrics
-    destinations: [prometheus]
+    enabled: false
   clusterEvents:
     enabled: true
     collector: alloy-logs

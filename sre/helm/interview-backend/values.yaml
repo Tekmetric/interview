@@ -220,6 +220,9 @@ istio:
     enabled: true
     timeout: ""
     retries: {}
+  gateway:
+    enabled: true
+    host: interview-backend.local
   # podAntiAffinity:
   #   preferredDuringSchedulingIgnoredDuringExecution:
   #   - weight: 100

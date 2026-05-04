@@ -9,6 +9,14 @@ metadata:
 spec:
   hosts:
     - {{ include "interview-backend.fullname" . }}
+    {{- if .Values.istio.gateway.enabled }}
+    - {{ .Values.istio.gateway.host | quote }}
+    {{- end }}
+  {{- if .Values.istio.gateway.enabled }}
+  gateways:
+    - mesh
+    - {{ include "interview-backend.fullname" . }}
+  {{- end }}
   http:
     - route:
         - destination:

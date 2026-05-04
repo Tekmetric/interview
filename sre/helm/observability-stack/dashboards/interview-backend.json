@@ -364,18 +364,21 @@
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"interview-backend\"}[$__rate_interval])) by (le, http_route, http_request_method))",
+          "interval": "60s",
           "legendFormat": "P50 {{http_request_method}} {{http_route}}",
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"interview-backend\"}[$__rate_interval])) by (le, http_route, http_request_method))",
+          "interval": "60s",
           "legendFormat": "P95 {{http_request_method}} {{http_route}}",
           "refId": "B"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{service_name=\"interview-backend\"}[$__rate_interval])) by (le, http_route, http_request_method))",
+          "interval": "60s",
           "legendFormat": "P99 {{http_request_method}} {{http_route}}",
           "refId": "C"
         }
@@ -480,6 +483,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "sum(rate(jvm_gc_duration_seconds_sum{service_name=\"interview-backend\"}[$__rate_interval])) by (jvm_gc_name, k8s_pod_name)",
+          "interval": "60s",
           "legendFormat": "{{k8s_pod_name}} — {{jvm_gc_name}}",
           "refId": "A"
         }
@@ -699,7 +703,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "sum(jvm_cpu_recent_utilization{service_name=\"interview-backend\"}) by (k8s_pod_name)",
+          "expr": "sum(jvm_cpu_recent_utilization_ratio{service_name=\"interview-backend\"}) by (k8s_pod_name)",
           "legendFormat": "{{k8s_pod_name}}",
           "refId": "A"
         }

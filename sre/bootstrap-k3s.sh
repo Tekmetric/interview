@@ -348,15 +348,17 @@ up() {
   smoke_test_interview_backend
   info "Bootstrap complete."
   info ""
-  info "To access Grafana from a Windows browser (WSL2):"
+  info "To access services from a Windows browser (WSL2):"
   info ""
   info "  1. Run in a separate WSL2 terminal:"
   info "       kubectl port-forward svc/istio-ingress -n istio-ingress 8080:80"
   info ""
   info "  2. Add to Windows hosts file (C:\\Windows\\System32\\drivers\\etc\\hosts):"
-  info "       127.0.0.1  grafana.local"
+  info "       127.0.0.1  grafana.local interview-backend.local"
   info ""
-  info "  3. Open: http://grafana.local:8080 (admin/admin)"
+  info "  3. Open:"
+  info "       http://grafana.local:8080 (admin/admin)"
+  info "       http://interview-backend.local:8080/api/welcome"
 }
 
 teardown() {

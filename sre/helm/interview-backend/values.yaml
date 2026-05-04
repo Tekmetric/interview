@@ -192,8 +192,8 @@ otelCollector:
         endpoint: tempo.observability-stack.svc.cluster.local:4317
         tls:
           insecure: true
-      otlp_http/prometheus:
-        endpoint: http://observability-stack-prometheus-server.observability-stack.svc.cluster.local:80/api/v1/otlp
+      otlp_grpc/alloy:
+        endpoint: observability-stack-receiver.observability-stack.svc.cluster.local:4317
         tls:
           insecure: true
       otlp_http/loki:
@@ -209,7 +209,7 @@ otelCollector:
         metrics:
           receivers: [otlp]
           processors: [batch, memory_limiter]
-          exporters: [otlp_http/prometheus]
+          exporters: [otlp_grpc/alloy]
         logs:
           receivers: [otlp]
           processors: [batch, memory_limiter]

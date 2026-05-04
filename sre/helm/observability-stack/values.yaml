@@ -14,6 +14,7 @@ prometheus:
     extraFlags:
       - web.enable-lifecycle
       - web.enable-remote-write-receiver
+      - enable-feature=otlp-write-receiver
     extraScrapeConfigs: |
       - job_name: prometheus
         static_configs:
@@ -419,6 +420,8 @@ k8s-monitoring:
         }
     alloy-logs:
       presets: [daemonset, filesystem-log-reader]
+    receiver:
+      presets: [daemonset]
   clusterMetrics:
     enabled: true
     collector: alloy-metrics
@@ -447,8 +450,8 @@ k8s-monitoring:
       - interview-backend
   applicationObservability:
     enabled: true
-    collector: alloy-metrics
-    destinations: [tempo]
+    collector: receiver
+    destinations: [tempo, prometheus]
     receivers:
       otlp:
         grpc:

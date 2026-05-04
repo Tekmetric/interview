@@ -14,7 +14,6 @@ prometheus:
     extraFlags:
       - web.enable-lifecycle
       - web.enable-remote-write-receiver
-      - enable-feature=otlp-write-receiver
     extraScrapeConfigs: |
       - job_name: prometheus
         static_configs:

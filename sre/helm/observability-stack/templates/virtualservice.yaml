@@ -100,4 +100,23 @@ spec:
             host: tempo
             port:
               number: 3200
+---
+{{- end }}
+{{- if index .Values "k8s-monitoring" "enabled" }}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: observability-stack-receiver
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "observability-stack.labels" . | nindent 4 }}
+spec:
+  hosts:
+    - observability-stack-receiver
+  http:
+    - route:
+        - destination:
+            host: observability-stack-receiver
+            port:
+              number: 4317
 {{- end }}

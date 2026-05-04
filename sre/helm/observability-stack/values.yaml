@@ -313,7 +313,8 @@ grafana:
 k8s-monitoring:
   enabled: true
   cluster:
-    name: minikube
+    name: interview
+    provider: k3s
   destinations:
     prometheus:
       type: prometheus
@@ -456,5 +457,7 @@ k8s-monitoring:
       otlp:
         grpc:
           enabled: true
+          port: 4317
         http:
           enabled: true
+          port: 4318

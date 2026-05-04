@@ -69,4 +69,19 @@ spec:
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL
+---
+{{- end }}
+{{- if index .Values "k8s-monitoring" "enabled" }}
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: observability-stack-receiver
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "observability-stack.labels" . | nindent 4 }}
+spec:
+  host: observability-stack-receiver
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
 {{- end }}

@@ -2,8 +2,10 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-K3S_VERSION="${K3S_VERSION:-}"
-HELM_VERSION="${HELM_VERSION:-v3.14.0}"
+K3D_VERSION="${K3D_VERSION:-}"
+CLUSTER_NAME="${CLUSTER_NAME:-interview}"
+K3D_MEMORY="${K3D_MEMORY:-20g}"
+HELM_VERSION="${HELM_VERSION:-v4.1.4}"
 HELM_CHARTS_DIR="${SCRIPT_DIR}/helm"
 BACKEND_DIR="${SCRIPT_DIR}/../backend"
 BACKEND_IMAGE="interview-backend:latest"
@@ -85,19 +87,27 @@ detect_platform() {
   fi
 }
 
-ensure_k3s() {
-  if command_exists k3s; then
-    info "k3s already installed: $(k3s --version | head -n1)"
+ensure_k3d() {
+  if command_exists k3d; then
+    info "k3d already installed: $(k3d version | head -n1)"
     return
   fi
 
-  [[ "$(uname -s)" == "Linux" ]] || die "k3s only runs on Linux (use k3d for macOS/Windows)"
+  command_exists docker || die "docker is required to run k3d"
+  detect_platform
 
-  info "Installing k3s ${K3S_VERSION:-latest}"
-  curl -sfL https://get.k3s.io | \
-    INSTALL_K3S_VERSION="${K3S_VERSION}" \
-    K3S_KUBECONFIG_MODE="644" \
-    sh -s - --disable=traefik
+  local version="${K3D_VERSION}"
+  if [[ -z "${version}" ]]; then
+    info "Fetching latest k3d version"
+    version="$(curl -fsSL https://api.github.com/repos/k3d-io/k3d/releases/latest \
+      | grep '"tag_name"' \
+      | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')"
+    [[ -n "${version}" ]] || die "Failed to determine latest k3d version from GitHub API"
+  fi
+
+  info "Installing k3d ${version} for ${os}/${arch}"
+  local k3d_url="https://github.com/k3d-io/k3d/releases/download/${version}/k3d-${os}-${arch}${ext}"
+  install_binary "${k3d_url}" "/usr/local/bin/k3d${ext}"
 }
 
 ensure_helm() {
@@ -140,26 +150,22 @@ ensure_kubectl() {
   fi
 }
 
-start_k3s() {
-  if sudo systemctl is-active --quiet k3s 2>/dev/null; then
-    info "k3s is already running"
-  else
-    info "Starting k3s"
-    sudo systemctl start k3s
+start_k3d() {
+  if k3d cluster list 2>/dev/null | grep -q "^${CLUSTER_NAME}[[:space:]]"; then
+    info "k3d cluster '${CLUSTER_NAME}' already exists, merging kubeconfig"
+    k3d kubeconfig merge "${CLUSTER_NAME}" --kubeconfig-merge-default
+    kubectl config use-context "k3d-${CLUSTER_NAME}"
+    return
   fi
 
-  info "Waiting for k3s containerd socket to be ready"
-  local attempts=0
-  until sudo k3s ctr version >/dev/null 2>&1; do
-    attempts=$((attempts + 1))
-    [[ ${attempts} -ge 30 ]] && die "Timed out waiting for k3s containerd to be ready"
-    sleep 2
-  done
+  info "Creating k3d cluster '${CLUSTER_NAME}'"
+  k3d cluster create "${CLUSTER_NAME}" \
+    --k3s-arg "--disable=traefik@server:0" \
+    --servers-memory "${K3D_MEMORY}" \
+    --wait
 
-  info "Configuring kubeconfig"
-  mkdir -p "${HOME}/.kube"
-  cp /etc/rancher/k3s/k3s.yaml "${HOME}/.kube/config"
-  export KUBECONFIG="${HOME}/.kube/config"
+  info "Waiting for node to be ready"
+  kubectl wait node --all --for=condition=ready --timeout=300s
 }
 
 install_istio() {
@@ -196,12 +202,8 @@ build_and_load_interview_backend() {
   command_exists docker || die "docker is required to build the interview-backend image"
   info "Building interview-backend Docker image: ${BACKEND_IMAGE}"
   docker build -t "${BACKEND_IMAGE}" "${BACKEND_DIR}"
-  info "Loading interview-backend image into k3s containerd"
-  local tmptar
-  tmptar="$(mktemp --suffix=.tar)"
-  trap 'rm -f "${tmptar}"' RETURN
-  docker save "${BACKEND_IMAGE}" -o "${tmptar}"
-  sudo k3s ctr images import "${tmptar}"
+  info "Loading interview-backend image into k3d cluster '${CLUSTER_NAME}'"
+  k3d image import "${BACKEND_IMAGE}" --cluster "${CLUSTER_NAME}"
 }
 
 install_argo_rollouts() {
@@ -329,10 +331,10 @@ smoke_test_interview_backend() {
 }
 
 up() {
-  ensure_k3s
+  ensure_k3d
   ensure_kubectl
   ensure_helm
-  start_k3s
+  start_k3d
   build_and_load_interview_backend
   install_istio
   install_gateway
@@ -358,21 +360,16 @@ up() {
 }
 
 teardown() {
-  info "Deleting k3s cluster"
-  if [[ -x /usr/local/bin/k3s-uninstall.sh ]]; then
-    sudo /usr/local/bin/k3s-uninstall.sh
-  else
-    die "k3s-uninstall.sh not found — was k3s installed via the official script?"
-  fi
-
+  info "Deleting k3d cluster '${CLUSTER_NAME}'"
+  k3d cluster delete "${CLUSTER_NAME}"
   info "Teardown complete"
 }
 
 usage() {
   echo "Usage: $(basename "$0") [--up | --teardown]"
   echo ""
-  echo "  --up        Install k3s and deploy all Helm charts"
-  echo "  --teardown  Uninstall k3s and remove all cluster state"
+  echo "  --up        Create k3d cluster and deploy all Helm charts"
+  echo "  --teardown  Delete the k3d cluster and all cluster state"
   exit 1
 }
 

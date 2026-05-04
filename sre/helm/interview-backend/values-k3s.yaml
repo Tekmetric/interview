@@ -1,4 +1,4 @@
-env: minikube
+env: k3s
 
 image:
   registry: ""

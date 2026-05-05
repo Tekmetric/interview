@@ -3,7 +3,7 @@ module "eks" {
 
   cluster_name       = "interview-prod"
   region             = "us-east-1"
-  kubernetes_version = "1.32"
+  kubernetes_version = "1.35"
 
   # m5.2xlarge = 8 vCPU / 32 GB — headroom for the full observability stack
   # plus interview-backend traffic; min=2 ensures HA across AZs

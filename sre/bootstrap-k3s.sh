@@ -186,6 +186,7 @@ install_gateway() {
     --create-namespace \
     --wait \
     --timeout 5m
+  kubectl label namespace "${GATEWAY_NAMESPACE}" istio-injection=enabled --overwrite
 }
 
 install_cert_manager() {
@@ -196,6 +197,7 @@ install_cert_manager() {
     --create-namespace \
     --wait \
     --timeout 10m
+  kubectl label namespace "${CERT_MANAGER_NAMESPACE}" istio-injection=disabled --overwrite
 }
 
 build_and_load_interview_backend() {
@@ -214,6 +216,7 @@ install_argo_rollouts() {
     --create-namespace \
     --wait \
     --timeout 10m
+  kubectl label namespace "${ARGO_ROLLOUTS_NAMESPACE}" istio-injection=disabled --overwrite
 }
 
 configure_argocd_repo() {
@@ -247,6 +250,7 @@ install_argocd() {
     --set "apps.interviewBackend.targetRevision=${git_branch}" \
     --wait \
     --timeout 10m
+  kubectl label namespace "${ARGOCD_NAMESPACE}" istio-injection=disabled --overwrite
 }
 
 install_opentelemetry_operator() {
@@ -258,6 +262,7 @@ install_opentelemetry_operator() {
     --skip-schema-validation \
     --wait \
     --timeout 10m
+  kubectl label namespace "${OTEL_OPERATOR_NAMESPACE}" istio-injection=disabled --overwrite
 }
 
 install_external_secrets_operator() {
@@ -268,6 +273,7 @@ install_external_secrets_operator() {
     --create-namespace \
     --wait \
     --timeout 10m
+  kubectl label namespace "${ESO_NAMESPACE}" istio-injection=disabled --overwrite
 }
 
 install_observability_stack() {
@@ -278,6 +284,7 @@ install_observability_stack() {
     --create-namespace \
     --wait \
     --timeout 20m
+  kubectl label namespace "${OBSERVABILITY_NAMESPACE}" istio-injection=enabled --overwrite
 }
 
 smoke_test_interview_backend() {

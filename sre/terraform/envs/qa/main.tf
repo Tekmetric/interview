@@ -3,7 +3,7 @@ module "eks" {
 
   cluster_name       = "interview-qa"
   region             = "us-east-1"
-  kubernetes_version = "1.32"
+  kubernetes_version = "1.35"
 
   # m5.xlarge = 4 vCPU / 16 GB — stable (no burstable CPU cap) for test runs
   node_instance_type = "m5.xlarge"

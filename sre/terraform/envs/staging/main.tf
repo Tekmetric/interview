@@ -3,7 +3,7 @@ module "eks" {
 
   cluster_name       = "interview-staging"
   region             = "us-east-1"
-  kubernetes_version = "1.32"
+  kubernetes_version = "1.35"
 
   # m5.xlarge — same instance family as prod, min=2 keeps the cluster HA
   node_instance_type = "m5.xlarge"

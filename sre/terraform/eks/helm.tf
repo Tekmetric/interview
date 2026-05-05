@@ -8,7 +8,7 @@ locals {
 resource "helm_release" "istio" {
   name             = "istio"
   chart            = "${local.charts}/istio-chart"
-  namespace        = "istio-system"
+  namespace        = kubernetes_namespace.istio_system.metadata[0].name
   create_namespace = false
   wait             = true
   timeout          = 600
@@ -22,7 +22,7 @@ resource "helm_release" "istio" {
 resource "helm_release" "gateway" {
   name             = "gateway"
   chart            = "${local.charts}/gateway-chart"
-  namespace        = "istio-ingress"
+  namespace        = kubernetes_namespace.istio_ingress.metadata[0].name
   create_namespace = false
   wait             = true
   timeout          = 300
@@ -53,10 +53,12 @@ resource "helm_release" "gateway" {
 resource "helm_release" "cert_manager" {
   name             = "cert-manager"
   chart            = "${local.charts}/cert-manager-chart"
-  namespace        = "cert-manager"
+  namespace        = kubernetes_namespace.cert_manager.metadata[0].name
   create_namespace = false
   wait             = true
   timeout          = 600
+
+  depends_on = [helm_release.istio]
 }
 
 # ── 4. OpenTelemetry Operator ─────────────────────────────────────────────────
@@ -65,8 +67,8 @@ resource "helm_release" "cert_manager" {
 resource "helm_release" "opentelemetry_operator" {
   name                   = "opentelemetry-operator"
   chart                  = "${local.charts}/opentelemetry-operator-chart"
-  namespace              = "opentelemetry-operator-system"
-  create_namespace       = true
+  namespace              = kubernetes_namespace.opentelemetry_operator_system.metadata[0].name
+  create_namespace       = false
   wait                   = true
   timeout                = 600
   depends_on = [helm_release.cert_manager]
@@ -78,7 +80,7 @@ resource "helm_release" "opentelemetry_operator" {
 resource "helm_release" "external_secrets" {
   name             = "external-secrets"
   chart            = "${local.charts}/external-secrets-chart"
-  namespace        = "eso"
+  namespace        = kubernetes_namespace.eso.metadata[0].name
   create_namespace = false
   wait             = true
   timeout          = 600
@@ -88,14 +90,14 @@ resource "helm_release" "external_secrets" {
     value = module.eso_irsa.iam_role_arn
   }
 
-  depends_on = [module.eso_irsa]
+  depends_on = [module.eso_irsa, helm_release.istio]
 }
 
 # ── 6. Argo Rollouts ──────────────────────────────────────────────────────────
 resource "helm_release" "argo_rollouts" {
   name             = "argo-rollouts"
   chart            = "${local.charts}/argo-rollouts-chart"
-  namespace        = "argo-rollouts"
+  namespace        = kubernetes_namespace.argo_rollouts.metadata[0].name
   create_namespace = false
   wait             = true
   timeout          = 600
@@ -107,7 +109,7 @@ resource "helm_release" "argo_rollouts" {
 resource "helm_release" "observability_stack" {
   name             = "observability-stack"
   chart            = "${local.charts}/observability-stack"
-  namespace        = "observability-stack"
+  namespace        = kubernetes_namespace.observability_stack.metadata[0].name
   create_namespace = false
   wait             = true
   timeout          = 1200
@@ -211,7 +213,7 @@ YAML
 resource "helm_release" "argocd" {
   name             = "argocd"
   chart            = "${local.charts}/argocd-chart"
-  namespace        = "argocd"
+  namespace        = kubernetes_namespace.argocd.metadata[0].name
   create_namespace = false
   wait             = true
   timeout          = 600

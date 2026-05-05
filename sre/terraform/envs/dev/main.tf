@@ -3,7 +3,7 @@ module "eks" {
 
   cluster_name       = "interview-dev"
   region             = "us-east-1"
-  kubernetes_version = "1.32"
+  kubernetes_version = "1.35"
 
   # t3.xlarge = 4 vCPU / 16 GB — burstable, cheap for dev
   node_instance_type = "t3.xlarge"

@@ -12,7 +12,7 @@
 #       --key-schema AttributeName=LockID,KeyType=HASH \
 #       --billing-mode PAY_PER_REQUEST
 
-bucket  = "interview-terraform-state"
-region  = "us-east-1"
-encrypt = true
-# dynamodb_table = "terraform-locks"
+bucket         = "interview-backend-terraform-state"
+region         = "us-east-1"
+encrypt        = true
+dynamodb_table = "interview-backend-terraform-locks"

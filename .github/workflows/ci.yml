@@ -127,6 +127,13 @@ jobs:
               body,
             });
 
+      - name: Fail job if plan or apply failed
+        if: always()
+        run: |
+          if [ "${{ steps.plan.outcome }}" = "failure" ] || [ "${{ steps.apply.outcome }}" = "failure" ]; then
+            exit 1
+          fi
+
       - name: Check vulnerabilities
         run: |
           VULN_COUNT=$(cat trivy-results.json | jq -r '[.Results[]?.Vulnerabilities[]?] | length' 2>/dev/null || echo "0")

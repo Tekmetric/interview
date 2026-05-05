@@ -69,8 +69,6 @@ resource "helm_release" "opentelemetry_operator" {
   create_namespace       = true
   wait                   = true
   timeout                = 600
-  skip_schema_validation = true
-
   depends_on = [helm_release.cert_manager]
 }
 

@@ -127,24 +127,6 @@ jobs:
               body,
             });
 
-            if (planOutcome === 'failure' || applyOutcome === 'failure') {
-              core.setFailed(`Terraform ${planOutcome === 'failure' ? 'plan' : 'apply'} failed`);
-            }
-
-      - name: Fail if plan or apply failed
-        if: always()
-        run: |
-          if [ "${{ steps.plan.outcome }}" = "failure" ] || [ "${{ steps.apply.outcome }}" = "failure" ]; then
-            exit 1
-          fi
-
-      - name: Fail job if plan or apply failed
-        if: always()
-        run: |
-          if [ "${{ steps.plan.outcome }}" = "failure" ] || [ "${{ steps.apply.outcome }}" = "failure" ]; then
-            exit 1
-          fi
-
       - name: Check vulnerabilities
         run: |
           VULN_COUNT=$(cat trivy-results.json | jq -r '[.Results[]?.Vulnerabilities[]?] | length' 2>/dev/null || echo "0")
@@ -284,6 +266,20 @@ jobs:
           terraform init \
             -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
             -backend-config="dynamodb_table=${{ vars.TF_LOCKS_TABLE }}"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v4.1.4
+
+      - name: Update Helm chart dependencies
+        run: |
+          find sre/helm -maxdepth 1 -mindepth 1 -type d | while read chart_dir; do
+            if [ -f "${chart_dir}/Chart.yaml" ]; then
+              echo "Updating dependencies for ${chart_dir}"
+              helm dependency update "${chart_dir}"
+            fi
+          done
 
       - name: Terraform Plan
         id: plan

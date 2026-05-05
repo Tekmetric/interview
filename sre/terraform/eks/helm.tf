@@ -91,10 +91,12 @@ resource "helm_release" "external_secrets" {
   wait              = true
   timeout           = 600
 
-  set {
-    name  = "external-secrets.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.eso_irsa.iam_role_arn
-  }
+  set = [
+    {
+      name  = "external-secrets.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.eso_irsa.iam_role_arn
+    }
+  ]
 
   depends_on = [module.eso_irsa, helm_release.istio]
 }
@@ -122,15 +124,16 @@ resource "helm_release" "observability_stack" {
   wait              = true
   timeout           = 1200
 
-  set {
-    name  = "k8s-monitoring.cluster.provider"
-    value = "eks"
-  }
-
-  set {
-    name  = "k8s-monitoring.cluster.name"
-    value = var.cluster_name
-  }
+  set = [
+    {
+      name  = "k8s-monitoring.cluster.provider"
+      value = "eks"
+    },
+    {
+      name  = "k8s-monitoring.cluster.name"
+      value = var.cluster_name
+    },
+  ]
 
   # Grafana's chart only exposes one service port. Setting port=443 with
   # targetPort=3000 (Grafana's HTTP port) lets the NLB terminate TLS and
@@ -250,38 +253,35 @@ resource "helm_release" "argocd" {
     }
   })]
 
-  set {
-    name  = "repo.secret.useExternalSecret"
-    value = "true"
-  }
-
-  set {
-    name  = "apps.interviewBackend.targetRevision"
-    value = var.git_branch
-  }
-
-  set {
-    name  = "apps.interviewBackend.valueFiles[0]"
-    value = "values.yaml"
-  }
-
-  set {
-    name  = "apps.interviewBackend.valueFiles[1]"
-    value = "values-eks.yaml"
-  }
-
-  # Inject the real hostname into the Istio Gateway resource so it only accepts
-  # traffic addressed to interview-backend.<domain>. ArgoCD passes this as a
-  # Helm parameter override on top of the value files.
-  set {
-    name  = "apps.interviewBackend.parameters[0].name"
-    value = "istio.gateway.host"
-  }
-
-  set {
-    name  = "apps.interviewBackend.parameters[0].value"
-    value = "interview-backend.${var.domain_name}"
-  }
+  set = [
+    {
+      name  = "repo.secret.useExternalSecret"
+      value = "true"
+    },
+    {
+      name  = "apps.interviewBackend.targetRevision"
+      value = var.git_branch
+    },
+    {
+      name  = "apps.interviewBackend.valueFiles[0]"
+      value = "values.yaml"
+    },
+    {
+      name  = "apps.interviewBackend.valueFiles[1]"
+      value = "values-eks.yaml"
+    },
+    # Inject the real hostname into the Istio Gateway resource so it only accepts
+    # traffic addressed to interview-backend.<domain>. ArgoCD passes this as a
+    # Helm parameter override on top of the value files.
+    {
+      name  = "apps.interviewBackend.parameters[0].name"
+      value = "istio.gateway.host"
+    },
+    {
+      name  = "apps.interviewBackend.parameters[0].value"
+      value = "interview-backend.${var.domain_name}"
+    },
+  ]
 
   depends_on = [
     null_resource.cluster_secret_store,

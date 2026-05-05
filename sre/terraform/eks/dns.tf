@@ -30,40 +30,37 @@ resource "helm_release" "external_dns" {
   wait             = true
   timeout          = 300
 
-  set {
-    name  = "provider"
-    value = "aws"
-  }
-
-  set {
-    name  = "aws.region"
-    value = var.region
-  }
-
-  # Scope External DNS to only this cluster's records so multiple clusters
-  # sharing a zone don't clobber each other's entries.
-  set {
-    name  = "txtOwnerId"
-    value = var.cluster_name
-  }
-
-  # Only manage records under the domain this cluster owns.
-  set {
-    name  = "domainFilters[0]"
-    value = var.domain_name
-  }
-
-  # sync = create AND delete records to match live services.
-  # Change to "upsert-only" if you want to protect records from deletion.
-  set {
-    name  = "policy"
-    value = "sync"
-  }
-
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.external_dns_irsa.iam_role_arn
-  }
+  set = [
+    {
+      name  = "provider"
+      value = "aws"
+    },
+    {
+      name  = "aws.region"
+      value = var.region
+    },
+    # Scope External DNS to only this cluster's records so multiple clusters
+    # sharing a zone don't clobber each other's entries.
+    {
+      name  = "txtOwnerId"
+      value = var.cluster_name
+    },
+    # Only manage records under the domain this cluster owns.
+    {
+      name  = "domainFilters[0]"
+      value = var.domain_name
+    },
+    # sync = create AND delete records to match live services.
+    # Change to "upsert-only" if you want to protect records from deletion.
+    {
+      name  = "policy"
+      value = "sync"
+    },
+    {
+      name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.external_dns_irsa.iam_role_arn
+    },
+  ]
 
   depends_on = [module.external_dns_irsa]
 }

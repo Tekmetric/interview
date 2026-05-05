@@ -34,7 +34,7 @@ output "argocd_url" {
 }
 
 output "acm_certificate_arn" {
-  description = "ACM wildcard certificate ARN (*.${var.domain_name})"
+  description = "ACM wildcard certificate ARN for the environment domain"
   value       = aws_acm_certificate_validation.wildcard.certificate_arn
 }
 

@@ -6,12 +6,13 @@ locals {
 
 # ── 1. Istio ─────────────────────────────────────────────────────────────────
 resource "helm_release" "istio" {
-  name             = "istio"
-  chart            = "${local.charts}/istio-chart"
-  namespace        = kubernetes_namespace.istio_system.metadata[0].name
-  create_namespace = false
-  wait             = true
-  timeout          = 600
+  name               = "istio"
+  chart              = "${local.charts}/istio-chart"
+  namespace          = kubernetes_namespace.istio_system.metadata[0].name
+  create_namespace   = false
+  dependency_update  = true
+  wait               = true
+  timeout            = 300
 }
 
 # ── 2. Istio Ingress Gateway ──────────────────────────────────────────────────
@@ -20,12 +21,13 @@ resource "helm_release" "istio" {
 # NLB forwards plain HTTP after decryption — Istio's 8443 port expects TLS
 # which would conflict with NLB termination.
 resource "helm_release" "gateway" {
-  name             = "gateway"
-  chart            = "${local.charts}/gateway-chart"
-  namespace        = kubernetes_namespace.istio_ingress.metadata[0].name
-  create_namespace = false
-  wait             = true
-  timeout          = 300
+  name              = "gateway"
+  chart             = "${local.charts}/gateway-chart"
+  namespace         = kubernetes_namespace.istio_ingress.metadata[0].name
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 600
 
   values = [yamlencode({
     gateway = {
@@ -51,12 +53,13 @@ resource "helm_release" "gateway" {
 
 # ── 3. cert-manager ───────────────────────────────────────────────────────────
 resource "helm_release" "cert_manager" {
-  name             = "cert-manager"
-  chart            = "${local.charts}/cert-manager-chart"
-  namespace        = kubernetes_namespace.cert_manager.metadata[0].name
-  create_namespace = false
-  wait             = true
-  timeout          = 600
+  name              = "cert-manager"
+  chart             = "${local.charts}/cert-manager-chart"
+  namespace         = kubernetes_namespace.cert_manager.metadata[0].name
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 600
 
   depends_on = [helm_release.istio]
 }
@@ -65,12 +68,14 @@ resource "helm_release" "cert_manager" {
 # Requires cert-manager for webhook certificate issuance.
 # skip_schema_validation mirrors the --skip-schema-validation flag in bootstrap-k3s.sh.
 resource "helm_release" "opentelemetry_operator" {
-  name                   = "opentelemetry-operator"
-  chart                  = "${local.charts}/opentelemetry-operator-chart"
-  namespace              = kubernetes_namespace.opentelemetry_operator_system.metadata[0].name
-  create_namespace       = false
-  wait                   = true
-  timeout                = 600
+  name              = "opentelemetry-operator"
+  chart             = "${local.charts}/opentelemetry-operator-chart"
+  namespace         = kubernetes_namespace.opentelemetry_operator_system.metadata[0].name
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 600
+
   depends_on = [helm_release.cert_manager]
 }
 
@@ -78,12 +83,13 @@ resource "helm_release" "opentelemetry_operator" {
 # The service account is annotated with the IRSA role so the controller pods
 # get AWS credentials via IRSA without any static keys.
 resource "helm_release" "external_secrets" {
-  name             = "external-secrets"
-  chart            = "${local.charts}/external-secrets-chart"
-  namespace        = kubernetes_namespace.eso.metadata[0].name
-  create_namespace = false
-  wait             = true
-  timeout          = 600
+  name              = "external-secrets"
+  chart             = "${local.charts}/external-secrets-chart"
+  namespace         = kubernetes_namespace.eso.metadata[0].name
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 600
 
   set {
     name  = "external-secrets.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
@@ -95,24 +101,26 @@ resource "helm_release" "external_secrets" {
 
 # ── 6. Argo Rollouts ──────────────────────────────────────────────────────────
 resource "helm_release" "argo_rollouts" {
-  name             = "argo-rollouts"
-  chart            = "${local.charts}/argo-rollouts-chart"
-  namespace        = kubernetes_namespace.argo_rollouts.metadata[0].name
-  create_namespace = false
-  wait             = true
-  timeout          = 600
+  name              = "argo-rollouts"
+  chart             = "${local.charts}/argo-rollouts-chart"
+  namespace         = kubernetes_namespace.argo_rollouts.metadata[0].name
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 600
 }
 
 # ── 7. Observability Stack ────────────────────────────────────────────────────
 # Prometheus, Loki, and Tempo each claim a PersistentVolume, so the EBS CSI
 # addon must be ready. Istio must be up for namespace-level sidecar injection.
 resource "helm_release" "observability_stack" {
-  name             = "observability-stack"
-  chart            = "${local.charts}/observability-stack"
-  namespace        = kubernetes_namespace.observability_stack.metadata[0].name
-  create_namespace = false
-  wait             = true
-  timeout          = 1200
+  name              = "observability-stack"
+  chart             = "${local.charts}/observability-stack"
+  namespace         = kubernetes_namespace.observability_stack.metadata[0].name
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 1200
 
   set {
     name  = "k8s-monitoring.cluster.provider"
@@ -211,12 +219,13 @@ YAML
 #   JSON key    : sshPrivateKey
 # before running `terraform apply`.
 resource "helm_release" "argocd" {
-  name             = "argocd"
-  chart            = "${local.charts}/argocd-chart"
-  namespace        = kubernetes_namespace.argocd.metadata[0].name
-  create_namespace = false
-  wait             = true
-  timeout          = 600
+  name              = "argocd"
+  chart             = "${local.charts}/argocd-chart"
+  namespace         = kubernetes_namespace.argocd.metadata[0].name
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 600
 
   # server.insecure disables ArgoCD's own TLS — the NLB handles it instead.
   # With NLB termination, ArgoCD receives plain HTTP on port 8080 whether

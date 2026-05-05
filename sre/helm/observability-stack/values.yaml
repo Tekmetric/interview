@@ -440,6 +440,7 @@ k8s-monitoring:
     destinations: [prometheus]
     kube-state-metrics:
       metricsTuning:
+        useDefaultAllowList: true
         includeMetrics:
           - kube_pod_status_ready
   hostMetrics:

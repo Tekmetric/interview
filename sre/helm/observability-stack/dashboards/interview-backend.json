@@ -40,7 +40,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"destination\"}[$__rate_interval]))",
+          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"source\"}[$__rate_interval]))",
+          "interval": "60s",
           "legendFormat": "RPS",
           "refId": "A"
         }
@@ -82,7 +83,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "(1 - sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"destination\",response_code=~\"5..\"}[$__rate_interval])) / sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"destination\"}[$__rate_interval]))) * 100 or vector(100)",
+          "expr": "(1 - sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"source\",response_code=~\"5..\"}[$__rate_interval])) / sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"source\"}[$__rate_interval]))) * 100 or vector(100)",
+          "interval": "60s",
           "legendFormat": "Availability",
           "refId": "A"
         }
@@ -121,7 +123,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"interview-backend\",reporter=\"destination\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"interview-backend\",reporter=\"source\"}[$__rate_interval])) by (le))",
+          "interval": "60s",
           "legendFormat": "P99",
           "refId": "A"
         }
@@ -163,7 +166,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"destination\",response_code=~\"5..\"}[$__rate_interval])) / sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"destination\"}[$__rate_interval])) * 100 or vector(0)",
+          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"source\",response_code=~\"5..\"}[$__rate_interval])) / sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"source\"}[$__rate_interval])) * 100 or vector(0)",
+          "interval": "60s",
           "legendFormat": "Error Rate",
           "refId": "A"
         }
@@ -228,19 +232,22 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"destination\",response_code=~\"2..\"}[$__rate_interval]))",
+          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"source\",response_code=~\"2..\"}[$__rate_interval]))",
+          "interval": "60s",
           "legendFormat": "2xx",
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"destination\",response_code=~\"4..\"}[$__rate_interval]))",
+          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"source\",response_code=~\"4..\"}[$__rate_interval]))",
+          "interval": "60s",
           "legendFormat": "4xx",
           "refId": "B"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"destination\",response_code=~\"5..\"}[$__rate_interval]))",
+          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"source\",response_code=~\"5..\"}[$__rate_interval]))",
+          "interval": "60s",
           "legendFormat": "5xx",
           "refId": "C"
         }
@@ -273,7 +280,8 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"destination\"}[$__rate_interval])) by (response_code)",
+          "expr": "sum(rate(istio_requests_total{destination_service_name=\"interview-backend\",reporter=\"source\"}[$__rate_interval])) by (response_code)",
+          "interval": "60s",
           "legendFormat": "HTTP {{response_code}}",
           "refId": "A"
         }
@@ -313,25 +321,29 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "histogram_quantile(0.50, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"interview-backend\",reporter=\"destination\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"interview-backend\",reporter=\"source\"}[$__rate_interval])) by (le))",
+          "interval": "60s",
           "legendFormat": "P50",
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "histogram_quantile(0.95, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"interview-backend\",reporter=\"destination\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"interview-backend\",reporter=\"source\"}[$__rate_interval])) by (le))",
+          "interval": "60s",
           "legendFormat": "P95",
           "refId": "B"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"interview-backend\",reporter=\"destination\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"interview-backend\",reporter=\"source\"}[$__rate_interval])) by (le))",
+          "interval": "60s",
           "legendFormat": "P99",
           "refId": "C"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "histogram_quantile(0.999, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"interview-backend\",reporter=\"destination\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.999, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"interview-backend\",reporter=\"source\"}[$__rate_interval])) by (le))",
+          "interval": "60s",
           "legendFormat": "P99.9",
           "refId": "D"
         }
@@ -562,6 +574,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"interview-backend\",container=\"interview-backend\"}[$__rate_interval])) by (pod)",
+          "interval": "60s",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }

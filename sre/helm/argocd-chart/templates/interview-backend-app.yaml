@@ -20,6 +20,10 @@ spec:
     helm:
       valueFiles:
         {{- toYaml .Values.apps.interviewBackend.valueFiles | nindent 8 }}
+      {{- if .Values.apps.interviewBackend.parameters }}
+      parameters:
+        {{- toYaml .Values.apps.interviewBackend.parameters | nindent 8 }}
+      {{- end }}
   destination:
     server: {{ .Values.apps.interviewBackend.destination.server }}
     namespace: {{ .Values.apps.interviewBackend.destination.namespace }}

@@ -8,3 +8,17 @@ metadata:
 spec:
   mtls:
     mode: STRICT
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: {{ include "observability-stack.fullname" . }}-kube-state-metrics-permissive
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "observability-stack.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics
+  mtls:
+    mode: PERMISSIVE

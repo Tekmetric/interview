@@ -127,6 +127,17 @@ jobs:
               body,
             });
 
+            if (planOutcome === 'failure' || applyOutcome === 'failure') {
+              core.setFailed(`Terraform ${planOutcome === 'failure' ? 'plan' : 'apply'} failed`);
+            }
+
+      - name: Fail if plan or apply failed
+        if: always()
+        run: |
+          if [ "${{ steps.plan.outcome }}" = "failure" ] || [ "${{ steps.apply.outcome }}" = "failure" ]; then
+            exit 1
+          fi
+
       - name: Fail job if plan or apply failed
         if: always()
         run: |
@@ -318,3 +329,6 @@ jobs:
               issue_number: context.issue.number,
               body,
             });
+            if (planOutcome === 'failure' || applyOutcome === 'failure') {
+              core.setFailed(`Terraform ${planOutcome === 'failure' ? 'plan' : 'apply'} failed`);
+            }

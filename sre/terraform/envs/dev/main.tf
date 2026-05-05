@@ -18,4 +18,6 @@ module "eks" {
   #            argocd.dev.interview.techholmes.info
   domain_name     = "dev.interview.techholmes.info"
   route53_zone_id = "Z00557182WVDNCS6ST2H1"
+
+  admin_iam_arns = var.admin_iam_arns
 }

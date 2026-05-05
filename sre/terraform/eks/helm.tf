@@ -9,7 +9,7 @@ resource "helm_release" "istio" {
   name             = "istio"
   chart            = "${local.charts}/istio-chart"
   namespace        = "istio-system"
-  create_namespace = true
+  create_namespace = false
   wait             = true
   timeout          = 600
 }
@@ -23,7 +23,7 @@ resource "helm_release" "gateway" {
   name             = "gateway"
   chart            = "${local.charts}/gateway-chart"
   namespace        = "istio-ingress"
-  create_namespace = true
+  create_namespace = false
   wait             = true
   timeout          = 300
 
@@ -54,7 +54,7 @@ resource "helm_release" "cert_manager" {
   name             = "cert-manager"
   chart            = "${local.charts}/cert-manager-chart"
   namespace        = "cert-manager"
-  create_namespace = true
+  create_namespace = false
   wait             = true
   timeout          = 600
 }
@@ -79,7 +79,7 @@ resource "helm_release" "external_secrets" {
   name             = "external-secrets"
   chart            = "${local.charts}/external-secrets-chart"
   namespace        = "eso"
-  create_namespace = true
+  create_namespace = false
   wait             = true
   timeout          = 600
 
@@ -96,7 +96,7 @@ resource "helm_release" "argo_rollouts" {
   name             = "argo-rollouts"
   chart            = "${local.charts}/argo-rollouts-chart"
   namespace        = "argo-rollouts"
-  create_namespace = true
+  create_namespace = false
   wait             = true
   timeout          = 600
 }
@@ -108,7 +108,7 @@ resource "helm_release" "observability_stack" {
   name             = "observability-stack"
   chart            = "${local.charts}/observability-stack"
   namespace        = "observability-stack"
-  create_namespace = true
+  create_namespace = false
   wait             = true
   timeout          = 1200
 
@@ -212,7 +212,7 @@ resource "helm_release" "argocd" {
   name             = "argocd"
   chart            = "${local.charts}/argocd-chart"
   namespace        = "argocd"
-  create_namespace = true
+  create_namespace = false
   wait             = true
   timeout          = 600
 

@@ -41,6 +41,23 @@ module "eks" {
   # Grants the caller's IAM identity cluster-admin so terraform can manage k8s resources
   enable_cluster_creator_admin_permissions = true
 
+  access_entries = {
+    for arn in var.admin_iam_arns : arn => {
+      principal_arn     = arn
+      type              = "STANDARD"
+      kubernetes_groups = []
+
+      policy_associations = {
+        cluster_admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
   tags = {
     cluster = var.cluster_name
   }

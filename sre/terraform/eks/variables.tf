@@ -13,7 +13,7 @@ variable "region" {
 variable "kubernetes_version" {
   description = "EKS Kubernetes version"
   type        = string
-  default     = "1.32"
+  default     = "1.35"
 }
 
 variable "node_instance_type" {
@@ -54,4 +54,10 @@ variable "domain_name" {
 variable "route53_zone_id" {
   description = "Route53 Hosted Zone ID that owns domain_name. External DNS will write records into this zone."
   type        = string
+}
+
+variable "admin_iam_arns" {
+  description = "List of IAM user/role ARNs to grant cluster-admin access via EKS Access Entries."
+  type        = list(string)
+  default     = []
 }

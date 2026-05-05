@@ -15,6 +15,50 @@ resource "helm_release" "istio" {
   timeout            = 300
 }
 
+# Istiod's pod readiness probe passes before the validating webhook is fully
+# serving. Poll with --dry-run=server until the webhook actually responds so
+# that downstream releases don't race against it.
+resource "null_resource" "wait_for_istiod_webhook" {
+  triggers = {
+    istio_revision = helm_release.istio.metadata[0].revision
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = <<-SHELL
+      aws eks update-kubeconfig \
+        --region '${var.region}' \
+        --name '${var.cluster_name}' \
+        --kubeconfig '/tmp/tf-kubeconfig-${var.cluster_name}'
+      echo "Waiting for Istiod webhook to be ready..."
+      until kubectl --kubeconfig '/tmp/tf-kubeconfig-${var.cluster_name}' \
+        apply --dry-run=server -f - 2>/dev/null <<'EOF'
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: webhook-readiness-probe
+  namespace: istio-system
+spec:
+  hosts:
+    - readiness-probe
+  http:
+    - route:
+        - destination:
+            host: readiness-probe
+            port:
+              number: 80
+EOF
+      do
+        echo "  not ready yet, retrying in 5s..."
+        sleep 5
+      done
+      echo "Istiod webhook is ready."
+    SHELL
+  }
+
+  depends_on = [helm_release.istio]
+}
+
 # ── 2. Istio Ingress Gateway ──────────────────────────────────────────────────
 # NLB terminates TLS using the ACM wildcard cert on port 443.
 # Port 443 targetPort is overridden to 8080 (Istio's HTTP port) so the
@@ -48,7 +92,7 @@ resource "helm_release" "gateway" {
     }
   })]
 
-  depends_on = [helm_release.istio]
+  depends_on = [null_resource.wait_for_istiod_webhook]
 }
 
 # ── 3. cert-manager ───────────────────────────────────────────────────────────
@@ -156,7 +200,7 @@ resource "helm_release" "observability_stack" {
   })]
 
   depends_on = [
-    helm_release.istio,
+    null_resource.wait_for_istiod_webhook,
     aws_eks_addon.ebs_csi,
   ]
 }

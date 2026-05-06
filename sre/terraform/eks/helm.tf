@@ -274,7 +274,7 @@ resource "null_resource" "cluster_secret_store" {
         --name '${var.cluster_name}' \
         --kubeconfig '/tmp/tf-kubeconfig-${var.cluster_name}' && \
       kubectl --kubeconfig '/tmp/tf-kubeconfig-${var.cluster_name}' apply -f - <<'YAML'
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ClusterSecretStore
 metadata:
   name: aws-secretsmanager

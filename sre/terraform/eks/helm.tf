@@ -40,32 +40,40 @@ resource "null_resource" "wait_for_istiod_webhook" {
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
     command     = <<-SHELL
+      KUBECONFIG='/tmp/tf-kubeconfig-${var.cluster_name}'
       aws eks update-kubeconfig \
         --region '${var.region}' \
         --name '${var.cluster_name}' \
-        --kubeconfig '/tmp/tf-kubeconfig-${var.cluster_name}'
-      echo "Waiting for Istiod webhook to be ready..."
-      until kubectl --kubeconfig '/tmp/tf-kubeconfig-${var.cluster_name}' \
-        apply --dry-run=server -f - 2>/dev/null <<'EOF'
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: webhook-readiness-probe
-  namespace: istio-system
-spec:
-  hosts:
-    - readiness-probe
-  http:
-    - route:
-        - destination:
-            host: readiness-probe
-            port:
-              number: 80
-EOF
-      do
-        echo "  not ready yet, retrying in 5s..."
+        --kubeconfig "$KUBECONFIG"
+
+      TIMEOUT=300
+      DEADLINE=$(( $(date +%s) + TIMEOUT ))
+
+      echo "Waiting for Istiod to have ready endpoints (timeout ${TIMEOUT}s)..."
+      until kubectl --kubeconfig "$KUBECONFIG" \
+        -n istio-system get endpoints istiod \
+        -o jsonpath='{.subsets[0].addresses[0].ip}' 2>/dev/null | grep -qE '^[0-9]'; do
+        if [ $(date +%s) -ge $DEADLINE ]; then
+          echo "Timed out waiting for Istiod endpoints after ${TIMEOUT}s" >&2
+          exit 1
+        fi
+        echo "  no ready endpoints yet, retrying in 5s..."
         sleep 5
       done
+
+      echo "Waiting for Istiod to register its webhook CA bundle (timeout ${TIMEOUT}s)..."
+      until kubectl --kubeconfig "$KUBECONFIG" \
+        get validatingwebhookconfiguration \
+        -l app=istiod \
+        -o jsonpath='{.items[0].webhooks[0].clientConfig.caBundle}' 2>/dev/null | grep -q '.'; do
+        if [ $(date +%s) -ge $DEADLINE ]; then
+          echo "Timed out waiting for Istiod webhook CA bundle after ${TIMEOUT}s" >&2
+          exit 1
+        fi
+        echo "  CA bundle not set yet, retrying in 5s..."
+        sleep 5
+      done
+
       echo "Istiod webhook is ready."
     SHELL
   }

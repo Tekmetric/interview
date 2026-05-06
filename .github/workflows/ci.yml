@@ -288,7 +288,7 @@ jobs:
         working-directory: sre/terraform/envs/dev
         env:
           TF_VAR_admin_iam_arns: '["${{ vars.ADMIN_IAM_ARN }}"]'
-          TF_VAR_image_tag: ${{ needs.build-push.result == 'success' && format('pr-{0}', github.event.pull_request.number) || '' }}
+          TF_VAR_image_tag: ${{ needs.build-push.outputs.image_tag || '' }}
           TF_VAR_git_branch: ${{ github.head_ref }}
         run: |
           set -o pipefail
@@ -301,7 +301,7 @@ jobs:
         working-directory: sre/terraform/envs/dev
         env:
           TF_VAR_admin_iam_arns: '["${{ vars.ADMIN_IAM_ARN }}"]'
-          TF_VAR_image_tag: ${{ needs.build-push.result == 'success' && format('pr-{0}', github.event.pull_request.number) || '' }}
+          TF_VAR_image_tag: ${{ needs.build-push.outputs.image_tag || '' }}
           TF_VAR_git_branch: ${{ github.head_ref }}
         run: |
           set -o pipefail

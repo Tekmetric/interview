@@ -24,12 +24,12 @@ module "eks" {
     }
   }
 
-  # Allow the EKS control plane to reach Istiod's admission webhook port.
-  # Without this rule, every Istio CR apply times out with "context deadline exceeded"
-  # because the API server cannot connect to istiod.istio-system.svc:443 → pod:15017.
+  # Allow the EKS control plane to reach admission webhook ports on worker nodes.
+  # Without these rules, webhook calls from the API server time out with "context deadline exceeded"
+  # because the default EKS node security group only opens ports 443 and 10250.
   node_security_group_additional_rules = {
     allow_control_plane_istiod_webhook = {
-      description                   = "EKS control plane → Istiod webhook (port 15017)"
+      description                   = "EKS control plane -> Istiod webhook (port 15017)"
       protocol                      = "tcp"
       from_port                     = 15017
       to_port                       = 15017
@@ -37,7 +37,7 @@ module "eks" {
       source_cluster_security_group = true
     }
     allow_control_plane_otel_webhook = {
-      description                   = "EKS control plane → OpenTelemetry Operator webhook (port 9443)"
+      description                   = "EKS control plane -> OpenTelemetry Operator webhook (port 9443)"
       protocol                      = "tcp"
       from_port                     = 9443
       to_port                       = 9443

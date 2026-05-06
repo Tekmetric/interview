@@ -1,7 +1,7 @@
 env: eks
 
 image:
-  tag: latest
+  tag: pr-2-01cfd38
   pullPolicy: IfNotPresent
 
 resources:

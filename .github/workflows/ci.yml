@@ -28,9 +28,10 @@ jobs:
       pull-requests: read
       contents: read
     outputs:
-      backend:   ${{ steps.result.outputs.backend }}
-      helm:      ${{ steps.result.outputs.helm }}
-      terraform: ${{ steps.result.outputs.terraform }}
+      backend:    ${{ steps.result.outputs.backend }}
+      helm_infra: ${{ steps.result.outputs.helm_infra }}
+      helm_app:   ${{ steps.result.outputs.helm_app }}
+      terraform:  ${{ steps.result.outputs.terraform }}
     steps:
       - uses: actions/checkout@v4
 
@@ -41,8 +42,11 @@ jobs:
           filters: |
             backend:
               - 'backend/**'
-            helm:
+            helm_infra:
               - 'sre/helm/**'
+              - '!sre/helm/interview-backend/**'
+            helm_app:
+              - 'sre/helm/interview-backend/**'
             terraform:
               - 'sre/terraform/**'
 
@@ -50,13 +54,15 @@ jobs:
         id: result
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "backend=true"    >> $GITHUB_OUTPUT
-            echo "helm=true"       >> $GITHUB_OUTPUT
-            echo "terraform=true"  >> $GITHUB_OUTPUT
+            echo "backend=true"     >> $GITHUB_OUTPUT
+            echo "helm_infra=true"  >> $GITHUB_OUTPUT
+            echo "helm_app=true"    >> $GITHUB_OUTPUT
+            echo "terraform=true"   >> $GITHUB_OUTPUT
           else
-            echo "backend=${{ steps.filter.outputs.backend }}"     >> $GITHUB_OUTPUT
-            echo "helm=${{ steps.filter.outputs.helm }}"           >> $GITHUB_OUTPUT
-            echo "terraform=${{ steps.filter.outputs.terraform }}" >> $GITHUB_OUTPUT
+            echo "backend=${{ steps.filter.outputs.backend }}"         >> $GITHUB_OUTPUT
+            echo "helm_infra=${{ steps.filter.outputs.helm_infra }}"   >> $GITHUB_OUTPUT
+            echo "helm_app=${{ steps.filter.outputs.helm_app }}"       >> $GITHUB_OUTPUT
+            echo "terraform=${{ steps.filter.outputs.terraform }}"     >> $GITHUB_OUTPUT
           fi
 
   trivy-scan:
@@ -146,12 +152,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: read
+      contents: write
     outputs:
       image_tag: ${{ steps.image.outputs.tag }}
       image_uri: ${{ steps.image.outputs.uri }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Set image tag
         id: image
@@ -213,10 +221,21 @@ jobs:
           VULN_COUNT=$(cat trivy-container-results.json | jq -r '[.Results[]?.Vulnerabilities[]?] | length' 2>/dev/null || echo "0")
           echo "Container scan: ${VULN_COUNT} CRITICAL/HIGH vulnerabilities in ${{ steps.image.outputs.tag }}"
 
+      - name: Update image tag in ArgoCD values
+        if: github.event_name == 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          sed -i "s|^  tag:.*|  tag: ${{ steps.image.outputs.tag }}|" \
+            sre/argocd-values/interview-backend-dev.yaml
+          git add sre/argocd-values/interview-backend-dev.yaml
+          git diff --cached --quiet || git commit -m "chore: update dev image tag to ${{ steps.image.outputs.tag }} [skip ci]"
+          git push
+
   helm-validate:
     name: Helm Chart Validate
     needs: changes
-    if: needs.changes.outputs.helm == 'true'
+    if: needs.changes.outputs.helm_infra == 'true' || needs.changes.outputs.helm_app == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -242,7 +261,7 @@ jobs:
       github.event_name == 'pull_request' &&
       (needs.build-push.result == 'success' || needs.build-push.result == 'skipped') &&
       (needs.helm-validate.result == 'success' || needs.helm-validate.result == 'skipped') &&
-      (needs.build-push.result == 'success' || needs.helm-validate.result == 'success' || needs.changes.outputs.terraform == 'true')
+      (needs.build-push.result == 'success' || needs.changes.outputs.helm_infra == 'true' || needs.changes.outputs.terraform == 'true')
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -288,7 +307,6 @@ jobs:
         working-directory: sre/terraform/envs/dev
         env:
           TF_VAR_admin_iam_arns: '["${{ vars.ADMIN_IAM_ARN }}"]'
-          TF_VAR_image_tag: ${{ needs.build-push.outputs.image_tag || '' }}
           TF_VAR_git_branch: ${{ github.head_ref }}
         run: |
           set -o pipefail
@@ -301,7 +319,6 @@ jobs:
         working-directory: sre/terraform/envs/dev
         env:
           TF_VAR_admin_iam_arns: '["${{ vars.ADMIN_IAM_ARN }}"]'
-          TF_VAR_image_tag: ${{ needs.build-push.outputs.image_tag || '' }}
           TF_VAR_git_branch: ${{ github.head_ref }}
         run: |
           set -o pipefail

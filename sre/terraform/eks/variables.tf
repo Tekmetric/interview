@@ -61,3 +61,9 @@ variable "admin_iam_arns" {
   type        = list(string)
   default     = []
 }
+
+variable "image_tag" {
+  description = "interview-backend image tag for ArgoCD to deploy. Set to a PR tag (e.g. pr-42) on PR builds; empty string leaves the value from values-eks.yaml."
+  type        = string
+  default     = ""
+}

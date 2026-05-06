@@ -2,6 +2,20 @@ locals {
   # Resolve the local chart paths relative to this module directory so Terraform
   # works regardless of the working directory it is invoked from.
   charts = "${path.module}/../../helm"
+
+  # ArgoCD parameter overrides for the interview-backend Application.
+  # Always sets the Istio gateway host; conditionally overrides image.tag
+  # when var.image_tag is provided (PR builds).
+  argocd_backend_params = concat(
+    [
+      { name = "apps.interviewBackend.parameters[0].name",  value = "istio.gateway.host" },
+      { name = "apps.interviewBackend.parameters[0].value", value = "interview-backend.${var.domain_name}" },
+    ],
+    var.image_tag != "" ? [
+      { name = "apps.interviewBackend.parameters[1].name",  value = "image.tag" },
+      { name = "apps.interviewBackend.parameters[1].value", value = var.image_tag },
+    ] : []
+  )
 }
 
 # ── 1. Istio ─────────────────────────────────────────────────────────────────
@@ -20,7 +34,7 @@ resource "helm_release" "istio" {
 # that downstream releases don't race against it.
 resource "null_resource" "wait_for_istiod_webhook" {
   triggers = {
-    istio_revision = helm_release.istio.metadata[0].revision
+    istio_revision = helm_release.istio.metadata.revision
   }
 
   provisioner "local-exec" {
@@ -314,18 +328,7 @@ resource "helm_release" "argocd" {
       name  = "apps.interviewBackend.valueFiles[1]"
       value = "values-eks.yaml"
     },
-    # Inject the real hostname into the Istio Gateway resource so it only accepts
-    # traffic addressed to interview-backend.<domain>. ArgoCD passes this as a
-    # Helm parameter override on top of the value files.
-    {
-      name  = "apps.interviewBackend.parameters[0].name"
-      value = "istio.gateway.host"
-    },
-    {
-      name  = "apps.interviewBackend.parameters[0].value"
-      value = "interview-backend.${var.domain_name}"
-    },
-  ]
+  ] + local.argocd_backend_params
 
   depends_on = [
     null_resource.cluster_secret_store,

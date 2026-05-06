@@ -29,11 +29,9 @@ Rather than mounting the agent at runtime or injecting it via an init container,
 
 ## CI/CD Pipeline
 
-### Consolidating four files into one
+### One Workflow
 
-The previous structure split concerns across four separate workflow files (`build-and-push-ecr.yml`, `helm-validate.yml`, `terraform-dev-deploy.yml`, `trivy-scan.yml`). The new `ci.yml` replaces all four.
-
-The main advantage of a single file is that job dependencies are explicit and visible in one place. The dependency graph at the top of the file makes the intent clear:
+The main advantage of a single file workflow is that job dependencies are explicit and visible in one place. The dependency graph at the top of the file makes the intent clear:
 
 ```
 changes ──┬── trivy-scan ── build-push ──┐
@@ -41,7 +39,7 @@ changes ──┬── trivy-scan ── build-push ──┐
           └── helm-validate ─────────────┘
 ```
 
-With four files there is no way to express that `terraform-dev-deploy` should wait for both `build-push` and `helm-validate`. Each file would trigger independently.
+If this workflow was broken into four files there is no way to express that `terraform-dev-deploy` should wait for both `build-push` and `helm-validate`. Each file would trigger independently.
 
 ### Path-based change detection
 

@@ -14,7 +14,7 @@ resource "aws_secretsmanager_secret" "argocd_password" {
 
 resource "null_resource" "argocd_password_sync" {
   triggers = {
-    argocd_revision = helm_release.argocd.metadata[0].revision
+    argocd_revision = helm_release.argocd.metadata.revision
   }
 
   provisioner "local-exec" {

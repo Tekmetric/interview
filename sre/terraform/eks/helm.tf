@@ -49,25 +49,25 @@ resource "null_resource" "wait_for_istiod_webhook" {
       TIMEOUT=300
       DEADLINE=$(( $(date +%s) + TIMEOUT ))
 
-      echo "Waiting for Istiod to have ready endpoints (timeout ${TIMEOUT}s)..."
+      echo "Waiting for Istiod to have ready endpoints (timeout $${TIMEOUT}s)..."
       until kubectl --kubeconfig "$KUBECONFIG" \
         -n istio-system get endpoints istiod \
         -o jsonpath='{.subsets[0].addresses[0].ip}' 2>/dev/null | grep -qE '^[0-9]'; do
         if [ $(date +%s) -ge $DEADLINE ]; then
-          echo "Timed out waiting for Istiod endpoints after ${TIMEOUT}s" >&2
+          echo "Timed out waiting for Istiod endpoints after $${TIMEOUT}s" >&2
           exit 1
         fi
         echo "  no ready endpoints yet, retrying in 5s..."
         sleep 5
       done
 
-      echo "Waiting for Istiod to register its webhook CA bundle (timeout ${TIMEOUT}s)..."
+      echo "Waiting for Istiod to register its webhook CA bundle (timeout $${TIMEOUT}s)..."
       until kubectl --kubeconfig "$KUBECONFIG" \
         get validatingwebhookconfiguration \
         -l app=istiod \
         -o jsonpath='{.items[0].webhooks[0].clientConfig.caBundle}' 2>/dev/null | grep -q '.'; do
         if [ $(date +%s) -ge $DEADLINE ]; then
-          echo "Timed out waiting for Istiod webhook CA bundle after ${TIMEOUT}s" >&2
+          echo "Timed out waiting for Istiod webhook CA bundle after $${TIMEOUT}s" >&2
           exit 1
         fi
         echo "  CA bundle not set yet, retrying in 5s..."

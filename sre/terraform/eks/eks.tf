@@ -36,14 +36,6 @@ module "eks" {
       type                          = "ingress"
       source_cluster_security_group = true
     }
-    allow_control_plane_otel_webhook = {
-      description                   = "EKS control plane to OpenTelemetry Operator webhook (port 9443)"
-      protocol                      = "tcp"
-      from_port                     = 9443
-      to_port                       = 9443
-      type                          = "ingress"
-      source_cluster_security_group = true
-    }
   }
 
   eks_managed_node_groups = {

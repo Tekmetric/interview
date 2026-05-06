@@ -4,18 +4,10 @@ locals {
   charts = "${path.module}/../../helm"
 
   # ArgoCD parameter overrides for the interview-backend Application.
-  # Always sets the Istio gateway host; conditionally overrides image.tag
-  # when var.image_tag is provided (PR builds).
-  argocd_backend_params = concat(
-    [
-      { name = "apps.interviewBackend.parameters[0].name",  value = "istio.gateway.host" },
-      { name = "apps.interviewBackend.parameters[0].value", value = "interview-backend.${var.domain_name}" },
-    ],
-    var.image_tag != "" ? [
-      { name = "apps.interviewBackend.parameters[1].name",  value = "image.tag" },
-      { name = "apps.interviewBackend.parameters[1].value", value = var.image_tag },
-    ] : []
-  )
+  argocd_backend_params = [
+    { name = "apps.interviewBackend.parameters[0].name",  value = "istio.gateway.host" },
+    { name = "apps.interviewBackend.parameters[0].value", value = "interview-backend.${var.domain_name}" },
+  ]
 }
 
 # ── 1. Istio ─────────────────────────────────────────────────────────────────
@@ -363,7 +355,7 @@ resource "helm_release" "argocd" {
       },
       {
         name  = "apps.interviewBackend.valueFiles[1]"
-        value = "values-eks.yaml"
+        value = "../../argocd-values/interview-backend-${var.env_name}.yaml"
       },
     ],
     local.argocd_backend_params

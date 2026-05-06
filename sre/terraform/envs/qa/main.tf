@@ -12,6 +12,7 @@ module "eks" {
   node_max_size      = 3
 
   git_branch = "develop"
+  env_name   = "qa"
 
   # Hostnames: interview-backend.qa.interview.techholmes.info
   #            grafana.qa.interview.techholmes.info

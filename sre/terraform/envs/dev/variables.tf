@@ -3,3 +3,9 @@ variable "admin_iam_arns" {
   type        = list(string)
   default     = []
 }
+
+variable "git_branch" {
+  description = "Git branch ArgoCD will track for the interview-backend Application. Set via TF_VAR_git_branch in CI."
+  type        = string
+  default     = "master"
+}

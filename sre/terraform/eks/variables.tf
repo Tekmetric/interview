@@ -67,8 +67,7 @@ variable "admin_iam_arns" {
   default     = []
 }
 
-variable "image_tag" {
-  description = "interview-backend image tag for ArgoCD to deploy. Set to a PR tag (e.g. pr-42) on PR builds; empty string leaves the value from values-eks.yaml."
+variable "env_name" {
+  description = "Environment name (e.g. 'dev', 'staging', 'prod'). Used to select the ArgoCD values file at sre/argocd-values/interview-backend-<env>.yaml."
   type        = string
-  default     = ""
 }

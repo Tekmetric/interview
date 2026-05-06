@@ -11,7 +11,8 @@ module "eks" {
   node_min_size      = 1
   node_max_size      = 3
 
-  git_branch = "develop"
+  git_branch = var.git_branch
+  env_name   = "dev"
 
   # Hostnames: interview-backend.dev.interview.techholmes.info
   #            grafana.dev.interview.techholmes.info

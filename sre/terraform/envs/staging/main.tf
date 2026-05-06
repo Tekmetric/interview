@@ -12,6 +12,7 @@ module "eks" {
   node_max_size      = 4
 
   git_branch = "master"
+  env_name   = "staging"
 
   # Hostnames: interview-backend.staging.interview.techholmes.info
   #            grafana.staging.interview.techholmes.info

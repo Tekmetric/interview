@@ -74,6 +74,34 @@ resource "null_resource" "wait_for_istiod_webhook" {
         sleep 5
       done
 
+      echo "Verifying Istiod webhook is responding to dry-run requests (timeout $${TIMEOUT}s)..."
+      cat > /tmp/vs-probe.yaml <<'VSEOF'
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: webhook-readiness-probe
+  namespace: istio-system
+spec:
+  hosts:
+    - readiness-probe
+  http:
+    - route:
+        - destination:
+            host: readiness-probe
+            port:
+              number: 80
+VSEOF
+      until kubectl --kubeconfig "$KUBECONFIG" apply --dry-run=server -f /tmp/vs-probe.yaml 2>/dev/null; do
+        if [ $(date +%s) -ge $DEADLINE ]; then
+          echo "Timed out waiting for Istiod webhook to respond after $${TIMEOUT}s" >&2
+          rm -f /tmp/vs-probe.yaml
+          exit 1
+        fi
+        echo "  webhook not responding yet, retrying in 5s..."
+        sleep 5
+      done
+      rm -f /tmp/vs-probe.yaml
+
       echo "Istiod webhook is ready."
     SHELL
   }

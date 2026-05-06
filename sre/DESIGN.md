@@ -34,16 +34,27 @@ Rather than mounting the agent at runtime or injecting it via an init container,
 The main advantage of a single file workflow is that job dependencies are explicit and visible in one place. The dependency graph at the top of the file makes the intent clear:
 
 ```
-changes ──┬── trivy-scan ── build-push ──┐
-          │                               ├── terraform-dev-deploy  (PR only)
-          └── helm-validate ─────────────┘
+changes ──┬── trivy-scan ── build-push (→ commits image tag to argocd-values/) ──┐
+          │                                                                         ├── terraform-dev-deploy  (PR only)
+          └── helm-validate ──────────────────────────────────────────────────────┘
 ```
+
+`terraform-dev-deploy` only runs when `build-push` succeeded, `helm_infra` changed, or `terraform` changed — not when only the `interview-backend` Helm chart changed (that is deployed by ArgoCD, not Terraform).
 
 If this workflow was broken into four files there is no way to express that `terraform-dev-deploy` should wait for both `build-push` and `helm-validate`. Each file would trigger independently.
 
 ### Path-based change detection
 
-`dorny/paths-filter` detects which paths changed in a given push or PR. The three output signals (`backend`, `helm`, `terraform`) control which downstream jobs run. A documentation-only commit does not trigger a Docker build. A Helm-only change does not trigger Trivy scanning.
+`dorny/paths-filter` detects which paths changed in a given push or PR. Four output signals control which downstream jobs run:
+
+| Signal | Path | Jobs triggered |
+|--------|------|---------------|
+| `backend` | `backend/**` | `trivy-scan`, `build-push` |
+| `helm_infra` | `sre/helm/**` (excluding `interview-backend`) | `helm-validate`, `terraform-dev-deploy` |
+| `helm_app` | `sre/helm/interview-backend/**` | `helm-validate` only |
+| `terraform` | `sre/terraform/**` | `terraform-dev-deploy` |
+
+`helm_infra` and `helm_app` are kept separate because the interview-backend Helm chart is deployed by ArgoCD directly from the Git repository — Terraform never installs it. A change to that chart only needs lint validation; it does not need a Terraform apply. Charts that Terraform does own (observability-stack, argocd-chart, istio, gateway, etc.) need both validation and a Terraform upgrade.
 
 On `workflow_dispatch` all filters are forced to `true`, so a manual trigger always runs everything.
 
@@ -68,10 +79,18 @@ Scans never fail the build by default (`exit-code: 0`). A manual `workflow_dispa
 
 | Context | Tags pushed | Rationale |
 |---------|------------|-----------|
-| Pull request | `pr-{N}-{short-sha}`, `pr-{N}` | The SHA tag uniquely identifies the exact build. The stable `pr-{N}` alias is passed as `TF_VAR_image_tag` to the Terraform dev deploy so that step always references the PR's image without needing to know the SHA. |
+| Pull request | `pr-{N}-{short-sha}`, `pr-{N}` | The SHA tag uniquely identifies the exact commit. The floating `pr-{N}` tag always points to the latest build for that PR. |
 | Merge to main | `{short-sha}-{date}`, `latest` | Short SHA gives traceability; date makes scanning chronologically sortable; `latest` supports GitOps tools that watch for the canonical tag. |
 
 `latest` is only pushed on merges to main, never on PRs, so it always refers to a production-ready build.
+
+After a successful PR build, the CI commits the immutable `pr-{N}-{short-sha}` tag directly into `sre/argocd-values/interview-backend-dev.yaml` and pushes it back to the PR branch with `[skip ci]` in the commit message to prevent re-triggering the workflow. ArgoCD detects the file change in the repository and auto-syncs the dev deployment with the exact image that was just built.
+
+This approach was chosen over passing `TF_VAR_image_tag` to Terraform because:
+
+- **No Terraform state churn.** The image tag lives in a file in Git, not in Terraform state. A helm-only commit does not cause a spurious "no changes" plan for the argocd release.
+- **Single source of truth.** The deployed image tag is visible directly in the repository without querying Terraform state or the Kubernetes API.
+- **Correct drift detection.** ArgoCD compares the live cluster against the Git file. If someone manually changes the image in the cluster, ArgoCD self-heals back to what the file says.
 
 ### Registry layer caching
 
@@ -150,15 +169,20 @@ checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sh
 
 When a ConfigMap value changes, `helm upgrade` recomputes the checksum. Kubernetes sees the pod template has changed and triggers a rolling restart. Without this, a ConfigMap update would not restart any pods, and the application would continue reading the stale mounted config until manually restarted.
 
-### Three values files
+### Values file structure
 
-| File | Target | Key differences |
-|------|--------|----------------|
-| `values.yaml` | Base defaults | ECR registry, canary rollout, Istio enabled |
-| `values-k3s.yaml` | Local k3d dev | No registry, `pullPolicy: Never`, resource limits |
-| `values-eks.yaml` | AWS EKS production | External Secrets enabled, ECR pull secrets |
+| File | Location | Target | Key differences |
+|------|----------|--------|----------------|
+| `values.yaml` | `sre/helm/interview-backend/` | Base defaults | ECR registry, canary rollout, Istio enabled |
+| `values-k3s.yaml` | `sre/helm/interview-backend/` | Local k3d dev | `pullPolicy: Never`, no External Secrets |
+| `interview-backend-dev.yaml` | `sre/argocd-values/` | EKS dev | Image tag (CI-managed), resource limits, External Secrets |
+| `interview-backend-staging.yaml` | `sre/argocd-values/` | EKS staging | Same pattern, separate image tag lifecycle |
 
-This avoids maintaining separate chart copies for different environments. The base chart is always the source of truth; environment-specific overlays are layered on top with `-f`.
+The `sre/argocd-values/` directory holds per-environment overlay files that live outside the Helm chart directory. ArgoCD references them using a relative path (`../../argocd-values/interview-backend-{env}.yaml`) from the chart root. Keeping them outside the chart makes it clear that they are operational overrides managed by the deployment pipeline, not part of the chart itself.
+
+The image tag in each `sre/argocd-values/interview-backend-{env}.yaml` file is the only value updated by CI automation. All other values are set by humans and reviewed in pull requests.
+
+For local k3d development, the `bootstrap-k3s.sh` script uses `values-k3s.yaml` directly via `--set` overrides. The `sre/argocd-values/` files are EKS-only and are not used in the local workflow.
 
 ---
 
@@ -256,6 +280,34 @@ Istiod's pod readiness probe passes before its validating webhook is actually se
 Only once both checks pass do `helm_release.gateway`, `helm_release.observability_stack`, and other Istio-dependent releases proceed. The 300s timeout matches the `helm_release.istio` timeout so failures surface with a clear error message rather than a silent hang.
 
 The earlier approach of using `--dry-run=server` against a dummy VirtualService manifest hung indefinitely when the webhook process was up but not yet serving, so it was replaced with the direct endpoint and CA bundle checks.
+
+### Istiod webhook node security group rule
+
+The EKS control plane needs to reach port 15017 on worker nodes to call the Istiod validating webhook. By default the EKS node security group blocks this — only port 10250 (kubelet) is open from the control plane. Without this rule, every Istio CRD admission request times out, manifesting as a persistent webhook timeout during `terraform apply` even when the Istiod pod shows `1/1 Running`.
+
+The rule is added via `node_security_group_additional_rules` in the EKS module rather than a separate `aws_security_group_rule` resource, so it stays co-located with the node group configuration.
+
+### gp3 default StorageClass
+
+EKS clusters do not provision a default StorageClass automatically. Without one, any `PersistentVolumeClaim` with no explicit `storageClassName` remains in `Pending` indefinitely. A `kubernetes_storage_class_v1` resource creates a `gp3` StorageClass (backed by the EBS CSI driver) and marks it as the cluster default. `gp3` is chosen over `gp2` because it delivers the same baseline performance at lower cost, with throughput and IOPS independently configurable without pre-provisioning.
+
+### External DNS domain filter
+
+External DNS uses a domain filter to determine which Route53 hosted zone to write records into. The filter must match the zone apex exactly — if the filter is set to a subdomain (e.g. `dev.interview.techholmes.info`) but the hosted zone is the parent domain (`interview.techholmes.info`), External DNS logs "no hosted zone matching record DNS Name" and skips the record silently.
+
+A separate `route53_zone_name` variable holds the zone apex. The `domain_name` variable continues to hold the per-environment subdomain prefix used for hostnames. This separation makes the intent explicit and avoids relying on `--aws-zone-match-parent`, which requires an additional IAM permission and is easy to forget.
+
+### ArgoCD per-environment branch and values file
+
+The `git_branch` module variable controls which Git branch ArgoCD tracks for the interview-backend Application. For the dev environment this is driven by `TF_VAR_git_branch` passed from CI (`github.head_ref`), so each PR's dev deployment automatically tracks that PR's branch. Other environments have it hardcoded to `master` or `develop` since they are not managed by the per-PR CI pipeline.
+
+The `env_name` variable selects the ArgoCD values overlay file (`sre/argocd-values/interview-backend-{env}.yaml`). This allows staging, QA, and prod to each have independent image tag lifecycles managed by their own deployment pipelines.
+
+### Grafana mTLS mode
+
+The observability-stack namespace has `PeerAuthentication` set to `STRICT` mTLS, which means all traffic entering pods must be mTLS-authenticated. The Grafana NLB terminates TLS at the load balancer and forwards plain HTTP to the node port. Plain HTTP arriving at a STRICT mTLS pod is rejected by the Istio sidecar, causing a connection reset.
+
+A workload-scoped `PeerAuthentication` with `mode: PERMISSIVE` is applied to the Grafana pod specifically. This overrides the namespace-level STRICT for Grafana only, allowing the NLB's plain HTTP backend traffic while all other pods in the namespace remain STRICT.
 
 ### Node sizing for dev
 

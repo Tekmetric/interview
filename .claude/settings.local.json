@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(wsl -d Ubuntu-26.04 -- bash -c \"kubectl get pods -n observability-stack -l app.kubernetes.io/instance=observability-stack-receiver 2>/dev/null; kubectl get pods -n observability-stack -l app.kubernetes.io/name=tempo 2>/dev/null\")"
-    ]
-  }
-}

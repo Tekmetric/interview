@@ -13,4 +13,4 @@ resources:
     memory: 256Mi
 
 externalSecrets:
-  enabled: true
+  enabled: false

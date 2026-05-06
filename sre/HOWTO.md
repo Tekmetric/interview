@@ -81,6 +81,8 @@ helm template interview-backend sre/helm/interview-backend \
   --debug
 ```
 
+> **Note:** The CI `helm-validate` job lints and templates using only `values.yaml` defaults (no overlay). If your change behaves correctly with `values-k3s.yaml` locally but fails in CI, check whether it depends on a value that is only set in the k3s overlay rather than the base defaults.
+
 ### 3b. Deploy to an existing k3d cluster
 
 The `values-k3s.yaml` overlay is designed for local k3d use — it sets `pullPolicy: Never`, clears the ECR registry prefix, and applies lightweight resource limits.
@@ -212,9 +214,26 @@ This deletes the k3d cluster and all data inside it.
 
 | File | Purpose |
 |------|---------|
-| `values.yaml` | Defaults — ECR registry, Istio enabled, canary rollout |
-| `values-k3s.yaml` | Local k3d overlay — no registry, `pullPolicy: Never`, resource limits |
-| `values-eks.yaml` | AWS EKS overlay — External Secrets enabled, ECR pull |
+| `sre/helm/interview-backend/values.yaml` | Defaults — ECR registry, Istio enabled, canary rollout |
+| `sre/helm/interview-backend/values-k3s.yaml` | Local k3d overlay — no registry, `pullPolicy: Never`, resource limits |
+| `sre/argocd-values/interview-backend-dev.yaml` | EKS dev overlay — image tag (CI-managed), resource limits, External Secrets |
+| `sre/argocd-values/interview-backend-staging.yaml` | EKS staging overlay — same pattern, independent image tag |
+
+The files under `sre/argocd-values/` are referenced by ArgoCD when deploying to EKS. They are not used in the local k3d workflow.
+
+### Working on a PR that includes backend changes
+
+When you push a commit that changes files under `backend/`, the CI pipeline builds a new Docker image and commits the updated image tag back to `sre/argocd-values/interview-backend-dev.yaml` on your PR branch (commit message: `chore: update dev image tag to pr-{N}-{sha} [skip ci]`).
+
+If you then make additional local changes without pulling first, your local branch will be behind the remote by that one commit, and your next `git push` will be rejected.
+
+After any push that triggers a backend build, run:
+
+```bash
+git pull origin <your-branch>
+```
+
+before continuing work. This is only needed after commits that change `backend/**` — helm-only or terraform-only changes do not trigger a build and therefore do not produce a CI commit.
 
 ### Configurable parameters
 
@@ -222,7 +241,7 @@ This deletes the k3d cluster and all data inside it.
 |-----------|---------|-------------|
 | `replicaCount` | `1` | Pod replicas (ignored when rollout enabled) |
 | `image.registry` | ECR URL | Container registry prefix |
-| `image.tag` | `""` | Image tag; empty uses chart `appVersion` |
+| `image.tag` | `""` | Image tag; empty uses chart `appVersion`. In EKS, set automatically by CI in `sre/argocd-values/interview-backend-{env}.yaml` — do not set manually. |
 | `image.pullPolicy` | `IfNotPresent` | `Never` for local k3d |
 | `rollout.enabled` | `true` | Use Argo Rollouts canary instead of Deployment |
 | `autoscaling.enabled` | `false` | Enable HPA (CPU/memory) |
@@ -232,3 +251,74 @@ This deletes the k3d cluster and all data inside it.
 | `podDisruptionBudget.enabled` | `false` | Enable PDB |
 | `externalSecrets.enabled` | `false` | Sync secrets from AWS Secrets Manager |
 | `istio.gateway.host` | `interview-backend.local` | Istio Gateway SNI hostname |
+
+---
+
+## 6. EKS Dev Environment
+
+### Prerequisites — Secrets Manager setup
+
+Before the first `terraform apply` against any EKS environment, the ArgoCD SSH private key must exist in AWS Secrets Manager. Without it, the ESO `ExternalSecret` cannot sync, ArgoCD cannot clone the repository, and the interview-backend Application will never deploy.
+
+Store the key (replace `~/.ssh/id_ed25519` with your actual key path):
+
+```bash
+jq -Rs '{"sshPrivateKey": .}' ~/.ssh/id_ed25519 > /tmp/secret.json
+aws secretsmanager put-secret-value \
+  --secret-id argocd/repo/interview \
+  --region us-east-1 \
+  --secret-string file:///tmp/secret.json
+rm /tmp/secret.json
+```
+
+> **Important:** Use `file://` to pass the JSON from a file rather than via shell substitution. Command substitution (`$(...)`) strips trailing newlines from the key, which corrupts the PEM format and causes ArgoCD to fail with `ssh: no key found`.
+
+The `secrets_manager_prereq` Terraform output prints a reminder of this step when you run `terraform output` after the initial apply.
+
+### Getting environment URLs
+
+After `terraform apply` completes, retrieve the live endpoint URLs:
+
+```bash
+terraform -chdir=sre/terraform/envs/dev output
+```
+
+Key outputs:
+
+| Output | Description |
+|--------|-------------|
+| `interview_backend_url` | Public URL for the interview-backend API |
+| `grafana_url` | Grafana dashboard |
+| `argocd_url` | ArgoCD UI |
+| `argocd_initial_password` | Initial ArgoCD admin password (change after first login) |
+| `configure_kubectl` | Command to configure `kubectl` for this cluster |
+
+Run the `configure_kubectl` command to point your local `kubectl` at the dev cluster before using the commands below.
+
+### Checking deployment status
+
+```bash
+# Is ArgoCD synced and healthy?
+kubectl -n argocd get application interview-backend
+
+# What image tag is currently deployed?
+kubectl -n argocd get application interview-backend \
+  -o jsonpath='{.spec.source.helm.valueFiles}'
+
+# What image is the running pod actually using?
+kubectl -n interview-backend get pods -o jsonpath='{.items[*].spec.containers[0].image}'
+
+# Force ArgoCD to re-sync if it appears stuck
+kubectl -n argocd patch application interview-backend --type=merge \
+  -p '{"operation": {"initiatedBy": {"username": "admin"}, "sync": {"syncStrategy": {"apply": {}}}}}'
+```
+
+### Checking the live image tag
+
+The current target image tag for the dev environment is always visible in Git:
+
+```bash
+cat sre/argocd-values/interview-backend-dev.yaml
+```
+
+This file is the single source of truth for what ArgoCD is configured to deploy. If the running pod's image does not match, ArgoCD is either mid-sync or has encountered an error — check `kubectl -n argocd get application interview-backend` for details.

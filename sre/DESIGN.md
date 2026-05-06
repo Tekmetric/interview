@@ -66,10 +66,10 @@ Scans never fail the build by default (`exit-code: 0`). A manual `workflow_dispa
 
 ### Image tagging strategy
 
-| Context | Tag format | Rationale |
-|---------|-----------|-----------|
-| Pull request | `pr-{N}-{short-sha}` | Uniquely identifies the build; can be deployed to a review environment |
-| Merge to main | `{short-sha}-{date}` + `latest` | Short SHA gives traceability; date makes scanning chronologically sortable; `latest` supports GitOps tools that watch for the canonical tag |
+| Context | Tags pushed | Rationale |
+|---------|------------|-----------|
+| Pull request | `pr-{N}-{short-sha}`, `pr-{N}` | The SHA tag uniquely identifies the exact build. The stable `pr-{N}` alias is passed as `TF_VAR_image_tag` to the Terraform dev deploy so that step always references the PR's image without needing to know the SHA. |
+| Merge to main | `{short-sha}-{date}`, `latest` | Short SHA gives traceability; date makes scanning chronologically sortable; `latest` supports GitOps tools that watch for the canonical tag. |
 
 `latest` is only pushed on merges to main, never on PRs, so it always refers to a production-ready build.
 
@@ -107,7 +107,7 @@ Traefik (the k3s default) is disabled in the bootstrap script so it does not con
 
 ### OpenTelemetry Collector sidecar
 
-Each pod gets an OTel Collector sidecar injected by the OpenTelemetry Operator. The Java agent sends telemetry to `localhost:4317` (the sidecar), and the sidecar fans it out to three backends over separate pipelines:
+The interview-backend service is enabled so each pod gets an OTel Collector sidecar injected by the OpenTelemetry Operator. The Java agent sends telemetry to `localhost:4317` (the sidecar), and the sidecar fans it out to three backends over separate pipelines:
 
 - Traces → Tempo (OTLP gRPC)
 - Metrics → Alloy/Prometheus (OTLP gRPC)
@@ -123,7 +123,7 @@ The alternative would be to store secrets in the Helm values files or as Kuberne
 
 ### Pod security hardening
 
-Every pod gets the following by default:
+Every interview-backend pod gets the following by default:
 
 ```yaml
 runAsNonRoot: true
@@ -243,6 +243,19 @@ EKS was chosen over self-managed Kubernetes because:
 The EKS cluster is provisioned with an OIDC provider. This allows IAM roles to be bound to Kubernetes service accounts using trust policies that check the pod's projected service account token. A pod running with `serviceAccountName: interview-backend` can assume an IAM role that only allows, for example, `s3:GetObject` on a specific bucket — without any AWS credentials being stored in the pod or on the node.
 
 The CI pipeline uses the same OIDC mechanism (GitHub Actions OIDC → IAM role) for consistency.
+
+### Istiod webhook readiness gate
+
+Istiod's pod readiness probe passes before its validating webhook is actually serving. Any Helm release that contains Istio CRDs (VirtualService, Gateway, etc.) submitted immediately after the Istio Helm release finishes will be rejected by the API server because the webhook hasn't registered its CA bundle yet, causing a race condition that's hard to reproduce but consistently breaks fully-automated installs.
+
+`null_resource.wait_for_istiod_webhook` in `helm.tf` gates all downstream releases on two sequential checks, both sharing a single 300-second deadline:
+
+1. **Endpoint readiness** — polls `kubectl get endpoints istiod -n istio-system` until at least one ready IP is present.
+2. **CA bundle registration** — polls the `ValidatingWebhookConfiguration` labelled `app=istiod` until `webhooks[0].clientConfig.caBundle` is non-empty.
+
+Only once both checks pass do `helm_release.gateway`, `helm_release.observability_stack`, and other Istio-dependent releases proceed. The 300s timeout matches the `helm_release.istio` timeout so failures surface with a clear error message rather than a silent hang.
+
+The earlier approach of using `--dry-run=server` against a dummy VirtualService manifest hung indefinitely when the webhook process was up but not yet serving, so it was replaced with the direct endpoint and CA bundle checks.
 
 ### Node sizing for dev
 

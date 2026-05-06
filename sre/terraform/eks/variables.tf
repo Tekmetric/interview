@@ -56,6 +56,11 @@ variable "route53_zone_id" {
   type        = string
 }
 
+variable "route53_zone_name" {
+  description = "Apex domain of the Route53 hosted zone (e.g. 'interview.techholmes.info'). Used as the External DNS domain filter so it can resolve the correct zone for subdomain records."
+  type        = string
+}
+
 variable "admin_iam_arns" {
   description = "List of IAM user/role ARNs to grant cluster-admin access via EKS Access Entries."
   type        = list(string)

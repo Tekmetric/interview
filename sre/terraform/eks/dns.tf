@@ -48,7 +48,7 @@ resource "helm_release" "external_dns" {
     # Only manage records under the domain this cluster owns.
     {
       name  = "domainFilters[0]"
-      value = var.domain_name
+      value = var.route53_zone_name
     },
     # sync = create AND delete records to match live services.
     # Change to "upsert-only" if you want to protect records from deletion.

@@ -16,8 +16,9 @@ module "eks" {
   # Hostnames: interview-backend.dev.interview.techholmes.info
   #            grafana.dev.interview.techholmes.info
   #            argocd.dev.interview.techholmes.info
-  domain_name     = "dev.interview.techholmes.info"
-  route53_zone_id = "Z00557182WVDNCS6ST2H1"
+  domain_name       = "dev.interview.techholmes.info"
+  route53_zone_id   = "Z00557182WVDNCS6ST2H1"
+  route53_zone_name = "interview.techholmes.info"
 
   admin_iam_arns = var.admin_iam_arns
 }

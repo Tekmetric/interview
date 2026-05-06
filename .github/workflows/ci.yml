@@ -289,6 +289,7 @@ jobs:
         env:
           TF_VAR_admin_iam_arns: '["${{ vars.ADMIN_IAM_ARN }}"]'
           TF_VAR_image_tag: pr-${{ github.event.pull_request.number }}
+          TF_VAR_git_branch: ${{ github.head_ref }}
         run: |
           set -o pipefail
           terraform plan -no-color -out=tfplan 2>&1 | tee /tmp/plan_output.txt
@@ -301,6 +302,7 @@ jobs:
         env:
           TF_VAR_admin_iam_arns: '["${{ vars.ADMIN_IAM_ARN }}"]'
           TF_VAR_image_tag: pr-${{ github.event.pull_request.number }}
+          TF_VAR_git_branch: ${{ github.head_ref }}
         run: |
           set -o pipefail
           terraform apply -auto-approve -no-color tfplan 2>&1 | tee /tmp/apply_output.txt

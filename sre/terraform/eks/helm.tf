@@ -311,24 +311,27 @@ resource "helm_release" "argocd" {
     }
   })]
 
-  set = [
-    {
-      name  = "repo.secret.useExternalSecret"
-      value = "true"
-    },
-    {
-      name  = "apps.interviewBackend.targetRevision"
-      value = var.git_branch
-    },
-    {
-      name  = "apps.interviewBackend.valueFiles[0]"
-      value = "values.yaml"
-    },
-    {
-      name  = "apps.interviewBackend.valueFiles[1]"
-      value = "values-eks.yaml"
-    },
-  ] + local.argocd_backend_params
+  set = concat(
+    [
+      {
+        name  = "repo.secret.useExternalSecret"
+        value = "true"
+      },
+      {
+        name  = "apps.interviewBackend.targetRevision"
+        value = var.git_branch
+      },
+      {
+        name  = "apps.interviewBackend.valueFiles[0]"
+        value = "values.yaml"
+      },
+      {
+        name  = "apps.interviewBackend.valueFiles[1]"
+        value = "values-eks.yaml"
+      },
+    ],
+    local.argocd_backend_params
+  )
 
   depends_on = [
     null_resource.cluster_secret_store,

@@ -1,0 +1,178 @@
+{
+  "info": {
+    "name": "Vehicle API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Vehicles",
+      "item": [
+        {
+          "name": "List vehicles (paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Request-Id",
+                "value": "postman-list-vehicles"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vehicles?page=0&size=10"
+          }
+        },
+        {
+          "name": "Get vehicle by id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Request-Id",
+                "value": "postman-get-vehicle"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vehicles/1"
+          }
+        },
+        {
+          "name": "Get vehicle by id (not found)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Request-Id",
+                "value": "postman-get-vehicle-missing"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vehicles/999"
+          }
+        },
+        {
+          "name": "Create vehicle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Request-Id",
+                "value": "postman-create-vehicle"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Chevy\",\n  \"model\": \"Silverado\",\n  \"year\": 2022,\n  \"vin\": \"1GCUKSEC8GZ123456\",\n  \"licensePlate\": \"GHI-3456\",\n  \"mileage\": 15000\n}"
+            },
+            "url": "{{baseUrl}}/api/vehicles"
+          }
+        },
+        {
+          "name": "Create vehicle (validation error)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Request-Id",
+                "value": "postman-create-vehicle-invalid"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"\",\n  \"model\": \"\",\n  \"year\": 1700,\n  \"vin\": \"BADVIN\",\n  \"mileage\": -1\n}"
+            },
+            "url": "{{baseUrl}}/api/vehicles"
+          }
+        },
+        {
+          "name": "Update vehicle",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Request-Id",
+                "value": "postman-update-vehicle"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2020,\n  \"vin\": \"1HGBH41JXMN109186\",\n  \"licensePlate\": \"ABC-1234\",\n  \"mileage\": 50000\n}"
+            },
+            "url": "{{baseUrl}}/api/vehicles/1"
+          }
+        },
+        {
+          "name": "Delete vehicle",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Request-Id",
+                "value": "postman-delete-vehicle"
+              }
+            ],
+            "url": "{{baseUrl}}/api/vehicles/2"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actuator",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Request-Id",
+                "value": "postman-actuator-health"
+              }
+            ],
+            "url": "{{baseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "Info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Request-Id",
+                "value": "postman-actuator-info"
+              }
+            ],
+            "url": "{{baseUrl}}/actuator/info"
+          }
+        },
+        {
+          "name": "Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Request-Id",
+                "value": "postman-actuator-metrics"
+              }
+            ],
+            "url": "{{baseUrl}}/actuator/metrics"
+          }
+        }
+      ]
+    }
+  ]
+}

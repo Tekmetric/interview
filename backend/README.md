@@ -52,6 +52,7 @@ This is a Spring Boot CRUD API for a simplified auto repair estimate builder. It
 - Jakarta Bean Validation
 - H2 in-memory database
 - Lombok
+- Springdoc OpenAPI and Swagger UI
 - JUnit, Mockito, and MockMvc
 
 ## JVM Setup
@@ -80,6 +81,14 @@ Health check:
 curl http://localhost:8080/api/health
 ```
 
+Swagger UI:
+
+- http://localhost:8080/swagger-ui.html
+
+OpenAPI JSON:
+
+- http://localhost:8080/v3/api-docs
+
 ## Run Tests
 
 ```zsh
@@ -101,6 +110,8 @@ The schema and seed data live in `src/main/resources/database/data.sql`.
 - `spring.sql.init.mode=always`: Spring runs SQL initialization every time the in-memory database starts.
 - `spring.sql.init.schema-locations=classpath:database/data.sql`: points Spring at the schema/seed file.
 - `spring.sql.init.continue-on-error=false`: startup fails if the SQL script has a problem.
+- `springdoc.api-docs.path=/v3/api-docs`: serves the generated OpenAPI JSON document.
+- `springdoc.swagger-ui.path=/swagger-ui.html`: serves the Swagger UI page.
 - `spring.jpa.defer-datasource-initialization=false`: SQL initialization runs during normal datasource startup.
 - `spring.h2.console.enabled=true`: enables the browser-based H2 console for local debugging.
 

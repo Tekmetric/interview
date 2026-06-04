@@ -166,6 +166,10 @@ PUT /api/estimates/{id}
 DELETE /api/estimates/{id}
 ```
 
+Estimate creation intentionally starts without work orders. Customer and vehicle identity are set when the estimate is
+created; later updates only accept `status` and `workOrderIds`, and append work orders instead of replacing the existing
+list.
+
 ## Example Demo Flow
 
 List seeded parts:
@@ -181,8 +185,7 @@ curl -X POST http://localhost:8080/api/estimates \
   -H 'Content-Type: application/json' \
   -d '{
     "customerId": "12121212-1212-1212-1212-121212121212",
-    "vehicleId": "99999999-9999-9999-9999-999999999999",
-    "status": "PENDING"
+    "vehicleId": "99999999-9999-9999-9999-999999999999"
   }'
 ```
 

@@ -1,0 +1,172 @@
+package com.interview.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.interview.dto.EstimateRequest;
+import com.interview.dto.EstimateResponse;
+import com.interview.dto.EstimateUpdateRequest;
+import com.interview.dto.WorkOrderPartRequest;
+import com.interview.dto.WorkOrderRequest;
+import com.interview.entity.Estimate;
+import com.interview.entity.EstimateStatus;
+import com.interview.entity.Part;
+import com.interview.entity.WorkOrder;
+import com.interview.entity.WorkOrderPart;
+import com.interview.entity.WorkOrderStatus;
+import com.interview.repository.EstimateRepository;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
+
+@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
+class EstimateServiceTest {
+    @Mock
+    private EstimateRepository estimateRepository;
+
+    @Mock
+    private WorkOrderService workOrderService;
+
+    @InjectMocks
+    private EstimateService estimateService;
+
+    @Test
+    void createAllowsAnEstimateWithoutWorkOrders() {
+        EstimateRequest request = new EstimateRequest(
+            UUID.randomUUID(),
+            UUID.randomUUID()
+        );
+
+        when(estimateRepository.save(any(Estimate.class))).thenAnswer(invocation -> {
+            Estimate estimate = invocation.getArgument(0);
+            estimate.setId(UUID.randomUUID());
+            return estimate;
+        });
+
+        EstimateResponse response = estimateService.create(request);
+
+        assertThat(response.workOrders()).isEmpty();
+        assertThat(response.status()).isEqualTo(EstimateStatus.PENDING);
+        assertThat(response.totalTime()).isEqualByComparingTo("0");
+        assertThat(response.totalCost()).isEqualByComparingTo("0");
+    }
+
+    @Test
+    void getPlacesRefusedWorkOrdersAtTheBottom() {
+        UUID estimateId = UUID.randomUUID();
+        Estimate estimate = Estimate.builder()
+            .id(estimateId)
+            .customerId(UUID.randomUUID())
+            .vehicleId(UUID.randomUUID())
+            .status(EstimateStatus.PENDING)
+            .build();
+        List<WorkOrder> workOrders = List.of(workOrder(WorkOrderStatus.REFUSED), workOrder(WorkOrderStatus.ACCEPTED));
+
+        when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
+        when(workOrderService.findAvailableForEstimateResponse(estimateId)).thenReturn(workOrders);
+
+        EstimateResponse response = estimateService.get(estimateId);
+
+        verify(workOrderService).findAvailableForEstimateResponse(estimateId);
+        assertThat(response.workOrders()).extracting("status")
+            .containsExactly(WorkOrderStatus.ACCEPTED, WorkOrderStatus.REFUSED);
+    }
+
+    @Test
+    void updateChangesStatusAndAddsWorkOrdersWithoutReplacingExistingOnes() {
+        UUID estimateId = UUID.randomUUID();
+        UUID workOrderIdToAdd = UUID.randomUUID();
+        Estimate estimate = Estimate.builder()
+            .id(estimateId)
+            .customerId(UUID.randomUUID())
+            .vehicleId(UUID.randomUUID())
+            .status(EstimateStatus.PENDING)
+            .workOrders(new ArrayList<>(List.of(workOrder(WorkOrderStatus.ACCEPTED))))
+            .build();
+
+        when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
+        when(workOrderService.findEntities(Set.of(workOrderIdToAdd))).thenReturn(List.of(workOrder(WorkOrderStatus.ACCEPTED)));
+
+        EstimateResponse response = estimateService.update(
+            estimateId,
+            new EstimateUpdateRequest(EstimateStatus.APPROVED, Set.of(workOrderIdToAdd))
+        );
+
+        assertThat(response.status()).isEqualTo(EstimateStatus.APPROVED);
+        assertThat(response.workOrders()).hasSize(2);
+        verify(estimateRepository, never()).save(estimate);
+    }
+
+    @Test
+    void addWorkOrderCreatesAndAssociatesWorkOrderToEstimate() {
+        UUID estimateId = UUID.randomUUID();
+        UUID partId = UUID.randomUUID();
+        WorkOrder workOrder = workOrder(WorkOrderStatus.PENDING);
+        Estimate estimate = Estimate.builder()
+            .id(estimateId)
+            .customerId(UUID.randomUUID())
+            .vehicleId(UUID.randomUUID())
+            .status(EstimateStatus.PENDING)
+            .build();
+
+        when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
+        when(workOrderService.createWorkOrderFromRequest(any(WorkOrderRequest.class))).thenReturn(workOrder);
+
+        EstimateResponse response = estimateService.addWorkOrder(
+            estimateId,
+            new WorkOrderRequest(
+                UUID.randomUUID(),
+                WorkOrderStatus.PENDING,
+                "Replace spark plugs",
+                "Customer approved premium plugs.",
+                new BigDecimal("100.00"),
+                new BigDecimal("2.00"),
+                List.of(new WorkOrderPartRequest(partId, 1))
+            )
+        );
+
+        assertThat(response.workOrders()).hasSize(1);
+        assertThat(response.workOrders().getFirst().id()).isEqualTo(workOrder.getId());
+        verify(estimateRepository, never()).save(estimate);
+    }
+
+    private WorkOrder workOrder(WorkOrderStatus status) {
+        Part part = Part.builder()
+            .id(UUID.randomUUID())
+            .sku(41002)
+            .manufacturer("Denso")
+            .name("Iridium Spark Plug")
+            .price(new BigDecimal("20.00"))
+            .build();
+        WorkOrder workOrder = WorkOrder.builder()
+            .id(UUID.randomUUID())
+            .vehicleId(UUID.randomUUID())
+            .status(status)
+            .summary("Replace spark plugs")
+            .notes("Customer approved premium plugs.")
+            .laborRate(new BigDecimal("100.00"))
+            .laborTime(new BigDecimal("2.00"))
+            .build();
+        WorkOrderPart workOrderPart = WorkOrderPart.builder()
+            .id(UUID.randomUUID())
+            .workOrder(workOrder)
+            .part(part)
+            .quantity(2)
+            .build();
+        workOrder.setPartsNeeded(List.of(workOrderPart));
+        return workOrder;
+    }
+}

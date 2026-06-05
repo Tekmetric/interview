@@ -23,15 +23,10 @@ export JAVA_HOME=/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home
 export PATH="$JAVA_HOME/bin:$PATH"
 ```
 
-The repository includes shared IntelliJ run configurations:
-
-- `Run Application`
-- `Run Tests`
-
 ## Run The App
 
 ```zsh
-mvn -Dmaven.repo.local=.m2/repository spring-boot:run
+mvn spring-boot:run
 ```
 
 Health check:
@@ -55,7 +50,7 @@ Postman collection:
 ## Run Tests
 
 ```zsh
-mvn -Dmaven.repo.local=.m2/repository test
+mvn test
 ```
 
 ## H2 Console

@@ -92,6 +92,34 @@ class WorkOrderTest {
     }
 
     @Test
+    void replacePartsNeededUpdatesExistingPartQuantityInPlace() {
+        WorkOrder workOrder = WorkOrder.builder()
+            .vehicleId(UUID.randomUUID())
+            .status(WorkOrderStatus.PENDING)
+            .summary("Replace spark plugs")
+            .laborRate(new BigDecimal("100.00"))
+            .laborTime(new BigDecimal("1.00"))
+            .build();
+        Part part = part(new BigDecimal("12.50"));
+        WorkOrderPart existingPart = WorkOrderPart.builder()
+            .id(UUID.randomUUID())
+            .workOrder(workOrder)
+            .part(part)
+            .quantity(1)
+            .build();
+        WorkOrderPart replacementPart = WorkOrderPart.builder()
+            .part(part)
+            .quantity(4)
+            .build();
+        workOrder.getPartsNeeded().add(existingPart);
+
+        workOrder.replacePartsNeeded(List.of(replacementPart));
+
+        assertThat(workOrder.getPartsNeeded()).containsExactly(existingPart);
+        assertThat(existingPart.getQuantity()).isEqualTo(4);
+    }
+
+    @Test
     void toResponseIncludesEstimateUrlWhenAssociated() {
         Estimate estimate = Estimate.builder()
             .id(UUID.randomUUID())

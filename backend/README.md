@@ -56,7 +56,7 @@ mvn test
 ## H2 Console
 
 - URL: http://localhost:8080/h2-console
-- JDBC URL: `jdbc:h2:mem:testdb`
+- JDBC URL: `jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1`
 - Username: `sa`
 - Password: `password`
 

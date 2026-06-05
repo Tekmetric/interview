@@ -49,9 +49,11 @@ class EstimateServiceTest {
             UUID.randomUUID()
         );
 
-        when(estimateRepository.save(any(Estimate.class))).thenAnswer(invocation -> {
+        when(estimateRepository.saveAndFlush(any(Estimate.class))).thenAnswer(invocation -> {
             Estimate estimate = invocation.getArgument(0);
             estimate.setId(UUID.randomUUID());
+            estimate.setCreatedAt(Instant.now());
+            estimate.setUpdatedAt(Instant.now());
             return estimate;
         });
 
@@ -61,6 +63,8 @@ class EstimateServiceTest {
         assertThat(response.status()).isEqualTo(EstimateStatus.PENDING);
         assertThat(response.totalTime()).isEqualByComparingTo("0");
         assertThat(response.totalCost()).isEqualByComparingTo("0");
+        assertThat(response.createdAt()).isNotNull();
+        assertThat(response.updatedAt()).isNotNull();
     }
 
     @Test

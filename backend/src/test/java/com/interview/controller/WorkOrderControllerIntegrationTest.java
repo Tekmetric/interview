@@ -106,6 +106,20 @@ class WorkOrderControllerIntegrationTest {
     }
 
     @Test
+    void updateWorkOrderUpdatesExistingPartQuantityWithoutUniqueConstraintViolation() throws Exception {
+        String id = createWorkOrderAndReturnId();
+
+        mockMvc.perform(put("/api/work-orders/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json("work-orders/update-same-part-work-order.json")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.partsNeeded.length()", is(1)))
+            .andExpect(jsonPath("$.partsNeeded[0].partId", is("11111111-1111-1111-1111-111111111111")))
+            .andExpect(jsonPath("$.partsNeeded[0].quantity", is(3)))
+            .andExpect(jsonPath("$.totalCost", is(469.97)));
+    }
+
+    @Test
     void deleteWorkOrderReturnsNoContent() throws Exception {
         String id = createWorkOrderAndReturnId();
 

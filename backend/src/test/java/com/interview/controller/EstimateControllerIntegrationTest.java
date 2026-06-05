@@ -42,7 +42,9 @@ class EstimateControllerIntegrationTest {
             .andExpect(jsonPath("$.status", is("PENDING")))
             .andExpect(jsonPath("$.workOrders.length()", is(0)))
             .andExpect(jsonPath("$.totalTime", is(0.0)))
-            .andExpect(jsonPath("$.totalCost", is(0.0)));
+            .andExpect(jsonPath("$.totalCost", is(0.0)))
+            .andExpect(jsonPath("$.createdAt").exists())
+            .andExpect(jsonPath("$.updatedAt").exists());
     }
 
     @Test

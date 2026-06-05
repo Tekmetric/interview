@@ -37,7 +37,7 @@ public class EstimateService {
     @Transactional
     public EstimateResponse create(EstimateRequest request) {
         Estimate estimate = Estimate.from(request);
-        Estimate savedEstimate = estimateRepository.save(estimate);
+        Estimate savedEstimate = estimateRepository.saveAndFlush(estimate);
         MDC.put(MdcKeys.ESTIMATE_ID, savedEstimate.getId().toString());
         return savedEstimate.toResponse();
     }

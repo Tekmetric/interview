@@ -23,7 +23,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -95,10 +97,22 @@ public class WorkOrder {
     }
 
     public void replacePartsNeeded(List<WorkOrderPart> replacementParts) {
-        partsNeeded.clear();
+        Set<UUID> replacementPartIds = replacementParts.stream()
+            .map(workOrderPart -> workOrderPart.getPart().getId())
+            .collect(Collectors.toSet());
+
+        partsNeeded.removeIf(workOrderPart -> !replacementPartIds.contains(workOrderPart.getPart().getId()));
         replacementParts.forEach(workOrderPart -> {
-            workOrderPart.setWorkOrder(this);
-            partsNeeded.add(workOrderPart);
+            partsNeeded.stream()
+                .filter(existingPart -> existingPart.getPart().getId().equals(workOrderPart.getPart().getId()))
+                .findFirst()
+                .ifPresentOrElse(
+                    existingPart -> existingPart.setQuantity(workOrderPart.getQuantity()),
+                    () -> {
+                        workOrderPart.setWorkOrder(this);
+                        partsNeeded.add(workOrderPart);
+                    }
+                );
         });
     }
 

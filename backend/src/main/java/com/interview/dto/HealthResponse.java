@@ -1,9 +1,9 @@
 package com.interview.dto;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record HealthResponse(
     String status,
-    LocalDateTime checkedAt
+    Instant checkedAt
 ) {
 }

@@ -1,44 +1,3 @@
-# Java Spring Boot API Coding Exercise
-
-## Steps to get started:
-
-#### Prerequisites
-- Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
-
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
-
-#### Import project into IDE
-- Project root is located in `backend` folder
-
-#### Build and run your app
-- `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
-
-#### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
-
-#### After finishing the goals listed below create a PR
-
-### Goals
-1. Design a CRUD API with data store using Spring Boot and in memory H2 database (pre-configured, see below)
-2. API should include one object with create, read, update, and delete operations. Read should include fetching a single item and list of items.
-3. Provide SQL create scripts for your object(s) in resources/data.sql
-4. Demo API functionality using API client tool
-
-### Considerations
-This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
-
-#### H2 Configuration
-- Console: http://localhost:8080/h2-console 
-- JDBC URL: jdbc:h2:mem:testdb
-- Username: sa
-- Password: password
-
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
-
-
 # Tekmetric Estimate Builder API
 
 This is a Spring Boot CRUD API for a simplified auto repair estimate builder. It models estimates, work orders, and seeded parts so a technician can create an estimate first, then add labor and parts as work orders are diagnosed.
@@ -111,6 +70,7 @@ The schema and seed data live in `src/main/resources/database/data.sql`.
 ## Application Properties
 
 - `spring.jpa.hibernate.ddl-auto=none`: Hibernate will not create or update tables; the SQL script owns schema setup.
+- `spring.jpa.open-in-view=false`: prevents lazy database access during controller response serialization.
 - `spring.sql.init.mode=always`: Spring runs SQL initialization every time the in-memory database starts.
 - `spring.sql.init.schema-locations=classpath:database/data.sql`: points Spring at the schema/seed file.
 - `spring.sql.init.continue-on-error=false`: startup fails if the SQL script has a problem.
@@ -126,11 +86,18 @@ In SQL, `CONSTRAINT` names a database rule such as a foreign key, uniqueness rul
 - Parts are seeded reference data and include `price`.
 - Work orders include `summary`, `notes`, labor rate, labor time, status, and needed parts.
 - Work-order updates do not change `vehicleId`; vehicle identity is set only when the work order is created.
+- A work order belongs to zero or one estimate; standalone work orders have no associated estimate.
+- Associating an unowned existing work order attaches it to the target estimate.
+- Associating an already-owned work order clones it and attaches the clone to the target estimate.
+- A work order can only be associated with an estimate for the same `vehicleId`.
 - A work order can require multiple quantities of the same part through `quantity`; duplicate part IDs in a request are consolidated.
 - Work order `totalCost` is calculated as `(laborTime * laborRate) + sum(part.price * quantity)`.
+- Work orders can be labor-only; `partsNeeded` may be empty.
 - Estimate `totalCost` and `totalTime` include only work orders that are not `REFUSED`.
 - Estimate responses include work-order summaries, but not nested part details.
 - Work order detail responses include parts needed.
+- Work order responses include `estimateUrl`, using `/api/estimates/{estimateId}` when associated and `null` when standalone.
+- API timestamps use `Instant` so responses include an unambiguous UTC timestamp.
 - Work order lists sort `REFUSED` work orders to the bottom.
 - API requests and responses use DTOs, not raw JPA entities.
 
@@ -138,8 +105,7 @@ In SQL, `CONSTRAINT` names a database rule such as a foreign key, uniqueness rul
 
 ```mermaid
 erDiagram
-    ESTIMATE ||--o{ ESTIMATE_WORK_ORDERS : contains
-    WORK_ORDER ||--o{ ESTIMATE_WORK_ORDERS : associated_with
+    ESTIMATE ||--o{ WORK_ORDER : contains
     WORK_ORDER ||--o{ WORK_ORDER_PART : needs
     PART ||--o{ WORK_ORDER_PART : referenced_by
 
@@ -158,6 +124,7 @@ erDiagram
       String notes
       BigDecimal laborRate
       BigDecimal laborTime
+      UUID estimateId
     }
 
     PART {
@@ -167,7 +134,6 @@ erDiagram
       String name
       BigDecimal price
     }
-
     WORK_ORDER_PART {
       UUID id
       UUID workOrderId
@@ -225,7 +191,7 @@ sequenceDiagram
     Repositories->>Database: INSERT work order and part rows
     Database-->>Repositories: Saved work order
     WorkOrderService-->>EstimateService: WorkOrder entity
-    EstimateService->>EstimateService: Add work order to estimate
+    EstimateService->>EstimateService: Set workOrder.estimate
     EstimateService-->>Controller: Updated EstimateResponse
     Controller-->>Client: 201 Created, estimate summary includes work order
 ```
@@ -246,18 +212,22 @@ sequenceDiagram
     EstimateService->>Repositories: find estimate by ID
     Repositories->>Database: SELECT estimate
     Database-->>Repositories: Estimate
-    EstimateService->>WorkOrderService: findEntity(workOrderId)
+    EstimateService->>WorkOrderService: find work order with parts and estimate
     WorkOrderService->>Repositories: find work order by ID
-    Repositories->>Database: SELECT work order
+    Repositories->>Database: SELECT work order graph
     Database-->>Repositories: WorkOrder
     WorkOrderService-->>EstimateService: WorkOrder entity
-    alt Work order is already associated
-        EstimateService-->>Controller: InvalidRequestException
-        Controller-->>Client: 400 Bad Request
-    else Work order is not associated
-        EstimateService->>EstimateService: Append work order association
+    EstimateService->>EstimateService: Verify vehicleId matches estimate
+    alt Work order is standalone
+        EstimateService->>EstimateService: Set workOrder.estimate
         EstimateService-->>Controller: Updated EstimateResponse
-        Controller-->>Client: 201 Created, estimate summary includes work order
+        Controller-->>Client: 200 OK, estimate summary includes work order
+    else Work order already belongs to an estimate
+        EstimateService->>WorkOrderService: cloneForEstimate(workOrder, estimate)
+        WorkOrderService->>Repositories: save cloned work order
+        Repositories->>Database: INSERT cloned work order and part rows
+        EstimateService-->>Controller: Updated EstimateResponse
+        Controller-->>Client: 200 OK, estimate summary includes clone
     end
 ```
 
@@ -293,7 +263,8 @@ DELETE /api/estimates/{id}
 
 Estimate creation intentionally starts without work orders. Customer and vehicle identity are set when the estimate is
 created; later updates only accept `status`. Work orders can be created and associated through the nested work-order
-endpoint, or one existing work order can be associated at a time.
+endpoint, or one existing work order can be associated at a time. If that existing work order already belongs to an
+estimate, the API creates a clone for the target estimate instead of moving the original.
 
 ## Example Demo Flow
 

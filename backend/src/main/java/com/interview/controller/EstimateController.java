@@ -77,8 +77,10 @@ public class EstimateController {
     }
 
     @PostMapping("/{estimateId}/work-orders/{workOrderId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Associate an existing work order", description = "Associates one existing work order with the selected estimate.")
+    @Operation(
+        summary = "Associate an existing work order",
+        description = "Associates an unowned work order or clones an already-owned work order onto the selected estimate."
+    )
     public EstimateResponse addExistingWorkOrder(
         @PathVariable UUID estimateId,
         @PathVariable UUID workOrderId

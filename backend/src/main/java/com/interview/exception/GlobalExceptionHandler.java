@@ -3,7 +3,7 @@ package com.interview.exception;
 import com.interview.dto.ErrorResponse;
 import com.interview.dto.FieldErrorResponse;
 import jakarta.validation.ConstraintViolationException;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionFailedException;
@@ -28,6 +28,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidRequest(InvalidRequestException exception) {
         log.warn("Invalid request: {}", exception.getMessage());
         return build(HttpStatus.BAD_REQUEST, exception.getMessage(), List.of());
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflict(ConflictException exception) {
+        log.warn("Request conflict: {}", exception.getMessage());
+        return build(HttpStatus.CONFLICT, exception.getMessage(), List.of());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -76,7 +82,7 @@ public class GlobalExceptionHandler {
         List<FieldErrorResponse> fieldErrors
     ) {
         return ResponseEntity.status(status).body(new ErrorResponse(
-            LocalDateTime.now(),
+            Instant.now(),
             status.value(),
             status.getReasonPhrase(),
             message,

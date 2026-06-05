@@ -10,12 +10,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -50,22 +49,17 @@ public class Estimate {
     @Column(nullable = false)
     private EstimateStatus status;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "estimate_work_orders",
-        joinColumns = @JoinColumn(name = "estimate_id"),
-        inverseJoinColumns = @JoinColumn(name = "work_order_id")
-    )
+    @OneToMany(mappedBy = "estimate", fetch = FetchType.LAZY)
     @Builder.Default
     private List<WorkOrder> workOrders = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     public static Estimate from(EstimateRequest request) {
         Estimate estimate = new Estimate();
@@ -76,17 +70,11 @@ public class Estimate {
     }
 
     public BigDecimal getTotalCost() {
-        return workOrders.stream()
-            .filter(workOrder -> workOrder.getStatus() != WorkOrderStatus.REFUSED)
-            .map(WorkOrder::getTotalCost)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return totalCost(workOrders);
     }
 
     public BigDecimal getTotalTime() {
-        return workOrders.stream()
-            .filter(workOrder -> workOrder.getStatus() != WorkOrderStatus.REFUSED)
-            .map(WorkOrder::getLaborTime)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return totalTime(workOrders);
     }
 
     public boolean containsWorkOrder(UUID workOrderId) {
@@ -103,29 +91,50 @@ public class Estimate {
             customerId,
             vehicleId,
             status,
-            getTotalCost(responseWorkOrders),
-            getTotalTime(responseWorkOrders),
+            totalCost(responseWorkOrders),
+            totalTime(responseWorkOrders),
             createdAt,
             updatedAt,
             responseWorkOrders.stream()
-                .sorted(Comparator.comparing((WorkOrder workOrder) -> workOrder.getStatus() == WorkOrderStatus.REFUSED)
-                    .thenComparing(WorkOrder::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())))
+                .sorted(refusedLastThenCreatedAt())
                 .map(WorkOrder::toSummaryResponse)
                 .toList()
         );
     }
 
-    private BigDecimal getTotalCost(List<WorkOrder> responseWorkOrders) {
+    public void addWorkOrder(WorkOrder workOrder) {
+        workOrders.add(workOrder);
+        workOrder.setEstimate(this);
+    }
+
+    public void removeWorkOrder(WorkOrder workOrder) {
+        workOrders.remove(workOrder);
+        workOrder.setEstimate(null);
+    }
+
+    public void clearWorkOrders() {
+        workOrders.forEach(workOrder -> workOrder.setEstimate(null));
+        workOrders.clear();
+    }
+
+    private static Comparator<WorkOrder> refusedLastThenCreatedAt() {
+        return Comparator.comparing((WorkOrder workOrder) -> workOrder.getStatus() == WorkOrderStatus.REFUSED)
+            .thenComparing(WorkOrder::getCreatedAt);
+    }
+
+    private static BigDecimal totalCost(List<WorkOrder> responseWorkOrders) {
         return responseWorkOrders.stream()
             .filter(workOrder -> workOrder.getStatus() != WorkOrderStatus.REFUSED)
             .map(WorkOrder::getTotalCost)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            .setScale(2, RoundingMode.HALF_UP);
     }
 
-    private BigDecimal getTotalTime(List<WorkOrder> responseWorkOrders) {
+    private static BigDecimal totalTime(List<WorkOrder> responseWorkOrders) {
         return responseWorkOrders.stream()
             .filter(workOrder -> workOrder.getStatus() != WorkOrderStatus.REFUSED)
             .map(WorkOrder::getLaborTime)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            .setScale(2, RoundingMode.HALF_UP);
     }
 }

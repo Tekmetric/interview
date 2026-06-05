@@ -2,7 +2,7 @@ package com.interview.dto;
 
 import com.interview.entity.EstimateStatus;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,8 +13,8 @@ public record EstimateResponse(
     EstimateStatus status,
     BigDecimal totalCost,
     BigDecimal totalTime,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt,
+    Instant createdAt,
+    Instant updatedAt,
     List<WorkOrderSummaryResponse> workOrders
 ) {
 }

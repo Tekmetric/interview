@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.interview.dto.EstimateRequest;
 import com.interview.dto.EstimateResponse;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class EstimateTest {
             new BigDecimal("1.50"),
             new BigDecimal("40.00"),
             2,
-            LocalDateTime.now()
+            Instant.now()
         );
         WorkOrder acceptedWorkOrder = workOrder(
             WorkOrderStatus.ACCEPTED,
@@ -40,7 +40,7 @@ class EstimateTest {
             new BigDecimal("2.00"),
             new BigDecimal("30.00"),
             1,
-            LocalDateTime.now()
+            Instant.now()
         );
         WorkOrder refusedWorkOrder = workOrder(
             WorkOrderStatus.REFUSED,
@@ -48,18 +48,18 @@ class EstimateTest {
             new BigDecimal("3.00"),
             new BigDecimal("500.00"),
             1,
-            LocalDateTime.now()
+            Instant.now()
         );
         Estimate estimate = estimate(List.of(pendingWorkOrder, acceptedWorkOrder, refusedWorkOrder));
 
         assertThat(estimate.getTotalTime()).isEqualByComparingTo("3.50");
-        assertThat(estimate.getTotalCost()).isEqualByComparingTo("597.5000");
+        assertThat(estimate.getTotalCost()).isEqualByComparingTo("597.50");
     }
 
     @Test
     void containsWorkOrderReturnsWhetherWorkOrderIsAssociated() {
         UUID workOrderId = UUID.randomUUID();
-        WorkOrder workOrder = workOrder(workOrderId, WorkOrderStatus.PENDING, LocalDateTime.now());
+        WorkOrder workOrder = workOrder(workOrderId, WorkOrderStatus.PENDING, Instant.now());
         Estimate estimate = estimate(List.of(workOrder));
 
         assertThat(estimate.containsWorkOrder(workOrderId)).isTrue();
@@ -71,15 +71,15 @@ class EstimateTest {
         UUID estimateId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
         UUID vehicleId = UUID.randomUUID();
-        LocalDateTime createdAt = LocalDateTime.of(2026, 1, 1, 10, 0);
-        LocalDateTime updatedAt = LocalDateTime.of(2026, 1, 2, 11, 0);
+        Instant createdAt = Instant.parse("2026-01-01T10:00:00Z");
+        Instant updatedAt = Instant.parse("2026-01-02T11:00:00Z");
         WorkOrder workOrder = workOrder(
             WorkOrderStatus.ACCEPTED,
             new BigDecimal("110.00"),
             new BigDecimal("2.25"),
             new BigDecimal("25.00"),
             2,
-            LocalDateTime.of(2026, 1, 1, 12, 0)
+            Instant.parse("2026-01-01T12:00:00Z")
         );
         Estimate estimate = Estimate.builder()
             .id(estimateId)
@@ -98,7 +98,7 @@ class EstimateTest {
         assertThat(response.vehicleId()).isEqualTo(vehicleId);
         assertThat(response.status()).isEqualTo(EstimateStatus.APPROVED);
         assertThat(response.totalTime()).isEqualByComparingTo("2.25");
-        assertThat(response.totalCost()).isEqualByComparingTo("297.5000");
+        assertThat(response.totalCost()).isEqualByComparingTo("297.50");
         assertThat(response.createdAt()).isEqualTo(createdAt);
         assertThat(response.updatedAt()).isEqualTo(updatedAt);
         assertThat(response.workOrders()).hasSize(1);
@@ -114,7 +114,7 @@ class EstimateTest {
             new BigDecimal("5.00"),
             new BigDecimal("10.00"),
             1,
-            LocalDateTime.now()
+            Instant.now()
         );
         WorkOrder responseWorkOrder = workOrder(
             WorkOrderStatus.ACCEPTED,
@@ -122,14 +122,14 @@ class EstimateTest {
             new BigDecimal("1.00"),
             new BigDecimal("15.00"),
             2,
-            LocalDateTime.now()
+            Instant.now()
         );
         Estimate estimate = estimate(List.of(associatedWorkOrder));
 
         EstimateResponse response = estimate.toResponse(List.of(responseWorkOrder));
 
         assertThat(response.totalTime()).isEqualByComparingTo("1.00");
-        assertThat(response.totalCost()).isEqualByComparingTo("120.0000");
+        assertThat(response.totalCost()).isEqualByComparingTo("120.00");
         assertThat(response.workOrders()).extracting("id").containsExactly(responseWorkOrder.getId());
     }
 
@@ -138,17 +138,17 @@ class EstimateTest {
         WorkOrder newestAccepted = workOrder(
             UUID.randomUUID(),
             WorkOrderStatus.ACCEPTED,
-            LocalDateTime.of(2026, 1, 2, 9, 0)
+            Instant.parse("2026-01-02T09:00:00Z")
         );
         WorkOrder oldestAccepted = workOrder(
             UUID.randomUUID(),
             WorkOrderStatus.PENDING,
-            LocalDateTime.of(2026, 1, 1, 9, 0)
+            Instant.parse("2026-01-01T09:00:00Z")
         );
         WorkOrder refused = workOrder(
             UUID.randomUUID(),
             WorkOrderStatus.REFUSED,
-            LocalDateTime.of(2025, 12, 31, 9, 0)
+            Instant.parse("2025-12-31T09:00:00Z")
         );
         Estimate estimate = estimate(List.of(newestAccepted, refused, oldestAccepted));
 
@@ -164,13 +164,13 @@ class EstimateTest {
             .customerId(UUID.randomUUID())
             .vehicleId(UUID.randomUUID())
             .status(EstimateStatus.PENDING)
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
+            .createdAt(Instant.now())
+            .updatedAt(Instant.now())
             .workOrders(workOrders)
             .build();
     }
 
-    private WorkOrder workOrder(UUID id, WorkOrderStatus status, LocalDateTime createdAt) {
+    private WorkOrder workOrder(UUID id, WorkOrderStatus status, Instant createdAt) {
         WorkOrder workOrder = workOrder(
             status,
             new BigDecimal("100.00"),
@@ -189,7 +189,7 @@ class EstimateTest {
         BigDecimal laborTime,
         BigDecimal partPrice,
         int partQuantity,
-        LocalDateTime createdAt
+        Instant createdAt
     ) {
         WorkOrder workOrder = WorkOrder.builder()
             .id(UUID.randomUUID())
@@ -200,7 +200,7 @@ class EstimateTest {
             .laborRate(laborRate)
             .laborTime(laborTime)
             .createdAt(createdAt)
-            .updatedAt(createdAt.plusHours(1))
+            .updatedAt(createdAt.plusSeconds(3600))
             .build();
         WorkOrderPart workOrderPart = WorkOrderPart.builder()
             .id(UUID.randomUUID())

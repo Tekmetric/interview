@@ -18,21 +18,20 @@ import com.interview.entity.Part;
 import com.interview.entity.WorkOrder;
 import com.interview.entity.WorkOrderPart;
 import com.interview.entity.WorkOrderStatus;
-import com.interview.exception.InvalidRequestException;
+import com.interview.exception.ConflictException;
 import com.interview.repository.EstimateRepository;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.system.OutputCaptureExtension;
 
-@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
+@ExtendWith(MockitoExtension.class)
 class EstimateServiceTest {
     @Mock
     private EstimateRepository estimateRepository;
@@ -67,20 +66,23 @@ class EstimateServiceTest {
     @Test
     void getPlacesRefusedWorkOrdersAtTheBottom() {
         UUID estimateId = UUID.randomUUID();
+        UUID vehicleId = UUID.randomUUID();
+        WorkOrder refusedWorkOrder = workOrder(vehicleId, WorkOrderStatus.REFUSED);
+        WorkOrder acceptedWorkOrder = workOrder(vehicleId, WorkOrderStatus.ACCEPTED);
         Estimate estimate = Estimate.builder()
             .id(estimateId)
             .customerId(UUID.randomUUID())
-            .vehicleId(UUID.randomUUID())
+            .vehicleId(vehicleId)
             .status(EstimateStatus.PENDING)
+            .workOrders(List.of(refusedWorkOrder, acceptedWorkOrder))
             .build();
-        List<WorkOrder> workOrders = List.of(workOrder(WorkOrderStatus.REFUSED), workOrder(WorkOrderStatus.ACCEPTED));
 
-        when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
-        when(workOrderService.findAvailableForEstimateResponse(estimateId)).thenReturn(workOrders);
+        when(estimateRepository.findByIdWithWorkOrders(estimateId)).thenReturn(estimate);
+        when(workOrderService.findAllByIdWithResponseGraph(List.of(refusedWorkOrder.getId(), acceptedWorkOrder.getId())))
+            .thenReturn(List.of(refusedWorkOrder, acceptedWorkOrder));
 
         EstimateResponse response = estimateService.get(estimateId);
 
-        verify(workOrderService).findAvailableForEstimateResponse(estimateId);
         assertThat(response.workOrders()).extracting("status")
             .containsExactly(WorkOrderStatus.ACCEPTED, WorkOrderStatus.REFUSED);
     }
@@ -88,16 +90,17 @@ class EstimateServiceTest {
     @Test
     void updateChangesStatusWithoutChangingWorkOrders() {
         UUID estimateId = UUID.randomUUID();
-        WorkOrder existingWorkOrder = workOrder(WorkOrderStatus.ACCEPTED);
+        UUID vehicleId = UUID.randomUUID();
+        WorkOrder existingWorkOrder = workOrder(vehicleId, WorkOrderStatus.ACCEPTED);
         Estimate estimate = Estimate.builder()
             .id(estimateId)
             .customerId(UUID.randomUUID())
-            .vehicleId(UUID.randomUUID())
+            .vehicleId(vehicleId)
             .status(EstimateStatus.PENDING)
             .workOrders(new ArrayList<>(List.of(existingWorkOrder)))
             .build();
 
-        when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
+        when(estimateRepository.findById(estimateId)).thenReturn(java.util.Optional.of(estimate));
 
         EstimateResponse response = estimateService.update(
             estimateId,
@@ -114,21 +117,22 @@ class EstimateServiceTest {
     void addWorkOrderCreatesAndAssociatesWorkOrderToEstimate() {
         UUID estimateId = UUID.randomUUID();
         UUID partId = UUID.randomUUID();
-        WorkOrder workOrder = workOrder(WorkOrderStatus.PENDING);
+        UUID vehicleId = UUID.randomUUID();
+        WorkOrder workOrder = workOrder(vehicleId, WorkOrderStatus.PENDING);
         Estimate estimate = Estimate.builder()
             .id(estimateId)
             .customerId(UUID.randomUUID())
-            .vehicleId(UUID.randomUUID())
+            .vehicleId(vehicleId)
             .status(EstimateStatus.PENDING)
             .build();
 
-        when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
+        when(estimateRepository.findById(estimateId)).thenReturn(java.util.Optional.of(estimate));
         when(workOrderService.createWorkOrderFromRequest(any(WorkOrderRequest.class))).thenReturn(workOrder);
 
         EstimateResponse response = estimateService.addWorkOrder(
             estimateId,
             new WorkOrderRequest(
-                UUID.randomUUID(),
+                vehicleId,
                 WorkOrderStatus.PENDING,
                 "Replace spark plugs",
                 "Customer approved premium plugs.",
@@ -147,39 +151,42 @@ class EstimateServiceTest {
     void addExistingWorkOrderAssociatesOneWorkOrderToEstimate() {
         UUID estimateId = UUID.randomUUID();
         UUID workOrderId = UUID.randomUUID();
+        UUID vehicleId = UUID.randomUUID();
         Estimate estimate = Estimate.builder()
             .id(estimateId)
             .customerId(UUID.randomUUID())
-            .vehicleId(UUID.randomUUID())
+            .vehicleId(vehicleId)
             .status(EstimateStatus.PENDING)
             .build();
-        WorkOrder workOrder = workOrder(workOrderId, WorkOrderStatus.PENDING);
+        WorkOrder workOrder = workOrder(workOrderId, vehicleId, WorkOrderStatus.PENDING);
 
-        when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
-        when(workOrderService.findEntity(workOrderId)).thenReturn(workOrder);
+        when(estimateRepository.findById(estimateId)).thenReturn(java.util.Optional.of(estimate));
+        when(workOrderService.findEntityWithResponseGraph(workOrderId)).thenReturn(workOrder);
 
         EstimateResponse response = estimateService.addExistingWorkOrder(estimateId, workOrderId);
 
         assertThat(response.workOrders()).hasSize(1);
         assertThat(response.workOrders().getFirst().id()).isEqualTo(workOrderId);
+        assertThat(workOrder.getEstimate()).isEqualTo(estimate);
         verify(estimateRepository, never()).save(estimate);
     }
 
     @Test
     void addExistingWorkOrderAppendsWithoutReplacingExistingWorkOrders() {
         UUID estimateId = UUID.randomUUID();
-        WorkOrder existingWorkOrder = workOrder(UUID.randomUUID(), WorkOrderStatus.ACCEPTED);
-        WorkOrder workOrderToAdd = workOrder(UUID.randomUUID(), WorkOrderStatus.PENDING);
+        UUID vehicleId = UUID.randomUUID();
+        WorkOrder existingWorkOrder = workOrder(UUID.randomUUID(), vehicleId, WorkOrderStatus.ACCEPTED);
+        WorkOrder workOrderToAdd = workOrder(UUID.randomUUID(), vehicleId, WorkOrderStatus.PENDING);
         Estimate estimate = Estimate.builder()
             .id(estimateId)
             .customerId(UUID.randomUUID())
-            .vehicleId(UUID.randomUUID())
+            .vehicleId(vehicleId)
             .status(EstimateStatus.PENDING)
             .workOrders(new ArrayList<>(List.of(existingWorkOrder)))
             .build();
 
-        when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
-        when(workOrderService.findEntity(workOrderToAdd.getId())).thenReturn(workOrderToAdd);
+        when(estimateRepository.findById(estimateId)).thenReturn(java.util.Optional.of(estimate));
+        when(workOrderService.findEntityWithResponseGraph(workOrderToAdd.getId())).thenReturn(workOrderToAdd);
 
         EstimateResponse response = estimateService.addExistingWorkOrder(estimateId, workOrderToAdd.getId());
 
@@ -189,31 +196,61 @@ class EstimateServiceTest {
     }
 
     @Test
-    void addExistingWorkOrderRejectsAlreadyAssociatedWorkOrder() {
+    void addExistingWorkOrderClonesAlreadyAssociatedWorkOrder() {
         UUID estimateId = UUID.randomUUID();
         UUID workOrderId = UUID.randomUUID();
-        WorkOrder workOrder = workOrder(workOrderId, WorkOrderStatus.PENDING);
+        UUID vehicleId = UUID.randomUUID();
+        Estimate estimate = Estimate.builder()
+            .id(estimateId)
+            .customerId(UUID.randomUUID())
+            .vehicleId(vehicleId)
+            .status(EstimateStatus.PENDING)
+            .build();
+        Estimate sourceEstimate = Estimate.builder().id(UUID.randomUUID()).vehicleId(vehicleId).build();
+        WorkOrder workOrder = workOrder(workOrderId, vehicleId, WorkOrderStatus.PENDING);
+        sourceEstimate.addWorkOrder(workOrder);
+        WorkOrder clonedWorkOrder = workOrder(UUID.randomUUID(), vehicleId, WorkOrderStatus.PENDING);
+        estimate.addWorkOrder(clonedWorkOrder);
+
+        when(estimateRepository.findById(estimateId)).thenReturn(java.util.Optional.of(estimate));
+        when(workOrderService.findEntityWithResponseGraph(workOrderId)).thenReturn(workOrder);
+        when(workOrderService.cloneForEstimate(workOrder, estimate)).thenReturn(clonedWorkOrder);
+
+        EstimateResponse response = estimateService.addExistingWorkOrder(estimateId, workOrderId);
+
+        assertThat(response.workOrders()).extracting("id").containsExactly(clonedWorkOrder.getId());
+        verify(workOrderService).cloneForEstimate(workOrder, estimate);
+    }
+
+    @Test
+    void addExistingWorkOrderRejectsVehicleMismatch() {
+        UUID estimateId = UUID.randomUUID();
+        UUID workOrderId = UUID.randomUUID();
         Estimate estimate = Estimate.builder()
             .id(estimateId)
             .customerId(UUID.randomUUID())
             .vehicleId(UUID.randomUUID())
             .status(EstimateStatus.PENDING)
-            .workOrders(new ArrayList<>(List.of(workOrder)))
             .build();
+        WorkOrder workOrder = workOrder(workOrderId, UUID.randomUUID(), WorkOrderStatus.PENDING);
 
-        when(estimateRepository.findById(estimateId)).thenReturn(Optional.of(estimate));
-        when(workOrderService.findEntity(workOrderId)).thenReturn(workOrder);
+        when(estimateRepository.findById(estimateId)).thenReturn(java.util.Optional.of(estimate));
+        when(workOrderService.findEntityWithResponseGraph(workOrderId)).thenReturn(workOrder);
 
         assertThatThrownBy(() -> estimateService.addExistingWorkOrder(estimateId, workOrderId))
-            .isInstanceOf(InvalidRequestException.class)
-            .hasMessageContaining("is already associated with estimate " + estimateId);
+            .isInstanceOf(ConflictException.class)
+            .hasMessageContaining("Work order vehicleId must match estimate vehicleId");
     }
 
     private WorkOrder workOrder(WorkOrderStatus status) {
-        return workOrder(UUID.randomUUID(), status);
+        return workOrder(UUID.randomUUID(), UUID.randomUUID(), status);
     }
 
-    private WorkOrder workOrder(UUID id, WorkOrderStatus status) {
+    private WorkOrder workOrder(UUID vehicleId, WorkOrderStatus status) {
+        return workOrder(UUID.randomUUID(), vehicleId, status);
+    }
+
+    private WorkOrder workOrder(UUID id, UUID vehicleId, WorkOrderStatus status) {
         Part part = Part.builder()
             .id(UUID.randomUUID())
             .sku(41002)
@@ -223,12 +260,14 @@ class EstimateServiceTest {
             .build();
         WorkOrder workOrder = WorkOrder.builder()
             .id(id)
-            .vehicleId(UUID.randomUUID())
+            .vehicleId(vehicleId)
             .status(status)
             .summary("Replace spark plugs")
             .notes("Customer approved premium plugs.")
             .laborRate(new BigDecimal("100.00"))
             .laborTime(new BigDecimal("2.00"))
+            .createdAt(Instant.now())
+            .updatedAt(Instant.now())
             .build();
         WorkOrderPart workOrderPart = WorkOrderPart.builder()
             .id(UUID.randomUUID())

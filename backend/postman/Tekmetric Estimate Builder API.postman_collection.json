@@ -47,8 +47,8 @@
       "type": "string"
     },
     {
-      "key": "approvedSeededWorkOrderId",
-      "value": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "key": "seededStandaloneWorkOrderId",
+      "value": "dddddddd-dddd-dddd-dddd-dddddddddddd",
       "type": "string"
     },
     {
@@ -230,8 +230,42 @@
           "request": {
             "method": "POST",
             "header": [],
-            "url": "{{baseUrl}}/api/estimates/{{estimateId}}/work-orders/{{approvedSeededWorkOrderId}}"
-          }
+            "url": "{{baseUrl}}/api/estimates/{{estimateId}}/work-orders/{{seededStandaloneWorkOrderId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('associates existing standalone work order', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/estimates/{estimateId}/work-orders/{workOrderId} - clone owned work order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/estimates/{{estimateId}}/work-orders/{{seededWorkOrderId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('clones work order that already belongs to an estimate', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "DELETE /api/estimates/{id}",
@@ -286,6 +320,36 @@
                   "});",
                   "",
                   "pm.collectionVariables.set('standaloneWorkOrderId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/work-orders - labor only",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicleId\": \"{{vehicleId}}\",\n  \"status\": \"PENDING\",\n  \"summary\": \"Perform diagnostic inspection\",\n  \"notes\": \"Labor-only inspection before repair approval.\",\n  \"laborRate\": 150.00,\n  \"laborTime\": 0.75,\n  \"partsNeeded\": []\n}"
+            },
+            "url": "{{baseUrl}}/api/work-orders"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('creates labor-only work order', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
                 ]
               }
             }

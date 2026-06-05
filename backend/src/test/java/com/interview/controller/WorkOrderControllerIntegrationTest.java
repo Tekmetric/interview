@@ -38,7 +38,9 @@ class WorkOrderControllerIntegrationTest {
             .andExpect(jsonPath("$.notes", is("Pads are worn below recommended thickness.")))
             .andExpect(jsonPath("$.laborCost", is(200.00)))
             .andExpect(jsonPath("$.partsNeeded[0].quantity", is(2)))
-            .andExpect(jsonPath("$.totalCost", is(379.98)));
+            .andExpect(jsonPath("$.totalCost", is(379.98)))
+            .andExpect(jsonPath("$.createdAt").exists())
+            .andExpect(jsonPath("$.updatedAt").exists());
     }
 
     @Test

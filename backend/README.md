@@ -89,6 +89,10 @@ OpenAPI JSON:
 
 - http://localhost:8080/v3/api-docs
 
+Postman collection:
+
+- `postman/Tekmetric Estimate Builder API.postman_collection.json`
+
 ## Run Tests
 
 ```zsh

@@ -94,7 +94,7 @@ public class WorkOrderService {
     public WorkOrder createWorkOrderFromRequest(WorkOrderRequest request) {
         WorkOrder workOrder = WorkOrder.from(request);
         updatePartsNeeded(workOrder, request.partsNeeded());
-        return workOrderRepository.save(workOrder);
+        return workOrderRepository.saveAndFlush(workOrder);
     }
 
     private void updateWorkOrderFromRequest(WorkOrder workOrder, WorkOrderUpdateRequest request) {

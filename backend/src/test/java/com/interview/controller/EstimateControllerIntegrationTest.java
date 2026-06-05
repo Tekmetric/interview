@@ -123,6 +123,8 @@ class EstimateControllerIntegrationTest {
             .andExpect(jsonPath("$.id", is(estimateId)))
             .andExpect(jsonPath("$.workOrders.length()", is(1)))
             .andExpect(jsonPath("$.workOrders[0].summary", is("Replace front brake pads")))
+            .andExpect(jsonPath("$.workOrders[0].createdAt").exists())
+            .andExpect(jsonPath("$.workOrders[0].updatedAt").exists())
             .andExpect(jsonPath("$.workOrders[0]", not(hasKey("partsNeeded"))));
     }
 

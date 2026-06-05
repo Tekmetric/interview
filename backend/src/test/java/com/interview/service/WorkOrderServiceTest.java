@@ -45,7 +45,7 @@ class WorkOrderServiceTest {
         WorkOrderRequest request = workOrderRequest(partId);
 
         when(partRepository.findAllById(Set.of(partId))).thenReturn(List.of(part(partId, new BigDecimal("12.50"))));
-        when(workOrderRepository.save(any(WorkOrder.class))).thenAnswer(invocation -> {
+        when(workOrderRepository.saveAndFlush(any(WorkOrder.class))).thenAnswer(invocation -> {
             WorkOrder workOrder = invocation.getArgument(0);
             workOrder.setId(UUID.randomUUID());
             return workOrder;
@@ -74,7 +74,7 @@ class WorkOrderServiceTest {
         );
 
         when(partRepository.findAllById(Set.of(partId))).thenReturn(List.of(part(partId, new BigDecimal("12.50"))));
-        when(workOrderRepository.save(any(WorkOrder.class))).thenAnswer(invocation -> {
+        when(workOrderRepository.saveAndFlush(any(WorkOrder.class))).thenAnswer(invocation -> {
             WorkOrder workOrder = invocation.getArgument(0);
             workOrder.setId(UUID.randomUUID());
             return workOrder;

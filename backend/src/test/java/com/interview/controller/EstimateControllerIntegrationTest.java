@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MvcResult;
 class EstimateControllerIntegrationTest {
     private static final String ESTIMATE_ID = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee";
     private static final String CUSTOMER_ID = "12121212-1212-1212-1212-121212121212";
+    private static final String WORK_ORDER_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 
     @Autowired
     private MockMvc mockMvc;
@@ -66,16 +67,8 @@ class EstimateControllerIntegrationTest {
     }
 
     @Test
-    void updateEstimateChangesStatusAndAddsWorkOrders() throws Exception {
+    void updateEstimateChangesStatusOnly() throws Exception {
         String id = createEstimateAndReturnId("estimates/create-empty-estimate.json");
-
-        mockMvc.perform(put("/api/estimates/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json("estimates/update-estimate-with-existing-work-order.json")))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.workOrders.length()", is(1)))
-            .andExpect(jsonPath("$.totalTime", is(1.50)))
-            .andExpect(jsonPath("$.totalCost", is(307.49)));
 
         mockMvc.perform(put("/api/estimates/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -84,20 +77,39 @@ class EstimateControllerIntegrationTest {
             .andExpect(jsonPath("$.status", is("APPROVED")))
             .andExpect(jsonPath("$.customerId", is(CUSTOMER_ID)))
             .andExpect(jsonPath("$.vehicleId", is("99999999-9999-9999-9999-999999999999")))
-            .andExpect(jsonPath("$.workOrders.length()", is(2)))
-            .andExpect(jsonPath("$.totalTime", is(3.50)))
-            .andExpect(jsonPath("$.totalCost", is(712.24)));
+            .andExpect(jsonPath("$.workOrders.length()", is(0)))
+            .andExpect(jsonPath("$.totalTime", is(0)))
+            .andExpect(jsonPath("$.totalCost", is(0)));
     }
 
     @Test
-    void updateEstimateRejectsAlreadyAssociatedWorkOrders() throws Exception {
-        mockMvc.perform(put("/api/estimates/{id}", ESTIMATE_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json("estimates/update-estimate-with-existing-work-order.json")))
+    void addExistingWorkOrderAssociatesOneWorkOrderToEstimate() throws Exception {
+        String id = createEstimateAndReturnId("estimates/create-empty-estimate.json");
+
+        mockMvc.perform(post("/api/estimates/{estimateId}/work-orders/{workOrderId}", id, WORK_ORDER_ID))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.workOrders.length()", is(1)))
+            .andExpect(jsonPath("$.workOrders[0].id", is(WORK_ORDER_ID)))
+            .andExpect(jsonPath("$.totalTime", is(1.50)))
+            .andExpect(jsonPath("$.totalCost", is(307.49)));
+    }
+
+    @Test
+    void addExistingWorkOrderRejectsAlreadyAssociatedWorkOrders() throws Exception {
+        mockMvc.perform(post("/api/estimates/{estimateId}/work-orders/{workOrderId}", ESTIMATE_ID, WORK_ORDER_ID))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message", is(
                 "Work order aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa(Summary: Replace front brake pads) is already associated with estimate " + ESTIMATE_ID
             )));
+    }
+
+    @Test
+    void addExistingWorkOrderReturnsNotFoundWhenWorkOrderIsMissing() throws Exception {
+        String id = createEstimateAndReturnId("estimates/create-empty-estimate.json");
+
+        mockMvc.perform(post("/api/estimates/{estimateId}/work-orders/{workOrderId}", id, "00000000-0000-0000-0000-000000000000"))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message", is("Work order 00000000-0000-0000-0000-000000000000 was not found")));
     }
 
     @Test

@@ -12,9 +12,7 @@ import com.interview.exception.ResourceNotFoundException;
 import com.interview.repository.EstimateRepository;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +78,16 @@ public class EstimateService {
         return estimate.toResponse();
     }
 
+    @Transactional
+    public EstimateResponse addExistingWorkOrder(UUID estimateId, UUID workOrderId) {
+        MDC.put("estimateId", estimateId.toString());
+        MDC.put("workOrderId", workOrderId.toString());
+        Estimate estimate = findEntity(estimateId);
+        WorkOrder workOrder = workOrderService.findEntity(workOrderId);
+        addWorkOrderToEstimate(estimate, workOrder);
+        return estimate.toResponse();
+    }
+
     public Estimate findEntity(UUID id) {
         return estimateRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Estimate " + id + " was not found"));
@@ -87,17 +95,6 @@ public class EstimateService {
 
     private void updateEstimateFromRequest(Estimate estimate, EstimateUpdateRequest request) {
         estimate.setStatus(request.status());
-        addExistingWorkOrdersToEstimate(estimate, request.workOrderIds());
-    }
-
-    private void addExistingWorkOrdersToEstimate(Estimate estimate, Set<UUID> workOrderIds) {
-        if (workOrderIds == null || workOrderIds.isEmpty()) {
-            return;
-        }
-
-        for (WorkOrder workOrder : workOrderService.findEntities(workOrderIds)) {
-            addWorkOrderToEstimate(estimate, workOrder);
-        }
     }
 
     private void addWorkOrderToEstimate(Estimate estimate, WorkOrder workOrder) {
@@ -108,10 +105,6 @@ public class EstimateService {
         }
 
         estimate.getWorkOrders().add(workOrder);
-    }
-
-    private EstimateResponse toResponseWithWorkOrders(Estimate estimate, List<WorkOrder> workOrders) {
-        return estimate.toResponse(workOrders);
     }
 
     private Specification<Estimate> withFilters(UUID customerId, EstimateStatus status) {

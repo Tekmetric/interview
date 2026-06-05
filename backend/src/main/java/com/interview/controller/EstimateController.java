@@ -61,7 +61,7 @@ public class EstimateController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update an estimate", description = "Updates estimate status and appends optional work orders.")
+    @Operation(summary = "Update an estimate", description = "Updates estimate status.")
     public EstimateResponse update(@PathVariable UUID id, @Valid @RequestBody EstimateUpdateRequest request) {
         return estimateService.update(id, request);
     }
@@ -74,6 +74,16 @@ public class EstimateController {
         @Valid @RequestBody WorkOrderRequest request
     ) {
         return estimateService.addWorkOrder(estimateId, request);
+    }
+
+    @PostMapping("/{estimateId}/work-orders/{workOrderId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Associate an existing work order", description = "Associates one existing work order with the selected estimate.")
+    public EstimateResponse addExistingWorkOrder(
+        @PathVariable UUID estimateId,
+        @PathVariable UUID workOrderId
+    ) {
+        return estimateService.addExistingWorkOrder(estimateId, workOrderId);
     }
 
     @DeleteMapping("/{id}")

@@ -11,11 +11,21 @@ import org.springframework.data.repository.query.Param;
 public interface WorkOrderRepository extends JpaRepository<WorkOrder, UUID>, JpaSpecificationExecutor<WorkOrder> {
     @Query("""
         SELECT DISTINCT workOrder
-        FROM Estimate estimate
-        JOIN estimate.workOrders workOrder
+        FROM WorkOrder workOrder
         LEFT JOIN FETCH workOrder.partsNeeded workOrderPart
         LEFT JOIN FETCH workOrderPart.part
-        WHERE estimate.id = :estimateId
+        LEFT JOIN FETCH workOrder.estimate
+        WHERE workOrder.id = :id
         """)
-    List<WorkOrder> findAvailableForEstimateResponse(@Param("estimateId") UUID estimateId);
+    WorkOrder findByIdWithResponseGraph(@Param("id") UUID id);
+
+    @Query("""
+        SELECT DISTINCT workOrder
+        FROM WorkOrder workOrder
+        LEFT JOIN FETCH workOrder.partsNeeded workOrderPart
+        LEFT JOIN FETCH workOrderPart.part
+        LEFT JOIN FETCH workOrder.estimate
+        WHERE workOrder.id IN :ids
+        """)
+    List<WorkOrder> findAllWithPartsAndEstimateIncluded(@Param("ids") List<UUID> ids);
 }

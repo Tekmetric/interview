@@ -1,8 +1,10 @@
 package com.interview.controller;
 
 import static com.interview.TestResourceLoader.json;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -11,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.jayway.jsonpath.JsonPath;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,8 +42,19 @@ class WorkOrderControllerIntegrationTest {
             .andExpect(jsonPath("$.laborCost", is(200.00)))
             .andExpect(jsonPath("$.partsNeeded[0].quantity", is(2)))
             .andExpect(jsonPath("$.totalCost", is(379.98)))
+            .andExpect(jsonPath("$.estimateUrl", nullValue()))
             .andExpect(jsonPath("$.createdAt").exists())
             .andExpect(jsonPath("$.updatedAt").exists());
+    }
+
+    @Test
+    void createWorkOrderAllowsLaborOnlyWorkOrder() throws Exception {
+        mockMvc.perform(post("/api/work-orders")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json("work-orders/create-labor-only-work-order.json")))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.partsNeeded.length()", is(0)))
+            .andExpect(jsonPath("$.totalCost", is(112.50)));
     }
 
     @Test
@@ -49,6 +63,7 @@ class WorkOrderControllerIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", is(WORK_ORDER_ID)))
             .andExpect(jsonPath("$.summary", is("Replace front brake pads")))
+            .andExpect(jsonPath("$.estimateUrl", is("/api/estimates/eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")))
             .andExpect(jsonPath("$.partsNeeded[0].price", is(89.99)));
     }
 
@@ -61,6 +76,19 @@ class WorkOrderControllerIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.content.length()", greaterThanOrEqualTo(1)))
             .andExpect(jsonPath("$.content[0].status", is("REFUSED")));
+    }
+
+    @Test
+    void listWorkOrdersSortsByStatusPriority() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/work-orders")
+                .param("page", "0")
+                .param("size", "10"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        List<String> statuses = JsonPath.read(result.getResponse().getContentAsString(), "$.content[*].status");
+
+        assertThat(statuses).isSortedAccordingTo((left, right) -> Integer.compare(statusPriority(left), statusPriority(right)));
     }
 
     @Test
@@ -83,6 +111,24 @@ class WorkOrderControllerIntegrationTest {
 
         mockMvc.perform(delete("/api/work-orders/{id}", id))
             .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteAssociatedWorkOrderRemovesItFromEstimate() throws Exception {
+        String estimateId = createEstimateAndReturnId();
+        MvcResult addResult = mockMvc.perform(post("/api/estimates/{estimateId}/work-orders", estimateId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json("work-orders/create-work-order.json")))
+            .andExpect(status().isCreated())
+            .andReturn();
+        String workOrderId = JsonPath.read(addResult.getResponse().getContentAsString(), "$.workOrders[0].id");
+
+        mockMvc.perform(delete("/api/work-orders/{id}", workOrderId))
+            .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/estimates/{id}", estimateId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.workOrders.length()", is(0)));
     }
 
     @Test
@@ -112,5 +158,23 @@ class WorkOrderControllerIntegrationTest {
             .andExpect(status().isCreated())
             .andReturn();
         return JsonPath.read(result.getResponse().getContentAsString(), "$.id");
+    }
+
+    private String createEstimateAndReturnId() throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/estimates")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json("estimates/create-empty-estimate.json")))
+            .andExpect(status().isCreated())
+            .andReturn();
+        return JsonPath.read(result.getResponse().getContentAsString(), "$.id");
+    }
+
+    private int statusPriority(String status) {
+        return switch (status) {
+            case "PENDING" -> 1;
+            case "ACCEPTED" -> 2;
+            case "REFUSED" -> 3;
+            default -> throw new IllegalArgumentException("Unexpected status " + status);
+        };
     }
 }

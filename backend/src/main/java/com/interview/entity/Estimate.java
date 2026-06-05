@@ -118,7 +118,7 @@ public class Estimate {
     }
 
     private static Comparator<WorkOrder> refusedLastThenCreatedAt() {
-        return Comparator.comparing((WorkOrder workOrder) -> workOrder.getStatus() == WorkOrderStatus.REFUSED)
+        return Comparator.comparing((WorkOrder workOrder) -> workOrder.getStatus().getSortPriority())
             .thenComparing(WorkOrder::getCreatedAt);
     }
 

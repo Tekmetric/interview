@@ -2,7 +2,7 @@ package com.interview.dto;
 
 import com.interview.entity.WorkOrderStatus;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 public record WorkOrderSummaryResponse(
@@ -15,7 +15,8 @@ public record WorkOrderSummaryResponse(
     BigDecimal laborTime,
     BigDecimal laborCost,
     BigDecimal totalCost,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt
+    String estimateUrl,
+    Instant createdAt,
+    Instant updatedAt
 ) {
 }

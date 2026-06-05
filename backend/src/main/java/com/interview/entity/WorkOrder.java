@@ -13,10 +13,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -48,17 +51,21 @@ public class WorkOrder {
     @Column(nullable = false)
     private WorkOrderStatus status;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
     private String summary;
 
-    @Column
+    @Column(length = 1000)
     private String notes;
 
-    @Column(name = "labor_rate", nullable = false)
+    @Column(name = "labor_rate", nullable = false, precision = 10, scale = 2)
     private BigDecimal laborRate;
 
-    @Column(name = "labor_time", nullable = false)
+    @Column(name = "labor_time", nullable = false, precision = 8, scale = 2)
     private BigDecimal laborTime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estimate_id")
+    private Estimate estimate;
 
     @OneToMany(mappedBy = "workOrder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
@@ -66,11 +73,11 @@ public class WorkOrder {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     public static WorkOrder from(WorkOrderRequest request) {
         WorkOrder workOrder = new WorkOrder();
@@ -89,14 +96,32 @@ public class WorkOrder {
 
     public void replacePartsNeeded(List<WorkOrderPart> replacementParts) {
         partsNeeded.clear();
-        for (WorkOrderPart workOrderPart : replacementParts) {
+        replacementParts.forEach(workOrderPart -> {
             workOrderPart.setWorkOrder(this);
             partsNeeded.add(workOrderPart);
-        }
+        });
+    }
+
+    public WorkOrder copyForEstimate(Estimate targetEstimate) {
+        WorkOrder clone = WorkOrder.builder()
+            .vehicleId(vehicleId)
+            .status(status)
+            .summary(summary)
+            .notes(notes)
+            .laborRate(laborRate)
+            .laborTime(laborTime)
+            .build();
+
+        List<WorkOrderPart> clonedParts = partsNeeded.stream()
+            .map(workOrderPart -> workOrderPart.copyForWorkOrder(clone))
+            .toList();
+        clone.replacePartsNeeded(clonedParts);
+        targetEstimate.addWorkOrder(clone);
+        return clone;
     }
 
     public BigDecimal calculateLaborCost() {
-        return laborRate.multiply(laborTime);
+        return money(laborRate.multiply(laborTime));
     }
 
     public BigDecimal getTotalCost() {
@@ -104,7 +129,7 @@ public class WorkOrder {
             .map(WorkOrderPart::calculateCost)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return calculateLaborCost().add(partsCost);
+        return money(calculateLaborCost().add(partsCost));
     }
 
     public WorkOrderResponse toResponse() {
@@ -118,6 +143,7 @@ public class WorkOrder {
             laborTime,
             calculateLaborCost(),
             getTotalCost(),
+            estimateUrl(),
             createdAt,
             updatedAt,
             partsNeeded.stream()
@@ -138,8 +164,17 @@ public class WorkOrder {
             laborTime,
             calculateLaborCost(),
             getTotalCost(),
+            estimateUrl(),
             createdAt,
             updatedAt
         );
+    }
+
+    private String estimateUrl() {
+        return estimate == null ? null : "/api/estimates/" + estimate.getId();
+    }
+
+    private static BigDecimal money(BigDecimal value) {
+        return value.setScale(2, RoundingMode.HALF_UP);
     }
 }

@@ -11,6 +11,7 @@ import com.interview.dto.WorkOrderPartRequest;
 import com.interview.dto.WorkOrderRequest;
 import com.interview.dto.WorkOrderResponse;
 import com.interview.dto.WorkOrderUpdateRequest;
+import com.interview.entity.Estimate;
 import com.interview.entity.Part;
 import com.interview.entity.WorkOrder;
 import com.interview.entity.WorkOrderStatus;
@@ -55,9 +56,9 @@ class WorkOrderServiceTest {
 
         assertThat(response.summary()).isEqualTo("Replace spark plugs");
         assertThat(response.notes()).isEqualTo("Customer approved premium plugs.");
-        assertThat(response.laborCost()).isEqualByComparingTo("250.0000");
+        assertThat(response.laborCost()).isEqualByComparingTo("250.00");
         assertThat(response.partsNeeded().getFirst().totalCost()).isEqualByComparingTo("50.00");
-        assertThat(response.totalCost()).isEqualByComparingTo("300.0000");
+        assertThat(response.totalCost()).isEqualByComparingTo("300.00");
     }
 
     @Test
@@ -85,7 +86,32 @@ class WorkOrderServiceTest {
         assertThat(response.partsNeeded()).hasSize(1);
         assertThat(response.partsNeeded().getFirst().quantity()).isEqualTo(3);
         assertThat(response.partsNeeded().getFirst().totalCost()).isEqualByComparingTo("37.50");
-        assertThat(response.totalCost()).isEqualByComparingTo("137.5000");
+        assertThat(response.totalCost()).isEqualByComparingTo("137.50");
+    }
+
+    @Test
+    void createAllowsLaborOnlyWorkOrder() {
+        WorkOrderRequest request = new WorkOrderRequest(
+            UUID.randomUUID(),
+            WorkOrderStatus.PENDING,
+            "Perform diagnostic inspection",
+            "Labor-only inspection.",
+            new BigDecimal("150.00"),
+            new BigDecimal("0.75"),
+            List.of()
+        );
+
+        when(partRepository.findAllById(Set.of())).thenReturn(List.of());
+        when(workOrderRepository.saveAndFlush(any(WorkOrder.class))).thenAnswer(invocation -> {
+            WorkOrder workOrder = invocation.getArgument(0);
+            workOrder.setId(UUID.randomUUID());
+            return workOrder;
+        });
+
+        WorkOrderResponse response = workOrderService.create(request);
+
+        assertThat(response.partsNeeded()).isEmpty();
+        assertThat(response.totalCost()).isEqualByComparingTo("112.50");
     }
 
     @Test
@@ -126,14 +152,29 @@ class WorkOrderServiceTest {
     }
 
     @Test
-    void findAvailableForEstimateResponseUsesResponseReadyRepositoryQuery() {
-        UUID estimateId = UUID.randomUUID();
-        List<WorkOrder> workOrders = List.of(WorkOrder.builder().id(UUID.randomUUID()).build());
+    void deleteClearsEstimateAssociationBeforeDeletingWorkOrder() {
+        UUID workOrderId = UUID.randomUUID();
+        Estimate estimate = Estimate.builder()
+            .id(UUID.randomUUID())
+            .vehicleId(UUID.randomUUID())
+            .build();
+        WorkOrder workOrder = WorkOrder.builder()
+            .id(workOrderId)
+            .vehicleId(estimate.getVehicleId())
+            .status(WorkOrderStatus.PENDING)
+            .summary("Replace spark plugs")
+            .laborRate(new BigDecimal("100.00"))
+            .laborTime(new BigDecimal("1.00"))
+            .build();
+        estimate.addWorkOrder(workOrder);
 
-        when(workOrderRepository.findAvailableForEstimateResponse(estimateId)).thenReturn(workOrders);
+        when(workOrderRepository.findById(workOrderId)).thenReturn(Optional.of(workOrder));
 
-        assertThat(workOrderService.findAvailableForEstimateResponse(estimateId)).isEqualTo(workOrders);
-        verify(workOrderRepository).findAvailableForEstimateResponse(estimateId);
+        workOrderService.delete(workOrderId);
+
+        assertThat(workOrder.getEstimate()).isNull();
+        assertThat(estimate.getWorkOrders()).doesNotContain(workOrder);
+        verify(workOrderRepository).delete(workOrder);
     }
 
     private WorkOrderRequest workOrderRequest(UUID partId) {

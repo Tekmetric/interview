@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,15 +44,23 @@ public class WorkOrderPart {
     private Integer quantity;
 
     public static WorkOrderPart from(WorkOrder workOrder, Part part, WorkOrderPartRequest request) {
-        WorkOrderPart workOrderPart = new WorkOrderPart();
-        workOrderPart.setWorkOrder(workOrder);
-        workOrderPart.setPart(part);
-        workOrderPart.setQuantity(request.quantity());
-        return workOrderPart;
+        return WorkOrderPart.builder()
+            .workOrder(workOrder)
+            .part(part)
+            .quantity(request.quantity())
+            .build();
+    }
+
+    public WorkOrderPart copyForWorkOrder(WorkOrder targetWorkOrder) {
+        return WorkOrderPart.builder()
+            .workOrder(targetWorkOrder)
+            .part(part)
+            .quantity(quantity)
+            .build();
     }
 
     public BigDecimal calculateCost() {
-        return part.getPrice().multiply(BigDecimal.valueOf(quantity));
+        return part.getPrice().multiply(BigDecimal.valueOf(quantity)).setScale(2, RoundingMode.HALF_UP);
     }
 
     public WorkOrderPartResponse toResponse() {

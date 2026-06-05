@@ -137,7 +137,7 @@ public class EstimateService {
         List<UUID> workOrderIds = estimate.getWorkOrders().stream()
             .map(WorkOrder::getId)
             .toList();
-        return workOrderService.findAllByIdWithResponseGraph(workOrderIds);
+        return workOrderService.findAllWithPartsAndEstimateIncluded(workOrderIds);
     }
 
     private Map<UUID, List<WorkOrder>> findResponseWorkOrdersByEstimateId(Map<UUID, Estimate> estimatesById) {
@@ -146,7 +146,7 @@ public class EstimateService {
             .map(WorkOrder::getId)
             .toList();
 
-        return workOrderService.findAllByIdWithResponseGraph(workOrderIds).stream()
+        return workOrderService.findAllWithPartsAndEstimateIncluded(workOrderIds).stream()
             .collect(Collectors.groupingBy(workOrder -> workOrder.getEstimate().getId()));
     }
 

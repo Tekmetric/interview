@@ -1,5 +1,6 @@
 package com.interview.service;
 
+import com.interview.config.MdcKeys;
 import com.interview.dto.PageResponse;
 import com.interview.dto.WorkOrderPartRequest;
 import com.interview.dto.WorkOrderRequest;
@@ -13,6 +14,7 @@ import com.interview.exception.InvalidRequestException;
 import com.interview.exception.ResourceNotFoundException;
 import com.interview.repository.PartRepository;
 import com.interview.repository.WorkOrderRepository;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -26,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,32 +41,29 @@ public class WorkOrderService {
     @Transactional
     public WorkOrderResponse create(WorkOrderRequest request) {
         WorkOrder savedWorkOrder = createWorkOrderFromRequest(request);
-        MDC.put("workOrderId", savedWorkOrder.getId().toString());
+        MDC.put(MdcKeys.WORK_ORDER_ID, savedWorkOrder.getId().toString());
         return savedWorkOrder.toResponse();
     }
 
     @Transactional(readOnly = true)
     public WorkOrderResponse get(UUID id) {
-        return findEntity(id).toResponse();
+        return findEntityWithResponseGraph(id).toResponse();
     }
 
     @Transactional(readOnly = true)
     public PageResponse<WorkOrderResponse> list(WorkOrderStatus status, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(
-            page,
-            size,
-            Sort.by("status").ascending().and(Sort.by("createdAt").descending())
-        );
+        PageRequest pageRequest = PageRequest.of(page, size);
 
         Page<WorkOrder> workOrders = workOrderRepository.findAll(withFilters(status), pageRequest);
-        Page<WorkOrderResponse> responsePage = workOrders.map(WorkOrder::toResponse);
+        Map<UUID, WorkOrder> workOrdersById = findWorkOrdersWithPartsAndEstimateIncluded(workOrders);
+        Page<WorkOrderResponse> responsePage = workOrders.map(workOrder -> workOrdersById.get(workOrder.getId()).toResponse());
 
         return PageResponse.from(responsePage);
     }
 
     @Transactional
     public WorkOrderResponse update(UUID id, WorkOrderUpdateRequest request) {
-        MDC.put("workOrderId", id.toString());
+        MDC.put(MdcKeys.WORK_ORDER_ID, id.toString());
         WorkOrder workOrder = findEntity(id);
         updateWorkOrderFromRequest(workOrder, request);
         return workOrder.toResponse();
@@ -73,10 +71,12 @@ public class WorkOrderService {
 
     @Transactional
     public void delete(UUID id) {
-        MDC.put("workOrderId", id.toString());
+        MDC.put(MdcKeys.WORK_ORDER_ID, id.toString());
         WorkOrder workOrder = findEntity(id);
+        if (workOrder.getEstimate() != null) {
+            workOrder.getEstimate().removeWorkOrder(workOrder);
+        }
         workOrderRepository.delete(workOrder);
-//        TODO: Should we delete the reference to the work order in the estimate that it is associated with?
     }
 
     @Transactional(readOnly = true)
@@ -86,8 +86,20 @@ public class WorkOrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<WorkOrder> findAvailableForEstimateResponse(UUID estimateId) {
-        return workOrderRepository.findAvailableForEstimateResponse(estimateId);
+    public WorkOrder findEntityWithResponseGraph(UUID id) {
+        WorkOrder workOrder = workOrderRepository.findByIdWithResponseGraph(id);
+        if (workOrder == null) {
+            throw new ResourceNotFoundException("Work order " + id + " was not found");
+        }
+        return workOrder;
+    }
+
+    @Transactional(readOnly = true)
+    public List<WorkOrder> findAllWithPartsAndEstimateIncluded(List<UUID> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        return workOrderRepository.findAllWithPartsAndEstimateIncluded(ids);
     }
 
     @Transactional
@@ -97,19 +109,23 @@ public class WorkOrderService {
         return workOrderRepository.saveAndFlush(workOrder);
     }
 
+    @Transactional
+    public WorkOrder cloneForEstimate(WorkOrder sourceWorkOrder, com.interview.entity.Estimate targetEstimate) {
+        WorkOrder clone = sourceWorkOrder.copyForEstimate(targetEstimate);
+        return workOrderRepository.saveAndFlush(clone);
+    }
+
     private void updateWorkOrderFromRequest(WorkOrder workOrder, WorkOrderUpdateRequest request) {
         workOrder.updateFrom(request);
         updatePartsNeeded(workOrder, request.partsNeeded());
     }
 
     private void updatePartsNeeded(WorkOrder workOrder, List<WorkOrderPartRequest> partsNeeded) {
-        List<WorkOrderPartRequest> consolidatedPartsNeeded = consolidatePartsNeeded(partsNeeded);
+        List<WorkOrderPartRequest> consolidatedPartsNeeded = consolidatePartsNeeded(partsNeeded == null ? List.of() : partsNeeded);
         Map<UUID, Part> partsById = findPartsById(consolidatedPartsNeeded);
-        List<WorkOrderPart> replacementParts = new ArrayList<>();
-
-        for (WorkOrderPartRequest partRequest : consolidatedPartsNeeded) {
-            replacementParts.add(WorkOrderPart.from(workOrder, partsById.get(partRequest.partId()), partRequest));
-        }
+        List<WorkOrderPart> replacementParts = consolidatedPartsNeeded.stream()
+            .map(partRequest -> WorkOrderPart.from(workOrder, partsById.get(partRequest.partId()), partRequest))
+            .toList();
         workOrder.replacePartsNeeded(replacementParts);
     }
 
@@ -128,7 +144,7 @@ public class WorkOrderService {
 
         if (!missingPartIds.isEmpty()) {
             UUID missingPartId = missingPartIds.getFirst();
-            MDC.put("partId", missingPartId.toString());
+            MDC.put(MdcKeys.PART_ID, missingPartId.toString());
             throw new InvalidRequestException("Part " + missingPartId + " does not exist");
         }
 
@@ -154,8 +170,29 @@ public class WorkOrderService {
                 predicates.add(criteriaBuilder.equal(root.get("status"), status));
             }
 
+            if (query.getResultType() != Long.class) {
+                Expression<Integer> statusPriority = criteriaBuilder.<Integer>selectCase()
+                    .when(criteriaBuilder.equal(root.get("status"), WorkOrderStatus.PENDING), WorkOrderStatus.PENDING.getSortPriority())
+                    .when(criteriaBuilder.equal(root.get("status"), WorkOrderStatus.ACCEPTED), WorkOrderStatus.ACCEPTED.getSortPriority())
+                    .otherwise(WorkOrderStatus.REFUSED.getSortPriority());
+                query.orderBy(criteriaBuilder.asc(statusPriority), criteriaBuilder.desc(root.get("createdAt")));
+            }
+
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         };
+    }
+
+    private Map<UUID, WorkOrder> findWorkOrdersWithPartsAndEstimateIncluded(Page<WorkOrder> workOrders) {
+        List<UUID> workOrderIds = workOrders.stream()
+            .map(WorkOrder::getId)
+            .toList();
+
+        if (workOrderIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return workOrderRepository.findAllWithPartsAndEstimateIncluded(workOrderIds).stream()
+            .collect(Collectors.toMap(WorkOrder::getId, Function.identity()));
     }
 
 }

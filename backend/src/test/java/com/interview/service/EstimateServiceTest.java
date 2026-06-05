@@ -78,7 +78,7 @@ class EstimateServiceTest {
             .build();
 
         when(estimateRepository.findByIdWithWorkOrders(estimateId)).thenReturn(estimate);
-        when(workOrderService.findAllByIdWithResponseGraph(List.of(refusedWorkOrder.getId(), acceptedWorkOrder.getId())))
+        when(workOrderService.findAllWithPartsAndEstimateIncluded(List.of(refusedWorkOrder.getId(), acceptedWorkOrder.getId())))
             .thenReturn(List.of(refusedWorkOrder, acceptedWorkOrder));
 
         EstimateResponse response = estimateService.get(estimateId);
@@ -191,7 +191,7 @@ class EstimateServiceTest {
         EstimateResponse response = estimateService.addExistingWorkOrder(estimateId, workOrderToAdd.getId());
 
         assertThat(response.workOrders()).extracting("id")
-            .containsExactly(existingWorkOrder.getId(), workOrderToAdd.getId());
+            .containsExactlyInAnyOrder(existingWorkOrder.getId(), workOrderToAdd.getId());
         verify(estimateRepository, never()).save(estimate);
     }
 

@@ -1,0 +1,90 @@
+###
+GET {{host}}/work-orders
+Content-Type: application/json
+
+> {%
+    if (response.body.content.length > 0) {
+        client.global.set("workOrderId", response.body.content[0].id);
+        client.global.set("vehicleId", response.body.content[0].vehicleId);
+    }
+%}
+
+###
+GET {{host}}/work-orders?customerId=00000000-0000-0000-0000-000000000001
+Content-Type: application/json
+
+###
+GET {{host}}/work-orders?vehicleId={{vehicleId}}
+Content-Type: application/json
+
+###
+GET {{host}}/work-orders/{{workOrderId}}
+Content-Type: application/json
+
+###
+POST {{host}}/work-orders
+Content-Type: application/json
+#X-XSRF-TOKEN: {{xsrf_token}}
+
+{
+  "scheduledStartDateTime": "2026-04-01T09:00:00Z",
+  "customerId": "00000000-0000-0000-0000-000000000001",
+  "vehicleId": "{{vehicleId}}"
+}
+
+> {%
+    client.global.set("workOrderId", response.body.id);
+%}
+
+###
+PUT {{host}}/work-orders/{{workOrderId}}
+Content-Type: application/json
+#X-XSRF-TOKEN: {{xsrf_token}}
+
+{
+  "scheduledStartDateTime": "2026-04-01T10:00:00Z",
+  "customerId": "00000000-0000-0000-0000-000000000001",
+  "vehicleId": "{{vehicleId}}"
+}
+
+###
+DELETE {{host}}/work-orders/{{workOrderId}}
+#X-XSRF-TOKEN: {{xsrf_token}}
+
+###
+POST {{host}}/work-orders/{{workOrderId}}/part-line-items
+Content-Type: application/json
+#X-XSRF-TOKEN: {{xsrf_token}}
+
+{
+  "name": "Oil Filter",
+  "quantity": 1,
+  "partNumber": "00000000-0000-0000-0000-000000000099"
+}
+
+> {%
+    client.global.set("partLineItemId", response.body.id);
+%}
+
+###
+DELETE {{host}}/work-orders/{{workOrderId}}/part-line-items/{{partLineItemId}}
+#X-XSRF-TOKEN: {{xsrf_token}}
+
+###
+POST {{host}}/work-orders/{{workOrderId}}/labor-line-items
+Content-Type: application/json
+#X-XSRF-TOKEN: {{xsrf_token}}
+
+{
+  "name": "Oil Change",
+  "quantity": 1,
+  "serviceCode": "00000000-0000-0000-0000-000000000088"
+}
+
+> {%
+    client.global.set("laborLineItemId", response.body.id);
+%}
+
+###
+DELETE {{host}}/work-orders/{{workOrderId}}/labor-line-items/{{laborLineItemId}}
+#X-XSRF-TOKEN: {{xsrf_token}}

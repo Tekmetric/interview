@@ -1,0 +1,13 @@
+{
+  "customerId": "00000000-0000-0000-0000-000000000001",
+  "requestedLoanAmount": 6000.00,
+  "loanPurpose": "VEHICLE_PURCHASE",
+  "monthlyDebt": 500.00,
+  "notes": "Loan amount intentionally exceeds validator threshold",
+  "documents": [
+    {
+      "documentType": "PROOF_OF_INCOME",
+      "fileName": "paystub_jan_2024.pdf"
+    }
+  ]
+}

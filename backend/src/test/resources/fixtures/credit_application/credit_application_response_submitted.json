@@ -1,0 +1,18 @@
+{
+  "id": "00000000-0000-0000-0000-000000000002",
+  "customerId": "00000000-0000-0000-0000-000000000001",
+  "customerName": "Jane Doe",
+  "status": "SUBMITTED",
+  "requestedLoanAmount": 35000.00,
+  "loanPurpose": "VEHICLE_PURCHASE",
+  "monthlyDebt": 500.00,
+  "notes": "First-time buyer, stable employment for 5 years",
+  "dateCreated": "2024-01-15T10:30:00Z",
+  "dateLastModified": "2024-01-16T09:00:00Z",
+  "documentUploadUrls": [
+    {
+      "documentType": "PROOF_OF_INCOME",
+      "presignedUrl": "https://no-op-s3-presigned-url/customers/00000000-0000-0000-0000-000000000001/applications/00000000-0000-0000-0000-000000000002/documents/proof_of_income"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "jane.doe@example.com",
+  "phone": "+15555550100",
+  "dateOfBirth": "1985-03-15",
+  "ssn": "123-45-6789",
+  "address": {
+    "street": "100 Main St",
+    "city": "Austin",
+    "state": "TX",
+    "zipCode": "78701"
+  },
+  "employmentDetails": {
+    "employmentStatus": "EMPLOYED",
+    "employerName": "Acme Corp",
+    "annualIncome": 95000.00
+  }
+}

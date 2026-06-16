@@ -1,0 +1,9 @@
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "employmentDetails": {
+    "employmentStatus": "EMPLOYED",
+    "employerName": "Acme Corp",
+    "annualIncome": 105000.00
+  }
+}

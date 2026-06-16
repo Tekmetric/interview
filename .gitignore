@@ -12,3 +12,6 @@ qa/playwright/.cache/
 
 # ignoring the .idea folder
 .idea
+
+#ignore DS Store
+.DS_Store

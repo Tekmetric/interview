@@ -1,0 +1,138 @@
+{
+	"info": {
+		"_postman_id": "a63c9f35-3109-4d0d-a969-2a04dc87fadb",
+		"name": "Tekmetric Interview Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14196615"
+	},
+	"item": [
+		{
+			"name": "Get All Purchase Orders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/purchaseOrder",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"purchaseOrder"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Single Purchase Order",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/purchaseOrder/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"purchaseOrder",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Purchase Order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"supplierName\": \"Car Parts International\",\n    \"placedOn\": \"2025-12-06\",\n    \"expectedDelivery\": \"2025-12-15\",\n    \"actualDelivery\": null,\n    \"totalCost\": 100.00,\n    \"totalWeight\": 25.00,\n    \"purchaseOrderStatus\": \"PLACED\",\n    \"purchaseOrderLines\": [\n        {\n            \"sku\": \"123456789101\",\n            \"description\": \"Steering Wheel\",\n            \"color\": \"green\",\n            \"quantity\": 1,\n            \"unitCost\": 50.00,\n            \"unitWeight\": 15.00\n        },\n        {\n            \"sku\": \"123456789102\",\n            \"description\": \"Stick Shift\",\n            \"color\": \"black\",\n            \"quantity\": 1,\n            \"unitCost\": 50.00,\n            \"unitWeight\": 10.00\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/purchaseOrder/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"purchaseOrder",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Purchase Order",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"purchaseOrderId\": 4,\n    \"supplierName\": \"Car Parts International\",\n    \"placedOn\": \"2025-12-06\",\n    \"expectedDelivery\": \"2025-12-15\",\n    \"actualDelivery\": null,\n    \"totalCost\": 100.00,\n    \"totalWeight\": 25.00,\n    \"purchaseOrderStatus\": \"CONFIRMED\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/purchaseOrder/update/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"purchaseOrder",
+						"update",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Purchase Order",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/purchaseOrder/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"purchaseOrder",
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

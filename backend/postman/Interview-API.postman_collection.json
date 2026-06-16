@@ -1,0 +1,204 @@
+{
+	"info": {
+		"_postman_id": "interview-api-collection",
+		"name": "Interview API",
+		"description": "CRUD demo for Customers, Vehicles, and Work Orders. Start the app with `mvn spring-boot:run` or `java -jar target/interview-1.0-SNAPSHOT.jar`. Seed data IDs are pre-filled so Get/Update/Delete work after startup.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{ "key": "baseUrl", "value": "http://localhost:8080" },
+		{ "key": "customerId", "value": "11111111-1111-1111-1111-111111111101" },
+		{ "key": "vehicleId", "value": "22222222-2222-2222-2222-222222222201" },
+		{ "key": "workOrderId", "value": "33333333-3333-3333-3333-333333333301" }
+	],
+	"item": [
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"New Customer\",\n  \"email\": \"new@example.com\"\n}"
+						},
+						"url": "{{baseUrl}}/customers",
+						"description": "Creates a customer. Returns 201 with body including id."
+					}
+				},
+				{
+					"name": "List Customers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/customers",
+						"description": "Returns all customers."
+					}
+				},
+				{
+					"name": "Get Customer by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/customers/{{customerId}}",
+						"description": "Uses seeded customer ID by default."
+					}
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Alice Smith Updated\",\n  \"email\": \"alice.updated@example.com\"\n}"
+						},
+						"url": "{{baseUrl}}/customers/{{customerId}}",
+						"description": "Updates customer by id."
+					}
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/customers/{{customerId}}",
+						"description": "Idempotent: 204 even if customer does not exist."
+					}
+				}
+			]
+		},
+		{
+			"name": "Vehicles",
+			"item": [
+				{
+					"name": "Create Vehicle",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"plateNumber\": \"NEW-0000\",\n  \"model\": \"Tesla Model 3\",\n  \"customerId\": \"{{customerId}}\"\n}"
+						},
+						"url": "{{baseUrl}}/vehicles",
+						"description": "Creates a vehicle. customerId must exist."
+					}
+				},
+				{
+					"name": "List Vehicles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/vehicles",
+						"description": "Returns all vehicles."
+					}
+				},
+				{
+					"name": "Get Vehicle by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/vehicles/{{vehicleId}}",
+						"description": "Uses seeded vehicle ID by default."
+					}
+				},
+				{
+					"name": "Update Vehicle",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"plateNumber\": \"ABC-9999\",\n  \"model\": \"Toyota Corolla Hybrid\",\n  \"customerId\": \"{{customerId}}\"\n}"
+						},
+						"url": "{{baseUrl}}/vehicles/{{vehicleId}}",
+						"description": "Updates vehicle by id."
+					}
+				},
+				{
+					"name": "Delete Vehicle",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/vehicles/{{vehicleId}}",
+						"description": "Idempotent: 204 even if vehicle does not exist."
+					}
+				}
+			]
+		},
+		{
+			"name": "Work Orders",
+			"item": [
+				{
+					"name": "Create Work Order",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"vehicleId\": \"{{vehicleId}}\",\n  \"description\": \"Tire rotation\"\n}"
+						},
+						"url": "{{baseUrl}}/work-orders",
+						"description": "Creates a work order (status defaults to OPEN)."
+					}
+				},
+				{
+					"name": "List Work Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/work-orders",
+						"description": "Returns all work orders."
+					}
+				},
+				{
+					"name": "List Work Orders by Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/work-orders?status=OPEN",
+							"host": ["{{baseUrl}}"],
+							"path": ["work-orders"],
+							"query": [{ "key": "status", "value": "OPEN", "description": "OPEN | IN_PROGRESS | DONE" }]
+						},
+						"description": "Filter by status."
+					}
+				},
+				{
+					"name": "Get Work Order by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/work-orders/{{workOrderId}}",
+						"description": "Uses seeded work order ID by default."
+					}
+				},
+				{
+					"name": "Update Work Order",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"vehicleId\": \"{{vehicleId}}\",\n  \"description\": \"Oil change completed\",\n  \"status\": \"DONE\"\n}"
+						},
+						"url": "{{baseUrl}}/work-orders/{{workOrderId}}",
+						"description": "Update requires status. Status: OPEN | IN_PROGRESS | DONE."
+					}
+				},
+				{
+					"name": "Delete Work Order",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/work-orders/{{workOrderId}}",
+						"description": "Idempotent: 204 even if work order does not exist."
+					}
+				}
+			]
+		}
+	]
+}

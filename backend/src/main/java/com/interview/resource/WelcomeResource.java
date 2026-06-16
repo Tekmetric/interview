@@ -11,4 +11,5 @@ public class WelcomeResource {
 
         return "Welcome to the interview project!";
     }
+
 }

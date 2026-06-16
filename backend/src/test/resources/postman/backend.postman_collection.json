@@ -1,0 +1,325 @@
+{
+	"info": {
+		"_postman_id": "0c27842f-5d0f-4e41-97e7-92b1e50a4565",
+		"name": "backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5378277"
+	},
+	"item": [
+		{
+			"name": "Welcome",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/welcome",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"welcome"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Person",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test Create Resonse\", function () {\r",
+							"    pm.expect(jsonData.success).to.be.true;\r",
+							"    pm.expect(jsonData.data.id).to.be.greaterThan(0);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Nathan Lugert\",\r\n    \"password\":\"password\",\r\n    \"email\":\"lugertnm@gmail.com\",\r\n    \"nickname\":\"Nate\",\r\n    \"state\":\"TN\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/person/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"person",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Person",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test Update Response\", function () {\r",
+							"    pm.expect(jsonData.success).to.be.true;\r",
+							"    pm.expect(jsonData.data.nickname).to.be.equal('NateL');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\":1,\r\n    \"name\":\"Nathan Lugert\",\r\n    \"email\":\"lugertnm@gmail.com\",\r\n    \"nickname\":\"NateL\",\r\n    \"state\":\"TN\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/person/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"person",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Person",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test Get Person Response\", function () {\r",
+							"    pm.expect(jsonData.success).to.be.true;\r",
+							"    pm.expect(jsonData.data.email).to.be.equal('lugertnm@gmail.com');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Nathan Lugert\",\r\n    \"password\":\"password\",\r\n    \"email\":\"lugertnm@gmail.com\",\r\n    \"nickname\":\"Nate\",\r\n    \"state\":\"TN\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/person/1/get",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"person",
+						"1",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Persons",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test List All\", function () {\r",
+							"    pm.expect(jsonData.success).to.be.true;\r",
+							"    pm.expect(jsonData.data).to.be.length.greaterThan(0);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Nathan Lugert\",\r\n    \"password\":\"password\",\r\n    \"email\":\"lugertnm@gmail.com\",\r\n    \"nickname\":\"Nate\",\r\n    \"state\":\"TN\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/person/list?page=0&size=10&sort=email",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"person",
+						"list"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "sort",
+							"value": "email"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Person",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function(){pm.response.to.have.status(200)});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test Delete Person Resonse\", function () {\r",
+							"    pm.expect(jsonData.success).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\":1,\r\n    \"name\":\"Nathan Lugert\",\r\n    \"email\":\"lugertnm@gmail.com\",\r\n    \"nickname\":\"NateL\",\r\n    \"state\":\"TN\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/person/1/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"person",
+						"1",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "admin",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

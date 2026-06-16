@@ -3,15 +3,19 @@
 ## Steps to get started:
 
 #### Fork the repository and clone it locally
+
 - https://github.com/Tekmetric/interview.git
 
 #### Let's install the project locally
-`npm install`
+
+`npm install --legacy-peer-deps`
 
 #### Let's start the project locally
+
 `npm start`
 
 ### Goals
+
 1. Fetch Data from the backend Crud API you created or from a public API
 2. Display data from API onto your page (Table, List, etc.)
 3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
@@ -32,4 +36,5 @@ You're welcome to use AI tools during this exercise — we use them too. That sa
 - The goal of this exercise is to understand how *you* think about frontend problems.
 
 ### Submitting your coding exercise
+
 Once you have finished the coding exercise please create a PR into Tekmetric/interview

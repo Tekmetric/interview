@@ -1,0 +1,25 @@
+info:
+  name: Get Vehicles Paginated
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: http://localhost:8080/api/vehicles?page=0&size=10&sort=modelYear,asc
+  params:
+    - name: page
+      value: "0"
+      type: query
+    - name: size
+      value: "10"
+      type: query
+    - name: sort
+      value: modelYear,asc
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

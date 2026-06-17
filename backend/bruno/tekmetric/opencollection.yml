@@ -1,0 +1,26 @@
+opencollection: 1.0.0
+
+info:
+  name: tekmetric
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsInVpZCI6MSwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzc0Mzg2MTk2LCJleHAiOjE3NzQzODcwOTZ9.G7ZxJvLktQH0HZSujfpqNbmnxsfen2XhFBo6b3VSwRTWc0Y7EhhQq8nmpJ5isCiktajfsDHfADkWbSvlS7gTAQ
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git

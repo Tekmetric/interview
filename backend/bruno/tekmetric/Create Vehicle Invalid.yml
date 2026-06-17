@@ -1,0 +1,29 @@
+info:
+  name: Create Vehicle Invalid
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: http://localhost:8080/api/vehicles
+  body:
+    type: json
+    data: |-
+      {
+        "color": "Gold",
+        "doors": 2,
+        "fuelType": "JET_FUEL",
+        "licensePlate": "CYBERCAB",
+        "make": "Tesla",
+        "mileage": 67,
+        "model": "Cybercab",
+        "modelYear": 1,
+        "vin": "JTDB4MEE9L1234568JTDB4MEE9L1234568"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

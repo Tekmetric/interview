@@ -1,0 +1,22 @@
+info:
+  name: Login Vehicle Owner
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: http://localhost:8080/api/auth/login
+  body:
+    type: json
+    data: |-
+      {
+        "email": "owner1@example.com",
+        "password": "password"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

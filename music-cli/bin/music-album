@@ -1,0 +1,491 @@
+#!/usr/bin/env bash
+#
+# music-album - Manage albums in the Music Library
+#
+# Usage:
+#   music-album list [options]
+#   music-album get <id> [options]
+#   music-album create [options]
+#   music-album update <id> [options]
+#   music-album delete <id> [options]
+#
+
+set -euo pipefail
+
+# Detect script and repository root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Source required libraries
+source "$REPO_ROOT/lib/colors.sh"
+source "$REPO_ROOT/lib/common.sh"
+source "$REPO_ROOT/lib/validate.sh"
+source "$REPO_ROOT/lib/format.sh"
+source "$REPO_ROOT/lib/api.sh"
+
+# Initialize
+init_common
+check_dependencies
+load_config
+
+# Show usage information
+function show_help() {
+    cat << EOF
+Usage: music-album <action> [options]
+
+ACTIONS:
+    list                List all albums
+    get <id>            Get album by ID
+    create              Create a new album
+    update <id>         Update an existing album
+    delete <id>         Delete an album
+
+LIST OPTIONS:
+    --page <n>          Page number (default: 0)
+    --size <n>          Page size (default: 20)
+    --sort <field>      Sort by field (default: title)
+    --artist <id>       Filter by artist ID
+
+GET OPTIONS:
+    --with-songs        Include song information
+
+CREATE/UPDATE OPTIONS:
+    --title <title>         Album title (required for create)
+    --release-date <date>   Release date YYYY-MM-DD (required for create)
+    --artist-id <id>        Artist ID (required for create)
+    --song-ids <ids>        Comma-separated song IDs (optional)
+
+DELETE OPTIONS:
+    --force             Skip confirmation prompt
+
+GLOBAL OPTIONS:
+    --api-url <url>     Override API URL
+    --json              Output raw JSON
+    --help              Show this help message
+
+EXAMPLES:
+    # List all albums
+    music-album list
+
+    # List albums by a specific artist
+    music-album list --artist 1
+
+    # Get album details
+    music-album get 5
+
+    # Create a new album
+    music-album create --title "Led Zeppelin IV" --release-date 1971-11-08 \\
+        --artist-id 1 --song-ids "1,2,3"
+
+    # Update an album
+    music-album update 5 --title "New Title"
+
+    # Delete an album
+    music-album delete 5
+
+EOF
+}
+
+# Action: List albums
+function action_list() {
+    local page=0
+    local size=20
+    local sort="title"
+    local artist_id=""
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --page)
+                page="$2"
+                shift 2
+                ;;
+            --size)
+                size="$2"
+                shift 2
+                ;;
+            --sort)
+                sort="$2"
+                shift 2
+                ;;
+            --artist)
+                artist_id="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate inputs
+    if ! validate_non_negative_integer "$page"; then
+        log_error "Invalid page number: $page"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_positive_integer "$size"; then
+        log_error "Invalid page size: $size"
+        exit $EXIT_USAGE
+    fi
+
+    # Fetch albums
+    local response
+    if [[ -n "$artist_id" ]]; then
+        response=$(api_get_artist_albums "$artist_id" "$page" "$size" "$sort")
+    else
+        response=$(api_get_albums "$page" "$size" "$sort")
+    fi
+
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Format output
+    format_album_list "$response"
+}
+
+# Action: Get album by ID
+function action_get() {
+    local album_id="$1"
+    shift
+
+    local with_songs=false
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --with-songs)
+                with_songs=true
+                shift
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate album ID
+    if ! validate_id "$album_id"; then
+        log_error "Invalid album ID: $album_id"
+        exit $EXIT_USAGE
+    fi
+
+    # Fetch album
+    local response
+    response=$(api_get_album "$album_id")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Format output
+    format_album_detail "$response" "$with_songs"
+}
+
+# Action: Create album
+function action_create() {
+    local title=""
+    local release_date=""
+    local artist_id=""
+    local song_ids=""
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --title)
+                title="$2"
+                shift 2
+                ;;
+            --release-date)
+                release_date="$2"
+                shift 2
+                ;;
+            --artist-id)
+                artist_id="$2"
+                shift 2
+                ;;
+            --song-ids)
+                song_ids="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Interactive mode if required fields are missing
+    if [[ -z "$title" ]]; then
+        read -p "Album title: " title
+    fi
+
+    if [[ -z "$release_date" ]]; then
+        read -p "Release date (YYYY-MM-DD): " release_date
+    fi
+
+    if [[ -z "$artist_id" ]]; then
+        read -p "Artist ID: " artist_id
+    fi
+
+    # Validate inputs
+    if [[ -z "$title" ]]; then
+        log_error "Album title is required"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_date "$release_date"; then
+        log_error "Invalid release date: $release_date (format: YYYY-MM-DD)"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_id "$artist_id"; then
+        log_error "Invalid artist ID: $artist_id"
+        exit $EXIT_USAGE
+    fi
+
+    if [[ -n "$song_ids" ]] && ! validate_id_list "$song_ids"; then
+        log_error "Invalid song IDs: $song_ids"
+        exit $EXIT_USAGE
+    fi
+
+    # Create album using api.sh function
+    local response
+    response=$(api_create_album "$title" "$artist_id" "$release_date" "$song_ids")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Show success
+    log_success "Album created successfully!"
+    format_album_detail "$response" false
+}
+
+# Action: Update album
+function action_update() {
+    local album_id="$1"
+    shift
+
+    local title=""
+    local release_date=""
+    local artist_id=""
+    local song_ids=""
+
+    # Validate album ID
+    if ! validate_id "$album_id"; then
+        log_error "Invalid album ID: $album_id"
+        exit $EXIT_USAGE
+    fi
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --title)
+                title="$2"
+                shift 2
+                ;;
+            --release-date)
+                release_date="$2"
+                shift 2
+                ;;
+            --artist-id)
+                artist_id="$2"
+                shift 2
+                ;;
+            --song-ids)
+                song_ids="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Fetch existing album
+    local existing
+    existing=$(api_get_album "$album_id")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Extract current values
+    local current_title current_date current_artist_id current_song_ids
+    current_title=$(echo "$existing" | jq -r '.title')
+    current_date=$(echo "$existing" | jq -r '.releaseDate')
+    current_artist_id=$(echo "$existing" | jq -r '.artistId')
+    current_song_ids=$(echo "$existing" | jq -r '.songIds | join(",")')
+
+    # Use current values if not provided
+    title="${title:-$current_title}"
+    release_date="${release_date:-$current_date}"
+    artist_id="${artist_id:-$current_artist_id}"
+    song_ids="${song_ids:-$current_song_ids}"
+
+    # Validate inputs
+    if ! validate_date "$release_date"; then
+        log_error "Invalid release date: $release_date"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_id "$artist_id"; then
+        log_error "Invalid artist ID: $artist_id"
+        exit $EXIT_USAGE
+    fi
+
+    if [[ -n "$song_ids" ]] && ! validate_id_list "$song_ids"; then
+        log_error "Invalid song IDs: $song_ids"
+        exit $EXIT_USAGE
+    fi
+
+    # Update album using api.sh function
+    local response
+    response=$(api_update_album "$album_id" "$title" "$artist_id" "$release_date" "$song_ids")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Show success
+    log_success "Album updated successfully!"
+    format_album_detail "$response" false
+}
+
+# Action: Delete album
+function action_delete() {
+    local album_id="$1"
+    shift
+
+    local force=false
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --force)
+                force=true
+                shift
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate album ID
+    if ! validate_id "$album_id"; then
+        log_error "Invalid album ID: $album_id"
+        exit $EXIT_USAGE
+    fi
+
+    # Fetch album details for confirmation
+    local album
+    album=$(api_get_album "$album_id")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    local title
+    title=$(echo "$album" | jq -r '.title')
+
+    # Confirm deletion
+    if [[ "$force" != "true" ]]; then
+        echo ""
+        format_album_detail "$album" false
+        echo ""
+        log_warning "This will permanently delete this album."
+        echo ""
+        read -p "Are you sure you want to delete '$title'? (y/N) " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Deletion cancelled."
+            exit 0
+        fi
+    fi
+
+    # Delete album
+    local response
+    response=$(api_delete_album "$album_id")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    log_success "Album deleted successfully"
+}
+
+# Main script logic
+if [[ $# -eq 0 ]]; then
+    show_help
+    exit $EXIT_USAGE
+fi
+
+# Parse command-line arguments
+ACTION=""
+ACTION_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help|-h)
+            show_help
+            exit 0
+            ;;
+        --api-url|--json|--no-color|--verbose|--debug|--quiet)
+            parse_common_option "$1" "${2:-}"
+            if [[ $1 == --api-url ]]; then
+                shift 2
+            else
+                shift
+            fi
+            ;;
+        list|get|create|update|delete)
+            ACTION="$1"
+            shift
+            ACTION_ARGS=("$@")
+            break
+            ;;
+        *)
+            log_error "Unknown action: $1"
+            echo ""
+            show_help
+            exit $EXIT_USAGE
+            ;;
+    esac
+done
+
+# Execute action
+case "$ACTION" in
+    list)
+        action_list "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    get)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Album ID required for 'get' action"
+            exit $EXIT_USAGE
+        fi
+        action_get "${ACTION_ARGS[@]}"
+        ;;
+    create)
+        action_create "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    update)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Album ID required for 'update' action"
+            exit $EXIT_USAGE
+        fi
+        action_update "${ACTION_ARGS[@]}"
+        ;;
+    delete)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Album ID required for 'delete' action"
+            exit $EXIT_USAGE
+        fi
+        action_delete "${ACTION_ARGS[@]}"
+        ;;
+    *)
+        log_error "Unknown action: $ACTION"
+        show_help
+        exit $EXIT_USAGE
+        ;;
+esac

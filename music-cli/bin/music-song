@@ -1,0 +1,520 @@
+#!/usr/bin/env bash
+#
+# music-song - Manage songs in the Music Library
+#
+# Usage:
+#   music-song list [options]
+#   music-song get <id> [options]
+#   music-song create [options]
+#   music-song update <id> [options]
+#   music-song delete <id> [options]
+#
+
+set -euo pipefail
+
+# Detect script and repository root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Source required libraries
+source "$REPO_ROOT/lib/colors.sh"
+source "$REPO_ROOT/lib/common.sh"
+source "$REPO_ROOT/lib/validate.sh"
+source "$REPO_ROOT/lib/format.sh"
+source "$REPO_ROOT/lib/api.sh"
+
+# Initialize
+init_common
+check_dependencies
+load_config
+
+# Show usage information
+function show_help() {
+    cat << EOF
+Usage: music-song <action> [options]
+
+ACTIONS:
+    list                List all songs
+    get <id>            Get song by ID
+    create              Create a new song
+    update <id>         Update an existing song
+    delete <id>         Delete a song
+
+LIST OPTIONS:
+    --page <n>          Page number (default: 0)
+    --size <n>          Page size (default: 20)
+    --sort <field>      Sort by field (default: title)
+    --artist <id>       Filter by artist ID
+
+GET OPTIONS:
+    --with-albums       Include album information
+
+CREATE/UPDATE OPTIONS:
+    --title <title>         Song title (required for create)
+    --length <seconds>      Song length in seconds (required for create)
+    --release-date <date>   Release date YYYY-MM-DD (required for create)
+    --artist-id <id>        Artist ID (required for create)
+
+DELETE OPTIONS:
+    --force             Skip confirmation prompt
+
+GLOBAL OPTIONS:
+    --api-url <url>     Override API URL
+    --json              Output raw JSON
+    --help              Show this help message
+
+EXAMPLES:
+    # List all songs
+    music-song list
+
+    # List songs by a specific artist
+    music-song list --artist 1
+
+    # Get song details
+    music-song get 5
+
+    # Create a new song
+    music-song create --title "Stairway to Heaven" --length 482 \\
+        --release-date 1971-11-08 --artist-id 1
+
+    # Update a song
+    music-song update 5 --title "New Title"
+
+    # Delete a song
+    music-song delete 5
+
+EOF
+}
+
+# Action: List songs
+function action_list() {
+    local page=0
+    local size=20
+    local sort="title"
+    local artist_id=""
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --page)
+                page="$2"
+                shift 2
+                ;;
+            --size)
+                size="$2"
+                shift 2
+                ;;
+            --sort)
+                sort="$2"
+                shift 2
+                ;;
+            --artist)
+                artist_id="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate inputs
+    if ! validate_non_negative_integer "$page"; then
+        log_error "Invalid page number: $page"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_positive_integer "$size"; then
+        log_error "Invalid page size: $size"
+        exit $EXIT_USAGE
+    fi
+
+    # Fetch songs
+    local response
+    if [[ -n "$artist_id" ]]; then
+        response=$(api_get_artist_songs "$artist_id" "$page" "$size" "$sort")
+    else
+        response=$(api_get_songs "$page" "$size" "$sort")
+    fi
+
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Format output
+    format_song_list "$response"
+}
+
+# Action: Get song by ID
+function action_get() {
+    local song_id="$1"
+    shift
+
+    local with_albums=false
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --with-albums)
+                with_albums=true
+                shift
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate song ID
+    if ! validate_id "$song_id"; then
+        log_error "Invalid song ID: $song_id"
+        exit $EXIT_USAGE
+    fi
+
+    # Fetch song
+    local response
+    response=$(api_get_song "$song_id")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Format output
+    format_song_detail "$response" "$with_albums"
+}
+
+# Action: Create song
+function action_create() {
+    local title=""
+    local length=""
+    local release_date=""
+    local artist_id=""
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --title)
+                title="$2"
+                shift 2
+                ;;
+            --length)
+                length="$2"
+                shift 2
+                ;;
+            --release-date)
+                release_date="$2"
+                shift 2
+                ;;
+            --artist-id)
+                artist_id="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Interactive mode if required fields are missing
+    if [[ -z "$title" ]]; then
+        read -p "Song title: " title
+    fi
+
+    if [[ -z "$length" ]]; then
+        read -p "Length (seconds): " length
+    fi
+
+    if [[ -z "$release_date" ]]; then
+        read -p "Release date (YYYY-MM-DD): " release_date
+    fi
+
+    if [[ -z "$artist_id" ]]; then
+        read -p "Artist ID: " artist_id
+    fi
+
+    # Validate inputs
+    if [[ -z "$title" ]]; then
+        log_error "Song title is required"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_positive_integer "$length"; then
+        log_error "Invalid length: $length (must be positive integer)"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_date "$release_date"; then
+        log_error "Invalid release date: $release_date (format: YYYY-MM-DD)"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_id "$artist_id"; then
+        log_error "Invalid artist ID: $artist_id"
+        exit $EXIT_USAGE
+    fi
+
+    # Create JSON payload
+    local payload
+    payload=$(cat <<EOF
+{
+    "title": "$title",
+    "lengthInSeconds": $length,
+    "releaseDate": "$release_date",
+    "artistId": $artist_id
+}
+EOF
+)
+
+    # Create song
+    local response
+    response=$(api_create_song_json "$payload")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Show success
+    log_success "Song created successfully!"
+    format_song_detail "$response" false
+}
+
+# Action: Update song
+function action_update() {
+    local song_id="$1"
+    shift
+
+    local title=""
+    local length=""
+    local release_date=""
+    local artist_id=""
+
+    # Validate song ID
+    if ! validate_id "$song_id"; then
+        log_error "Invalid song ID: $song_id"
+        exit $EXIT_USAGE
+    fi
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --title)
+                title="$2"
+                shift 2
+                ;;
+            --length)
+                length="$2"
+                shift 2
+                ;;
+            --release-date)
+                release_date="$2"
+                shift 2
+                ;;
+            --artist-id)
+                artist_id="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Fetch existing song
+    local existing
+    existing=$(api_get_song "$song_id")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Extract current values
+    local current_title current_length current_date current_artist_id
+    current_title=$(echo "$existing" | jq -r '.title')
+    current_length=$(echo "$existing" | jq -r '.lengthInSeconds')
+    current_date=$(echo "$existing" | jq -r '.releaseDate')
+    current_artist_id=$(echo "$existing" | jq -r '.artistId // .artist.id // 0')
+
+    # Use current values if not provided
+    title="${title:-$current_title}"
+    length="${length:-$current_length}"
+    release_date="${release_date:-$current_date}"
+    artist_id="${artist_id:-$current_artist_id}"
+
+    # Validate inputs
+    if ! validate_positive_integer "$length"; then
+        log_error "Invalid length: $length"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_date "$release_date"; then
+        log_error "Invalid release date: $release_date"
+        exit $EXIT_USAGE
+    fi
+
+    if ! validate_id "$artist_id"; then
+        log_error "Invalid artist ID: $artist_id"
+        exit $EXIT_USAGE
+    fi
+
+    # Create JSON payload
+    local payload
+    payload=$(cat <<EOF
+{
+    "id": $song_id,
+    "title": "$title",
+    "lengthInSeconds": $length,
+    "releaseDate": "$release_date",
+    "artistId": $artist_id
+}
+EOF
+)
+
+    # Update song
+    local response
+    response=$(api_update_song_json "$song_id" "$payload")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    # Show success
+    log_success "Song updated successfully!"
+    format_song_detail "$response" false
+}
+
+# Action: Delete song
+function action_delete() {
+    local song_id="$1"
+    shift
+
+    local force=false
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --force)
+                force=true
+                shift
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                exit $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate song ID
+    if ! validate_id "$song_id"; then
+        log_error "Invalid song ID: $song_id"
+        exit $EXIT_USAGE
+    fi
+
+    # Fetch song details for confirmation
+    local song
+    song=$(api_get_song "$song_id")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    local title
+    title=$(echo "$song" | jq -r '.title')
+
+    # Confirm deletion
+    if [[ "$force" != "true" ]]; then
+        echo ""
+        format_song_detail "$song" false
+        echo ""
+        log_warning "This will permanently delete this song."
+        echo ""
+        read -p "Are you sure you want to delete '$title'? (y/N) " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Deletion cancelled."
+            exit 0
+        fi
+    fi
+
+    # Delete song
+    local response
+    response=$(api_delete_song "$song_id")
+    if [[ $? -ne 0 ]]; then
+        exit $EXIT_ERROR
+    fi
+
+    log_success "Song deleted successfully"
+}
+
+# Main script logic
+if [[ $# -eq 0 ]]; then
+    show_help
+    exit $EXIT_USAGE
+fi
+
+# Parse command-line arguments
+ACTION=""
+ACTION_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help|-h)
+            show_help
+            exit 0
+            ;;
+        --api-url|--json|--no-color|--verbose|--debug|--quiet)
+            parse_common_option "$1" "${2:-}"
+            if [[ $1 == --api-url ]]; then
+                shift 2
+            else
+                shift
+            fi
+            ;;
+        list|get|create|update|delete)
+            ACTION="$1"
+            shift
+            ACTION_ARGS=("$@")
+            break
+            ;;
+        *)
+            log_error "Unknown action: $1"
+            echo ""
+            show_help
+            exit $EXIT_USAGE
+            ;;
+    esac
+done
+
+# Execute action
+case "$ACTION" in
+    list)
+        action_list "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    get)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Song ID required for 'get' action"
+            exit $EXIT_USAGE
+        fi
+        action_get "${ACTION_ARGS[@]}"
+        ;;
+    create)
+        action_create "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    update)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Song ID required for 'update' action"
+            exit $EXIT_USAGE
+        fi
+        action_update "${ACTION_ARGS[@]}"
+        ;;
+    delete)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Song ID required for 'delete' action"
+            exit $EXIT_USAGE
+        fi
+        action_delete "${ACTION_ARGS[@]}"
+        ;;
+    *)
+        log_error "Unknown action: $ACTION"
+        show_help
+        exit $EXIT_USAGE
+        ;;
+esac

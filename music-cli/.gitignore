@@ -1,0 +1,9 @@
+# User-specific configuration
+.music-cli/config
+
+# Test artifacts
+*.tmp
+test-results/
+
+# macOS
+.DS_Store

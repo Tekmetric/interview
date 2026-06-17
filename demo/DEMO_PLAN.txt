@@ -1,0 +1,257 @@
+Music Library API Demo Script Plan
+====================================
+
+This demo script will comprehensively exercise all features of the Music Library API
+through a series of operations that demonstrate CRUD operations, search functionality,
+pagination, filtering, and relationship management.
+
+Script Flow:
+------------
+
+SECTION 1: Initial Setup
+-------------------------
+1. Display welcome message
+2. Check API connectivity
+3. List existing artists to show starting state
+
+SECTION 2: Artist Management
+-----------------------------
+4. Create Artist #1: "Pink Floyd"
+   - Capture the artist ID from response
+
+5. Create Artist #2: "Led Zeppelin"
+   - Capture the artist ID from response
+
+6. Create Artist #3: "AC/DC"
+   - Capture the artist ID from response
+
+7. List all artists
+   - Show pagination with page size of 10
+   - Demonstrate all three new artists appear
+
+8. Get details for Pink Floyd
+   - Show individual artist retrieval
+
+9. Update Pink Floyd's name to "Pink Floyd (Remastered)"
+   - Demonstrate update operation
+
+10. List artists again
+    - Verify the update took effect
+
+SECTION 3: Song Management
+---------------------------
+11. Create Song #1: "Comfortably Numb" by Pink Floyd
+    - Title: "Comfortably Numb"
+    - Length: 382 seconds (6:22)
+    - Release Date: 1979-11-30
+    - Artist: Pink Floyd
+
+12. Create Song #2: "Wish You Were Here" by Pink Floyd
+    - Title: "Wish You Were Here"
+    - Length: 334 seconds (5:34)
+    - Release Date: 1975-09-12
+    - Artist: Pink Floyd
+
+13. Create Song #3: "Shine On You Crazy Diamond" by Pink Floyd
+    - Title: "Shine On You Crazy Diamond"
+    - Length: 810 seconds (13:30)
+    - Release Date: 1975-09-12
+    - Artist: Pink Floyd
+
+14. Create Song #4: "Stairway to Heaven" by Led Zeppelin
+    - Title: "Stairway to Heaven"
+    - Length: 482 seconds (8:02)
+    - Release Date: 1971-11-08
+    - Artist: Led Zeppelin
+
+15. Create Song #5: "Kashmir" by Led Zeppelin
+    - Title: "Kashmir"
+    - Length: 515 seconds (8:35)
+    - Release Date: 1975-02-24
+    - Artist: Led Zeppelin
+
+16. Create Song #6: "Back in Black" by AC/DC
+    - Title: "Back in Black"
+    - Length: 255 seconds (4:15)
+    - Release Date: 1980-07-25
+    - Artist: AC/DC
+
+17. List all songs
+    - Show pagination
+    - Demonstrate all songs appear
+
+18. Get details for "Comfortably Numb"
+    - Show individual song retrieval with artist information
+
+19. Update "Comfortably Numb" length to 384 seconds
+    - Demonstrate partial update (only length field)
+
+20. List songs filtered by Pink Floyd
+    - Demonstrate artist filtering
+    - Should show 3 songs
+
+21. List songs sorted by release date (descending)
+    - Demonstrate sorting capability
+    - Most recent songs first
+
+SECTION 4: Album Management
+----------------------------
+22. Create Album #1: "The Wall" by Pink Floyd
+    - Title: "The Wall"
+    - Release Date: 1979-11-30
+    - Artist: Pink Floyd
+    - Songs: "Comfortably Numb" (and possibly others)
+
+23. Create Album #2: "Wish You Were Here" by Pink Floyd
+    - Title: "Wish You Were Here"
+    - Release Date: 1975-09-12
+    - Artist: Pink Floyd
+    - Songs: "Wish You Were Here", "Shine On You Crazy Diamond"
+
+24. Create Album #3: "Led Zeppelin IV" by Led Zeppelin
+    - Title: "Led Zeppelin IV"
+    - Release Date: 1971-11-08
+    - Artist: Led Zeppelin
+    - Songs: "Stairway to Heaven"
+
+25. Create Album #4: "Physical Graffiti" by Led Zeppelin
+    - Title: "Physical Graffiti"
+    - Release Date: 1975-02-24
+    - Artist: Led Zeppelin
+    - Songs: "Kashmir"
+
+26. Create Album #5: "Back in Black" by AC/DC
+    - Title: "Back in Black"
+    - Release Date: 1980-07-25
+    - Artist: AC/DC
+    - Songs: "Back in Black"
+
+27. List all albums
+    - Show all 5 new albums
+
+28. Get details for "The Wall" album
+    - Show album with song associations
+
+29. Update "The Wall" album title to "The Wall (Remastered)"
+    - Demonstrate album update
+
+30. List albums filtered by Pink Floyd
+    - Should show 2 albums
+
+31. Get artist details with albums
+    - Retrieve Pink Floyd with all albums
+    - Demonstrate relationship navigation
+
+32. Get artist details with songs
+    - Retrieve Pink Floyd with all songs
+    - Demonstrate relationship navigation
+
+SECTION 5: Search Functionality
+--------------------------------
+33. Search across all entities for "Floyd"
+    - Should find artist, songs, and albums
+
+34. Search for "heaven" (should find "Stairway to Heaven")
+    - Demonstrate song-only search results
+
+35. Search for "black"
+    - Should find AC/DC songs and albums
+    - Demonstrate multi-entity search
+
+36. Search filtered by entity type: ARTIST only
+    - Search for "led" with type filter
+    - Should only return Led Zeppelin artist
+
+37. Search filtered by entity type: SONG only
+    - Search for "wish" with type filter
+    - Should only return songs
+
+38. Search filtered by entity type: ALBUM only
+    - Search for "back" with type filter
+    - Should only return albums
+
+SECTION 6: Pagination and Sorting
+----------------------------------
+39. List songs with page size 2
+    - Get first page
+    - Show pagination info
+
+40. List songs with page size 2, page 1
+    - Get second page
+    - Demonstrate pagination navigation
+
+41. List albums sorted by release date (ascending)
+    - Oldest albums first
+    - Demonstrate sorting
+
+42. List albums sorted by release date (descending)
+    - Newest albums first
+
+SECTION 7: Deletion and Cleanup (Optional)
+-------------------------------------------
+43. Delete one song: "Kashmir"
+    - Demonstrate song deletion
+    - Verify it's removed from album
+
+44. Delete one album: "Physical Graffiti"
+    - Demonstrate album deletion
+
+45. List remaining albums
+    - Verify deletion worked
+
+46. Attempt to delete artist "Pink Floyd"
+    - Should demonstrate cascade delete warning
+    - (May fail if cascade delete is not allowed)
+
+SECTION 8: Final State
+-----------------------
+47. Display final statistics:
+    - Total artists
+    - Total songs
+    - Total albums
+
+48. List all artists with song and album counts
+    - Show final state of the library
+
+49. Display success message
+    - Demo completed successfully
+
+Expected Results:
+-----------------
+- Created: 3 artists, 6 songs, 5 albums
+- Updated: 1 artist, 1 song, 1 album
+- Deleted: 1 song, 1 album (optional: 1 artist with cascade)
+- Demonstrated: All CRUD operations, search, filtering, pagination, sorting, relationships
+- Total API calls: ~49 operations
+
+Special Features Demonstrated:
+-------------------------------
+1. CRUD operations on all entity types (Artists, Songs, Albums)
+2. Entity relationships (songs belong to artists and albums)
+3. Search functionality across multiple entity types
+4. Search with type filtering
+5. Pagination with different page sizes
+6. Sorting (ascending and descending)
+7. Filtering (songs by artist, albums by artist)
+8. Partial updates (updating only specific fields)
+9. Detailed retrieval with relationships (artist with songs/albums)
+10. Data validation (dates in YYYY-MM-DD format)
+
+Pauses:
+-------
+- 3 seconds between each operation for visibility
+- Allows time to read output before next operation
+- Makes demo followable in real-time
+
+Output Format:
+--------------
+CLI Version:
+- Uses formatted table output for readability
+- Shows CLI-specific features (music-config, --json flag)
+- Demonstrates command-line options
+
+Curl Version:
+- Raw HTTP requests
+- Shows JSON request/response bodies
+- Demonstrates direct API access
+- Uses jq for JSON formatting and extraction

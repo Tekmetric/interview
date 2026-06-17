@@ -1,0 +1,623 @@
+#!/usr/bin/env bash
+#
+# music-artist - Manage artists in the Music Library
+#
+
+# Strict error handling
+set -euo pipefail
+
+# Detect script directory and repository root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Load shared libraries
+source "$REPO_ROOT/lib/colors.sh"
+source "$REPO_ROOT/lib/common.sh"
+source "$REPO_ROOT/lib/validate.sh"
+source "$REPO_ROOT/lib/format.sh"
+source "$REPO_ROOT/lib/api.sh"
+
+# Initialize
+init_common
+check_dependencies
+load_config
+
+# Show usage
+function show_help() {
+    cat << EOF
+Usage: music-artist <action> [options]
+
+Actions:
+  list                List all artists
+  get <id>            Get artist by ID
+  create              Create new artist
+  update <id>         Update artist
+  delete <id>         Delete artist
+  songs <id>          List artist's songs
+  albums <id>         List artist's albums
+
+Options:
+  --name <name>           Artist name (for create/update)
+  --page <n>              Page number (default: 0)
+  --size <n>              Page size (default: 20)
+  --sort <field,dir>      Sort field and direction (e.g., name,asc)
+  --with-songs            Include songs in output (for get)
+  --with-albums           Include albums in output (for get)
+  --force                 Skip confirmation prompts
+  --json                  Output raw JSON
+  --api-url <url>         Override API URL
+  --help                  Show this help
+
+Examples:
+  music-artist list
+  music-artist list --page 1 --size 10
+  music-artist create --name "The Beatles"
+  music-artist get 1 --with-songs
+  music-artist update 1 --name "The Beatles (Updated)"
+  music-artist delete 5 --force
+  music-artist songs 1 --sort title,asc
+  music-artist albums 1
+
+EOF
+}
+
+#
+# Action: list
+#
+function action_list() {
+    local page=0
+    local size=$PAGE_SIZE
+    local sort="name,asc"
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --page)
+                page="$2"
+                shift 2
+                ;;
+            --size)
+                size="$2"
+                shift 2
+                ;;
+            --sort)
+                sort="$2"
+                shift 2
+                ;;
+            --json)
+                OUTPUT_FORMAT="json"
+                shift
+                ;;
+            --api-url)
+                API_URL="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                return $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate
+    if ! validate_non_negative_integer "$page"; then
+        log_error "Invalid page number: $page"
+        return $EXIT_ERROR
+    fi
+
+    if ! validate_positive_integer "$size"; then
+        log_error "Invalid page size: $size"
+        return $EXIT_ERROR
+    fi
+
+    # Make API call
+    local response
+    if ! response=$(api_get_artists "$page" "$size" "$sort"); then
+        return $EXIT_ERROR
+    fi
+
+    # Format and display
+    format_artist_list "$response"
+    return $EXIT_SUCCESS
+}
+
+#
+# Action: get
+#
+function action_get() {
+    local id="$1"
+    shift
+
+    local with_songs=false
+    local with_albums=false
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --with-songs)
+                with_songs=true
+                shift
+                ;;
+            --with-albums)
+                with_albums=true
+                shift
+                ;;
+            --json)
+                OUTPUT_FORMAT="json"
+                shift
+                ;;
+            --api-url)
+                API_URL="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                return $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate
+    if ! validate_id_or_error "$id" "Artist ID"; then
+        return $EXIT_ERROR
+    fi
+
+    # Get artist details
+    local response
+    if ! response=$(api_get_artist "$id"); then
+        return $EXIT_ERROR
+    fi
+
+    # Format and display
+    format_artist_details "$response"
+
+    # Show songs if requested
+    if [[ "$with_songs" == "true" ]]; then
+        echo ""
+        echo "$(color_bold "Songs:")"
+        local songs_response
+        if ! songs_response=$(api_get_artist_songs "$id" 0 100 "title,asc"); then
+            log_warning "Failed to fetch songs"
+        else
+            format_song_list "$songs_response"
+        fi
+    fi
+
+    # Show albums if requested
+    if [[ "$with_albums" == "true" ]]; then
+        echo ""
+        echo "$(color_bold "Albums:")"
+        local albums_response
+        if ! albums_response=$(api_get_artist_albums "$id" 0 100 "title,asc"); then
+            log_warning "Failed to fetch albums"
+        else
+            format_album_list "$albums_response"
+        fi
+    fi
+
+    return $EXIT_SUCCESS
+}
+
+#
+# Action: create
+#
+function action_create() {
+    local name=""
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --name)
+                name="$2"
+                shift 2
+                ;;
+            --json)
+                OUTPUT_FORMAT="json"
+                shift
+                ;;
+            --api-url)
+                API_URL="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                return $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # If name not provided, prompt for it
+    if [[ -z "$name" ]]; then
+        read -p "Artist name: " name
+    fi
+
+    # Validate
+    if ! validate_non_empty_or_error "$name" "Artist name"; then
+        return $EXIT_ERROR
+    fi
+
+    # Create artist
+    local response
+    if ! response=$(api_create_artist "$name"); then
+        return $EXIT_ERROR
+    fi
+
+    # Show success
+    log_success "Artist created successfully!"
+    format_artist_details "$response"
+
+    return $EXIT_SUCCESS
+}
+
+#
+# Action: update
+#
+function action_update() {
+    local id="$1"
+    shift
+
+    local name=""
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --name)
+                name="$2"
+                shift 2
+                ;;
+            --json)
+                OUTPUT_FORMAT="json"
+                shift
+                ;;
+            --api-url)
+                API_URL="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                return $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate ID
+    if ! validate_id_or_error "$id" "Artist ID"; then
+        return $EXIT_ERROR
+    fi
+
+    # Get current artist details
+    local current_response
+    if ! current_response=$(api_get_artist "$id"); then
+        return $EXIT_ERROR
+    fi
+
+    local current_name
+    current_name=$(echo "$current_response" | jq -r '.name')
+
+    # If name not provided, prompt with current value
+    if [[ -z "$name" ]]; then
+        read -p "Artist name [$current_name]: " name
+        # Use current value if empty
+        if [[ -z "$name" ]]; then
+            name="$current_name"
+        fi
+    fi
+
+    # Validate
+    if ! validate_non_empty_or_error "$name" "Artist name"; then
+        return $EXIT_ERROR
+    fi
+
+    # Update artist
+    local response
+    if ! response=$(api_update_artist "$id" "$name"); then
+        return $EXIT_ERROR
+    fi
+
+    # Show success
+    log_success "Artist updated successfully!"
+    format_artist_details "$response"
+
+    return $EXIT_SUCCESS
+}
+
+#
+# Action: delete
+#
+function action_delete() {
+    local id="$1"
+    shift
+
+    local force=false
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --force)
+                force=true
+                shift
+                ;;
+            --api-url)
+                API_URL="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                return $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate ID
+    if ! validate_id_or_error "$id" "Artist ID"; then
+        return $EXIT_ERROR
+    fi
+
+    # Get artist details for confirmation
+    local response
+    if ! response=$(api_get_artist "$id"); then
+        return $EXIT_ERROR
+    fi
+
+    local name
+    name=$(echo "$response" | jq -r '.name')
+
+    # Get song and album counts
+    local songs_response albums_response
+    local song_count=0 album_count=0
+
+    if songs_response=$(api_get_artist_songs "$id" 0 1 "title,asc" 2>/dev/null); then
+        song_count=$(echo "$songs_response" | jq -r '.totalElements // 0')
+    fi
+
+    if albums_response=$(api_get_artist_albums "$id" 0 1 "title,asc" 2>/dev/null); then
+        album_count=$(echo "$albums_response" | jq -r '.totalElements // 0')
+    fi
+
+    # Show warning and confirm
+    if [[ "$force" != "true" ]]; then
+        echo "$(color_warning "WARNING:") Deleting artist \"$name\" will also delete:"
+        echo "  - $song_count songs"
+        echo "  - $album_count albums"
+        echo ""
+        read -p "Are you sure? (yes/no): " confirm
+
+        if [[ "$confirm" != "yes" ]]; then
+            echo "Deletion canceled"
+            return $EXIT_SUCCESS
+        fi
+    fi
+
+    # Delete artist
+    if ! api_delete_artist "$id"; then
+        return $EXIT_ERROR
+    fi
+
+    # Show success
+    log_success "Artist deleted successfully"
+
+    return $EXIT_SUCCESS
+}
+
+#
+# Action: songs
+#
+function action_songs() {
+    local id="$1"
+    shift
+
+    local page=0
+    local size=$PAGE_SIZE
+    local sort="title,asc"
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --page)
+                page="$2"
+                shift 2
+                ;;
+            --size)
+                size="$2"
+                shift 2
+                ;;
+            --sort)
+                sort="$2"
+                shift 2
+                ;;
+            --json)
+                OUTPUT_FORMAT="json"
+                shift
+                ;;
+            --api-url)
+                API_URL="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                return $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate ID
+    if ! validate_id_or_error "$id" "Artist ID"; then
+        return $EXIT_ERROR
+    fi
+
+    # Get artist songs
+    local response
+    if ! response=$(api_get_artist_songs "$id" "$page" "$size" "$sort"); then
+        return $EXIT_ERROR
+    fi
+
+    # Format and display
+    format_song_list "$response"
+
+    return $EXIT_SUCCESS
+}
+
+#
+# Action: albums
+#
+function action_albums() {
+    local id="$1"
+    shift
+
+    local page=0
+    local size=$PAGE_SIZE
+    local sort="title,asc"
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --page)
+                page="$2"
+                shift 2
+                ;;
+            --size)
+                size="$2"
+                shift 2
+                ;;
+            --sort)
+                sort="$2"
+                shift 2
+                ;;
+            --json)
+                OUTPUT_FORMAT="json"
+                shift
+                ;;
+            --api-url)
+                API_URL="$2"
+                shift 2
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                return $EXIT_USAGE
+                ;;
+        esac
+    done
+
+    # Validate ID
+    if ! validate_id_or_error "$id" "Artist ID"; then
+        return $EXIT_ERROR
+    fi
+
+    # Get artist albums
+    local response
+    if ! response=$(api_get_artist_albums "$id" "$page" "$size" "$sort"); then
+        return $EXIT_ERROR
+    fi
+
+    # Format and display
+    format_album_list "$response"
+
+    return $EXIT_SUCCESS
+}
+
+#
+# Main
+#
+
+# Check for at least one argument
+if [[ $# -eq 0 ]]; then
+    show_help
+    exit $EXIT_USAGE
+fi
+
+# Parse common options before action
+ACTION=""
+ACTION_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help|-h|help)
+            show_help
+            exit 0
+            ;;
+        --api-url|--json|--no-color|--verbose|--debug|--quiet)
+            parse_common_option "$1" "${2:-}"
+            if [[ $1 == --api-url ]]; then
+                shift 2
+            else
+                shift
+            fi
+            ;;
+        list|get|create|update|delete|songs|albums)
+            ACTION="$1"
+            shift
+            ACTION_ARGS=("$@")
+            break
+            ;;
+        *)
+            log_error "Unknown action: $1"
+            echo ""
+            show_help
+            exit $EXIT_USAGE
+            ;;
+    esac
+done
+
+# Check that an action was provided
+if [[ -z "$ACTION" ]]; then
+    log_error "Action required"
+    echo ""
+    show_help
+    exit $EXIT_USAGE
+fi
+
+# Dispatch to action
+case "$ACTION" in
+    list)
+        action_list "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    get)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Artist ID required"
+            echo "Usage: music-artist get <id> [options]"
+            exit $EXIT_USAGE
+        fi
+        action_get "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    create)
+        action_create "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    update)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Artist ID required"
+            echo "Usage: music-artist update <id> [options]"
+            exit $EXIT_USAGE
+        fi
+        action_update "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    delete)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Artist ID required"
+            echo "Usage: music-artist delete <id> [options]"
+            exit $EXIT_USAGE
+        fi
+        action_delete "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    songs)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Artist ID required"
+            echo "Usage: music-artist songs <id> [options]"
+            exit $EXIT_USAGE
+        fi
+        action_songs "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    albums)
+        if [[ ${#ACTION_ARGS[@]} -eq 0 ]]; then
+            log_error "Artist ID required"
+            echo "Usage: music-artist albums <id> [options]"
+            exit $EXIT_USAGE
+        fi
+        action_albums "${ACTION_ARGS[@]+"${ACTION_ARGS[@]}"}"
+        ;;
+    *)
+        log_error "Unknown action: $ACTION"
+        echo ""
+        show_help
+        exit $EXIT_USAGE
+        ;;
+esac

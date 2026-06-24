@@ -1,0 +1,257 @@
+{
+	"info": {
+		"_postman_id": "45643270-1c7a-4a4e-842d-a3f8b0a795a7",
+		"name": "Invoice Maker API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4891224"
+	},
+	"item": [
+		{
+			"name": "Get Invoice by ID",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "MerchantId 1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api_host}}/v1/invoices/I-00001",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"v1",
+						"invoices",
+						"I-00001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Invoice",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"invoiceNumber\": \"I-00001\",\n  \"customerId\": \"CUST-1039\",\n  \"items\": [\n    {\n      \"itemCode\": \"A100\",\n      \"itemName\": \"Oil\",\n      \"quantity\": 1,\n      \"unitPrice\": 49.99,\n      \"taxRate\": 0.07\n    },\n    {\n      \"itemCode\": \"B200\",\n      \"itemName\": \"Oil change\",\n      \"quantity\": 5,\n      \"unitPrice\": 20.00,\n      \"taxRate\": 0.07\n    }\n  ],\n  \"notes\": \"Notes here!\",\n  \"paymentInstructions\": \"Pay via ACH within 14 days.\",\n  \"issueDate\": \"2025-11-01\",\n  \"dueDate\": \"2026-01-05\",\n  \"createdBy\": \"auth0|u-3573259\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_host}}/v1/invoices",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"v1",
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Invoice",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"invoiceNumber\": \"I-00001\",\n  \"version\": 0,\n  \"items\": [\n    {\n      \"itemCode\": \"BT-12445-EUX\",\n      \"itemName\": \"Part number P-17\",\n      \"quantity\": 12,\n      \"unitPrice\": 1.29,\n      \"taxRate\": 0.07\n    }\n  ],\n  \"notes\": \"Notes here.\",\n  \"paymentInstructions\": \"Pay via ACH within 14 days.\",\n  \"issueDate\": \"2025-03-31\",\n  \"dueDate\": \"2025-12-14\",\n  \"paidDate\": \"2025-10-14\",\n  \"updatedBy\": \"auth0|u-3573259\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_host}}/v1/invoices",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"v1",
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Invoice",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"invoiceNumber\": \"I-00001\",\n    \"version\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_host}}/v1/invoices",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"v1",
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Invoices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_host}}/v1/invoices?invoiceNumber=00",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"v1",
+						"invoices"
+					],
+					"query": [
+						{
+							"key": "invoiceNumber",
+							"value": "00"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Issue Invoice",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"invoiceNumber\": \"I-00001\",\n    \"version\": 0,\n    \"issuedBy\": \"auth0|u-3573259\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_host}}/v1/invoices/issue",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"v1",
+						"invoices",
+						"issue"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pay Invoice",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"invoiceNumber\": \"I-00001\",\n    \"version\": 1,\n    \"transactionReference\": \"TX-re875fh9ehw9d\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_host}}/v1/invoices/pay",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"v1",
+						"invoices",
+						"pay"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Invoice",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"invoiceNumber\": \"I-00001\",\n    \"version\": 1,\n    \"cancelledBy\": \"auth0|u-3573259\",\n    \"comment\": \"Some reason\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_host}}/v1/invoices/cancel",
+					"host": [
+						"{{api_host}}"
+					],
+					"path": [
+						"v1",
+						"invoices",
+						"cancel"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "api_host",
+			"value": "http://localhost:8080"
+		}
+	]
+}

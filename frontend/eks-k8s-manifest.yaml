@@ -1,0 +1,160 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: interview-frontend
+  namespace: interview
+  labels:
+    app: interview-frontend
+spec:
+  selector:
+    matchLabels:
+      app: interview-frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%  # At most 25% of pods can be unavailable during the rollout
+      maxSurge: 25%        # Can create 25% more pods than desired temporarily
+  template:
+    metadata:
+      labels:
+        app: interview-frontend
+      annotations:
+        sidecar.istio.io/inject: "true"   # Enable Istio sidecar injection
+    spec:
+      serviceAccountName: interview-frontend-sa
+      containers:
+        - name: interview-frontend
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/interview-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+
+          # Startup probe – gives NGINX time to fully start before liveness/readiness start
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 10   # ~50 seconds total (5s × 10 tries)
+            timeoutSeconds: 3
+
+          # Liveness probe – ensures container is still responding
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # Readiness probe – marks pod ready for traffic
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      
+      topologySpreadConstraints:
+        ## Ensures even distribution across nodes
+        ## Spread pods across different nodes for high availability.
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: interview-frontend
+        ## Keeps pods balanced across availability zones
+        ## pread pods across different AZs for fault tolerance     
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: interview-frontend
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: interview-frontend-service
+  namespace: interview
+  labels:
+    app: interview-frontend
+spec:
+  type: ClusterIP  # Internal service, traffic handled by Istio ingress gateway
+  selector:
+    app: interview-frontend
+  ports:
+    - name: http
+      port: 80          # Service port
+      targetPort: 80    # Container port 
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: interview-frontend
+  namespace: interview
+spec:
+  hosts:
+    - frontend.internal.tekmetrics.com 
+  gateways:
+    - http-internalgateway         
+  http:
+    - match:
+        - uri:
+            prefix: /        
+      route:
+        - destination:
+            host: interview-frontend-service
+            port:
+              number: 80
+      timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 2s
+        retryOn: gateway-error,connect-failure,refused-stream
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: interview-frontend-hpa
+  namespace: interview
+  labels:
+    app: interview-frontend
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: interview-frontend
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 85
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: interview-frontend-sa
+  namespace: interview
+  labels:
+    app: interview-frontend
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/interview-frontend-role ## assume this role is already created
+

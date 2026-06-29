@@ -1,0 +1,61 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd
+  # Wave 0: secrets backend needs to exist before anything tries to pull from it.
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://helm.releases.hashicorp.com
+    chart: vault
+    targetRevision: 0.28.1
+    helm:
+      releaseName: vault
+      values: |
+        global:
+          tlsDisable: true  # TLS terminates at ingress-nginx for demo
+        server:
+          # Dev mode: in-memory storage, unsealed, root token = "root".
+          # NEVER for production. Real prod uses HA + Raft + auto-unseal.
+          dev:
+            enabled: true
+            devRootToken: "root"
+          standalone:
+            enabled: false
+          ha:
+            enabled: false
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            enabled: true
+          livenessProbe:
+            enabled: true
+            initialDelaySeconds: 60
+        ui:
+          enabled: true
+          serviceType: ClusterIP
+        injector:
+          # ESO handles injection for this demo; disable the agent injector.
+          enabled: false
+        csi:
+          enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

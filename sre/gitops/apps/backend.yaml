@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tekmetric-backend
+  namespace: argocd
+  # Wave 3: app goes last, after all platform components are ready.
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SchloTech/interview.git
+    targetRevision: HEAD
+    path: sre/chart
+    helm:
+      releaseName: tekmetric-backend
+      valueFiles:
+        - values.yaml
+        # Uncomment for prod posture:
+        # - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: backend
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        maxDuration: 3m
+        factor: 2

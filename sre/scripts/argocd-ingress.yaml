@@ -1,0 +1,34 @@
+# Argo CD UI ingress. Applied imperatively (from the Makefile) before the
+# root-app is applied, so the operator can reach Argo while it syncs.
+#
+# Other ingresses (backend, Grafana, Prometheus, Vault) are managed by
+# Argo via their respective Applications.
+#
+# backend-protocol=HTTP because argocd-server is patched to run in
+# --insecure mode (TLS terminates at ingress-nginx).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server
+  namespace: argocd
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned-ca
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: argocd-tls
+      hosts:
+        - argocd.sre-demo.local
+  rules:
+    - host: argocd.sre-demo.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  name: http

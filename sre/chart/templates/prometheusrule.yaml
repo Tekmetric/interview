@@ -1,0 +1,59 @@
+{{- if .Values.prometheusRule.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "tekmetric-backend.fullname" . }}
+  labels:
+    {{- include "tekmetric-backend.labels" . | nindent 4 }}
+    {{- with .Values.prometheusRule.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  groups:
+    - name: tekmetric-backend.slo
+      # Interval matches ServiceMonitor scrape; evaluating faster gains nothing.
+      interval: 30s
+      rules:
+        # SLO: 99% of HTTP requests complete without 5xx errors. Alert
+        # on fast burn (2% of monthly budget in 1h) and slow burn (5% in 6h).
+        # Multi-window multi-burn-rate alerting: catches acute and chronic issues.
+        - alert: TekmetricBackendHighErrorRateFast
+          expr: |
+            (
+              sum(rate(http_server_requests_seconds_count{application="tekmetric-backend",status=~"5.."}[5m]))
+              /
+              sum(rate(http_server_requests_seconds_count{application="tekmetric-backend"}[5m]))
+            ) > 0.02
+          for: 2m
+          labels:
+            severity: critical
+            slo: availability
+          annotations:
+            summary: "Backend error budget burning fast (>2% error rate over 5m)"
+            description: "Error rate exceeds 2% for 5 minutes. At this rate we exhaust monthly error budget in <1 day."
+            runbook_url: "https://runbooks.example.com/tekmetric-backend/high-error-rate"
+
+        - alert: TekmetricBackendHighLatencyP95
+          expr: |
+            histogram_quantile(0.95,
+              sum by (le) (rate(http_server_requests_seconds_bucket{application="tekmetric-backend"}[5m]))
+            ) > 1
+          for: 10m
+          labels:
+            severity: warning
+            slo: latency
+          annotations:
+            summary: "Backend p95 latency >1s over 10m"
+            description: "P95 request latency has exceeded 1 second for 10 minutes."
+
+        - alert: TekmetricBackendPodNotReady
+          expr: |
+            kube_pod_status_ready{namespace="{{ .Release.Namespace }}",condition="true"}
+              * on(pod) group_left kube_pod_labels{label_app_kubernetes_io_name="tekmetric-backend"} == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Backend pod not ready for 5m"
+            description: "Pod {{`{{ $labels.pod }}`}} has been non-ready for 5 minutes."
+{{- end }}

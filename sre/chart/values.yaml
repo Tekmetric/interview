@@ -1,0 +1,178 @@
+# Default values for tekmetric-backend.
+# Dev-leaning defaults. values-prod.yaml overrides for production posture.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: ghcr.io/schlotech/tekmetric-backend
+  # CI overwrites tag on every build. Never use mutable tags (latest, main)
+  # in Argo-managed values: breaks the "git is source of truth" contract.
+  tag: "sha-1487a4a"
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+replicaCount: 2
+
+# Split ports: 8080 = app traffic, 8081 = actuator (probes + metrics).
+# Matches Dockerfile EXPOSE and application.properties management.server.port.
+service:
+  type: ClusterIP
+  appPort: 8080
+  managementPort: 8081
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod-level security context. Defense in depth: non-root, no privilege
+# escalation, dropped capabilities, read-only root FS.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  capabilities:
+    drop:
+      - ALL
+
+# Resource requests/limits. Requests drive scheduling; limits prevent
+# noisy-neighbor. JVM MaxRAMPercentage=75 means heap will cap ~384Mi
+# of the 512Mi limit, leaving headroom for non-heap memory.
+resources:
+  requests:
+    cpu: 200m
+    memory: 384Mi
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+
+# Three probes, all hit /actuator/health on the management port. Spring
+# Boot 2.2.1 predates the split liveness/readiness endpoints (added in
+# 2.3). Different periodSeconds/failureThreshold still give asymmetric
+# semantics: readiness pulls from LB fast, liveness restarts slowly.
+probes:
+  startup:
+    path: /actuator/health
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 30 # ~5 min budget for JVM cold start
+  liveness:
+    path: /actuator/health
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 6 # ~60s of sustained failure before restart
+  readiness:
+    path: /actuator/health
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 2 # ~10s to pull from LB on transient failure
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Deny-all egress baseline; explicit allow-list for DNS, app ingress,
+# Prometheus scrape, and cluster services the app may need.
+networkPolicy:
+  enabled: true
+  # Namespace that hosts Prometheus; must match monitoring app install ns.
+  prometheusNamespace: monitoring
+  # Namespace that hosts the ingress controller.
+  ingressNamespace: ingress-nginx
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned-ca
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: app.sre-demo.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: tekmetric-backend-tls
+      hosts:
+        - app.sre-demo.local
+
+# Environment variables for the app container. Secrets flow through
+# envFrom referencing the Secret synced by ExternalSecret.
+env:
+  SPRING_PROFILES_ACTIVE: "default"
+  H2_CONSOLE_ENABLED: "true" # overridden to "false" in values-prod.yaml
+  MANAGEMENT_SERVER_PORT: "8081"
+  SERVER_PORT: "8080"
+
+externalSecrets:
+  enabled: false # enabled in values-prod.yaml; Vault must be reachable
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  refreshInterval: 1m
+  # Path in Vault KV v2: data/backend → secret/data/backend in API.
+  remoteRef:
+    path: secret/data/backend
+  # Keys expected in the Vault secret payload.
+  data:
+    - secretKey: DATASOURCE_PASSWORD
+      remoteKey: datasource_password
+    - secretKey: API_KEY
+      remoteKey: api_key
+
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s
+  path: /actuator/prometheus
+  # kube-prometheus-stack selects ServiceMonitors by this label.
+  labels:
+    release: kube-prometheus-stack
+
+prometheusRule:
+  enabled: true
+  labels:
+    release: kube-prometheus-stack
+
+# Grafana sidecar auto-loads ConfigMaps with grafana_dashboard="1".
+grafanaDashboard:
+  enabled: true
+
+# Pod-level scheduling hints. Soft anti-affinity across nodes gives HA
+# without blocking scheduling on small clusters.
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: tekmetric-backend
+
+nodeSelector: {}
+tolerations: []
+topologySpreadConstraints: []
+
+# 30s grace period + 5s preStop sleep gives in-flight requests time to
+# drain and load balancers time to notice the pod is terminating.
+terminationGracePeriodSeconds: 30
+preStopSleepSeconds: 5

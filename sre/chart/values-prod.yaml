@@ -1,0 +1,55 @@
+# Production overrides. Apply on top of values.yaml:
+#   helm upgrade ... -f values.yaml -f values-prod.yaml
+# In Argo, this is set via Application.spec.source.helm.valueFiles.
+
+replicaCount: 3
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 768Mi
+  limits:
+    cpu: 2000m
+    memory: 1Gi
+
+autoscaling:
+  minReplicas: 3
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 60
+
+podDisruptionBudget:
+  minAvailable: 2
+
+env:
+  SPRING_PROFILES_ACTIVE: "prod"
+  # Disable H2 console in prod: it exposes the DB to anyone who can reach
+  # the pod, which is not a posture we want outside local dev.
+  H2_CONSOLE_ENABLED: "false"
+
+# Vault-backed secrets only in prod. Dev uses plain Secret or defaults.
+externalSecrets:
+  enabled: true
+
+ingress:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+# Harder scheduling constraint in prod: never two replicas on one node.
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - topologyKey: kubernetes.io/hostname
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: tekmetric-backend
+
+# Spread across AZs when the cluster exposes zone labels.
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: tekmetric-backend

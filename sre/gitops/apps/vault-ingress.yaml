@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault-ingress
+  namespace: argocd
+  # Wave 2: needs ingress-nginx (wave 0) and vault (wave 0) both ready,
+  # plus cert-manager issuers (wave 1) for the TLS secret.
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SchloTech/interview.git
+    targetRevision: HEAD
+    path: sre/gitops/manifests/vault
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true

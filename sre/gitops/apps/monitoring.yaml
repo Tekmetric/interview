@@ -1,0 +1,130 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 62.6.0
+    helm:
+      releaseName: kube-prometheus-stack
+      # Large chart. `skipCrds: false` means Argo installs CRDs once;
+      # ServerSideApply keeps them on later syncs without replace storms.
+      skipCrds: false
+      values: |
+        fullnameOverride: kps
+        crds:
+          enabled: true
+
+        # Discover ServiceMonitors/PrometheusRules from any namespace,
+        # not just ones with matching release labels. Avoids fighting the
+        # operator over label expectations.
+        prometheus:
+          prometheusSpec:
+            serviceMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelectorNilUsesHelmValues: false
+            ruleSelectorNilUsesHelmValues: false
+            probeSelectorNilUsesHelmValues: false
+            retention: 7d
+            resources:
+              requests:
+                cpu: 200m
+                memory: 512Mi
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: selfsigned-ca
+            hosts:
+              - prometheus.sre-demo.local
+            tls:
+              - secretName: prometheus-tls
+                hosts:
+                  - prometheus.sre-demo.local
+
+        grafana:
+          adminPassword: admin # demo only
+          defaultDashboardsTimezone: browser
+          sidecar:
+            dashboards:
+              enabled: true
+              searchNamespace: ALL
+              label: grafana_dashboard
+              labelValue: "1"
+            datasources:
+              enabled: true
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: selfsigned-ca
+            hosts:
+              - grafana.sre-demo.local
+            tls:
+              - secretName: grafana-tls
+                hosts:
+                  - grafana.sre-demo.local
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+
+        alertmanager:
+          alertmanagerSpec:
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
+              limits:
+                cpu: 200m
+                memory: 128Mi
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: selfsigned-ca
+            hosts:
+              - alertmanager.sre-demo.local
+            tls:
+              - secretName: alertmanager-tls
+                hosts:
+                  - alertmanager.sre-demo.local
+
+        # Trim footprint for local demo. Re-enable per environment.
+        nodeExporter:
+          enabled: true
+        kubeStateMetrics:
+          enabled: true
+        defaultRules:
+          create: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      # kube-prometheus-stack CRDs are large; skip diff validation on them.
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        maxDuration: 5m
+        factor: 2

@@ -1,5 +1,9 @@
 # Site Reliability Engineering Interview Guidelines
 
+> **Submission docs**
+> - [`docs/QUICKSTART.md`](./docs/QUICKSTART.md) — prerequisites, local bring-up, demo flow.
+> - [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — design decisions, chart internals, CI/CD, observability, secrets, backend changes, what-would-differ-in-prod.
+
 Welcome to the Site Reliability Engineer take-home coding challenge! 
 
 This project is designed to evaluate your skills in `productionizing applications`, `managing container orchestration`, and ensuring the `reliability` and `observability` of services in a `Kubernetes production environment`.

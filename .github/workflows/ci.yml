@@ -1,0 +1,132 @@
+# Main CI: fires on push to main when SRE paths change. Builds and
+# pushes the image to GHCR, bumps chart values image tag, commits
+# the bump back so Argo CD picks up the change and syncs.
+name: SRE CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "sre/**"
+      - "backend/**"
+      - ".github/workflows/ci.yml"
+    tags:
+      - "v*.*.*"
+
+concurrency:
+  group: sre-ci-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write     # needed to commit values.yaml bump
+  packages: write     # needed to push to ghcr.io
+  id-token: write     # cosign keyless signing
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: schlotech/tekmetric-backend
+
+jobs:
+  build-push:
+    name: Build, scan, push, bump
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Compute image tag:
+      #   - push to main  -> sha-<short>
+      #   - tag push v*   -> <tag>-sha-<short>
+      - name: Compute tags
+        id: meta
+        run: |
+          SHORT_SHA=$(git rev-parse --short=7 HEAD)
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            TAG="${GITHUB_REF_NAME}-sha-${SHORT_SHA}"
+          else
+            TAG="sha-${SHORT_SHA}"
+          fi
+          echo "image_tag=${TAG}"        >> "$GITHUB_OUTPUT"
+          echo "short_sha=${SHORT_SHA}"  >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: sre/Dockerfile
+          # Multi-arch so the image runs on both Intel/AMD hosts (cloud,
+          # x86 CI) and Apple Silicon / Graviton / ARM nodes.
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.image_tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Scan runs non-blocking for the demo: table output is visible in
+      # job logs, the image still ships. In prod: exit-code "1" and a
+      # .trivyignore for documented accepted risks. Base image (Eclipse
+      # Temurin 8 on Ubuntu Jammy) needs a Spring Boot / JDK upgrade to
+      # go CVE-clean; that is a separate backend PR.
+      - name: Trivy vulnerability scan (table, non-blocking)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.image_tag }}
+          format: table
+          exit-code: "0"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"
+
+      - name: Trivy vulnerability scan (SARIF for upload)
+        if: always()
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.image_tag }}
+          format: sarif
+          output: trivy.sarif
+          exit-code: "0"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"
+
+      # SARIF upload requires GitHub Advanced Security on private repos;
+      # on public forks without it, the API returns 403. Keep the step
+      # so it works where enabled; continue-on-error prevents blocking.
+      - name: Upload Trivy results
+        if: always()
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy.sarif
+
+      # GitOps step: bump image tag in values.yaml so Argo reconciles.
+      # Uses [skip ci] in commit message to avoid retriggering this workflow.
+      - name: Bump chart image tag
+        env:
+          NEW_TAG: ${{ steps.meta.outputs.image_tag }}
+        run: |
+          set -euo pipefail
+          FILE=sre/chart/values.yaml
+          sed -i -E "s|^(  tag: ).*$|\1\"${NEW_TAG}\"|" "$FILE"
+          sed -i -E "s|^appVersion: .*$|appVersion: \"${NEW_TAG}\"|" sre/chart/Chart.yaml
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$FILE" sre/chart/Chart.yaml
+          git commit -m "chore(sre): bump backend image to ${NEW_TAG} [skip ci]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

@@ -1,0 +1,94 @@
+{{- if .Values.grafanaDashboard.enabled -}}
+# Grafana sidecar discovers ConfigMaps with this label and loads them
+# as dashboards automatically. No API calls, no provisioning YAML.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tekmetric-backend.fullname" . }}-dashboard
+  labels:
+    {{- include "tekmetric-backend.labels" . | nindent 4 }}
+    grafana_dashboard: "1"
+data:
+  tekmetric-backend.json: |-
+    {
+      "title": "Tekmetric Backend",
+      "uid": "tekmetric-backend",
+      "schemaVersion": 39,
+      "timezone": "browser",
+      "refresh": "30s",
+      "time": { "from": "now-1h", "to": "now" },
+      "tags": ["tekmetric", "backend", "slo"],
+      "panels": [
+        {
+          "id": 1,
+          "type": "stat",
+          "title": "Request rate (req/s)",
+          "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+          "targets": [{
+            "expr": "sum(rate(http_server_requests_seconds_count{application=\"tekmetric-backend\"}[1m]))",
+            "refId": "A"
+          }],
+          "options": { "colorMode": "value", "graphMode": "area" }
+        },
+        {
+          "id": 2,
+          "type": "stat",
+          "title": "Error rate (%)",
+          "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+          "targets": [{
+            "expr": "100 * sum(rate(http_server_requests_seconds_count{application=\"tekmetric-backend\",status=~\"5..\"}[5m])) / clamp_min(sum(rate(http_server_requests_seconds_count{application=\"tekmetric-backend\"}[5m])), 0.001)",
+            "refId": "A"
+          }],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 1 },
+                  { "color": "red", "value": 2 }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 3,
+          "type": "timeseries",
+          "title": "P50 / P95 / P99 latency",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "targets": [
+            { "expr": "histogram_quantile(0.50, sum by (le) (rate(http_server_requests_seconds_bucket{application=\"tekmetric-backend\"}[5m])))", "legendFormat": "p50", "refId": "A" },
+            { "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{application=\"tekmetric-backend\"}[5m])))", "legendFormat": "p95", "refId": "B" },
+            { "expr": "histogram_quantile(0.99, sum by (le) (rate(http_server_requests_seconds_bucket{application=\"tekmetric-backend\"}[5m])))", "legendFormat": "p99", "refId": "C" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "s" } }
+        },
+        {
+          "id": 4,
+          "type": "timeseries",
+          "title": "JVM heap used",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+          "targets": [{
+            "expr": "sum by (pod) (jvm_memory_used_bytes{application=\"tekmetric-backend\",area=\"heap\"})",
+            "legendFormat": "{{`{{ pod }}`}}",
+            "refId": "A"
+          }],
+          "fieldConfig": { "defaults": { "unit": "bytes" } }
+        },
+        {
+          "id": 5,
+          "type": "timeseries",
+          "title": "GC pause time",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+          "targets": [{
+            "expr": "sum by (action) (rate(jvm_gc_pause_seconds_sum{application=\"tekmetric-backend\"}[5m]))",
+            "legendFormat": "{{`{{ action }}`}}",
+            "refId": "A"
+          }],
+          "fieldConfig": { "defaults": { "unit": "s" } }
+        }
+      ]
+    }
+{{- end }}

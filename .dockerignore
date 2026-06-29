@@ -1,0 +1,23 @@
+# Build context is the repo root (interview/). The backend Dockerfile
+# (sre/Dockerfile) only needs backend/. Everything else is excluded to
+# keep the context small and fast to transfer to the Docker daemon.
+**/.git
+**/.gitignore
+**/target
+**/.idea
+**/.vscode
+**/*.iml
+**/node_modules
+**/.DS_Store
+**/README.md
+# Exclude sibling interview exercises not used by this build.
+sre/chart
+sre/gitops
+sre/docs
+sre/scripts
+.github
+data
+frontend
+ml
+mobile
+qa

@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-nginx
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://kubernetes.github.io/ingress-nginx
+    chart: ingress-nginx
+    targetRevision: 4.11.3
+    helm:
+      releaseName: ingress-nginx
+      values: |
+        controller:
+          # HostPort mode for k3d: binds container ports 80/443 to host.
+          # For cloud, switch to service.type=LoadBalancer and remove hostPort.
+          kind: Deployment
+          hostPort:
+            enabled: true
+            ports:
+              http: 80
+              https: 443
+          service:
+            type: ClusterIP
+          ingressClassResource:
+            default: true
+          config:
+            # Helpful defaults for demo visibility and security.
+            proxy-body-size: 10m
+            use-forwarded-headers: "true"
+            enable-brotli: "true"
+            hsts: "true"
+            ssl-protocols: "TLSv1.2 TLSv1.3"
+          metrics:
+            enabled: true
+            serviceMonitor:
+              enabled: true
+              additionalLabels:
+                release: kube-prometheus-stack
+          podDisruptionBudget:
+            enabled: true
+            minAvailable: 1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          admissionWebhooks:
+            enabled: true
+            patch:
+              enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

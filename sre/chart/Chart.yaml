@@ -1,0 +1,12 @@
+apiVersion: v2
+name: tekmetric-backend
+description: Spring Boot backend deployment for the Tekmetric SRE take-home.
+type: application
+# Chart version tracks packaging changes. Bumped independently of appVersion.
+version: 0.1.0
+# appVersion mirrors the image tag. CI overwrites this on build.
+appVersion: "sha-1487a4a"
+kubeVersion: ">=1.27.0"
+maintainers:
+  - name: Jake Schlotter
+    email: jakeschlottag@gmail.com

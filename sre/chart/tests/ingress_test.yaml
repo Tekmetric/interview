@@ -1,0 +1,30 @@
+suite: ingress
+templates:
+  - ingress.yaml
+tests:
+  - it: uses nginx class and enables TLS
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: spec.ingressClassName
+          value: nginx
+      - equal:
+          path: spec.tls[0].secretName
+          value: tekmetric-backend-tls
+      - contains:
+          path: spec.tls[0].hosts
+          content: app.sre-demo.local
+
+  - it: has cert-manager annotation
+    asserts:
+      - equal:
+          path: metadata.annotations["cert-manager.io/cluster-issuer"]
+          value: selfsigned-ca
+
+  - it: is omitted when disabled
+    set:
+      ingress.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0

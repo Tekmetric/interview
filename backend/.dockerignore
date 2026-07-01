@@ -1,0 +1,22 @@
+# Maven
+/target/
+/.mvn/
+/.m2/
+
+# IDE
+/.idea/
+/.vscode/
+*.iml
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+
+# Node (if present)
+/node_modules/
+
+# Git
+/.git
+/.gitignore

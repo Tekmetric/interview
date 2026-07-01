@@ -1,0 +1,14 @@
+{
+  "packages": [
+    "kind",
+    "kubectl",
+    "kubernetes-helm",
+    "gnumake"
+  ],
+  "shell": {
+    "scripts": {
+      "cluster:create": "kind create cluster --name dev-cluster --wait 60s || true",
+      "cluster:delete": "kind delete cluster --name dev-cluster || true"
+    }
+  }
+}

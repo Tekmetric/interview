@@ -1,0 +1,68 @@
+replicaCount: 1
+
+image:
+  repository: backend-service
+  tag: dev
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  # Set when type=NodePort for local access
+  nodePort: null
+  annotations: {}
+  labels: {}
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+probes:
+  liveness:
+    enabled: true
+    path: /api/welcome
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 3
+    successThreshold: 1
+  readiness:
+    enabled: true
+    path: /api/welcome
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 3
+    successThreshold: 1
+
+metrics:
+  enabled: false
+  path: /metrics
+  port: 8080
+
+jmxExporter:
+  enabled: false
+  image: public.ecr.aws/u0n6l1t0/system/bitnami/jmx-exporter:0.17.2-debian-11-r29
+  port: 9404
+  # default rules: scrape standard JVM metrics via remote JMX on localhost:9010
+  config:
+    startDelaySeconds: 0
+    hostPort: "127.0.0.1:9010"
+    ssl: false
+    lowercaseOutputName: true
+    rules:
+      - pattern: 'java.lang<type=Memory><>(.*)'
+      - pattern: 'java.lang<type=Threading><>(.*)'
+      - pattern: 'java.lang<type=ClassLoading><>(.*)'
+      - pattern: 'java.lang<type=OperatingSystem><>(.*)'
+      - pattern: 'java.lang<type=GarbageCollector,name=(.*)><>(.*)'
+
+nodeSelector: {}
+affinity: {}
+tolerations: []
+podAnnotations: {}
+podLabels: {}

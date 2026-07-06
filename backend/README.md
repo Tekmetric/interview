@@ -35,5 +35,8 @@ This is an open ended exercise for you to showcase what you know! We encourage y
 - Username: sa
 - Password: password
 
+#### Swagger UI
+- URL: http://localhost:8080/swagger-ui.html
+
 ### Submitting your coding exercise
 Once you have finished the coding exercise please create a PR into Tekmetric/interview

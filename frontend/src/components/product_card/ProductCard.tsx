@@ -19,15 +19,17 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <div className="flex flex-1 flex-col gap-2 p-3">
         <ProductTitle title={product.title} brand={product.brand} />
-        <ProductPrice
-          price={product.price}
-          discountPercentage={product.discountPercentage}
-        />
-        <ReviewStars
-          rating={product.rating}
-          reviewCount={product.reviews.length}
-        />
-        <AddToCartButton sku={product.sku} />
+        <div className="mt-auto flex flex-col gap-2">
+          <ProductPrice
+            price={product.price}
+            discountPercentage={product.discountPercentage}
+          />
+          <ReviewStars
+            rating={product.rating}
+            reviewCount={product.reviews.length}
+          />
+          <AddToCartButton sku={product.sku} />
+        </div>
       </div>
     </article>
   );

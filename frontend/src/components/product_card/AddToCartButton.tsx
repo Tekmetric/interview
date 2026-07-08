@@ -1,4 +1,4 @@
-import { CardButton } from './CardButton';
+import { Button } from '../button/Button';
 
 interface AddToCartButtonProps {
   sku: string;
@@ -6,11 +6,12 @@ interface AddToCartButtonProps {
 
 export function AddToCartButton({ sku }: AddToCartButtonProps) {
   return (
-    <CardButton
+    <Button
       variant="primary"
+      className="mt-auto"
       onClick={() => console.log('Add to cart clicked', { sku })}
     >
       Add to Cart
-    </CardButton>
+    </Button>
   );
 }

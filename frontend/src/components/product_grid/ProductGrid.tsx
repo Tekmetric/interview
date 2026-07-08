@@ -1,5 +1,5 @@
-import type { Product } from '../hooks/types';
-import { ProductCard } from './product_card/ProductCard';
+import type { Product } from '../../hooks/types';
+import { ProductCard } from '../product_card/ProductCard';
 
 interface ProductGridProps {
   products: Product[];

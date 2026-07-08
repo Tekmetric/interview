@@ -1,4 +1,4 @@
-import { CardButton } from './CardButton';
+import { Button } from '../button/Button';
 import './moreDetailsOverlay.css';
 
 interface MoreDetailsOverlayProps {
@@ -22,9 +22,9 @@ export function MoreDetailsOverlay({ sku }: MoreDetailsOverlayProps) {
   return (
     <>
       <div className="details-overlay">
-        <CardButton variant="secondary" aria-label="View Details" onClick={handleClick}>
+        <Button variant="secondary" aria-label="View Details" onClick={handleClick}>
           View Details
-        </CardButton>
+        </Button>
       </div>
       <button
         type="button"

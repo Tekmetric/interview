@@ -1,4 +1,8 @@
+import { useState } from 'react';
 import type { ProductCategory } from '../../hooks/types';
+import { Button } from '../button/Button';
+import { CategoryFilterDrawer } from './CategoryFilterDrawer';
+import { CategoryRadioList } from './CategoryRadioList';
 
 const DISABLED_HINT_ID = 'category-filter-disabled-hint';
 const DISABLED_HINT_TEXT =
@@ -21,72 +25,95 @@ export function CategoryFilter({
   value,
   onChange,
 }: CategoryFilterProps) {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [draftSlug, setDraftSlug] = useState<string | null>(null);
+
+  function openDrawer() {
+    setDraftSlug(value);
+    setIsDrawerOpen(true);
+  }
+
+  function closeDrawer() {
+    setIsDrawerOpen(false);
+  }
+
+  function handleApply() {
+    onChange(draftSlug);
+    closeDrawer();
+  }
+
   return (
-    <aside aria-label="Product filters" className="lg:w-56 shrink-0">
-      <fieldset
-        disabled={isSearchActive}
-        aria-describedby={isSearchActive ? DISABLED_HINT_ID : undefined}
-        className="m-0 min-w-0 border-0 p-0"
+    <>
+      <aside
+        aria-label="Product filters"
+        className="hidden lg:block lg:w-56 shrink-0"
       >
-        <legend className="mb-2 text-sm font-semibold text-neutral-900">
-          Categories
-        </legend>
+        <fieldset
+          disabled={isSearchActive}
+          aria-describedby={isSearchActive ? DISABLED_HINT_ID : undefined}
+          className="m-0 min-w-0 border-0 p-0"
+        >
+          <legend className="mb-2 text-sm font-semibold text-neutral-900">
+            Categories
+          </legend>
 
-        {isSearchActive && (
-          <p
-            id={DISABLED_HINT_ID}
-            className="mb-2 text-sm text-neutral-500"
-            title={DISABLED_HINT_TEXT}
-          >
-            {DISABLED_HINT_TEXT}
-          </p>
-        )}
+          {isSearchActive && (
+            <p
+              id={DISABLED_HINT_ID}
+              className="mb-2 text-sm text-neutral-500"
+              title={DISABLED_HINT_TEXT}
+            >
+              {DISABLED_HINT_TEXT}
+            </p>
+          )}
 
-        {isLoading && (
-          <p role="status" aria-live="polite" className="text-sm text-neutral-600">
-            Loading categories...
-          </p>
-        )}
+          {isLoading && (
+            <p role="status" aria-live="polite" className="text-sm text-neutral-600">
+              Loading categories...
+            </p>
+          )}
 
-        {error && (
-          <p role="alert" className="text-sm text-red-600">
-            {error}
-          </p>
-        )}
+          {error && (
+            <p role="alert" className="text-sm text-red-600">
+              {error}
+            </p>
+          )}
 
-        {!isLoading && !error && (
-          <ul className="m-0 list-none space-y-1 p-0">
-            <li>
-              <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 has-disabled:cursor-not-allowed has-disabled:opacity-60">
-                <input
-                  type="radio"
-                  name="product-category"
-                  value=""
-                  checked={value === null}
-                  onChange={() => onChange(null)}
-                  className="h-4 w-4 border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                />
-                All categories
-              </label>
-            </li>
-            {categories.map((category) => (
-              <li key={category.slug}>
-                <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 has-disabled:cursor-not-allowed has-disabled:opacity-60">
-                  <input
-                    type="radio"
-                    name="product-category"
-                    value={category.slug}
-                    checked={value === category.slug}
-                    onChange={() => onChange(category.slug)}
-                    className="h-4 w-4 border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                  />
-                  {category.name}
-                </label>
-              </li>
-            ))}
-          </ul>
-        )}
-      </fieldset>
-    </aside>
+          {!isLoading && !error && (
+            <CategoryRadioList
+              categories={categories}
+              value={value}
+              onChange={onChange}
+              name="product-category"
+              disabled={isSearchActive}
+            />
+          )}
+        </fieldset>
+      </aside>
+
+      <div className="lg:hidden">
+        <Button
+          variant="secondary"
+          aria-haspopup="dialog"
+          aria-expanded={isDrawerOpen}
+          disabled={isSearchActive}
+          onClick={openDrawer}
+        >
+          Filter by Category
+        </Button>
+
+        <CategoryFilterDrawer
+          isOpen={isDrawerOpen}
+          categories={categories}
+          isLoading={isLoading}
+          error={error}
+          isSearchActive={isSearchActive}
+          draftSlug={draftSlug}
+          onDraftChange={setDraftSlug}
+          onApply={handleApply}
+          onCancel={closeDrawer}
+        />
+      </div>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import { getStarStates, roundToNearestHalf } from './ratingUtils';
+import './reviewStars.css';
 
 interface ReviewStarsProps {
   rating: number;
@@ -11,7 +12,7 @@ function StarIcon({ state, index }: { state: 'full' | 'half' | 'empty'; index: n
   if (state === 'full') {
     return (
       <svg
-        className="product-card__star product-card__star--full"
+        className="review-star review-star--full h-4 w-4"
         viewBox="0 0 24 24"
         aria-hidden="true"
       >
@@ -24,7 +25,7 @@ function StarIcon({ state, index }: { state: 'full' | 'half' | 'empty'; index: n
     const clipId = `half-star-clip-${index}`;
     return (
       <svg
-        className="product-card__star product-card__star--half"
+        className="review-star review-star--half h-4 w-4"
         viewBox="0 0 24 24"
         aria-hidden="true"
       >
@@ -34,11 +35,11 @@ function StarIcon({ state, index }: { state: 'full' | 'half' | 'empty'; index: n
           </clipPath>
         </defs>
         <path
-          className="product-card__star-outline"
+          className="review-star-outline"
           d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"
         />
         <path
-          className="product-card__star-fill"
+          className="review-star-fill"
           d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"
           clipPath={`url(#${clipId})`}
         />
@@ -48,12 +49,12 @@ function StarIcon({ state, index }: { state: 'full' | 'half' | 'empty'; index: n
 
   return (
     <svg
-      className="product-card__star product-card__star--empty"
+      className="review-star review-star--empty h-4 w-4"
       viewBox="0 0 24 24"
       aria-hidden="true"
     >
       <path
-        className="product-card__star-outline"
+        className="review-star-outline"
         d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"
       />
     </svg>
@@ -66,13 +67,13 @@ export function ReviewStars({ rating, reviewCount }: ReviewStarsProps) {
   const label = `${roundedRating} out of 5 stars, ${reviewCount} reviews`;
 
   return (
-    <div className="product-card__reviews">
-      <div className="product-card__stars" role="img" aria-label={label}>
+    <div className="flex items-center gap-[0.35rem]">
+      <div className="flex items-center gap-[0.1rem]" role="img" aria-label={label}>
         {starStates.map((state, index) => (
           <StarIcon key={index} state={state} index={index} />
         ))}
       </div>
-      <span className="product-card__review-count" aria-hidden="true">
+      <span className="text-[0.85rem] text-neutral-500" aria-hidden="true">
         ({reviewCount})
       </span>
     </div>

@@ -1,0 +1,15 @@
+.review-star--full path,
+.review-star-fill {
+  fill: #f5a623;
+}
+
+.review-star-outline {
+  fill: none;
+  stroke: #f5a623;
+  stroke-width: 1.5;
+}
+
+.review-star--empty .review-star-outline {
+  fill: none;
+  stroke: #ccc;
+}

@@ -3,10 +3,17 @@ interface ProductImageProps {
   alt: string;
 }
 
+// Could add image crunching here or rendering different size images
+// if the backend supported it for performance.
 export function ProductImage({ src, alt }: ProductImageProps) {
   return (
-    <div className="product-card__image-wrap">
-      <img className="product-card__image" src={src} alt={alt} loading="lazy" />
+    <div className="flex aspect-square items-center justify-center bg-neutral-100">
+      <img
+        className="h-full w-full object-contain"
+        src={src}
+        alt={alt}
+        loading="lazy"
+      />
     </div>
   );
 }

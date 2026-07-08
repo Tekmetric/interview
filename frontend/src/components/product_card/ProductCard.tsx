@@ -5,7 +5,6 @@ import { ProductImage } from './ProductImage';
 import { ProductPrice } from './ProductPrice';
 import { ProductTitle } from './ProductTitle';
 import { ReviewStars } from './ReviewStars';
-import './productCard.css';
 
 interface ProductCardProps {
   product: Product;
@@ -13,11 +12,12 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <article className="product-card">
-      <div className="product-card__media">
+    <article className="flex h-full flex-col overflow-hidden rounded border border-neutral-200">
+      <div className="group relative">
         <ProductImage src={product.thumbnail} alt={product.title} />
+        <MoreDetailsOverlay sku={product.sku} />
       </div>
-      <div className="product-card__body">
+      <div className="flex flex-1 flex-col gap-2 p-3">
         <ProductTitle title={product.title} brand={product.brand} />
         <ProductPrice
           price={product.price}
@@ -29,7 +29,6 @@ export function ProductCard({ product }: ProductCardProps) {
         />
         <AddToCartButton sku={product.sku} />
       </div>
-      <MoreDetailsOverlay sku={product.sku} />
     </article>
   );
 }

@@ -1,10 +1,13 @@
+import { CardButton } from './CardButton';
+import './moreDetailsOverlay.css';
+
 interface MoreDetailsOverlayProps {
   sku: string;
 }
 
 function MagnifyingGlassIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="product-card__details-icon">
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
       <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="2" />
       <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" strokeWidth="2" />
     </svg>
@@ -18,19 +21,14 @@ export function MoreDetailsOverlay({ sku }: MoreDetailsOverlayProps) {
 
   return (
     <>
-      <div className="product-card__details-overlay">
-        <button
-          type="button"
-          className="product-card__button product-card__button--secondary"
-          aria-label="View Details"
-          onClick={handleClick}
-        >
+      <div className="details-overlay">
+        <CardButton variant="secondary" aria-label="View Details" onClick={handleClick}>
           View Details
-        </button>
+        </CardButton>
       </div>
       <button
         type="button"
-        className="product-card__details-corner"
+        className="details-corner"
         aria-label="View Details"
         onClick={handleClick}
       >

@@ -2,7 +2,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h2>Welcome to the interview app!</h2>
+        <h2 className="text-2xl font-bold text-blue-600">
+          Welcome to the interview app!
+        </h2>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>

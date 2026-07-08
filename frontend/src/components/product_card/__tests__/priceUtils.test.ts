@@ -21,4 +21,15 @@ describe('formatProductPrice', () => {
       discountLabel: null,
     });
   });
+
+  it('formats large prices with thousand separators', () => {
+    expect(formatProductPrice(1000, 0)).toEqual({
+      display: '$1,000.00',
+      discountLabel: null,
+    });
+    expect(formatProductPrice(36999.99, 0)).toEqual({
+      display: '$36,999.99',
+      discountLabel: null,
+    });
+  });
 });

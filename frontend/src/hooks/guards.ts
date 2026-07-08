@@ -62,7 +62,7 @@ export function isProduct(value: unknown): value is Product {
     typeof value.rating === 'number' &&
     typeof value.stock === 'number' &&
     isStringArray(value.tags) &&
-    typeof value.brand === 'string' &&
+    (value.brand === undefined || typeof value.brand === 'string') &&
     typeof value.sku === 'string' &&
     typeof value.weight === 'number' &&
     isProductDimensions(value.dimensions) &&

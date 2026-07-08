@@ -19,6 +19,11 @@ describe('isProduct', () => {
     expect(isProduct({ ...sampleProduct, price: '9.99' })).toBe(false);
   });
 
+  it('accepts products without a brand', () => {
+    const { brand: _brand, ...productWithoutBrand } = sampleProduct;
+    expect(isProduct(productWithoutBrand)).toBe(true);
+  });
+
   it('rejects when images is not a string array', () => {
     expect(isProduct({ ...sampleProduct, images: ['valid', 1] })).toBe(false);
   });

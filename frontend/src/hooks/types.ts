@@ -36,7 +36,7 @@ export interface Product {
   rating: number;
   stock: number;
   tags: string[];
-  brand: string;
+  brand?: string;
   sku: string;
   weight: number;
   dimensions: ProductDimensions;

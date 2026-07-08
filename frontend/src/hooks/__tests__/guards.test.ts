@@ -1,5 +1,5 @@
-import { isProduct, isProductsResponse } from '../guards';
-import { sampleProduct, sampleProductsResponse } from './fixtures';
+import { isProduct, isProductCategoriesResponse, isProductCategory, isProductsResponse } from '../guards';
+import { sampleCategories, sampleProduct, sampleProductsResponse } from './fixtures';
 
 describe('isProduct', () => {
   it('accepts a representative DummyJSON product', () => {
@@ -69,5 +69,43 @@ describe('isProductsResponse', () => {
         products: [{ id: 1 }],
       })
     ).toBe(false);
+  });
+});
+
+describe('isProductCategory', () => {
+  it('accepts a representative DummyJSON category', () => {
+    expect(isProductCategory(sampleCategories[0])).toBe(true);
+  });
+
+  it('rejects when slug is missing', () => {
+    const { slug: _slug, ...categoryWithoutSlug } = sampleCategories[0];
+    expect(isProductCategory(categoryWithoutSlug)).toBe(false);
+  });
+
+  it('rejects when name is not a string', () => {
+    expect(isProductCategory({ ...sampleCategories[0], name: 123 })).toBe(false);
+  });
+
+  it('rejects null and non-object values', () => {
+    expect(isProductCategory(null)).toBe(false);
+    expect(isProductCategory('beauty')).toBe(false);
+  });
+});
+
+describe('isProductCategoriesResponse', () => {
+  it('accepts a representative DummyJSON categories response', () => {
+    expect(isProductCategoriesResponse(sampleCategories)).toBe(true);
+  });
+
+  it('accepts an empty array', () => {
+    expect(isProductCategoriesResponse([])).toBe(true);
+  });
+
+  it('rejects when a category in the array is malformed', () => {
+    expect(isProductCategoriesResponse([{ slug: 'beauty' }])).toBe(false);
+  });
+
+  it('rejects non-array values', () => {
+    expect(isProductCategoriesResponse({ slug: 'beauty' })).toBe(false);
   });
 });

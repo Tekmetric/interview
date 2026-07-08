@@ -2,6 +2,8 @@ export { getProducts } from './getProducts';
 export { getProduct } from './getProduct';
 export { getSortedProducts } from './getSortedProducts';
 export { searchProducts } from './searchProducts';
+export { getCategories } from './getCategories';
+export { getProductsByCategory } from './getProductsByCategory';
 
 export type {
   Product,
@@ -9,6 +11,8 @@ export type {
   GetProductsParams,
   GetSortedProductsParams,
   SearchProductsParams,
+  ProductCategory,
+  GetProductsByCategoryParams,
   SortOption,
   ProductSortField,
   SortOrder,

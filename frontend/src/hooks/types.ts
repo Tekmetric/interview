@@ -82,6 +82,20 @@ export interface GetSortedProductsParams {
   skip?: number;
 }
 
+export interface ProductCategory {
+  slug: string;
+  name: string;
+  url: string;
+}
+
+export interface GetProductsByCategoryParams {
+  category: string;
+  limit?: number;
+  skip?: number;
+  sortBy?: ProductSortField;
+  order?: SortOrder;
+}
+
 export interface SortOption {
   id: string;
   label: string;

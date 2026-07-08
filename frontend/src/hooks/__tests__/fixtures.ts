@@ -1,4 +1,4 @@
-import type { Product, ProductsResponse } from '../types';
+import type { Product, ProductCategory, ProductsResponse } from '../types';
 
 export const sampleProduct: Product = {
   id: 1,
@@ -52,6 +52,19 @@ export const sampleProductsResponse: ProductsResponse = {
   skip: 0,
   limit: 12,
 };
+
+export const sampleCategories: ProductCategory[] = [
+  {
+    slug: 'beauty',
+    name: 'Beauty',
+    url: 'https://dummyjson.com/products/category/beauty',
+  },
+  {
+    slug: 'smartphones',
+    name: 'Smartphones',
+    url: 'https://dummyjson.com/products/category/smartphones',
+  },
+];
 
 export function createMockResponse(
   body: unknown,

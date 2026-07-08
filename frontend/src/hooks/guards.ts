@@ -1,4 +1,4 @@
-import type { Product, ProductsResponse } from './types';
+import type { Product, ProductCategory, ProductsResponse } from './types';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -95,4 +95,22 @@ export function isProductsResponse(value: unknown): value is ProductsResponse {
 
 export function isProductArrayResponse(value: unknown): value is Product[] {
   return Array.isArray(value) && value.every(isProduct);
+}
+
+export function isProductCategory(value: unknown): value is ProductCategory {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.slug === 'string' &&
+    typeof value.name === 'string' &&
+    typeof value.url === 'string'
+  );
+}
+
+export function isProductCategoriesResponse(
+  value: unknown
+): value is ProductCategory[] {
+  return Array.isArray(value) && value.every(isProductCategory);
 }

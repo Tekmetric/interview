@@ -40,6 +40,23 @@ describe('searchProducts', () => {
     );
   });
 
+  it('forwards sortBy and order when provided', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue(
+      createMockResponse(sampleProductsResponse)
+    );
+
+    await searchProducts({
+      q: 'phone',
+      sortBy: 'price',
+      order: 'asc',
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://dummyjson.com/products/search?q=phone&limit=12&skip=0&sortBy=price&order=asc',
+      expect.any(Object)
+    );
+  });
+
   it('accepts an empty result set as a valid response', async () => {
     const emptyResponse = {
       products: [],

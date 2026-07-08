@@ -67,4 +67,54 @@ export interface SearchProductsParams {
   q: string;
   limit?: number;
   skip?: number;
+  sortBy?: ProductSortField;
+  order?: SortOrder;
 }
+
+export type ProductSortField = 'price' | 'discountPercentage' | 'rating';
+
+export type SortOrder = 'asc' | 'desc';
+
+export interface GetSortedProductsParams {
+  sortBy: ProductSortField;
+  order: SortOrder;
+  limit?: number;
+  skip?: number;
+}
+
+export interface SortOption {
+  id: string;
+  label: string;
+  sortBy?: ProductSortField;
+  order?: SortOrder;
+}
+
+export const DEFAULT_SORT_OPTION_ID = 'default';
+
+export const SORT_OPTIONS: SortOption[] = [
+  { id: DEFAULT_SORT_OPTION_ID, label: 'Default' },
+  {
+    id: 'price-asc',
+    label: 'Price (Low to High)',
+    sortBy: 'price',
+    order: 'asc',
+  },
+  {
+    id: 'price-desc',
+    label: 'Price (High to Low)',
+    sortBy: 'price',
+    order: 'desc',
+  },
+  {
+    id: 'deal',
+    label: 'Best Deal',
+    sortBy: 'discountPercentage',
+    order: 'desc',
+  },
+  {
+    id: 'rating',
+    label: 'Best Rated',
+    sortBy: 'rating',
+    order: 'desc',
+  },
+];

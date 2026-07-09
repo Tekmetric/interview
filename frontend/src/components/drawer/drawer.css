@@ -40,6 +40,12 @@
   transform: translateY(100%);
 }
 
+.drawer-panel--full-height {
+  height: 100vh;
+  height: 100dvh;
+  border-radius: 0;
+}
+
 .drawer-header {
   display: flex;
   align-items: center;

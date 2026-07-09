@@ -34,6 +34,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       title="Cart"
       titleId="cart-drawer-title"
       closeAriaLabel="Close cart"
+      panelClassName="drawer-panel--full-height"
     >
       {isEmpty ? (
         <p className="m-0 text-sm text-neutral-600">Cart is empty</p>

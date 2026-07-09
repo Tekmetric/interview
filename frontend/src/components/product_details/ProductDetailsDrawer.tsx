@@ -65,7 +65,7 @@ export function ProductDetailsDrawer({
       title={title}
       titleId="product-details-drawer-title"
       closeAriaLabel="Close product details"
-      panelClassName="drawer-panel--wide"
+      panelClassName="drawer-panel--wide drawer-panel--full-height"
     >
       {isLoading && (
         <p role="status" aria-live="polite" className="text-sm text-neutral-600">

@@ -15,6 +15,7 @@ interface ProductSummaryRaw {
   rating: number;
   reviews: unknown[];
   thumbnail: string;
+  availabilityStatus: string;
 }
 
 interface ProductDetailReviewRaw {
@@ -63,6 +64,7 @@ export function mapProductSummary(raw: ProductSummaryRaw): ProductSummary {
     rating: raw.rating,
     reviewCount: raw.reviews.length,
     thumbnail: raw.thumbnail,
+    availabilityStatus: raw.availabilityStatus,
   };
 }
 

@@ -1,5 +1,6 @@
 import type { ProductSummary } from '../../hooks/types';
 import { AddToCartButton } from './AddToCartButton';
+import { AvailabilityBadge } from './AvailabilityBadge';
 import { MoreDetailsOverlay } from './MoreDetailsOverlay';
 import { ProductImage } from './ProductImage';
 import { ProductPrice } from './ProductPrice';
@@ -21,6 +22,7 @@ export function ProductCard({
     <article className="flex h-full flex-col overflow-hidden rounded border border-neutral-200">
       <div className="group relative">
         <ProductImage src={product.thumbnail} alt={product.title} />
+        <AvailabilityBadge availabilityStatus={product.availabilityStatus} />
         <MoreDetailsOverlay
           productId={product.id}
           isOpen={isDetailsOpen}
@@ -44,6 +46,9 @@ export function ProductCard({
             price={product.price}
             discountPercentage={product.discountPercentage}
             thumbnail={product.thumbnail}
+            availabilityStatus={product.availabilityStatus}
+            productId={product.id}
+            onOpenDetails={onOpenDetails}
           />
         </div>
       </div>

@@ -22,6 +22,7 @@ export interface ProductSummary {
   rating: number;
   reviewCount: number;
   thumbnail: string;
+  availabilityStatus: string;
 }
 
 /** Fields returned by the single-product endpoint for the details drawer. */

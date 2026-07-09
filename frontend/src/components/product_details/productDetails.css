@@ -202,3 +202,28 @@
   flex: 0 0 70%;
   min-width: 0;
 }
+
+.product-details-action--notify {
+  flex-wrap: wrap;
+}
+
+.product-details-action__email {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.product-details-action__notify-button {
+  flex: 0 0 auto;
+  min-width: 7rem;
+}
+
+@media (max-width: 480px) {
+  .product-details-action--notify {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .product-details-action__notify-button {
+    width: 100%;
+  }
+}

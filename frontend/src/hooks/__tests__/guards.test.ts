@@ -50,6 +50,12 @@ describe('isProductSummaryRaw', () => {
     ).toBe(false);
   });
 
+  it('rejects when availabilityStatus is missing', () => {
+    const { availabilityStatus: _availabilityStatus, ...productWithoutStatus } =
+      sampleProductSummaryRaw;
+    expect(isProductSummaryRaw(productWithoutStatus)).toBe(false);
+  });
+
   it('rejects null and non-object values', () => {
     expect(isProductSummaryRaw(null)).toBe(false);
     expect(isProductSummaryRaw('product')).toBe(false);

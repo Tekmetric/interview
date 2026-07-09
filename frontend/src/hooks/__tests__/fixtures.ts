@@ -24,6 +24,7 @@ export const sampleProductSummaryRaw = {
   ],
   thumbnail:
     'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp',
+  availabilityStatus: 'Low Stock',
 };
 
 export const sampleProductSummary: ProductSummary = {
@@ -37,6 +38,7 @@ export const sampleProductSummary: ProductSummary = {
   reviewCount: 1,
   thumbnail:
     'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp',
+  availabilityStatus: 'Low Stock',
 };
 
 export const sampleProductsResponseRaw = {
@@ -140,7 +142,7 @@ export const sampleCategories: ProductCategory[] = [
 ];
 
 export const PRODUCT_SUMMARY_SELECT =
-  'id,sku,title,brand,price,discountPercentage,rating,reviews,thumbnail';
+  'id,sku,title,brand,price,discountPercentage,rating,reviews,thumbnail,availabilityStatus';
 
 export const PRODUCT_DETAIL_SELECT =
   'id,sku,title,description,brand,price,discountPercentage,rating,stock,images,thumbnail,weight,dimensions,shippingInformation,availabilityStatus,returnPolicy,reviews';

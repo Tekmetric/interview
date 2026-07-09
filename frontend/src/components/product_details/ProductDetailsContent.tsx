@@ -7,9 +7,13 @@ import './productDetails.css';
 
 interface ProductDetailsContentProps {
   product: ProductDetail;
+  onNotifySuccess: () => void;
 }
 
-export function ProductDetailsContent({ product }: ProductDetailsContentProps) {
+export function ProductDetailsContent({
+  product,
+  onNotifySuccess,
+}: ProductDetailsContentProps) {
   const { width, height, depth } = product.dimensions;
   const inStock = product.stock > 0;
 
@@ -70,6 +74,7 @@ export function ProductDetailsContent({ product }: ProductDetailsContentProps) {
         discountPercentage={product.discountPercentage}
         thumbnail={product.thumbnail}
         inStock={inStock}
+        onNotifySuccess={onNotifySuccess}
       />
     </div>
   );

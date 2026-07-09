@@ -53,7 +53,8 @@ export function isProductSummaryRaw(value: unknown): boolean {
     typeof value.rating === 'number' &&
     Array.isArray(value.reviews) &&
     value.reviews.every(isProductSummaryReview) &&
-    typeof value.thumbnail === 'string'
+    typeof value.thumbnail === 'string' &&
+    typeof value.availabilityStatus === 'string'
   );
 }
 

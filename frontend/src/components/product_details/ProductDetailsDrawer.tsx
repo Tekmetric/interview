@@ -79,7 +79,9 @@ export function ProductDetailsDrawer({
         </p>
       )}
 
-      {product && <ProductDetailsContent product={product} />}
+      {product && (
+        <ProductDetailsContent product={product} onNotifySuccess={onClose} />
+      )}
     </Drawer>
   );
 }

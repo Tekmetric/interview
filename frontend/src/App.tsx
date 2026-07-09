@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CategoryFilter } from './components/category_filter/CategoryFilter';
 import { Pagination } from './components/pagination/Pagination';
 import {
@@ -24,6 +24,7 @@ import {
   type ProductSummary,
   type ProductCategory,
 } from './hooks/types';
+import { scrollIntoViewRespectingMotion } from './utils/scrollIntoViewRespectingMotion';
 
 function App() {
   const [products, setProducts] = useState<ProductSummary[]>([]);
@@ -40,6 +41,7 @@ function App() {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const productsTopRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -143,6 +145,12 @@ function App() {
   const handleCategoryChange = (slug: string | null) => {
     setSelectedCategorySlug(slug);
     setCurrentPage(1);
+    scrollIntoViewRespectingMotion(productsTopRef.current);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    scrollIntoViewRespectingMotion(productsTopRef.current);
   };
 
   const trimmedQuery = searchQuery.trim();
@@ -173,7 +181,9 @@ function App() {
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-4 mb-4">
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                <h1 className="text-2xl font-bold">{heading}</h1>
+                <h1 ref={productsTopRef} className="text-2xl font-bold">
+                  {heading}
+                </h1>
                 {!isLoading && !error && (
                   <span
                     className="text-sm text-neutral-600"
@@ -204,7 +214,7 @@ function App() {
                 <Pagination
                   currentPage={currentPage}
                   totalPages={getTotalPages(productTotal)}
-                  onPageChange={setCurrentPage}
+                  onPageChange={handlePageChange}
                 />
               </>
             )}

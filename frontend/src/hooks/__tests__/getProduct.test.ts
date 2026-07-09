@@ -1,6 +1,12 @@
 import { getProduct } from '../getProduct';
 import { HttpError, InvalidResponseError } from '../errors';
-import { createMockResponse, sampleProduct } from './fixtures';
+import {
+  createMockResponse,
+  PRODUCT_DETAIL_SELECT,
+  sampleProductDetail,
+  sampleProductDetailRaw,
+  withSelectParam,
+} from './fixtures';
 
 describe('getProduct', () => {
   const originalFetch = global.fetch;
@@ -13,27 +19,28 @@ describe('getProduct', () => {
     global.fetch = originalFetch;
   });
 
-  it('returns a correctly shaped Product on success', async () => {
+  it('returns a correctly shaped ProductDetail on success', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProduct)
+      createMockResponse(sampleProductDetailRaw)
     );
 
     const result = await getProduct(1);
 
-    expect(result).toEqual(sampleProduct);
+    expect(result).toEqual(sampleProductDetail);
     expect(result.id).toBe(1);
     expect(result.price).toBe(9.99);
+    expect(result.reviews[0]).not.toHaveProperty('reviewerEmail');
   });
 
-  it('requests the correct product URL', async () => {
+  it('requests the correct product URL with select param', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProduct)
+      createMockResponse(sampleProductDetailRaw)
     );
 
     await getProduct(42);
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://dummyjson.com/products/42',
+      withSelectParam('https://dummyjson.com/products/42', PRODUCT_DETAIL_SELECT),
       expect.objectContaining({ signal: expect.any(AbortSignal) })
     );
   });

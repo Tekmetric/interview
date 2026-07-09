@@ -6,7 +6,10 @@ export { getCategories } from './getCategories';
 export { getProductsByCategory } from './getProductsByCategory';
 
 export type {
-  Product,
+  ProductSummary,
+  ProductDetail,
+  ProductDetailReview,
+  ProductDimensions,
   ProductsResponse,
   GetProductsParams,
   GetSortedProductsParams,

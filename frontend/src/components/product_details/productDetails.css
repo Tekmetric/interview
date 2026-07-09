@@ -1,0 +1,141 @@
+.product-details-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .product-details-hero {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+
+  .product-details-hero__gallery {
+    flex: 0 0 45%;
+    min-width: 0;
+  }
+
+  .product-details-hero__info {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.product-details-hero__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.product-image-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.collapsible-section {
+  border-top: 1px solid #e5e5e5;
+}
+
+.collapsible-section__trigger {
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  background: transparent;
+  padding: 0.75rem 0;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #171717;
+}
+
+.collapsible-section__trigger:hover {
+  color: #404040;
+}
+
+.collapsible-section__trigger:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+.collapsible-section__icon {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #737373;
+}
+
+.collapsible-section__panel {
+  padding-bottom: 0.75rem;
+}
+
+.product-details-specs {
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.product-details-specs dt {
+  font-weight: 600;
+  color: #404040;
+}
+
+.product-details-specs dd {
+  margin: 0;
+  color: #525252;
+}
+
+.product-review-pager {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.product-review-pager__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.product-review-pager__controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.product-review-pager__review {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.product-review-pager__meta {
+  font-size: 0.875rem;
+  color: #525252;
+}
+
+.product-review-pager__comment {
+  margin: 0;
+  color: #404040;
+}
+
+.product-review-pager__empty {
+  margin: 0;
+  color: #737373;
+  font-size: 0.875rem;
+}
+
+.product-details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.product-details-sections {
+  display: flex;
+  flex-direction: column;
+}

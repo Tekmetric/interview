@@ -2,7 +2,10 @@ import { getProductsByCategory } from '../getProductsByCategory';
 import { InvalidResponseError } from '../errors';
 import {
   createMockResponse,
+  PRODUCT_SUMMARY_SELECT,
   sampleProductsResponse,
+  sampleProductsResponseRaw,
+  withSelectParam,
 } from './fixtures';
 
 describe('getProductsByCategory', () => {
@@ -18,7 +21,7 @@ describe('getProductsByCategory', () => {
 
   it('returns a correctly shaped ProductsResponse on success', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProductsResponse)
+      createMockResponse(sampleProductsResponseRaw)
     );
 
     const result = await getProductsByCategory({ category: 'beauty' });
@@ -27,22 +30,25 @@ describe('getProductsByCategory', () => {
     expect(result.products).toHaveLength(1);
   });
 
-  it('includes the category slug in the request path and uses default limit=12', async () => {
+  it('includes the category slug in the request path and uses default limit=12 with select param', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProductsResponse)
+      createMockResponse(sampleProductsResponseRaw)
     );
 
     await getProductsByCategory({ category: 'smartphones' });
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://dummyjson.com/products/category/smartphones?limit=12&skip=0',
+      withSelectParam(
+        'https://dummyjson.com/products/category/smartphones?limit=12&skip=0',
+        PRODUCT_SUMMARY_SELECT
+      ),
       expect.any(Object)
     );
   });
 
   it('forwards custom limit, skip, and sort params', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProductsResponse)
+      createMockResponse(sampleProductsResponseRaw)
     );
 
     await getProductsByCategory({
@@ -54,7 +60,10 @@ describe('getProductsByCategory', () => {
     });
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://dummyjson.com/products/category/beauty?limit=5&skip=10&sortBy=price&order=asc',
+      withSelectParam(
+        'https://dummyjson.com/products/category/beauty?limit=5&skip=10&sortBy=price&order=asc',
+        PRODUCT_SUMMARY_SELECT
+      ),
       expect.any(Object)
     );
   });

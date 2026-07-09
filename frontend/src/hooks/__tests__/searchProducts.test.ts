@@ -2,7 +2,10 @@ import { searchProducts } from '../searchProducts';
 import { InvalidResponseError } from '../errors';
 import {
   createMockResponse,
+  PRODUCT_SUMMARY_SELECT,
   sampleProductsResponse,
+  sampleProductsResponseRaw,
+  withSelectParam,
 } from './fixtures';
 
 describe('searchProducts', () => {
@@ -18,7 +21,7 @@ describe('searchProducts', () => {
 
   it('returns a correctly shaped ProductsResponse on success', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProductsResponse)
+      createMockResponse(sampleProductsResponseRaw)
     );
 
     const result = await searchProducts({ q: 'phone' });
@@ -27,22 +30,25 @@ describe('searchProducts', () => {
     expect(result.products).toHaveLength(1);
   });
 
-  it('URL-encodes the search query and uses default limit=12', async () => {
+  it('URL-encodes the search query and uses default limit=12 with select param', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProductsResponse)
+      createMockResponse(sampleProductsResponseRaw)
     );
 
     await searchProducts({ q: 'phone case' });
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://dummyjson.com/products/search?q=phone+case&limit=12&skip=0',
+      withSelectParam(
+        'https://dummyjson.com/products/search?q=phone+case&limit=12&skip=0',
+        PRODUCT_SUMMARY_SELECT
+      ),
       expect.any(Object)
     );
   });
 
   it('forwards sortBy and order when provided', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProductsResponse)
+      createMockResponse(sampleProductsResponseRaw)
     );
 
     await searchProducts({
@@ -52,7 +58,10 @@ describe('searchProducts', () => {
     });
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://dummyjson.com/products/search?q=phone&limit=12&skip=0&sortBy=price&order=asc',
+      withSelectParam(
+        'https://dummyjson.com/products/search?q=phone&limit=12&skip=0&sortBy=price&order=asc',
+        PRODUCT_SUMMARY_SELECT
+      ),
       expect.any(Object)
     );
   });

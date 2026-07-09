@@ -1,47 +1,86 @@
-import { isProduct, isProductCategoriesResponse, isProductCategory, isProductsResponse } from '../guards';
-import { sampleCategories, sampleProduct, sampleProductsResponse } from './fixtures';
+import {
+  isProductCategoriesResponse,
+  isProductCategory,
+  isProductDetailRaw,
+  isProductSummaryRaw,
+  isProductsResponseRaw,
+} from '../guards';
+import {
+  sampleCategories,
+  sampleProductDetailRaw,
+  sampleProductSummaryRaw,
+  sampleProductsResponseRaw,
+} from './fixtures';
 
-describe('isProduct', () => {
-  it('accepts a representative DummyJSON product', () => {
-    expect(isProduct(sampleProduct)).toBe(true);
+describe('isProductSummaryRaw', () => {
+  it('accepts a representative summary product', () => {
+    expect(isProductSummaryRaw(sampleProductSummaryRaw)).toBe(true);
   });
 
   it('rejects when id is missing', () => {
-    const { id: _id, ...productWithoutId } = sampleProduct;
-    expect(isProduct(productWithoutId)).toBe(false);
+    const { id: _id, ...productWithoutId } = sampleProductSummaryRaw;
+    expect(isProductSummaryRaw(productWithoutId)).toBe(false);
   });
 
   it('rejects when title is not a string', () => {
-    expect(isProduct({ ...sampleProduct, title: 123 })).toBe(false);
+    expect(isProductSummaryRaw({ ...sampleProductSummaryRaw, title: 123 })).toBe(
+      false
+    );
   });
 
   it('rejects when price is not a number', () => {
-    expect(isProduct({ ...sampleProduct, price: '9.99' })).toBe(false);
+    expect(
+      isProductSummaryRaw({ ...sampleProductSummaryRaw, price: '9.99' })
+    ).toBe(false);
   });
 
   it('accepts products without a brand', () => {
-    const { brand: _brand, ...productWithoutBrand } = sampleProduct;
-    expect(isProduct(productWithoutBrand)).toBe(true);
+    const { brand: _brand, ...productWithoutBrand } = sampleProductSummaryRaw;
+    expect(isProductSummaryRaw(productWithoutBrand)).toBe(true);
   });
 
-  it('rejects when images is not a string array', () => {
-    expect(isProduct({ ...sampleProduct, images: ['valid', 1] })).toBe(false);
+  it('rejects when reviews is not an array', () => {
+    expect(
+      isProductSummaryRaw({ ...sampleProductSummaryRaw, reviews: 'invalid' })
+    ).toBe(false);
   });
 
   it('rejects null and non-object values', () => {
-    expect(isProduct(null)).toBe(false);
-    expect(isProduct('product')).toBe(false);
+    expect(isProductSummaryRaw(null)).toBe(false);
+    expect(isProductSummaryRaw('product')).toBe(false);
   });
 });
 
-describe('isProductsResponse', () => {
-  it('accepts a representative DummyJSON products response', () => {
-    expect(isProductsResponse(sampleProductsResponse)).toBe(true);
+describe('isProductDetailRaw', () => {
+  it('accepts a representative detail product', () => {
+    expect(isProductDetailRaw(sampleProductDetailRaw)).toBe(true);
+  });
+
+  it('rejects when sku is missing', () => {
+    const { sku: _sku, ...productWithoutSku } = sampleProductDetailRaw;
+    expect(isProductDetailRaw(productWithoutSku)).toBe(false);
+  });
+
+  it('rejects when images is not a string array', () => {
+    expect(
+      isProductDetailRaw({ ...sampleProductDetailRaw, images: ['valid', 1] })
+    ).toBe(false);
+  });
+
+  it('rejects null and non-object values', () => {
+    expect(isProductDetailRaw(null)).toBe(false);
+    expect(isProductDetailRaw('product')).toBe(false);
+  });
+});
+
+describe('isProductsResponseRaw', () => {
+  it('accepts a representative products response', () => {
+    expect(isProductsResponseRaw(sampleProductsResponseRaw)).toBe(true);
   });
 
   it('accepts an empty products array', () => {
     expect(
-      isProductsResponse({
+      isProductsResponseRaw({
         products: [],
         total: 0,
         skip: 0,
@@ -52,20 +91,20 @@ describe('isProductsResponse', () => {
 
   it('rejects when products is missing', () => {
     const { products: _products, ...responseWithoutProducts } =
-      sampleProductsResponse;
-    expect(isProductsResponse(responseWithoutProducts)).toBe(false);
+      sampleProductsResponseRaw;
+    expect(isProductsResponseRaw(responseWithoutProducts)).toBe(false);
   });
 
   it('rejects when total is not a number', () => {
     expect(
-      isProductsResponse({ ...sampleProductsResponse, total: '194' })
+      isProductsResponseRaw({ ...sampleProductsResponseRaw, total: '194' })
     ).toBe(false);
   });
 
   it('rejects when a product in the array is malformed', () => {
     expect(
-      isProductsResponse({
-        ...sampleProductsResponse,
+      isProductsResponseRaw({
+        ...sampleProductsResponseRaw,
         products: [{ id: 1 }],
       })
     ).toBe(false);

@@ -2,7 +2,9 @@ import { Button } from '../button/Button';
 import './moreDetailsOverlay.css';
 
 interface MoreDetailsOverlayProps {
-  sku: string;
+  productId: number;
+  isOpen: boolean;
+  onOpenDetails: (productId: number) => void;
 }
 
 function MagnifyingGlassIcon() {
@@ -14,15 +16,25 @@ function MagnifyingGlassIcon() {
   );
 }
 
-export function MoreDetailsOverlay({ sku }: MoreDetailsOverlayProps) {
+export function MoreDetailsOverlay({
+  productId,
+  isOpen,
+  onOpenDetails,
+}: MoreDetailsOverlayProps) {
   const handleClick = () => {
-    console.log('More details clicked', { sku });
+    onOpenDetails(productId);
   };
 
   return (
     <>
       <div className="details-overlay">
-        <Button variant="secondary" aria-label="View Details" onClick={handleClick}>
+        <Button
+          variant="secondary"
+          aria-label="View Details"
+          aria-expanded={isOpen}
+          aria-haspopup="dialog"
+          onClick={handleClick}
+        >
           View Details
         </Button>
       </div>
@@ -30,6 +42,8 @@ export function MoreDetailsOverlay({ sku }: MoreDetailsOverlayProps) {
         type="button"
         className="details-corner"
         aria-label="View Details"
+        aria-expanded={isOpen}
+        aria-haspopup="dialog"
         onClick={handleClick}
       >
         <MagnifyingGlassIcon />

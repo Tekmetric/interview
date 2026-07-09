@@ -1,5 +1,7 @@
 import { fetchJson } from './apiClient';
-import { isProductsResponse } from './guards';
+import { isProductsResponseRaw } from './guards';
+import { mapProductsResponse } from './productMappers';
+import { PRODUCT_SUMMARY_SELECT } from './productSelectFields';
 import type { GetProductsByCategoryParams, ProductsResponse } from './types';
 
 export async function getProductsByCategory(
@@ -7,8 +9,10 @@ export async function getProductsByCategory(
 ): Promise<ProductsResponse> {
   const { category, limit = 12, skip = 0, sortBy, order } = params;
 
-  return fetchJson<ProductsResponse>(`/products/category/${category}`, {
-    query: { limit, skip, sortBy, order },
-    validate: isProductsResponse,
+  const raw = await fetchJson(`/products/category/${category}`, {
+    query: { limit, skip, sortBy, order, select: PRODUCT_SUMMARY_SELECT },
+    validate: isProductsResponseRaw,
   });
+
+  return mapProductsResponse(raw);
 }

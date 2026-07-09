@@ -10,6 +10,7 @@ interface DrawerProps {
   closeAriaLabel: string;
   children: ReactNode;
   footer?: ReactNode;
+  panelClassName?: string;
 }
 
 export function Drawer({
@@ -20,6 +21,7 @@ export function Drawer({
   closeAriaLabel,
   children,
   footer,
+  panelClassName,
 }: DrawerProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const [isMounted, setIsMounted] = useState(false);
@@ -91,7 +93,7 @@ export function Drawer({
         aria-modal="true"
         aria-labelledby={titleId}
         onTransitionEnd={handleTransitionEnd}
-        className={`drawer-panel ${isVisible ? 'drawer-panel--visible' : 'drawer-panel--hidden'}`}
+        className={`drawer-panel ${panelClassName ?? ''} ${isVisible ? 'drawer-panel--visible' : 'drawer-panel--hidden'}`.trim()}
       >
         <div className="drawer-header">
           <h2 id={titleId} className="drawer-title">

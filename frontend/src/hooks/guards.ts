@@ -1,4 +1,5 @@
-import type { Product, ProductCategory, ProductsResponse } from './types';
+import type { ProductCategory } from './types';
+import type { ProductDetailRaw, ProductsResponseRaw } from './productMappers';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -20,7 +21,11 @@ function isProductDimensions(value: unknown): boolean {
   );
 }
 
-function isProductReview(value: unknown): boolean {
+function isProductSummaryReview(value: unknown): boolean {
+  return isRecord(value);
+}
+
+function isProductDetailReview(value: unknown): boolean {
   if (!isRecord(value)) {
     return false;
   }
@@ -29,25 +34,11 @@ function isProductReview(value: unknown): boolean {
     typeof value.rating === 'number' &&
     typeof value.comment === 'string' &&
     typeof value.date === 'string' &&
-    typeof value.reviewerName === 'string' &&
-    typeof value.reviewerEmail === 'string'
+    typeof value.reviewerName === 'string'
   );
 }
 
-function isProductMeta(value: unknown): boolean {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  return (
-    typeof value.createdAt === 'string' &&
-    typeof value.updatedAt === 'string' &&
-    typeof value.barcode === 'string' &&
-    typeof value.qrCode === 'string'
-  );
-}
-
-export function isProduct(value: unknown): value is Product {
+export function isProductSummaryRaw(value: unknown): boolean {
   if (!isRecord(value)) {
     return false;
   }
@@ -55,46 +46,56 @@ export function isProduct(value: unknown): value is Product {
   return (
     typeof value.id === 'number' &&
     typeof value.title === 'string' &&
-    typeof value.description === 'string' &&
-    typeof value.category === 'string' &&
+    (value.brand === undefined || typeof value.brand === 'string') &&
+    typeof value.price === 'number' &&
+    typeof value.discountPercentage === 'number' &&
+    typeof value.rating === 'number' &&
+    Array.isArray(value.reviews) &&
+    value.reviews.every(isProductSummaryReview) &&
+    typeof value.thumbnail === 'string'
+  );
+}
+
+export function isProductDetailRaw(value: unknown): value is ProductDetailRaw {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === 'number' &&
+    typeof value.sku === 'string' &&
+    typeof value.title === 'string' &&
+    (value.brand === undefined || typeof value.brand === 'string') &&
     typeof value.price === 'number' &&
     typeof value.discountPercentage === 'number' &&
     typeof value.rating === 'number' &&
     typeof value.stock === 'number' &&
-    isStringArray(value.tags) &&
-    (value.brand === undefined || typeof value.brand === 'string') &&
-    typeof value.sku === 'string' &&
+    isStringArray(value.images) &&
+    typeof value.thumbnail === 'string' &&
     typeof value.weight === 'number' &&
     isProductDimensions(value.dimensions) &&
-    typeof value.warrantyInformation === 'string' &&
     typeof value.shippingInformation === 'string' &&
     typeof value.availabilityStatus === 'string' &&
-    Array.isArray(value.reviews) &&
-    value.reviews.every(isProductReview) &&
     typeof value.returnPolicy === 'string' &&
-    typeof value.minimumOrderQuantity === 'number' &&
-    isProductMeta(value.meta) &&
-    typeof value.thumbnail === 'string' &&
-    isStringArray(value.images)
+    Array.isArray(value.reviews) &&
+    value.reviews.every(isProductDetailReview)
   );
 }
 
-export function isProductsResponse(value: unknown): value is ProductsResponse {
+export function isProductsResponseRaw(
+  value: unknown
+): value is ProductsResponseRaw {
   if (!isRecord(value)) {
     return false;
   }
 
   return (
     Array.isArray(value.products) &&
-    value.products.every(isProduct) &&
+    value.products.every(isProductSummaryRaw) &&
     typeof value.total === 'number' &&
     typeof value.skip === 'number' &&
     typeof value.limit === 'number'
   );
-}
-
-export function isProductArrayResponse(value: unknown): value is Product[] {
-  return Array.isArray(value) && value.every(isProduct);
 }
 
 export function isProductCategory(value: unknown): value is ProductCategory {

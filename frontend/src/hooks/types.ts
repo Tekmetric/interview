@@ -11,48 +11,47 @@ export interface ProductDimensions {
   depth: number;
 }
 
-export interface ProductReview {
+/** Fields returned by list/search endpoints for product cards. */
+export interface ProductSummary {
+  id: number;
+  title: string;
+  brand?: string;
+  price: number;
+  discountPercentage: number;
+  rating: number;
+  reviewCount: number;
+  thumbnail: string;
+}
+
+/** Fields returned by the single-product endpoint for the details drawer. */
+export interface ProductDetailReview {
   rating: number;
   comment: string;
   date: string;
   reviewerName: string;
-  reviewerEmail: string;
 }
 
-export interface ProductMeta {
-  createdAt: string;
-  updatedAt: string;
-  barcode: string;
-  qrCode: string;
-}
-
-export interface Product {
+export interface ProductDetail {
   id: number;
+  sku: string;
   title: string;
-  description: string;
-  category: string;
+  brand?: string;
   price: number;
   discountPercentage: number;
   rating: number;
   stock: number;
-  tags: string[];
-  brand?: string;
-  sku: string;
+  images: string[];
+  thumbnail: string;
   weight: number;
   dimensions: ProductDimensions;
-  warrantyInformation: string;
   shippingInformation: string;
   availabilityStatus: string;
-  reviews: ProductReview[];
   returnPolicy: string;
-  minimumOrderQuantity: number;
-  meta: ProductMeta;
-  thumbnail: string;
-  images: string[];
+  reviews: ProductDetailReview[];
 }
 
 export interface ProductsResponse {
-  products: Product[];
+  products: ProductSummary[];
   total: number;
   skip: number;
   limit: number;

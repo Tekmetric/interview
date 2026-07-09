@@ -103,6 +103,10 @@
     transform: translateX(100%);
   }
 
+  .drawer-panel--wide {
+    width: 32rem;
+  }
+
   .drawer-panel--visible {
     transform: translateX(0);
   }

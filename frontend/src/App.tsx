@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CategoryFilter } from './components/category_filter/CategoryFilter';
+import { ProductDetailsDrawer } from './components/product_details/ProductDetailsDrawer';
 import { ProductGrid } from './components/product_grid/ProductGrid';
 import { PageFooter } from './components/layout/PageFooter';
 import { PageHeader } from './components/layout/PageHeader';
@@ -12,12 +13,12 @@ import { searchProducts } from './hooks/searchProducts';
 import {
   DEFAULT_SORT_OPTION_ID,
   SORT_OPTIONS,
-  type Product,
+  type ProductSummary,
   type ProductCategory,
 } from './hooks/types';
 
 function App() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductSummary[]>([]);
   const [productTotal, setProductTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +27,7 @@ function App() {
   const [selectedCategorySlug, setSelectedCategorySlug] = useState<string | null>(
     null
   );
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
@@ -163,11 +165,22 @@ function App() {
 
             {error && <p role="alert">{error}</p>}
 
-            {!isLoading && !error && <ProductGrid products={products} />}
+            {!isLoading && !error && (
+              <ProductGrid
+                products={products}
+                selectedProductId={selectedProductId}
+                onOpenDetails={setSelectedProductId}
+              />
+            )}
           </div>
         </div>
       </main>
       <PageFooter />
+      <ProductDetailsDrawer
+        productId={selectedProductId}
+        isOpen={selectedProductId !== null}
+        onClose={() => setSelectedProductId(null)}
+      />
     </div>
   );
 }

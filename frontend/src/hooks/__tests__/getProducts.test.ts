@@ -7,7 +7,10 @@ import {
 } from '../errors';
 import {
   createMockResponse,
+  PRODUCT_SUMMARY_SELECT,
   sampleProductsResponse,
+  sampleProductsResponseRaw,
+  withSelectParam,
 } from './fixtures';
 
 describe('getProducts', () => {
@@ -24,7 +27,7 @@ describe('getProducts', () => {
 
   it('returns a correctly shaped ProductsResponse on success', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProductsResponse)
+      createMockResponse(sampleProductsResponseRaw)
     );
 
     const result = await getProducts();
@@ -34,28 +37,28 @@ describe('getProducts', () => {
     expect(result.products[0].title).toBe('Essence Mascara Lash Princess');
   });
 
-  it('uses limit=12 by default', async () => {
+  it('uses limit=12 and skip=0 by default with select param', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProductsResponse)
+      createMockResponse(sampleProductsResponseRaw)
     );
 
     await getProducts();
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://dummyjson.com/products?limit=12&skip=0',
+      withSelectParam('https://dummyjson.com/products?limit=12&skip=0', PRODUCT_SUMMARY_SELECT),
       expect.objectContaining({ signal: expect.any(AbortSignal) })
     );
   });
 
   it('forwards custom limit and skip to the request URL', async () => {
     (global.fetch as jest.Mock).mockResolvedValue(
-      createMockResponse(sampleProductsResponse)
+      createMockResponse(sampleProductsResponseRaw)
     );
 
     await getProducts({ limit: 5, skip: 10 });
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://dummyjson.com/products?limit=5&skip=10',
+      withSelectParam('https://dummyjson.com/products?limit=5&skip=10', PRODUCT_SUMMARY_SELECT),
       expect.any(Object)
     );
   });

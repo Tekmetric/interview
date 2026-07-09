@@ -1,0 +1,7 @@
+// List/card endpoints — reviews included only to derive count
+export const PRODUCT_SUMMARY_SELECT =
+  'id,title,brand,price,discountPercentage,rating,reviews,thumbnail';
+
+// Detail drawer — only fields specified in requirements (+ sku for future cart actions)
+export const PRODUCT_DETAIL_SELECT =
+  'id,sku,title,brand,price,discountPercentage,rating,stock,images,thumbnail,weight,dimensions,shippingInformation,availabilityStatus,returnPolicy,reviews';

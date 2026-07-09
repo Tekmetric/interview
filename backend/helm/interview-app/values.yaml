@@ -1,0 +1,165 @@
+# ── Replica count ─────────────────────────────────────────────────────────────
+replicaCount: 2
+
+# ── Image ─────────────────────────────────────────────────────────────────────
+image:
+  repository: ghcr.io/your-org/interview-app  # Override with your registry
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# ── Pod metadata ──────────────────────────────────────────────────────────────
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations:
+  # Prometheus auto-scrape (used when no ServiceMonitor CRD is available)
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/actuator/prometheus"
+
+podLabels: {}
+
+# ── Service account ───────────────────────────────────────────────────────────
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+# ── Service ───────────────────────────────────────────────────────────────────
+service:
+  type: ClusterIP
+  port: 8080
+
+# ── Ingress ───────────────────────────────────────────────────────────────────
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # Uncomment for cert-manager TLS:
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: interview-app.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  # tls:
+  #   - secretName: interview-app-tls
+  #     hosts:
+  #       - interview-app.example.com
+
+# ── Resource requests & limits ────────────────────────────────────────────────
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+# ── Horizontal Pod Autoscaler ─────────────────────────────────────────────────
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# ── Pod Disruption Budget ─────────────────────────────────────────────────────
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# ── Liveness, Readiness & Startup Probes ─────────────────────────────────────
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+startupProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 5
+  # Allow up to 240 s for first startup (46 * 5 s + 10 s delay)
+  failureThreshold: 46
+
+# ── Security context ──────────────────────────────────────────────────────────
+podSecurityContext:
+  fsGroup: 1000
+  runAsNonRoot: true
+
+containerSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+
+# ── Prometheus ServiceMonitor (requires Prometheus Operator CRD) ──────────────
+serviceMonitor:
+  enabled: false          # Set to true when Prometheus Operator is installed
+  namespace: ""           # Defaults to release namespace
+  labels: {}              # Must match Prometheus Operator's serviceMonitorSelector
+  interval: 30s
+  scrapeTimeout: 10s
+  path: /actuator/prometheus
+
+# ── Spring / application config (injected as env vars via ConfigMap) ──────────
+spring:
+  applicationName: interview-app
+  datasource:
+    url: "jdbc:h2:mem:testdb;MODE=LEGACY;NON_KEYWORDS=YEAR"
+    username: sa
+    # In production replace with a Kubernetes Secret reference
+    password: password
+
+# ── JVM options ───────────────────────────────────────────────────────────────
+javaOpts: "-Xms256m -Xmx512m -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
+
+# ── Scheduling ────────────────────────────────────────────────────────────────
+nodeSelector: {}
+
+tolerations: []
+
+# Prefer spreading pods across nodes for HA
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - interview-app
+          topologyKey: kubernetes.io/hostname
+
+# ── Topology spread (K8s 1.19+) ──────────────────────────────────────────────
+topologySpreadConstraints: []
+# - maxSkew: 1
+#   topologyKey: topology.kubernetes.io/zone
+#   whenUnsatisfiable: DoNotSchedule
+#   labelSelector:
+#     matchLabels:
+#       app.kubernetes.io/name: interview-app

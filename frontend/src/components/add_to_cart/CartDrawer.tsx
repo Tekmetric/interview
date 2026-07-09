@@ -1,5 +1,6 @@
 import { Button } from '../button/Button';
 import { Drawer } from '../drawer/Drawer';
+import { QuantityInput } from '../quantity_input/QuantityInput';
 import { formatProductPrice } from '../product_card/priceUtils';
 import { removeItem, updateQuantity } from '../../store/cartSlice';
 import {
@@ -59,26 +60,18 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <p className="m-0 text-sm font-medium">{item.title}</p>
                     <p className="m-0 mt-1 text-sm text-neutral-600">{display}</p>
                     <div className="mt-2 flex items-center gap-2">
-                      <label
-                        className="sr-only"
-                        htmlFor={`cart-qty-${item.sku}`}
-                      >
-                        Quantity for {item.title}
-                      </label>
-                      <input
+                      <QuantityInput
                         id={`cart-qty-${item.sku}`}
-                        type="number"
-                        min={1}
+                        label={`Quantity for ${item.title}`}
                         value={item.quantity}
-                        onChange={(event) =>
+                        onChange={(quantity) =>
                           dispatch(
                             updateQuantity({
                               sku: item.sku,
-                              quantity: Number(event.target.value),
+                              quantity,
                             })
                           )
                         }
-                        className="w-16 rounded border border-neutral-300 px-2 py-1 text-sm"
                       />
                       <Button
                         variant="secondary"

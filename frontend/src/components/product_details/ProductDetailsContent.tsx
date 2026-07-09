@@ -18,6 +18,10 @@ export function ProductDetailsContent({ product }: ProductDetailsContentProps) {
       <ProductDetailsHero product={product} />
 
       <div className="product-details-sections">
+        {product.description.trim() ? (
+          <p className="product-details-description">{product.description}</p>
+        ) : null}
+
         <CollapsibleSection title="Product Specifications">
           <dl className="product-details-specs">
             <div>

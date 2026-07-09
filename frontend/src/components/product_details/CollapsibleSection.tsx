@@ -31,10 +31,10 @@ export function CollapsibleSection({
       </button>
       <div
         id={panelId}
-        className="collapsible-section__panel"
-        hidden={!isOpen}
+        className={`collapsible-section__panel${isOpen ? ' collapsible-section__panel--open' : ''}`}
+        aria-hidden={!isOpen}
       >
-        {children}
+        <div className="collapsible-section__panel-inner">{children}</div>
       </div>
     </section>
   );

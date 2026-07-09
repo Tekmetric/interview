@@ -29,6 +29,7 @@ export interface ProductDetailRaw {
   id: number;
   sku: string;
   title: string;
+  description: string;
   brand?: string;
   price: number;
   discountPercentage: number;
@@ -88,6 +89,7 @@ export function mapProductDetail(raw: ProductDetailRaw): ProductDetail {
     id: raw.id,
     sku: raw.sku,
     title: raw.title,
+    description: raw.description,
     brand: raw.brand,
     price: raw.price,
     discountPercentage: raw.discountPercentage,

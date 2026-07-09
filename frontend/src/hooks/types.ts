@@ -36,6 +36,7 @@ export interface ProductDetail {
   id: number;
   sku: string;
   title: string;
+  description: string;
   brand?: string;
   price: number;
   discountPercentage: number;

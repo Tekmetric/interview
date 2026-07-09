@@ -27,6 +27,28 @@ describe('cartSlice', () => {
     expect(secondState.items).toEqual([{ ...sampleItem, quantity: 2 }]);
   });
 
+  it('adds a new item with the requested quantity', () => {
+    const state = cartReducer(
+      undefined,
+      addItem({ ...sampleItem, quantity: 3 })
+    );
+
+    expect(state.items).toEqual([{ ...sampleItem, quantity: 3 }]);
+  });
+
+  it('increments by the requested quantity when adding the same sku again', () => {
+    const firstState = cartReducer(
+      undefined,
+      addItem({ ...sampleItem, quantity: 2 })
+    );
+    const secondState = cartReducer(
+      firstState,
+      addItem({ ...sampleItem, quantity: 3 })
+    );
+
+    expect(secondState.items).toEqual([{ ...sampleItem, quantity: 5 }]);
+  });
+
   it('removes an item by sku', () => {
     const withItem = cartReducer(undefined, addItem(sampleItem));
     const nextState = cartReducer(withItem, removeItem(sampleItem.sku));

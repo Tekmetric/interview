@@ -57,6 +57,8 @@ export const sampleProductDetailRaw = {
   id: 1,
   sku: 'RCH45Q1A',
   title: 'Essence Mascara Lash Princess',
+  description:
+    'The Essence Mascara Lash Princess is a popular mascara known for its volumizing and lengthening effects.',
   price: 9.99,
   discountPercentage: 7.17,
   rating: 4.94,
@@ -92,6 +94,8 @@ export const sampleProductDetail: ProductDetail = {
   id: 1,
   sku: 'RCH45Q1A',
   title: 'Essence Mascara Lash Princess',
+  description:
+    'The Essence Mascara Lash Princess is a popular mascara known for its volumizing and lengthening effects.',
   price: 9.99,
   discountPercentage: 7.17,
   rating: 4.94,
@@ -139,7 +143,7 @@ export const PRODUCT_SUMMARY_SELECT =
   'id,sku,title,brand,price,discountPercentage,rating,reviews,thumbnail';
 
 export const PRODUCT_DETAIL_SELECT =
-  'id,sku,title,brand,price,discountPercentage,rating,stock,images,thumbnail,weight,dimensions,shippingInformation,availabilityStatus,returnPolicy,reviews';
+  'id,sku,title,description,brand,price,discountPercentage,rating,stock,images,thumbnail,weight,dimensions,shippingInformation,availabilityStatus,returnPolicy,reviews';
 
 export function createMockResponse(
   body: unknown,

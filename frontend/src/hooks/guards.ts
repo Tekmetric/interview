@@ -66,6 +66,7 @@ export function isProductDetailRaw(value: unknown): value is ProductDetailRaw {
     typeof value.id === 'number' &&
     typeof value.sku === 'string' &&
     typeof value.title === 'string' &&
+    typeof value.description === 'string' &&
     (value.brand === undefined || typeof value.brand === 'string') &&
     typeof value.price === 'number' &&
     typeof value.discountPercentage === 'number' &&

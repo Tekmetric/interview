@@ -9,3 +9,7 @@ export interface CartItem {
 }
 
 export type AddToCartPayload = Omit<CartItem, 'quantity'>;
+
+export type AddToCartActionPayload = AddToCartPayload & {
+  quantity?: number;
+};

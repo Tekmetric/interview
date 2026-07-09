@@ -3,6 +3,7 @@ import type { ProductCategory } from '../../hooks/types';
 import { Button } from '../button/Button';
 import { CategoryFilterDrawer } from './CategoryFilterDrawer';
 import { CategoryRadioList } from './CategoryRadioList';
+import { CategoryFilterSkeleton } from '../skeleton/CategoryFilterSkeleton';
 import {
   CATEGORY_FILTER_DISABLED_HINT_ID,
   DISABLED_HINT_TEXT,
@@ -42,6 +43,10 @@ export function CategoryFilter({
     closeDrawer();
   }
 
+  if (isLoading) {
+    return <CategoryFilterSkeleton />;
+  }
+
   return (
     <>
       <aside
@@ -67,19 +72,13 @@ export function CategoryFilter({
             </p>
           )}
 
-          {isLoading && (
-            <p role="status" aria-live="polite" className="text-sm text-neutral-600">
-              Loading categories...
-            </p>
-          )}
-
           {error && (
             <p role="alert" className="text-sm text-red-600">
               {error}
             </p>
           )}
 
-          {!isLoading && !error && (
+          {!error && (
             <CategoryRadioList
               categories={categories}
               value={value}

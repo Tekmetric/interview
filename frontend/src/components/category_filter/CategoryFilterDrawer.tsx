@@ -1,6 +1,7 @@
 import { Button } from '../button/Button';
 import { Drawer } from '../drawer/Drawer';
 import type { ProductCategory } from '../../hooks/types';
+import { CategoryFilterSkeleton } from '../skeleton/CategoryFilterSkeleton';
 import { CategoryRadioList } from './CategoryRadioList';
 import {
   CATEGORY_DRAWER_DISABLED_HINT_ID,
@@ -65,11 +66,7 @@ export function CategoryFilterDrawer({
           </p>
         )}
 
-        {isLoading && (
-          <p role="status" aria-live="polite" className="text-sm text-neutral-600">
-            Loading categories...
-          </p>
-        )}
+        {isLoading && <CategoryFilterSkeleton variant="list" />}
 
         {error && (
           <p role="alert" className="text-sm text-red-600">

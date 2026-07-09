@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CategoryFilter } from './components/category_filter/CategoryFilter';
 import { Pagination } from './components/pagination/Pagination';
 import {
@@ -8,8 +8,11 @@ import {
 } from './components/pagination/paginationUtils';
 import { ProductDetailsDrawer } from './components/product_details/ProductDetailsDrawer';
 import { ProductGrid } from './components/product_grid/ProductGrid';
-import { PageFooter } from './components/layout/PageFooter';
+import { LazyPageFooter } from './components/layout/LazyPageFooter';
 import { PageHeader } from './components/layout/PageHeader';
+import { PaginationSkeleton } from './components/skeleton/PaginationSkeleton';
+import { ProductGridSkeleton } from './components/skeleton/ProductGridSkeleton';
+import { Skeleton } from './components/skeleton/Skeleton';
 import { SortDropdown } from './components/sort_dropdown/SortDropdown';
 import { getCategories } from './hooks/getCategories';
 import { getProducts } from './hooks/getProducts';
@@ -28,7 +31,7 @@ import {
   type ProductSortField,
   type SortOrder,
 } from './hooks/types';
-import { scrollIntoViewRespectingMotion } from './utils/scrollIntoViewRespectingMotion';
+import { scrollToTopRespectingMotion } from './utils/scrollIntoViewRespectingMotion';
 
 interface BuildProductFetchParams {
   trimmedQuery: string;
@@ -82,7 +85,6 @@ function App() {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
-  const productsTopRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -181,12 +183,12 @@ function App() {
   const handleCategoryChange = (slug: string | null) => {
     setSelectedCategorySlug(slug);
     setCurrentPage(1);
-    scrollIntoViewRespectingMotion(productsTopRef.current);
+    scrollToTopRespectingMotion();
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    scrollIntoViewRespectingMotion(productsTopRef.current);
+    scrollToTopRespectingMotion();
   };
 
   const trimmedQuery = searchQuery.trim();
@@ -217,47 +219,52 @@ function App() {
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-4 mb-4">
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                <h1 ref={productsTopRef} className="text-2xl font-bold">
+                <h1 className="text-2xl font-bold">
                   {heading}
                 </h1>
-                {!isLoading && !error && (
-                  <span
-                    className="text-sm text-neutral-600"
-                    aria-label={`${productTotal} items`}
-                  >
-                    {productTotal} Item(s)
-                  </span>
+                {isLoading ? (
+                  <Skeleton className="h-4 w-20" />
+                ) : (
+                  !error && (
+                    <span
+                      className="text-sm text-neutral-600"
+                      aria-label={`${productTotal} items`}
+                    >
+                      {productTotal} Item(s)
+                    </span>
+                  )
                 )}
               </div>
               <SortDropdown value={sortOptionId} onChange={handleSortChange} />
             </div>
 
-            {isLoading && (
-              <p role="status" aria-live="polite">
-                Loading products...
-              </p>
-            )}
-
             {error && <p role="alert">{error}</p>}
 
-            {!isLoading && !error && (
+            {isLoading ? (
               <>
-                <ProductGrid
-                  products={products}
-                  selectedProductId={selectedProductId}
-                  onOpenDetails={setSelectedProductId}
-                />
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={getTotalPages(productTotal)}
-                  onPageChange={handlePageChange}
-                />
+                <ProductGridSkeleton />
+                <PaginationSkeleton />
               </>
+            ) : (
+              !error && (
+                <>
+                  <ProductGrid
+                    products={products}
+                    selectedProductId={selectedProductId}
+                    onOpenDetails={setSelectedProductId}
+                  />
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={getTotalPages(productTotal)}
+                    onPageChange={handlePageChange}
+                  />
+                </>
+              )
             )}
           </div>
         </div>
       </main>
-      <PageFooter />
+      <LazyPageFooter />
       <ProductDetailsDrawer
         productId={selectedProductId}
         isOpen={selectedProductId !== null}

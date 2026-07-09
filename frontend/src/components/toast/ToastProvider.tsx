@@ -10,8 +10,10 @@ import {
 } from 'react';
 import { usePrefersReducedMotion } from '../drawer/usePrefersReducedMotion';
 import { Toast } from './Toast';
+import './toast.css';
 
 const TOAST_DURATION_MS = 4000;
+const TOAST_EXIT_DURATION_MS = 200;
 
 interface ToastItem {
   id: number;
@@ -46,7 +48,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed bottom-4 right-4 z-50 flex w-full max-w-sm flex-col gap-2 p-4"
+        className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex flex-col items-center gap-2 px-4"
       >
         {toasts.map((toast) => (
           <ToastItemWithAutoDismiss
@@ -73,26 +75,56 @@ function ToastItemWithAutoDismiss({
   prefersReducedMotion: boolean;
   onDismiss: (id: number) => void;
 }) {
+  const [isExiting, setIsExiting] = useState(false);
+
+  const beginDismiss = useCallback(() => {
+    if (prefersReducedMotion) {
+      onDismiss(id);
+      return;
+    }
+
+    setIsExiting(true);
+  }, [id, onDismiss, prefersReducedMotion]);
+
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
-      onDismiss(id);
+      beginDismiss();
     }, TOAST_DURATION_MS);
 
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [id, onDismiss]);
+  }, [beginDismiss]);
+
+  useEffect(() => {
+    if (!isExiting) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      onDismiss(id);
+    }, TOAST_EXIT_DURATION_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [id, isExiting, onDismiss]);
 
   return (
     <div
       className={[
-        'pointer-events-auto',
-        prefersReducedMotion ? '' : 'animate-[toast-in_200ms_ease-out]',
+        'w-full max-w-sm',
+        isExiting ? 'pointer-events-none' : 'pointer-events-auto',
+        prefersReducedMotion
+          ? ''
+          : isExiting
+            ? 'animate-[toast-out_200ms_ease-in_forwards]'
+            : 'animate-[toast-in_200ms_ease-out]',
       ]
         .filter(Boolean)
         .join(' ')}
     >
-      <Toast message={message} onDismiss={() => onDismiss(id)} />
+      <Toast message={message} onDismiss={beginDismiss} />
     </div>
   );
 }

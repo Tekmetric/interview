@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Button } from '../button/Button';
+import { useToast } from '../toast/useToast';
 import { addItem } from '../../store/cartSlice';
 import { useAppDispatch } from '../../store/hooks';
 import type { AddToCartPayload } from '../../store/cartTypes';
@@ -8,6 +10,12 @@ interface AddToCartButtonProps extends AddToCartPayload {
   availabilityStatus: string;
   productId: number;
   onOpenDetails: (productId: number) => void;
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
 }
 
 export function AddToCartButton({
@@ -21,28 +29,41 @@ export function AddToCartButton({
   onOpenDetails,
 }: AddToCartButtonProps) {
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
+  const [isAdding, setIsAdding] = useState(false);
   const showNotifyMe = shouldShowNotifyMe(availabilityStatus);
-  const label = showNotifyMe ? 'Notify Me' : 'Add to Cart';
+  const label = showNotifyMe ? 'Notify Me' : isAdding ? 'Adding...' : 'Add to Cart';
+
+  async function handleAddToCart() {
+    // Simulate a real add-to-cart request so the button reflects in-flight state.
+    setIsAdding(true);
+    await wait(500);
+
+    dispatch(
+      addItem({
+        sku,
+        title,
+        price,
+        discountPercentage,
+        thumbnail,
+      })
+    );
+    showToast('Added to cart!');
+    setIsAdding(false);
+  }
 
   return (
     <Button
       variant="primary"
       className="mt-auto"
+      disabled={isAdding}
       onClick={() => {
         if (showNotifyMe) {
           onOpenDetails(productId);
           return;
         }
 
-        dispatch(
-          addItem({
-            sku,
-            title,
-            price,
-            discountPercentage,
-            thumbnail,
-          })
-        );
+        void handleAddToCart();
       }}
     >
       {label}

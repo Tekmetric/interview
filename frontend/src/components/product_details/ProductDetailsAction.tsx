@@ -9,7 +9,7 @@ import { isValidEmail } from '../../utils/isValidEmail';
 
 interface ProductDetailsActionProps extends AddToCartPayload {
   inStock: boolean;
-  onNotifySuccess: () => void;
+  onClose: () => void;
 }
 
 function wait(ms: number): Promise<void> {
@@ -25,7 +25,7 @@ export function ProductDetailsAction({
   discountPercentage,
   thumbnail,
   inStock,
-  onNotifySuccess,
+  onClose,
 }: ProductDetailsActionProps) {
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
@@ -52,7 +52,22 @@ export function ProductDetailsAction({
     await wait(500);
 
     showToast(`Success! ${trimmedEmail} subscribed to stock updates.`);
-    onNotifySuccess();
+    onClose();
+  }
+
+  function handleAddToCart() {
+    dispatch(
+      addItem({
+        sku,
+        title,
+        price,
+        discountPercentage,
+        thumbnail,
+        quantity: Math.max(1, quantity),
+      })
+    );
+    showToast('Added to cart!');
+    onClose();
   }
 
   if (!inStock) {
@@ -112,18 +127,7 @@ export function ProductDetailsAction({
       <Button
         variant="primary"
         className="product-details-action__button"
-        onClick={() => {
-          dispatch(
-            addItem({
-              sku,
-              title,
-              price,
-              discountPercentage,
-              thumbnail,
-              quantity: Math.max(1, quantity),
-            })
-          );
-        }}
+        onClick={handleAddToCart}
       >
         Add to Cart
       </Button>

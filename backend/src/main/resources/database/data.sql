@@ -1,1 +1,7 @@
--- Provide SQL scripts here
+-- Demo seed rows. Flyway owns DDL (see db/migration/V1__create_vehicle.sql);
+INSERT INTO vehicle (vin, make, model, model_year, license_plate, mileage, created_at, updated_at)
+VALUES ('1HGCM82633A004352', 'Honda', 'Accord', 2021, 'ABC1234', 42000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       ('JH4KA7650MC012345', 'Acura', 'Legend', 1991, 'OLD0001', 210000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       ('5YJSA1E26HF000337', 'Tesla', 'Model S', 2017, 'EV22222', 88000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       ('WAUZZZ8V1FA123456', 'Audi', 'A3', 2015, 'GER4242', 105500, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       ('1FTFW1ET5DFC10312', 'Ford', 'F-150', 2013, 'TRK9001', 175000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

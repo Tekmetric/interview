@@ -7,6 +7,7 @@ import type {
 
 export const sampleProductSummaryRaw = {
   id: 1,
+  sku: 'RCH45Q1A',
   title: 'Essence Mascara Lash Princess',
   price: 9.99,
   discountPercentage: 7.17,
@@ -27,6 +28,7 @@ export const sampleProductSummaryRaw = {
 
 export const sampleProductSummary: ProductSummary = {
   id: 1,
+  sku: 'RCH45Q1A',
   title: 'Essence Mascara Lash Princess',
   price: 9.99,
   discountPercentage: 7.17,
@@ -134,7 +136,7 @@ export const sampleCategories: ProductCategory[] = [
 ];
 
 export const PRODUCT_SUMMARY_SELECT =
-  'id,title,brand,price,discountPercentage,rating,reviews,thumbnail';
+  'id,sku,title,brand,price,discountPercentage,rating,reviews,thumbnail';
 
 export const PRODUCT_DETAIL_SELECT =
   'id,sku,title,brand,price,discountPercentage,rating,stock,images,thumbnail,weight,dimensions,shippingInformation,availabilityStatus,returnPolicy,reviews';

@@ -59,7 +59,14 @@ export function ProductDetailsContent({ product }: ProductDetailsContentProps) {
         </CollapsibleSection>
       </div>
 
-      <ProductDetailsAction sku={product.sku} inStock={inStock} />
+      <ProductDetailsAction
+        sku={product.sku}
+        title={product.title}
+        price={product.price}
+        discountPercentage={product.discountPercentage}
+        thumbnail={product.thumbnail}
+        inStock={inStock}
+      />
     </div>
   );
 }

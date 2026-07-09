@@ -38,7 +38,13 @@ export function ProductCard({
             rating={product.rating}
             reviewCount={product.reviewCount}
           />
-          <AddToCartButton productId={product.id} />
+          <AddToCartButton
+            sku={product.sku}
+            title={product.title}
+            price={product.price}
+            discountPercentage={product.discountPercentage}
+            thumbnail={product.thumbnail}
+          />
         </div>
       </div>
     </article>

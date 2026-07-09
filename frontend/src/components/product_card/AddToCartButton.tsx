@@ -1,15 +1,34 @@
 import { Button } from '../button/Button';
+import { addItem } from '../../store/cartSlice';
+import { useAppDispatch } from '../../store/hooks';
+import type { AddToCartPayload } from '../../store/cartTypes';
 
-interface AddToCartButtonProps {
-  sku: string;
-}
+type AddToCartButtonProps = AddToCartPayload;
 
-export function AddToCartButton({ sku }: AddToCartButtonProps) {
+export function AddToCartButton({
+  sku,
+  title,
+  price,
+  discountPercentage,
+  thumbnail,
+}: AddToCartButtonProps) {
+  const dispatch = useAppDispatch();
+
   return (
     <Button
       variant="primary"
       className="mt-auto"
-      onClick={() => console.log('Add to cart clicked', { sku })}
+      onClick={() =>
+        dispatch(
+          addItem({
+            sku,
+            title,
+            price,
+            discountPercentage,
+            thumbnail,
+          })
+        )
+      }
     >
       Add to Cart
     </Button>

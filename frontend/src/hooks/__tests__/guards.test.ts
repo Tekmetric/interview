@@ -22,6 +22,11 @@ describe('isProductSummaryRaw', () => {
     expect(isProductSummaryRaw(productWithoutId)).toBe(false);
   });
 
+  it('rejects when sku is missing', () => {
+    const { sku: _sku, ...productWithoutSku } = sampleProductSummaryRaw;
+    expect(isProductSummaryRaw(productWithoutSku)).toBe(false);
+  });
+
   it('rejects when title is not a string', () => {
     expect(isProductSummaryRaw({ ...sampleProductSummaryRaw, title: 123 })).toBe(
       false

@@ -14,6 +14,7 @@ export interface ProductDimensions {
 /** Fields returned by list/search endpoints for product cards. */
 export interface ProductSummary {
   id: number;
+  sku: string;
   title: string;
   brand?: string;
   price: number;

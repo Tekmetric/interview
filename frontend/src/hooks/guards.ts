@@ -45,6 +45,7 @@ export function isProductSummaryRaw(value: unknown): boolean {
 
   return (
     typeof value.id === 'number' &&
+    typeof value.sku === 'string' &&
     typeof value.title === 'string' &&
     (value.brand === undefined || typeof value.brand === 'string') &&
     typeof value.price === 'number' &&

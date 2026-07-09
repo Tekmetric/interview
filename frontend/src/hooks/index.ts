@@ -21,7 +21,7 @@ export type {
   SortOrder,
 } from './types';
 
-export { SORT_OPTIONS, DEFAULT_SORT_OPTION_ID } from './types';
+export { SORT_OPTIONS, DEFAULT_SORT_OPTION_ID } from './sortOptions';
 
 export {
   ApiError,

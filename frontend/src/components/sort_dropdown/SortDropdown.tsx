@@ -1,4 +1,4 @@
-import { SORT_OPTIONS } from '../../hooks/types';
+import { SORT_OPTIONS } from '../../hooks/sortOptions';
 
 interface SortDropdownProps {
   value: string;

@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
 import { CategoryFilter } from './components/category_filter/CategoryFilter';
+import { Pagination } from './components/pagination/Pagination';
+import {
+  getTotalPages,
+  pageToSkip,
+  PRODUCTS_PAGE_SIZE,
+} from './components/pagination/paginationUtils';
 import { ProductDetailsDrawer } from './components/product_details/ProductDetailsDrawer';
 import { ProductGrid } from './components/product_grid/ProductGrid';
 import { PageFooter } from './components/layout/PageFooter';
@@ -13,6 +19,8 @@ import { searchProducts } from './hooks/searchProducts';
 import {
   DEFAULT_SORT_OPTION_ID,
   SORT_OPTIONS,
+} from './hooks/sortOptions';
+import {
   type ProductSummary,
   type ProductCategory,
 } from './hooks/types';
@@ -28,6 +36,7 @@ function App() {
     null
   );
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
@@ -81,17 +90,22 @@ function App() {
             ? { sortBy: sort.sortBy, order: sort.order }
             : {};
 
+        const paginationParams = {
+          limit: PRODUCTS_PAGE_SIZE,
+          skip: pageToSkip(currentPage),
+        };
+
         const response = trimmedQuery
-          ? await searchProducts({ q: trimmedQuery, limit: 12, ...sortParams })
+          ? await searchProducts({ q: trimmedQuery, ...paginationParams, ...sortParams })
           : selectedCategorySlug
             ? await getProductsByCategory({
                 category: selectedCategorySlug,
-                limit: 12,
+                ...paginationParams,
                 ...sortParams,
               })
             : sortParams.sortBy
-              ? await getSortedProducts({ ...sortParams, limit: 12 })
-              : await getProducts({ limit: 12 });
+              ? await getSortedProducts({ ...sortParams, ...paginationParams })
+              : await getProducts(paginationParams);
 
         if (!cancelled) {
           setProducts(response.products);
@@ -114,7 +128,22 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [searchQuery, sortOptionId, selectedCategorySlug]);
+  }, [searchQuery, sortOptionId, selectedCategorySlug, currentPage]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (id: string) => {
+    setSortOptionId(id);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (slug: string | null) => {
+    setSelectedCategorySlug(slug);
+    setCurrentPage(1);
+  };
 
   const trimmedQuery = searchQuery.trim();
   const selectedCategory = categories.find(
@@ -129,7 +158,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <PageHeader onSearch={setSearchQuery} />
+      <PageHeader onSearch={handleSearch} />
       <main className="flex-1 max-w-7xl mx-auto p-4 w-full">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
           <CategoryFilter
@@ -138,7 +167,7 @@ function App() {
             error={categoriesError}
             isSearchActive={Boolean(trimmedQuery)}
             value={selectedCategorySlug}
-            onChange={setSelectedCategorySlug}
+            onChange={handleCategoryChange}
           />
 
           <div className="min-w-0 flex-1">
@@ -154,7 +183,7 @@ function App() {
                   </span>
                 )}
               </div>
-              <SortDropdown value={sortOptionId} onChange={setSortOptionId} />
+              <SortDropdown value={sortOptionId} onChange={handleSortChange} />
             </div>
 
             {isLoading && (
@@ -166,11 +195,18 @@ function App() {
             {error && <p role="alert">{error}</p>}
 
             {!isLoading && !error && (
-              <ProductGrid
-                products={products}
-                selectedProductId={selectedProductId}
-                onOpenDetails={setSelectedProductId}
-              />
+              <>
+                <ProductGrid
+                  products={products}
+                  selectedProductId={selectedProductId}
+                  onOpenDetails={setSelectedProductId}
+                />
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={getTotalPages(productTotal)}
+                  onPageChange={setCurrentPage}
+                />
+              </>
             )}
           </div>
         </div>

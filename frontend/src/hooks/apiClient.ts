@@ -5,8 +5,7 @@ import {
   TimeoutError,
 } from './errors';
 
-// if this was not a dummy API we would probably keep this in an
-// env file or similar configuration with auth.
+// if this was not a dummy API we'd set up auth and such here.
 const BASE_URL = 'https://dummyjson.com';
 
 export interface FetchJsonOptions<T> {

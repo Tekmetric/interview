@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ProductDetailReview } from '../../hooks/types';
 import { Button } from '../button/Button';
+// Reuses shared star styles from product_card (see reviewStars.css).
 import '../product_card/reviewStars.css';
 import './productDetails.css';
 

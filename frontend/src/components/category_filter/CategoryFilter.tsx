@@ -3,10 +3,10 @@ import type { ProductCategory } from '../../hooks/types';
 import { Button } from '../button/Button';
 import { CategoryFilterDrawer } from './CategoryFilterDrawer';
 import { CategoryRadioList } from './CategoryRadioList';
-
-const DISABLED_HINT_ID = 'category-filter-disabled-hint';
-const DISABLED_HINT_TEXT =
-  'Category filtering is not supported while search query is active';
+import {
+  CATEGORY_FILTER_DISABLED_HINT_ID,
+  DISABLED_HINT_TEXT,
+} from './categoryFilterConstants';
 
 interface CategoryFilterProps {
   categories: ProductCategory[];
@@ -50,7 +50,7 @@ export function CategoryFilter({
       >
         <fieldset
           disabled={isSearchActive}
-          aria-describedby={isSearchActive ? DISABLED_HINT_ID : undefined}
+          aria-describedby={isSearchActive ? CATEGORY_FILTER_DISABLED_HINT_ID : undefined}
           className="m-0 min-w-0 border-0 p-0"
         >
           <legend className="mb-2 text-sm font-semibold text-neutral-900">
@@ -59,7 +59,7 @@ export function CategoryFilter({
 
           {isSearchActive && (
             <p
-              id={DISABLED_HINT_ID}
+              id={CATEGORY_FILTER_DISABLED_HINT_ID}
               className="mb-2 text-sm text-neutral-500"
               title={DISABLED_HINT_TEXT}
             >

@@ -6,16 +6,11 @@ import { addItem } from '../../store/cartSlice';
 import { useAppDispatch } from '../../store/hooks';
 import type { AddToCartPayload } from '../../store/cartTypes';
 import { isValidEmail } from '../../utils/isValidEmail';
+import { wait } from '../../utils/wait';
 
 interface ProductDetailsActionProps extends AddToCartPayload {
   inStock: boolean;
   onClose: () => void;
-}
-
-function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
 }
 
 export function ProductDetailsAction({
@@ -49,10 +44,14 @@ export function ProductDetailsAction({
     setEmailError(null);
     setIsSubmitting(true);
 
-    await wait(500);
+    try {
+      await wait(500);
 
-    showToast(`Success! ${trimmedEmail} subscribed to stock updates.`);
-    onClose();
+      showToast(`Success! ${trimmedEmail} subscribed to stock updates.`);
+      onClose();
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleAddToCart() {

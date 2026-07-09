@@ -58,7 +58,7 @@ export function CriteriaMenu() {
     <nav aria-label="Developer options" ref={containerRef} className="relative">
       <Button
         variant="secondary"
-        aria-haspopup="true"
+        aria-haspopup="menu"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((open) => !open)}
       >

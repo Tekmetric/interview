@@ -1,7 +1,7 @@
 import { Button } from '../button/Button';
 import { Drawer } from '../drawer/Drawer';
 import { QuantityInput } from '../quantity_input/QuantityInput';
-import { formatProductPrice } from '../product_card/priceUtils';
+import { formatCurrency, formatProductPrice } from '../product_card/priceUtils';
 import { removeItem, updateQuantity } from '../../store/cartSlice';
 import {
   selectCartItemCount,
@@ -14,11 +14,6 @@ interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const usdFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-});
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const dispatch = useAppDispatch();
@@ -37,7 +32,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       panelClassName="drawer-panel--full-height"
     >
       {isEmpty ? (
-        <p className="m-0 text-md text-neutral-600">Nothing to see here. Add some items to your cart!</p>
+        <p className="m-0 text-base text-neutral-600">Nothing to see here. Add some items to your cart!</p>
       ) : (
         <div className="flex flex-col gap-4">
           <ul className="m-0 flex list-none flex-col gap-4 p-0">
@@ -93,7 +88,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <span>
                 Subtotal ({itemCount} item{itemCount === 1 ? '' : 's'})
               </span>
-              <span>{usdFormatter.format(subtotal)}</span>
+              <span>{formatCurrency(subtotal)}</span>
             </p>
           </div>
         </div>

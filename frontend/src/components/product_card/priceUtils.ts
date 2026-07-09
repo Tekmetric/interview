@@ -8,6 +8,10 @@ const usdFormatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
+export function formatCurrency(amount: number): string {
+  return usdFormatter.format(amount);
+}
+
 export function formatProductPrice(
   price: number,
   discountPercentage: number

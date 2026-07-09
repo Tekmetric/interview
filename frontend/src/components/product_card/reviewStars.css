@@ -1,3 +1,4 @@
+/* Shared star rating styles used by ReviewStars and ProductReviewPager. */
 .review-star--full path,
 .review-star-fill {
   fill: #f5a623;

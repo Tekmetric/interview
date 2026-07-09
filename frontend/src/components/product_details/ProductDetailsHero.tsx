@@ -18,7 +18,7 @@ export function ProductDetailsHero({ product }: ProductDetailsHeroProps) {
         <ProductImageGallery product={product} />
       </div>
       <div className="product-details-hero__info">
-        <ProductTitle title={product.title} brand={product.brand} />
+        <ProductTitle as="h3" title={product.title} brand={product.brand} />
         <ReviewStars
           rating={product.rating}
           reviewCount={product.reviews.length}

@@ -2,10 +2,10 @@ import { Button } from '../button/Button';
 import { Drawer } from '../drawer/Drawer';
 import type { ProductCategory } from '../../hooks/types';
 import { CategoryRadioList } from './CategoryRadioList';
-
-const DISABLED_HINT_ID = 'category-drawer-disabled-hint';
-const DISABLED_HINT_TEXT =
-  'Category filtering is not supported while search query is active';
+import {
+  CATEGORY_DRAWER_DISABLED_HINT_ID,
+  DISABLED_HINT_TEXT,
+} from './categoryFilterConstants';
 
 interface CategoryFilterDrawerProps {
   isOpen: boolean;
@@ -52,12 +52,12 @@ export function CategoryFilterDrawer({
     >
       <fieldset
         disabled={isSearchActive}
-        aria-describedby={isSearchActive ? DISABLED_HINT_ID : undefined}
+        aria-describedby={isSearchActive ? CATEGORY_DRAWER_DISABLED_HINT_ID : undefined}
         className="m-0 min-w-0 border-0 p-0"
       >
         {isSearchActive && (
           <p
-            id={DISABLED_HINT_ID}
+            id={CATEGORY_DRAWER_DISABLED_HINT_ID}
             className="mb-2 text-sm text-neutral-500"
             title={DISABLED_HINT_TEXT}
           >

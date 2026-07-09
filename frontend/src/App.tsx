@@ -23,8 +23,49 @@ import {
 import {
   type ProductSummary,
   type ProductCategory,
+  type GetProductsParams,
+  type ProductsResponse,
+  type ProductSortField,
+  type SortOrder,
 } from './hooks/types';
 import { scrollIntoViewRespectingMotion } from './utils/scrollIntoViewRespectingMotion';
+
+interface BuildProductFetchParams {
+  trimmedQuery: string;
+  selectedCategorySlug: string | null;
+  sortParams: { sortBy?: ProductSortField; order?: SortOrder };
+  paginationParams: GetProductsParams;
+}
+
+// Resolves which product fetcher to call based on active filters.
+function buildProductFetch({
+  trimmedQuery,
+  selectedCategorySlug,
+  sortParams,
+  paginationParams,
+}: BuildProductFetchParams): Promise<ProductsResponse> {
+  if (trimmedQuery) {
+    return searchProducts({ q: trimmedQuery, ...paginationParams, ...sortParams });
+  }
+
+  if (selectedCategorySlug) {
+    return getProductsByCategory({
+      category: selectedCategorySlug,
+      ...paginationParams,
+      ...sortParams,
+    });
+  }
+
+  if (sortParams.sortBy && sortParams.order) {
+    return getSortedProducts({
+      sortBy: sortParams.sortBy,
+      order: sortParams.order,
+      ...paginationParams,
+    });
+  }
+
+  return getProducts(paginationParams);
+}
 
 function App() {
   const [products, setProducts] = useState<ProductSummary[]>([]);
@@ -97,17 +138,12 @@ function App() {
           skip: pageToSkip(currentPage),
         };
 
-        const response = trimmedQuery
-          ? await searchProducts({ q: trimmedQuery, ...paginationParams, ...sortParams })
-          : selectedCategorySlug
-            ? await getProductsByCategory({
-                category: selectedCategorySlug,
-                ...paginationParams,
-                ...sortParams,
-              })
-            : sortParams.sortBy
-              ? await getSortedProducts({ ...sortParams, ...paginationParams })
-              : await getProducts(paginationParams);
+        const response = await buildProductFetch({
+          trimmedQuery,
+          selectedCategorySlug,
+          sortParams,
+          paginationParams,
+        });
 
         if (!cancelled) {
           setProducts(response.products);

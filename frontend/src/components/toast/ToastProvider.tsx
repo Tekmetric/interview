@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { usePrefersReducedMotion } from '../drawer/usePrefersReducedMotion';
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 import { Toast } from './Toast';
 import './toast.css';
 

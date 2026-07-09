@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent } from 'react';
 import { Button } from '../button/Button';
 
 interface SearchBarProps {
@@ -6,6 +6,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ onSearch }: SearchBarProps) {
+  const inputId = useId();
   const [inputValue, setInputValue] = useState('');
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -19,11 +20,11 @@ export function SearchBar({ onSearch }: SearchBarProps) {
       onSubmit={handleSubmit}
       className="flex w-full gap-2"
     >
-      <label htmlFor="product-search" className="sr-only">
+      <label htmlFor={inputId} className="sr-only">
         Search products
       </label>
       <input
-        id="product-search"
+        id={inputId}
         type="search"
         name="q"
         value={inputValue}

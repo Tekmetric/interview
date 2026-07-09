@@ -5,17 +5,12 @@ import { addItem } from '../../store/cartSlice';
 import { useAppDispatch } from '../../store/hooks';
 import type { AddToCartPayload } from '../../store/cartTypes';
 import { shouldShowNotifyMe } from '../../utils/availabilityStatus';
+import { wait } from '../../utils/wait';
 
 interface AddToCartButtonProps extends AddToCartPayload {
   availabilityStatus: string;
   productId: number;
   onOpenDetails: (productId: number) => void;
-}
-
-function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
 }
 
 export function AddToCartButton({

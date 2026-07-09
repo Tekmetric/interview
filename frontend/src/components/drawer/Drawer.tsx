@@ -1,6 +1,21 @@
-import { useEffect, useState, type ReactNode } from 'react';
-import { usePrefersReducedMotion } from './usePrefersReducedMotion';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 import './drawer.css';
+
+const FOCUSABLE_SELECTORS = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTORS)
+  ).filter((element) => !element.hasAttribute('disabled'));
+}
 
 interface DrawerProps {
   isOpen: boolean;
@@ -24,6 +39,8 @@ export function Drawer({
   panelClassName,
 }: DrawerProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const previousActiveElementRef = useRef<HTMLElement | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -54,9 +71,56 @@ export function Drawer({
       return;
     }
 
+    previousActiveElementRef.current = document.activeElement as HTMLElement | null;
+
+    const panel = panelRef.current;
+    if (!panel) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      const focusableElements = getFocusableElements(panel);
+      const target =
+        focusableElements[0] ??
+        panel.querySelector<HTMLElement>('.drawer-close');
+      target?.focus();
+    });
+
     function handleKeyDown(event: KeyboardEvent) {
+      const activePanel = panelRef.current;
+      if (!activePanel) {
+        return;
+      }
+
       if (event.key === 'Escape') {
         onClose();
+        return;
+      }
+
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const focusableElements = getFocusableElements(activePanel);
+      if (focusableElements.length === 0) {
+        return;
+      }
+
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey) {
+        if (active === first || !activePanel.contains(active)) {
+          event.preventDefault();
+          last.focus();
+        }
+        return;
+      }
+
+      if (active === last || !activePanel.contains(active)) {
+        event.preventDefault();
+        first.focus();
       }
     }
 
@@ -64,6 +128,7 @@ export function Drawer({
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      previousActiveElementRef.current?.focus();
     };
   }, [isMounted, onClose]);
 
@@ -89,6 +154,7 @@ export function Drawer({
         onClick={onClose}
       />
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}

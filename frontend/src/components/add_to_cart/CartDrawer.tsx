@@ -37,7 +37,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       panelClassName="drawer-panel--full-height"
     >
       {isEmpty ? (
-        <p className="m-0 text-sm text-neutral-600">Cart is empty</p>
+        <p className="m-0 text-md text-neutral-600">Nothing to see here. Add some items to your cart!</p>
       ) : (
         <div className="flex flex-col gap-4">
           <ul className="m-0 flex list-none flex-col gap-4 p-0">

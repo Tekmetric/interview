@@ -11,6 +11,12 @@ export interface ProductDimensions {
   depth: number;
 }
 
+export type AvailabilityStatus =
+  | 'In Stock'
+  | 'Low Stock'
+  | 'Out of Stock'
+  | (string & {}); // handles unknown values but they should be flagged in a real app
+
 /** Fields returned by list/search endpoints for product cards. */
 export interface ProductSummary {
   id: number;
@@ -22,7 +28,7 @@ export interface ProductSummary {
   rating: number;
   reviewCount: number;
   thumbnail: string;
-  availabilityStatus: string;
+  availabilityStatus: AvailabilityStatus;
 }
 
 /** Fields returned by the single-product endpoint for the details drawer. */
@@ -48,7 +54,7 @@ export interface ProductDetail {
   weight: number;
   dimensions: ProductDimensions;
   shippingInformation: string;
-  availabilityStatus: string;
+  availabilityStatus: AvailabilityStatus;
   returnPolicy: string;
   reviews: ProductDetailReview[];
 }

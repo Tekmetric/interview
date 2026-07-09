@@ -11,6 +11,8 @@ if (!container) {
   throw new Error('Root element #root not found');
 }
 
+document.getElementById('app-shell')?.removeAttribute('aria-busy');
+
 const root = createRoot(container);
 root.render(
   <React.StrictMode>

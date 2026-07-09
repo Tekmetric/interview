@@ -1,7 +1,6 @@
 import { Button } from '../button/Button';
 import { Drawer } from '../drawer/Drawer';
 import type { ProductCategory } from '../../hooks/types';
-import { CategoryFilterSkeleton } from '../skeleton/CategoryFilterSkeleton';
 import { CategoryRadioList } from './CategoryRadioList';
 import {
   CATEGORY_DRAWER_DISABLED_HINT_ID,
@@ -11,7 +10,6 @@ import {
 interface CategoryFilterDrawerProps {
   isOpen: boolean;
   categories: ProductCategory[];
-  isLoading: boolean;
   error: string | null;
   isSearchActive: boolean;
   draftSlug: string | null;
@@ -20,10 +18,11 @@ interface CategoryFilterDrawerProps {
   onCancel: () => void;
 }
 
+export const CATEGORY_FILTER_DRAWER_PANEL_ID = 'category-drawer-panel';
+
 export function CategoryFilterDrawer({
   isOpen,
   categories,
-  isLoading,
   error,
   isSearchActive,
   draftSlug,
@@ -31,7 +30,7 @@ export function CategoryFilterDrawer({
   onApply,
   onCancel,
 }: CategoryFilterDrawerProps) {
-  const canApply = !isLoading && !error;
+  const canApply = !error;
 
   return (
     <Drawer
@@ -39,7 +38,9 @@ export function CategoryFilterDrawer({
       onClose={onCancel}
       title="Categories"
       titleId="category-drawer-title"
+      panelId={CATEGORY_FILTER_DRAWER_PANEL_ID}
       closeAriaLabel="Close category filter"
+      panelClassName="drawer-panel--full-height"
       footer={
         <>
           <Button variant="secondary" onClick={onCancel}>
@@ -66,15 +67,13 @@ export function CategoryFilterDrawer({
           </p>
         )}
 
-        {isLoading && <CategoryFilterSkeleton variant="list" />}
-
         {error && (
           <p role="alert" className="text-sm text-red-600">
             {error}
           </p>
         )}
 
-        {!isLoading && !error && (
+        {!error && (
           <CategoryRadioList
             categories={categories}
             value={draftSlug}

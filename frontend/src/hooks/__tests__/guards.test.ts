@@ -128,12 +128,13 @@ describe('isProductCategory', () => {
   });
 
   it('rejects when slug is missing', () => {
-    const { slug: _slug, ...categoryWithoutSlug } = sampleCategories[0];
+    const category = sampleCategories[0]!;
+    const { slug: _slug, ...categoryWithoutSlug } = category;
     expect(isProductCategory(categoryWithoutSlug)).toBe(false);
   });
 
   it('rejects when name is not a string', () => {
-    expect(isProductCategory({ ...sampleCategories[0], name: 123 })).toBe(false);
+    expect(isProductCategory({ ...sampleCategories[0]!, name: 123 })).toBe(false);
   });
 
   it('rejects null and non-object values', () => {

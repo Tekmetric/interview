@@ -5,7 +5,7 @@ import type {
   ProductsResponse,
 } from './types';
 
-interface ProductSummaryRaw {
+export interface ProductSummaryRaw {
   id: number;
   sku: string;
   title: string;
@@ -58,7 +58,7 @@ export function mapProductSummary(raw: ProductSummaryRaw): ProductSummary {
     id: raw.id,
     sku: raw.sku,
     title: raw.title,
-    brand: raw.brand,
+    ...(raw.brand !== undefined ? { brand: raw.brand } : {}),
     price: raw.price,
     discountPercentage: raw.discountPercentage,
     rating: raw.rating,
@@ -92,7 +92,7 @@ export function mapProductDetail(raw: ProductDetailRaw): ProductDetail {
     sku: raw.sku,
     title: raw.title,
     description: raw.description,
-    brand: raw.brand,
+    ...(raw.brand !== undefined ? { brand: raw.brand } : {}),
     price: raw.price,
     discountPercentage: raw.discountPercentage,
     rating: raw.rating,

@@ -26,7 +26,7 @@ describe('getCategories', () => {
 
     expect(result).toEqual(sampleCategories);
     expect(result).toHaveLength(2);
-    expect(result[0].name).toBe('Beauty');
+    expect(result[0]!.name).toBe('Beauty');
   });
 
   it('requests the categories endpoint', async () => {

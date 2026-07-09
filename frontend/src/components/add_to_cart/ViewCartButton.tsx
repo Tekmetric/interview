@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../button/Button';
-import { CartDrawer } from './CartDrawer';
+import { CartDrawer, CART_DRAWER_PANEL_ID } from './CartDrawer';
 import { selectCartItemCount } from '../../store/cartSelectors';
 import { useAppSelector } from '../../store/hooks';
 
@@ -13,6 +13,8 @@ export function ViewCartButton() {
       <Button
         variant="secondary"
         className="relative flex items-center gap-2"
+        aria-haspopup="dialog"
+        aria-controls={CART_DRAWER_PANEL_ID}
         aria-label={
           itemCount > 0 ? `View cart, ${itemCount} items` : 'View cart'
         }

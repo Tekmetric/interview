@@ -1,7 +1,8 @@
+import type { AvailabilityStatus } from '../../hooks/types';
 import { getAvailabilityBadgeLabel } from '../../utils/availabilityStatus';
 
 interface AvailabilityBadgeProps {
-  availabilityStatus: string;
+  availabilityStatus: AvailabilityStatus;
 }
 
 export function AvailabilityBadge({ availabilityStatus }: AvailabilityBadgeProps) {

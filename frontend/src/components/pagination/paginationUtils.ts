@@ -1,6 +1,8 @@
+import { DEFAULT_PAGE_SIZE } from '../../constants/pagination';
+
 export type PageItem = number | 'ellipsis';
 
-export const PRODUCTS_PAGE_SIZE = 12;
+export const PRODUCTS_PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 export function pageToSkip(page: number): number {
   return (page - 1) * PRODUCTS_PAGE_SIZE;
@@ -31,12 +33,14 @@ export function getVisiblePages(
 
   const sorted = [...pages].sort((a, b) => a - b);
   const result: PageItem[] = [];
+  let previousPage: number | undefined;
 
-  for (let index = 0; index < sorted.length; index++) {
-    if (index > 0 && sorted[index] - sorted[index - 1] > 1) {
+  for (const page of sorted) {
+    if (previousPage !== undefined && page - previousPage > 1) {
       result.push('ellipsis');
     }
-    result.push(sorted[index]);
+    result.push(page);
+    previousPage = page;
   }
 
   return result;

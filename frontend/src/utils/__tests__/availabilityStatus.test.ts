@@ -2,7 +2,9 @@ import {
   getAvailabilityBadgeLabel,
   isLowStock,
   isOutOfStock,
+  isProductInStock,
   shouldShowNotifyMe,
+  shouldShowNotifyMeForProduct,
 } from '../availabilityStatus';
 
 describe('availabilityStatus', () => {
@@ -28,5 +30,20 @@ describe('availabilityStatus', () => {
     expect(shouldShowNotifyMe('Out of Stock')).toBe(true);
     expect(shouldShowNotifyMe('Low Stock')).toBe(false);
     expect(shouldShowNotifyMe('In Stock')).toBe(false);
+  });
+
+  it('unifies stock signals for purchase state', () => {
+    expect(
+      isProductInStock({ availabilityStatus: 'In Stock', stock: 5 })
+    ).toBe(true);
+    expect(
+      isProductInStock({ availabilityStatus: 'Out of Stock', stock: 5 })
+    ).toBe(false);
+    expect(
+      isProductInStock({ availabilityStatus: 'In Stock', stock: 0 })
+    ).toBe(false);
+    expect(
+      shouldShowNotifyMeForProduct({ availabilityStatus: 'Out of Stock' })
+    ).toBe(true);
   });
 });

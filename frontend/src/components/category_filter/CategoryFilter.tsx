@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ProductCategory } from '../../hooks/types';
 import { Button } from '../button/Button';
-import { CategoryFilterDrawer } from './CategoryFilterDrawer';
+import { CategoryFilterDrawer, CATEGORY_FILTER_DRAWER_PANEL_ID } from './CategoryFilterDrawer';
 import { CategoryRadioList } from './CategoryRadioList';
 import { CategoryFilterSkeleton } from '../skeleton/CategoryFilterSkeleton';
 import {
@@ -91,10 +91,24 @@ export function CategoryFilter({
       </aside>
 
       <div className="lg:hidden">
+        {isSearchActive && (
+          <p
+            id={CATEGORY_FILTER_DISABLED_HINT_ID}
+            className="mb-2 text-sm text-neutral-500"
+            title={DISABLED_HINT_TEXT}
+          >
+            {DISABLED_HINT_TEXT}
+          </p>
+        )}
+
         <Button
           variant="secondary"
           aria-haspopup="dialog"
+          aria-controls={CATEGORY_FILTER_DRAWER_PANEL_ID}
           aria-expanded={isDrawerOpen}
+          aria-describedby={
+            isSearchActive ? CATEGORY_FILTER_DISABLED_HINT_ID : undefined
+          }
           disabled={isSearchActive}
           onClick={openDrawer}
         >
@@ -104,7 +118,6 @@ export function CategoryFilter({
         <CategoryFilterDrawer
           isOpen={isDrawerOpen}
           categories={categories}
-          isLoading={isLoading}
           error={error}
           isSearchActive={isSearchActive}
           draftSlug={draftSlug}

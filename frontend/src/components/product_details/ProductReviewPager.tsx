@@ -65,6 +65,10 @@ export function ProductReviewPager({ reviews }: ProductReviewPagerProps) {
   }
 
   const review = reviews[currentIndex];
+  if (!review) {
+    return <p className="product-review-pager__empty">No reviews yet.</p>;
+  }
+
   const statusLabel = `Review ${currentIndex + 1} of ${reviews.length}`;
 
   return (

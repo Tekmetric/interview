@@ -1,5 +1,9 @@
 import type { ProductCategory } from './types';
-import type { ProductDetailRaw, ProductsResponseRaw } from './productMappers';
+import type {
+  ProductDetailRaw,
+  ProductSummaryRaw,
+  ProductsResponseRaw,
+} from './productMappers';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -9,7 +13,9 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');
 }
 
-function isProductDimensions(value: unknown): boolean {
+function isProductDimensions(
+  value: unknown
+): value is { width: number; height: number; depth: number } {
   if (!isRecord(value)) {
     return false;
   }
@@ -21,11 +27,16 @@ function isProductDimensions(value: unknown): boolean {
   );
 }
 
-function isProductSummaryReview(value: unknown): boolean {
+function isProductSummaryReview(value: unknown): value is Record<string, unknown> {
   return isRecord(value);
 }
 
-function isProductDetailReview(value: unknown): boolean {
+function isProductDetailReview(value: unknown): value is {
+  rating: number;
+  comment: string;
+  date: string;
+  reviewerName: string;
+} {
   if (!isRecord(value)) {
     return false;
   }
@@ -38,7 +49,7 @@ function isProductDetailReview(value: unknown): boolean {
   );
 }
 
-export function isProductSummaryRaw(value: unknown): boolean {
+export function isProductSummaryRaw(value: unknown): value is ProductSummaryRaw {
   if (!isRecord(value)) {
     return false;
   }

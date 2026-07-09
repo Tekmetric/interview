@@ -13,7 +13,7 @@ export function Toast({ message, onDismiss }: ToastProps) {
       <button
         type="button"
         onClick={onDismiss}
-        className="shrink-0 cursor-pointer rounded px-1 text-neutral-500 hover:text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        className="inline-flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded px-2 text-neutral-500 hover:text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         aria-label="Dismiss notification"
       >
         ×

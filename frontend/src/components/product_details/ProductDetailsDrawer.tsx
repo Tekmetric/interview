@@ -49,7 +49,7 @@ export function ProductDetailsDrawer({
       }
     }
 
-    loadProduct();
+    void loadProduct();
 
     return () => {
       cancelled = true;
@@ -64,6 +64,7 @@ export function ProductDetailsDrawer({
       onClose={onClose}
       title={title}
       titleId="product-details-drawer-title"
+      panelId="product-details-drawer-panel"
       closeAriaLabel="Close product details"
       panelClassName="drawer-panel--wide drawer-panel--full-height"
     >

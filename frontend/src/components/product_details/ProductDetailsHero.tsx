@@ -1,4 +1,5 @@
 import type { ProductDetail } from '../../hooks/types';
+import { isProductInStock } from '../../utils/availabilityStatus';
 import { ProductPrice } from '../product_card/ProductPrice';
 import { ProductTitle } from '../product_card/ProductTitle';
 import { ReviewStars } from '../product_card/ReviewStars';
@@ -10,7 +11,7 @@ interface ProductDetailsHeroProps {
 }
 
 export function ProductDetailsHero({ product }: ProductDetailsHeroProps) {
-  const inStock = product.stock > 0;
+  const inStock = isProductInStock(product);
 
   return (
     <div className="product-details-hero">
@@ -18,7 +19,11 @@ export function ProductDetailsHero({ product }: ProductDetailsHeroProps) {
         <ProductImageGallery product={product} />
       </div>
       <div className="product-details-hero__info">
-        <ProductTitle as="h3" title={product.title} brand={product.brand} />
+        <ProductTitle
+          as="h3"
+          title={product.title}
+          {...(product.brand !== undefined ? { brand: product.brand } : {})}
+        />
         <ReviewStars
           rating={product.rating}
           reviewCount={product.reviews.length}

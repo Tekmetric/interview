@@ -4,11 +4,12 @@ import { useToast } from '../toast/useToast';
 import { addItem } from '../../store/cartSlice';
 import { useAppDispatch } from '../../store/hooks';
 import type { AddToCartPayload } from '../../store/cartTypes';
-import { shouldShowNotifyMe } from '../../utils/availabilityStatus';
+import type { AvailabilityStatus } from '../../hooks/types';
+import { shouldShowNotifyMeForProduct } from '../../utils/availabilityStatus';
 import { wait } from '../../utils/wait';
 
 interface AddToCartButtonProps extends AddToCartPayload {
-  availabilityStatus: string;
+  availabilityStatus: AvailabilityStatus;
   productId: number;
   onOpenDetails: (productId: number) => void;
 }
@@ -26,7 +27,7 @@ export function AddToCartButton({
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
   const [isAdding, setIsAdding] = useState(false);
-  const showNotifyMe = shouldShowNotifyMe(availabilityStatus);
+  const showNotifyMe = shouldShowNotifyMeForProduct({ availabilityStatus });
   const label = showNotifyMe ? 'Notify Me' : isAdding ? 'Adding...' : 'Add to Cart';
 
   async function handleAddToCart() {
@@ -52,6 +53,7 @@ export function AddToCartButton({
       variant="primary"
       className="mt-auto"
       disabled={isAdding}
+      aria-busy={isAdding}
       onClick={() => {
         if (showNotifyMe) {
           onOpenDetails(productId);

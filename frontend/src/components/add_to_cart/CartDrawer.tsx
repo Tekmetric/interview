@@ -1,7 +1,7 @@
 import { Button } from '../button/Button';
 import { Drawer } from '../drawer/Drawer';
 import { QuantityInput } from '../quantity_input/QuantityInput';
-import { formatCurrency, formatProductPrice } from '../product_card/priceUtils';
+import { formatCurrency, formatProductPrice } from '../../utils/priceUtils';
 import { removeItem, updateQuantity } from '../../store/cartSlice';
 import {
   selectCartItemCount,
@@ -14,6 +14,8 @@ interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+export const CART_DRAWER_PANEL_ID = 'cart-drawer-panel';
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const dispatch = useAppDispatch();
@@ -28,6 +30,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       onClose={onClose}
       title="Cart"
       titleId="cart-drawer-title"
+      panelId={CART_DRAWER_PANEL_ID}
       closeAriaLabel="Close cart"
       panelClassName="drawer-panel--full-height"
     >
@@ -55,7 +58,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <div className="min-w-0 flex-1">
                     <p className="m-0 text-sm font-medium">{item.title}</p>
                     <p className="m-0 mt-1 text-sm text-neutral-600">{display}</p>
-                    <div className="mt-2 flex items-center gap-2">
+                    <div className="mt-2 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
                       <QuantityInput
                         id={`cart-qty-${item.sku}`}
                         label={`Quantity for ${item.title}`}

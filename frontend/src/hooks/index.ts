@@ -6,6 +6,7 @@ export { getCategories } from './getCategories';
 export { getProductsByCategory } from './getProductsByCategory';
 
 export type {
+  AvailabilityStatus,
   ProductSummary,
   ProductDetail,
   ProductDetailReview,

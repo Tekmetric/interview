@@ -37,7 +37,7 @@ describe('getSortedProducts', () => {
 
     expect(result).toEqual(sampleProductsResponse);
     expect(result.products).toHaveLength(1);
-    expect(result.products[0].title).toBe('Essence Mascara Lash Princess');
+    expect(result.products[0]!.title).toBe('Essence Mascara Lash Princess');
   });
 
   it('uses limit=12 and skip=0 by default with select param', async () => {

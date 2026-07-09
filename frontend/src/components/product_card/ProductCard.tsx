@@ -1,4 +1,5 @@
 import type { ProductSummary } from '../../hooks/types';
+import { getAvailabilityBadgeLabel } from '../../utils/availabilityStatus';
 import { AddToCartButton } from './AddToCartButton';
 import { AvailabilityBadge } from './AvailabilityBadge';
 import { MoreDetailsOverlay } from './MoreDetailsOverlay';
@@ -18,8 +19,16 @@ export function ProductCard({
   isDetailsOpen,
   onOpenDetails,
 }: ProductCardProps) {
+  const availabilityLabel = getAvailabilityBadgeLabel(product.availabilityStatus);
+  const accessibleName = availabilityLabel
+    ? `${product.title}, ${availabilityLabel}`
+    : product.title;
+
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded border border-neutral-200">
+    <article
+      aria-label={accessibleName}
+      className="flex h-full flex-col overflow-hidden rounded border border-neutral-200"
+    >
       <div className="group relative">
         <ProductImage src={product.thumbnail} alt={product.title} />
         <AvailabilityBadge availabilityStatus={product.availabilityStatus} />
@@ -30,7 +39,10 @@ export function ProductCard({
         />
       </div>
       <div className="flex flex-1 flex-col gap-2 p-3">
-        <ProductTitle title={product.title} brand={product.brand} />
+        <ProductTitle
+          title={product.title}
+          {...(product.brand !== undefined ? { brand: product.brand } : {})}
+        />
         <div className="mt-auto flex flex-col gap-2">
           <ProductPrice
             price={product.price}

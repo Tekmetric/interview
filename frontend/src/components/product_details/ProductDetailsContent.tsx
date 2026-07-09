@@ -1,4 +1,5 @@
 import type { ProductDetail } from '../../hooks/types';
+import { isProductInStock } from '../../utils/availabilityStatus';
 import { CollapsibleSection } from './CollapsibleSection';
 import { ProductDetailsAction } from './ProductDetailsAction';
 import { ProductDetailsHero } from './ProductDetailsHero';
@@ -15,7 +16,7 @@ export function ProductDetailsContent({
   onClose,
 }: ProductDetailsContentProps) {
   const { width, height, depth } = product.dimensions;
-  const inStock = product.stock > 0;
+  const inStock = isProductInStock(product);
 
   return (
     <div className="product-details-content">

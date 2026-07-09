@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 import './drawer.css';
 
@@ -22,6 +23,7 @@ interface DrawerProps {
   onClose: () => void;
   title: string;
   titleId: string;
+  panelId: string;
   closeAriaLabel: string;
   children: ReactNode;
   footer?: ReactNode;
@@ -33,6 +35,7 @@ export function Drawer({
   onClose,
   title,
   titleId,
+  panelId,
   closeAriaLabel,
   children,
   footer,
@@ -65,6 +68,28 @@ export function Drawer({
       setIsMounted(false);
     }
   }, [isOpen, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (!isMounted) {
+      return;
+    }
+
+    const root = document.getElementById('root');
+    const previousOverflow = document.body.style.overflow;
+    const previousRootInert = root?.inert ?? false;
+
+    document.body.style.overflow = 'hidden';
+    if (root) {
+      root.inert = true;
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      if (root) {
+        root.inert = previousRootInert;
+      }
+    };
+  }, [isMounted]);
 
   useEffect(() => {
     if (!isMounted) {
@@ -108,6 +133,10 @@ export function Drawer({
 
       const first = focusableElements[0];
       const last = focusableElements[focusableElements.length - 1];
+      if (!first || !last) {
+        return;
+      }
+
       const active = document.activeElement;
 
       if (event.shiftKey) {
@@ -146,7 +175,7 @@ export function Drawer({
     return null;
   }
 
-  return (
+  return createPortal(
     <>
       <div
         aria-hidden="true"
@@ -155,6 +184,7 @@ export function Drawer({
       />
       <div
         ref={panelRef}
+        id={panelId}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -177,6 +207,7 @@ export function Drawer({
         <div className="drawer-body">{children}</div>
         {footer && <div className="drawer-footer">{footer}</div>}
       </div>
-    </>
+    </>,
+    document.body
   );
 }

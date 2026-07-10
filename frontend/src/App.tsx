@@ -1,7 +1,7 @@
 import { CategoryFilter } from './components/category_filter/CategoryFilter';
 import { Pagination } from './components/pagination/Pagination';
 import { getTotalPages } from './components/pagination/paginationUtils';
-import { ProductDetailsDrawer } from './components/product_details/ProductDetailsDrawer';
+import { LazyProductDetailsDrawer } from './components/product_details/LazyProductDetailsDrawer';
 import { ProductGrid } from './components/product_grid/ProductGrid';
 import { LazyPageFooter } from './components/layout/LazyPageFooter';
 import { PageHeader } from './components/layout/PageHeader';
@@ -34,6 +34,8 @@ function App() {
     sortOptionId,
   } = useProductListing();
 
+  const isInitialLoad = isLoading && products.length === 0;
+
   return (
     <div className="min-h-screen flex flex-col bg-surface">
       <a
@@ -60,7 +62,7 @@ function App() {
                 <h1 className="text-2xl font-bold">
                   {heading}
                 </h1>
-                {isLoading ? (
+                {isInitialLoad ? (
                   <Skeleton className="h-4 w-20" />
                 ) : (
                   !error && (
@@ -70,6 +72,9 @@ function App() {
                       aria-atomic="true"
                     >
                       {productTotal} Item(s)
+                      {isLoading && (
+                        <span className="sr-only">, updating</span>
+                      )}
                     </span>
                   )
                 )}
@@ -83,7 +88,7 @@ function App() {
 
             {error && <p role="alert">{error}</p>}
 
-            {isLoading ? (
+            {isInitialLoad ? (
               <>
                 <ProductGridSkeleton />
                 <PaginationSkeleton />
@@ -91,21 +96,26 @@ function App() {
             ) : (
               !error && (
                 <>
-                  {products.length === 0 ? (
-                    <p role="status" className="text-text-secondary">
-                      {trimmedQuery
-                        ? `No products found for "${trimmedQuery}".`
-                        : selectedCategory
-                          ? `No products found in ${selectedCategory.name}.`
-                          : 'No products found.'}
-                    </p>
-                  ) : (
-                    <ProductGrid
-                      products={products}
-                      selectedProductId={selectedProductId}
-                      onOpenDetails={setSelectedProductId}
-                    />
-                  )}
+                  <div
+                    className={isLoading ? 'opacity-60 transition-opacity' : undefined}
+                    aria-busy={isLoading || undefined}
+                  >
+                    {products.length === 0 ? (
+                      <p role="status" className="text-text-secondary">
+                        {trimmedQuery
+                          ? `No products found for "${trimmedQuery}".`
+                          : selectedCategory
+                            ? `No products found in ${selectedCategory.name}.`
+                            : 'No products found.'}
+                      </p>
+                    ) : (
+                      <ProductGrid
+                        products={products}
+                        selectedProductId={selectedProductId}
+                        onOpenDetails={setSelectedProductId}
+                      />
+                    )}
+                  </div>
                   <Pagination
                     currentPage={currentPage}
                     totalPages={getTotalPages(productTotal)}
@@ -118,7 +128,7 @@ function App() {
         </div>
       </main>
       <LazyPageFooter />
-      <ProductDetailsDrawer
+      <LazyProductDetailsDrawer
         productId={selectedProductId}
         isOpen={selectedProductId !== null}
         onClose={() => setSelectedProductId(null)}

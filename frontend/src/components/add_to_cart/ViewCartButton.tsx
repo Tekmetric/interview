@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '../button/Button';
-import { CartDrawer, CART_DRAWER_PANEL_ID } from './CartDrawer';
+import { CART_DRAWER_PANEL_ID } from './cartDrawerConstants';
+import { LazyCartDrawer } from './LazyCartDrawer';
 import { selectCartItemCount } from '../../store/cartSelectors';
 import { useAppSelector } from '../../store/hooks';
 
@@ -33,7 +34,7 @@ export function ViewCartButton() {
           </span>
         )}
       </Button>
-      <CartDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <LazyCartDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   );
 }

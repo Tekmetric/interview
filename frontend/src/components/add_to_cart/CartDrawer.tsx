@@ -13,13 +13,12 @@ import {
 } from '../../store/cartSelectors';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { CartItem } from '../../store/cartTypes';
+import { CART_DRAWER_PANEL_ID } from './cartDrawerConstants';
 
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-export const CART_DRAWER_PANEL_ID = 'cart-drawer-panel';
 const CART_CHECKOUT_TOOLTIP_ID = 'cart-checkout-tooltip';
 const CHECKOUT_DISABLED_MESSAGE = 'Checkout is not implemented';
 
@@ -97,6 +96,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <img
                     src={item.thumbnail}
                     alt=""
+                    width={64}
+                    height={64}
+                    loading="lazy"
+                    decoding="async"
                     className="h-16 w-16 shrink-0 rounded object-cover"
                   />
                   <div className="min-w-0 flex-1">

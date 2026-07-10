@@ -4,6 +4,7 @@ import type { ProductCategory } from '../../hooks/types';
 import { CategoryRadioList } from './CategoryRadioList';
 import {
   CATEGORY_DRAWER_DISABLED_HINT_ID,
+  CATEGORY_FILTER_DRAWER_PANEL_ID,
   DISABLED_HINT_TEXT,
 } from './categoryFilterConstants';
 
@@ -17,8 +18,6 @@ interface CategoryFilterDrawerProps {
   onApply: () => void;
   onCancel: () => void;
 }
-
-export const CATEGORY_FILTER_DRAWER_PANEL_ID = 'category-drawer-panel';
 
 export function CategoryFilterDrawer({
   isOpen,

@@ -12,12 +12,14 @@ interface ProductCardProps {
   product: ProductSummary;
   isDetailsOpen: boolean;
   onOpenDetails: (productId: number) => void;
+  priority?: boolean;
 }
 
 export function ProductCard({
   product,
   isDetailsOpen,
   onOpenDetails,
+  priority = false,
 }: ProductCardProps) {
   const availabilityLabel = getAvailabilityBadgeLabel(product.availabilityStatus);
   const accessibleName = availabilityLabel
@@ -30,7 +32,7 @@ export function ProductCard({
       className="flex h-full flex-col overflow-hidden rounded border border-border bg-elevated"
     >
       <div className="group relative">
-        <ProductImage src={product.thumbnail} alt={product.title} />
+        <ProductImage src={product.thumbnail} alt={product.title} priority={priority} />
         <AvailabilityBadge availabilityStatus={product.availabilityStatus} />
         <MoreDetailsOverlay
           productId={product.id}

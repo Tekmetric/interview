@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { ProductCategory } from '../../hooks/types';
 import { Button } from '../button/Button';
-import { CategoryFilterDrawer, CATEGORY_FILTER_DRAWER_PANEL_ID } from './CategoryFilterDrawer';
+import { CATEGORY_FILTER_DRAWER_PANEL_ID } from './categoryFilterConstants';
+import { LazyCategoryFilterDrawer } from './LazyCategoryFilterDrawer';
 import { CategoryRadioList } from './CategoryRadioList';
 import { CategoryFilterSkeleton } from '../skeleton/CategoryFilterSkeleton';
 import {
@@ -115,7 +116,7 @@ export function CategoryFilter({
           Filter by Category
         </Button>
 
-        <CategoryFilterDrawer
+        <LazyCategoryFilterDrawer
           isOpen={isDrawerOpen}
           categories={categories}
           error={error}

@@ -1,0 +1,109 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+}
+
+.error {
+  color: red;
+}
+
+.pageInfo {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.pageInfo p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.totalCount {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.asteroidList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.asteroidCard {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.6rem;
+  background: white;
+  transition: box-shadow 0.2s;
+}
+
+.asteroidCard:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.asteroidHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.asteroidName {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.hazardBadge {
+  background: #ff6b6b;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.asteroidDetails {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.asteroidDetails p {
+  margin: 0.35rem 0;
+  font-size: 0.85rem;
+}
+
+.asteroidDetails strong {
+  color: #333;
+}
+
+.detailsLink {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #0066cc;
+  text-decoration: underline;
+  font-size: 0.85rem;
+}
+
+.detailsLink:hover {
+  color: #0052a3;
+}
+
+@media (max-width: 600px) {
+  .asteroidList {
+    grid-template-columns: 1fr;
+  }
+
+  .asteroidHeader {
+    flex-direction: column;
+  }
+}

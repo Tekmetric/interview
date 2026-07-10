@@ -1,0 +1,249 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.datePickerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dateLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.datePicker {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+  cursor: pointer;
+  min-width: 160px;
+}
+
+.datePicker:hover {
+  border-color: #0066cc;
+}
+
+.datePicker:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  border-radius: 8px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.summaryCount {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.summaryText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.summaryDate {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+}
+
+.error {
+  color: red;
+  background: #fff0f0;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.loadingOverlay {
+  text-align: center;
+  padding: 1rem;
+  background: #f0f8ff;
+  border-radius: 8px;
+  margin: 1rem 0;
+  color: #0066cc;
+}
+
+.dateSection {
+  margin-bottom: 1.5rem;
+}
+
+.dateHeader {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid #0066cc;
+}
+
+.asteroidCount {
+  color: #666;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.asteroidList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 0.75rem;
+}
+
+.asteroidCard {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.75rem;
+  background: white;
+  transition: box-shadow 0.2s;
+}
+
+.asteroidCard:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.asteroidHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.asteroidName {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.hazardBadge {
+  background: #ff6b6b;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.asteroidDetails {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.detailRow {
+  margin: 0.4rem 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.detailRow strong {
+  color: #333;
+  display: inline-block;
+  min-width: 130px;
+}
+
+.detailsLink {
+  display: inline-block;
+  margin-top: 0.6rem;
+  color: #0066cc;
+  text-decoration: underline;
+  font-size: 0.85rem;
+}
+
+.detailsLink:hover {
+  color: #0052a3;
+}
+
+@media (min-width: 768px) {
+  .controls {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .summary {
+    flex: 1;
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 767px) {
+  .controls {
+    padding: 1rem;
+  }
+
+  .datePickerWrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .dateLabel {
+    text-align: center;
+  }
+
+  .datePicker {
+    width: 100%;
+  }
+
+  .summary {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .summaryCount {
+    font-size: 2.5rem;
+  }
+
+  .asteroidList {
+    grid-template-columns: 1fr;
+  }
+
+  .asteroidHeader {
+    flex-direction: column;
+  }
+
+  .detailRow strong {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+}

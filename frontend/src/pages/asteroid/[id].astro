@@ -1,0 +1,58 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import AsteroidDetail from '../../components/AsteroidDetail';
+import { SITE_TITLE } from '../../consts';
+import { AsteroidDetailSchema } from '../../schemas/nasa';
+
+// Get the asteroid ID from the route parameter
+const { id } = Astro.params;
+
+// Disable prerendering for dynamic routes
+export const prerender = false;
+
+// Fetch data server-side
+const runtime = Astro.locals.runtime as any;
+const apiKey = runtime?.env?.NASA_API_KEY;
+
+if (!apiKey) {
+  throw new Error('NASA_API_KEY not configured');
+}
+
+if (!id) {
+  throw new Error('Asteroid ID is required');
+}
+
+// Fetch from NASA NeoWs Lookup API
+const response = await fetch(
+  `https://api.nasa.gov/neo/rest/v1/neo/${id}?api_key=${apiKey}`
+);
+
+if (!response.ok) {
+  if (response.status === 404) {
+    return Astro.redirect('/404');
+  }
+  throw new Error('Failed to fetch asteroid data from NASA');
+}
+
+const rawData = await response.json();
+
+// Parse and validate response with Zod
+const data = AsteroidDetailSchema.parse(rawData);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`Asteroid ${id} - ${SITE_TITLE}`}
+      description={`Detailed information about asteroid ${id}`}
+    />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <AsteroidDetail data={data} client:load />
+    </main>
+  </body>
+</html>

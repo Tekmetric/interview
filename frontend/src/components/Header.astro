@@ -1,0 +1,30 @@
+---
+import HeaderLink from "./HeaderLink.astro";
+import { SITE_TITLE } from "../consts";
+---
+
+<header>
+  <nav>
+    <h1><a href="/">{SITE_TITLE}</a></h1>
+    <div class="internal-links">
+      <HeaderLink href="/">Check by date</HeaderLink>/
+      <HeaderLink href="/browse">Browse All</HeaderLink>
+    </div>
+  </nav>
+</header>
+<style>
+  header {
+    margin: 0;
+    padding: 0 1em;
+    background: white;
+    box-shadow: 0 2px 8px rgba(var(--black), 5%);
+    text-align: center;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .internal-links {
+    text-align: right;
+  }
+</style>

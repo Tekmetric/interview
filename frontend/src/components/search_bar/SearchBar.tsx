@@ -1,4 +1,5 @@
 import { useId, useState, type FormEvent } from 'react';
+import { formControlClassName } from '../../styles/formControl';
 import { Button } from '../button/Button';
 
 interface SearchBarProps {
@@ -30,7 +31,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         value={inputValue}
         onChange={(event) => setInputValue(event.target.value)}
         placeholder="Search products..."
-        className="min-w-0 flex-1 rounded border border-border-input bg-elevated px-3 py-2 text-sm text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-focus"
+        className={`${formControlClassName} min-w-0 flex-1 px-3 py-2 text-text`}
       />
       <Button type="submit" variant="primary">
         Search

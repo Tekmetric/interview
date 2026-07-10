@@ -1,4 +1,7 @@
 import { SORT_OPTIONS } from '../../hooks/sortOptions';
+import { formControlClassName } from '../../styles/formControl';
+
+const selectClassName = `${formControlClassName} cursor-pointer px-3 py-2 text-text-secondary`;
 
 interface SortDropdownProps {
   value: string;
@@ -12,7 +15,7 @@ export function SortDropdown({ value, onChange, className }: SortDropdownProps) 
       aria-label="Sort products"
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className={`cursor-pointer rounded border border-border-input bg-elevated px-3 py-2 text-sm text-text-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-focus ${className ?? ''}`.trim()}
+      className={[selectClassName, className].filter(Boolean).join(' ')}
     >
       {SORT_OPTIONS.map((option) => (
         <option key={option.id} value={option.id}>

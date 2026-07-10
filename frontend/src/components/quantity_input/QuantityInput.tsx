@@ -1,3 +1,7 @@
+import { formControlClassName } from '../../styles/formControl';
+
+const quantityInputClassName = `${formControlClassName} min-h-11 px-2 py-1 text-text disabled:cursor-not-allowed disabled:border-border disabled:bg-disabled-bg disabled:text-disabled-text`;
+
 interface QuantityInputProps {
   id: string;
   label: string;
@@ -59,7 +63,7 @@ export function QuantityInput({
             onChange(quantity);
           }
         }}
-        className={`${className} min-h-11 rounded border border-border-input bg-elevated px-2 py-1 text-sm text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-focus disabled:cursor-not-allowed disabled:border-border disabled:bg-disabled-bg disabled:text-disabled-text`}
+        className={[className, quantityInputClassName].filter(Boolean).join(' ')}
       />
     </>
   );

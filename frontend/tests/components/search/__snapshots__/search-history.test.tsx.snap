@@ -1,0 +1,119 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SearchHistory Component > should render correctly when no search history exists 1`] = `
+<div>
+  <div
+    class="pt-4"
+  >
+    <div
+      class="flex items-center justify-between px-5 mb-2"
+    >
+      <h2
+        class="text-xl font-semibold py-2"
+      >
+        Search History
+      </h2>
+    </div>
+    <p
+      class="px-4 text-gray-500"
+    >
+      No search history yet.
+    </p>
+  </div>
+</div>
+`;
+
+exports[`SearchHistory Component > should render recent searches correctly 1`] = `
+<div>
+  <div
+    class="pt-4"
+  >
+    <div
+      class="flex items-center justify-between px-5 mb-2"
+    >
+      <h2
+        class="text-xl font-semibold py-2"
+      >
+        Search History
+      </h2>
+      <button
+        class="p-2 text-sm border border-gray-300 rounded-sm bg-white hover:bg-gray-100"
+      >
+        Clear
+      </button>
+    </div>
+    <a
+      class=""
+      data-discover="true"
+      href="/forecast/12345"
+    >
+      <div
+        class="relative p-4 pl-12 bg-white hover:bg-blue-100 cursor-pointer"
+      >
+        <span
+          class="material-icons-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+        >
+          location_on
+        </span>
+        <div
+          class="flex items-center justify-between"
+        >
+          <div>
+            <h2
+              class="text-lg font-semibold"
+            >
+              New York
+            </h2>
+            <p
+              class="text-sm text-gray-600"
+            >
+              NY
+            </p>
+          </div>
+          <p
+            class="text-sm text-gray-600"
+          >
+            United States
+          </p>
+        </div>
+      </div>
+    </a>
+    <a
+      class=""
+      data-discover="true"
+      href="/forecast/67890"
+    >
+      <div
+        class="relative p-4 pl-12 bg-white hover:bg-blue-100 cursor-pointer"
+      >
+        <span
+          class="material-icons-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+        >
+          location_on
+        </span>
+        <div
+          class="flex items-center justify-between"
+        >
+          <div>
+            <h2
+              class="text-lg font-semibold"
+            >
+              Los Angeles
+            </h2>
+            <p
+              class="text-sm text-gray-600"
+            >
+              CA
+            </p>
+          </div>
+          <p
+            class="text-sm text-gray-600"
+          >
+            United States
+          </p>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+`;

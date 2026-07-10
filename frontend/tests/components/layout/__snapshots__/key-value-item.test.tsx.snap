@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`KeyValueItem Component > should render correctly 1`] = `
+<div>
+  <div
+    class="flex items-center justify-between md:p-4 p-2"
+  >
+    <span
+      class="font-semibold"
+    >
+      Test Key
+    </span>
+    <span>
+      Test Value
+    </span>
+  </div>
+</div>
+`;

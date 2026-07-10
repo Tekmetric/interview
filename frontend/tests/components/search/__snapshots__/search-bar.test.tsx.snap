@@ -1,0 +1,166 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SearchBar Component > should display correctly when no search results are returned 1`] = `
+<div>
+  <div
+    class="relative"
+  >
+    <div
+      class="relative"
+    >
+      <span
+        class="material-icons-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+      >
+        search
+      </span>
+      <input
+        class="border border-gray-300 w-full bg-white py-4 pl-12 pr-4 text-lg rounded-t-md border-b-0"
+        placeholder="Search for a location..."
+        type="text"
+      />
+    </div>
+    <div
+      class="absolute top-full left-0 right-0 bg-white"
+    >
+      <p
+        class="p-4 border border-gray-300"
+      >
+        No results found.
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SearchBar Component > should display search results correctly 1`] = `
+<div>
+  <div
+    class="relative"
+  >
+    <div
+      class="relative"
+    >
+      <span
+        class="material-icons-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+      >
+        search
+      </span>
+      <input
+        class="border border-gray-300 w-full bg-white py-4 pl-12 pr-4 text-lg rounded-t-md border-b-0"
+        placeholder="Search for a location..."
+        type="text"
+      />
+    </div>
+    <div
+      class="absolute top-full left-0 right-0 bg-white"
+    >
+      <div
+        class="border border-gray-300 "
+      >
+        <a
+          class=""
+          data-discover="true"
+          href="/forecast/1"
+        >
+          <div
+            class="relative p-4 pl-12 bg-white hover:bg-blue-100 cursor-pointer"
+          >
+            <span
+              class="material-icons-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+            >
+              location_on
+            </span>
+            <div
+              class="flex items-center justify-between"
+            >
+              <div>
+                <h2
+                  class="text-lg font-semibold"
+                >
+                  New York
+                </h2>
+                <p
+                  class="text-sm text-gray-600"
+                >
+                  New York
+                </p>
+              </div>
+              <p
+                class="text-sm text-gray-600"
+              >
+                United States
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div
+        class="border border-gray-300 border-t-0"
+      >
+        <a
+          class=""
+          data-discover="true"
+          href="/forecast/2"
+        >
+          <div
+            class="relative p-4 pl-12 bg-white hover:bg-blue-100 cursor-pointer"
+          >
+            <span
+              class="material-icons-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+            >
+              location_on
+            </span>
+            <div
+              class="flex items-center justify-between"
+            >
+              <div>
+                <h2
+                  class="text-lg font-semibold"
+                >
+                  New Orleans
+                </h2>
+                <p
+                  class="text-sm text-gray-600"
+                >
+                  Louisiana
+                </p>
+              </div>
+              <p
+                class="text-sm text-gray-600"
+              >
+                United States
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SearchBar Component > should render default state correctly 1`] = `
+<div>
+  <div
+    class="relative"
+  >
+    <div
+      class="relative"
+    >
+      <span
+        class="material-icons-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+      >
+        search
+      </span>
+      <input
+        class="border border-gray-300 w-full bg-white py-4 pl-12 pr-4 text-lg rounded-md"
+        placeholder="Search for a location..."
+        type="text"
+      />
+    </div>
+    <div
+      class="absolute top-full left-0 right-0 bg-white"
+    />
+  </div>
+</div>
+`;

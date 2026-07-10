@@ -1,0 +1,85 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Current Component > should render current conditions data correctly 1`] = `
+<div>
+  <div
+    class="flex md:flex-row flex-col md:space-between space-y-4"
+  >
+    <div
+      class="md:w-1/2 w-full flex flex-col space-y-2"
+    >
+      <div
+        class="flex space-x-4 items-center"
+      >
+        <img
+          src="https://www.accuweather.com/assets/images/weather-icons/v2a/1.svg"
+        />
+        <div
+          class="font-bold text-5xl"
+        >
+          72
+          ° 
+          F
+        </div>
+      </div>
+      <p
+        class="text-lg"
+      >
+        Sunny
+      </p>
+    </div>
+    <div
+      class="md:w-1/2 w-full flex flex-col justify-evenly divide-y divide-gray-300 border border-gray-300 rounded-md"
+    >
+      <div
+        class="flex items-center justify-between md:p-4 p-2"
+      >
+        <span
+          class="font-semibold"
+        >
+          Wind
+        </span>
+        <span>
+          NW 10 mph
+        </span>
+      </div>
+      <div
+        class="flex items-center justify-between md:p-4 p-2"
+      >
+        <span
+          class="font-semibold"
+        >
+          UV Index
+        </span>
+        <span>
+          5 (High)
+        </span>
+      </div>
+      <div
+        class="flex items-center justify-between md:p-4 p-2"
+      >
+        <span
+          class="font-semibold"
+        >
+          Dew Point
+        </span>
+        <span>
+          45° F
+        </span>
+      </div>
+      <div
+        class="flex items-center justify-between md:p-4 p-2"
+      >
+        <span
+          class="font-semibold"
+        >
+          Visibility
+        </span>
+        <span>
+          10 mi
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;

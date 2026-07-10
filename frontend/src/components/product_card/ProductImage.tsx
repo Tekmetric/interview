@@ -19,7 +19,7 @@ export function ProductImage({ src, alt, priority = false }: ProductImageProps) 
         height={IMAGE_SIZE}
         decoding="async"
         loading={priority ? 'eager' : 'lazy'}
-        {...(priority ? { fetchPriority: 'high' as const } : {})}
+        {...(priority ? ({ fetchpriority: 'high' } as React.ImgHTMLAttributes<HTMLImageElement>) : {})}
       />
     </div>
   );

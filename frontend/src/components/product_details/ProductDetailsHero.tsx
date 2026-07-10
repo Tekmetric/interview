@@ -1,4 +1,4 @@
-import type { ProductDetail } from '../../hooks/types';
+import type { ProductDetail } from '../../types/product';
 import { isProductInStock } from '../../utils/availabilityStatus';
 import { ProductPrice } from '../product_card/ProductPrice';
 import { ProductTitle } from '../product_card/ProductTitle';

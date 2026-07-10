@@ -1,4 +1,4 @@
-import { SORT_OPTIONS } from '../../hooks/sortOptions';
+import { SORT_OPTIONS } from '../../config/sortOptions';
 import { formControlClassName } from '../../styles/formControl';
 
 const selectClassName = `${formControlClassName} cursor-pointer px-3 py-2 text-text-secondary`;

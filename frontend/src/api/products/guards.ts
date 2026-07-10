@@ -1,9 +1,9 @@
-import type { ProductCategory } from './types';
+import type { ProductCategory } from '../../types/product';
 import type {
   ProductDetailRaw,
   ProductSummaryRaw,
   ProductsResponseRaw,
-} from './productMappers';
+} from './mappers';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;

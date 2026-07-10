@@ -1,6 +1,6 @@
 import { Button } from '../button/Button';
 import { Drawer } from '../drawer/Drawer';
-import type { ProductCategory } from '../../hooks/types';
+import type { ProductCategory } from '../../types/product';
 import { CategoryRadioList } from './CategoryRadioList';
 import {
   CATEGORY_DRAWER_DISABLED_HINT_ID,

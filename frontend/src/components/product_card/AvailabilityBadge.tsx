@@ -1,4 +1,4 @@
-import type { AvailabilityStatus } from '../../hooks/types';
+import type { AvailabilityStatus } from '../../types/product';
 import { getAvailabilityBadgeLabel } from '../../utils/availabilityStatus';
 
 interface AvailabilityBadgeProps {

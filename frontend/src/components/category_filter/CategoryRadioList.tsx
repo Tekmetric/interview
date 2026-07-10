@@ -1,4 +1,4 @@
-import type { ProductCategory } from '../../hooks/types';
+import type { ProductCategory } from '../../types/product';
 
 interface CategoryRadioListProps {
   categories: ProductCategory[];

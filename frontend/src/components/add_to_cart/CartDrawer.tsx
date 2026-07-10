@@ -53,6 +53,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         isEmpty ? undefined : (
           <span
             className="group relative block w-full"
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focusable wrapper for disabled-checkout tooltip
             tabIndex={0}
             title={CHECKOUT_DISABLED_MESSAGE}
             aria-describedby={CART_CHECKOUT_TOOLTIP_ID}

@@ -1,4 +1,4 @@
-import type { ProductSummary } from '../../hooks/types';
+import type { ProductSummary } from '../../types/product';
 import { getAvailabilityBadgeLabel } from '../../utils/availabilityStatus';
 import { AddToCartButton } from './AddToCartButton';
 import { AvailabilityBadge } from './AvailabilityBadge';

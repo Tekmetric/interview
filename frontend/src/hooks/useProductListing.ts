@@ -4,14 +4,14 @@ import {
   DEFAULT_SORT_OPTION_ID,
   SORT_OPTIONS,
 } from '../config/sortOptions';
-import { fetchProducts } from '../hooks/fetchProducts';
-import { getCategories } from '../hooks/getCategories';
+import { fetchProducts } from '../api/products/fetchProducts';
+import { getCategories } from '../api/products/getCategories';
 import type {
   ProductCategory,
   ProductSortField,
   ProductSummary,
   SortOrder,
-} from '../hooks/types';
+} from '../types/product';
 import { pageToSkip } from '../components/pagination/paginationUtils';
 import { scrollToTopRespectingMotion } from '../utils/scrollIntoViewRespectingMotion';
 

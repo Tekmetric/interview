@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
-import { getProduct } from '../../hooks/getProduct';
-import type { ProductDetail } from '../../hooks/types';
 import { Drawer } from '../drawer/Drawer';
+import { useProduct } from '../../hooks/useProduct';
 import { ProductDetailsContent } from './ProductDetailsContent';
 
 interface ProductDetailsDrawerProps {
@@ -15,46 +13,7 @@ export function ProductDetailsDrawer({
   isOpen,
   onClose,
 }: ProductDetailsDrawerProps) {
-  const [product, setProduct] = useState<ProductDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isOpen || productId === null) {
-      return;
-    }
-
-    const id = productId;
-    let cancelled = false;
-
-    async function loadProduct() {
-      setIsLoading(true);
-      setProduct(null);
-      setError(null);
-
-      try {
-        const result = await getProduct(id);
-
-        if (!cancelled) {
-          setProduct(result);
-        }
-      } catch {
-        if (!cancelled) {
-          setError('Failed to load product details.');
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadProduct();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isOpen, productId]);
+  const { product, isLoading, error } = useProduct(productId, isOpen);
 
   const title = product?.title ?? 'Product Details';
 

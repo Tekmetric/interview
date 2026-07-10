@@ -1,4 +1,4 @@
-import type { AvailabilityStatus } from '../hooks/types';
+import type { AvailabilityStatus } from '../types/product';
 
 const OUT_OF_STOCK = 'Out of Stock';
 const LOW_STOCK = 'Low Stock';

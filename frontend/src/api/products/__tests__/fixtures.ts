@@ -3,7 +3,7 @@ import type {
   ProductDetail,
   ProductSummary,
   ProductsResponse,
-} from '../types';
+} from '../../../types/product';
 
 export const sampleProductSummaryRaw = {
   id: 1,

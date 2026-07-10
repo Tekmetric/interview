@@ -4,7 +4,7 @@ import { useToast } from '../toast/useToast';
 import { addItem } from '../../store/cartSlice';
 import { useAppDispatch } from '../../store/hooks';
 import type { AddToCartPayload } from '../../store/cartTypes';
-import type { AvailabilityStatus } from '../../hooks/types';
+import type { AvailabilityStatus } from '../../types/product';
 import { shouldShowNotifyMeForProduct } from '../../utils/availabilityStatus';
 import { wait } from '../../utils/wait';
 

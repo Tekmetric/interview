@@ -1,5 +1,5 @@
 import { fetchProducts } from './fetchProducts';
-import type { GetProductsParams, ProductsResponse } from './types';
+import type { GetProductsParams, ProductsResponse } from '../../types/product';
 
 export async function getProducts(
   params: GetProductsParams = {}

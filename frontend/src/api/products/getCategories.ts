@@ -1,6 +1,6 @@
-import { fetchJson } from './apiClient';
+import type { ProductCategory } from '../../types/product';
+import { fetchJson } from './client';
 import { isProductCategoriesResponse } from './guards';
-import type { ProductCategory } from './types';
 
 export async function getCategories(): Promise<ProductCategory[]> {
   return fetchJson<ProductCategory[]>('/products/categories', {

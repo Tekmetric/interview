@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import type { ProductCategory } from '../../hooks/types';
+import type { ProductCategory } from '../../types/product';
 
 const CategoryFilterDrawer = lazy(() =>
   import('./CategoryFilterDrawer').then((module) => ({

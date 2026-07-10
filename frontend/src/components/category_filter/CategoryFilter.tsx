@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ProductCategory } from '../../hooks/types';
+import type { ProductCategory } from '../../types/product';
 import { Button } from '../button/Button';
 import { CATEGORY_FILTER_DRAWER_PANEL_ID } from './categoryFilterConstants';
 import { LazyCategoryFilterDrawer } from './LazyCategoryFilterDrawer';

@@ -1,8 +1,8 @@
-import { fetchJson } from './apiClient';
+import type { ProductDetail } from '../../types/product';
+import { fetchJson } from './client';
 import { isProductDetailRaw } from './guards';
-import { mapProductDetail } from './productMappers';
-import { PRODUCT_DETAIL_SELECT } from './productSelectFields';
-import type { ProductDetail } from './types';
+import { mapProductDetail } from './mappers';
+import { PRODUCT_DETAIL_SELECT } from './selectFields';
 
 export async function getProduct(id: number): Promise<ProductDetail> {
   const raw = await fetchJson(`/products/${id}`, {

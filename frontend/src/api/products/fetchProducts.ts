@@ -1,13 +1,13 @@
-import { fetchJson } from './apiClient';
-import { DEFAULT_PAGE_SIZE } from '../constants/pagination';
-import { isProductsResponseRaw } from './guards';
-import { mapProductsResponse } from './productMappers';
-import { PRODUCT_SUMMARY_SELECT } from './productSelectFields';
+import { DEFAULT_PAGE_SIZE } from '../../constants/pagination';
 import type {
   ProductSortField,
   ProductsResponse,
   SortOrder,
-} from './types';
+} from '../../types/product';
+import { fetchJson } from './client';
+import { isProductsResponseRaw } from './guards';
+import { mapProductsResponse } from './mappers';
+import { PRODUCT_SUMMARY_SELECT } from './selectFields';
 
 type PaginationParams = {
   limit?: number;

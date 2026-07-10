@@ -1,4 +1,4 @@
-import type { ProductSummary } from '../../hooks/types';
+import type { ProductSummary } from '../../types/product';
 import { ProductCard } from '../product_card/ProductCard';
 
 interface ProductGridProps {

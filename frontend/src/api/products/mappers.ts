@@ -3,7 +3,7 @@ import type {
   ProductDetailReview,
   ProductSummary,
   ProductsResponse,
-} from './types';
+} from '../../types/product';
 
 export interface ProductSummaryRaw {
   id: number;

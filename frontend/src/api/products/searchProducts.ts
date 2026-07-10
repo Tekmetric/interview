@@ -1,5 +1,5 @@
 import { fetchProducts } from './fetchProducts';
-import type { ProductsResponse, SearchProductsParams } from './types';
+import type { ProductsResponse, SearchProductsParams } from '../../types/product';
 
 export async function searchProducts(
   params: SearchProductsParams

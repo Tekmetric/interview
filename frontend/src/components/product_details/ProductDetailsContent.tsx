@@ -1,4 +1,4 @@
-import type { ProductDetail } from '../../hooks/types';
+import type { ProductDetail } from '../../types/product';
 import { isProductInStock } from '../../utils/availabilityStatus';
 import { CollapsibleSection } from './CollapsibleSection';
 import { ProductDetailsAction } from './ProductDetailsAction';

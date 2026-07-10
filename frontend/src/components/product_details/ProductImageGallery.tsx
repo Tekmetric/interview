@@ -1,4 +1,4 @@
-import type { ProductDetail } from '../../hooks/types';
+import type { ProductDetail } from '../../types/product';
 import { ProductImage } from '../product_card/ProductImage';
 import './productDetails.css';
 

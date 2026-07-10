@@ -1,4 +1,4 @@
-import type { SortOption } from '../hooks/types';
+import type { SortOption } from '../types/product';
 
 export const DEFAULT_SORT_OPTION_ID = 'default';
 

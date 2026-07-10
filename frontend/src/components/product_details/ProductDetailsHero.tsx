@@ -32,7 +32,7 @@ export function ProductDetailsHero({ product }: ProductDetailsHeroProps) {
           price={product.price}
           discountPercentage={product.discountPercentage}
         />
-        <p className="m-0 text-sm font-medium text-neutral-700">
+        <p className="m-0 text-sm font-medium text-text-secondary">
           {inStock ? 'In stock' : 'Out of stock'}
         </p>
       </div>

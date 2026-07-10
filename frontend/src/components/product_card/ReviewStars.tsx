@@ -73,7 +73,7 @@ export function ReviewStars({ rating, reviewCount }: ReviewStarsProps) {
           <StarIcon key={index} state={state} index={index} />
         ))}
       </div>
-      <span className="text-[0.85rem] text-neutral-500" aria-hidden="true">
+      <span className="text-[0.85rem] text-text-muted" aria-hidden="true">
         ({reviewCount})
       </span>
     </div>

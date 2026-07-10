@@ -7,7 +7,7 @@ interface ProductImageProps {
 // if the backend supported it for performance.
 export function ProductImage({ src, alt }: ProductImageProps) {
   return (
-    <div className="flex aspect-square items-center justify-center bg-neutral-100">
+    <div className="flex aspect-square items-center justify-center bg-hover">
       <img
         className="h-full w-full object-contain"
         src={src}

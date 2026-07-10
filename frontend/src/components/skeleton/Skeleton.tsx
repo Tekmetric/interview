@@ -10,7 +10,7 @@ export function Skeleton({ className }: SkeletonProps) {
   return (
     <div
       className={[
-        'rounded bg-neutral-200',
+        'rounded bg-disabled-bg',
         prefersReducedMotion ? '' : 'animate-pulse',
         className,
       ]

@@ -35,10 +35,10 @@ function App() {
   } = useProductListing();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-surface">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:shadow-lg focus:outline-2 focus:outline-offset-2 focus:outline-blue-600"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded focus:bg-elevated focus:px-4 focus:py-2 focus:outline-2 focus:outline-offset-2 focus:outline-cta-focus"
       >
         Skip to main content
       </a>
@@ -65,7 +65,7 @@ function App() {
                 ) : (
                   !error && (
                     <span
-                      className="text-sm text-neutral-600"
+                      className="text-sm text-text-secondary"
                       aria-live="polite"
                       aria-atomic="true"
                     >
@@ -92,7 +92,7 @@ function App() {
               !error && (
                 <>
                   {products.length === 0 ? (
-                    <p role="status" className="text-neutral-600">
+                    <p role="status" className="text-text-secondary">
                       {trimmedQuery
                         ? `No products found for "${trimmedQuery}".`
                         : selectedCategory

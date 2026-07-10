@@ -1,5 +1,58 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-surface: #f7f5f0;
+  --color-elevated: #fdfcfa;
+  --color-text: #292524;
+  --color-text-secondary: #57534e;
+  --color-text-muted: #6f665c;
+  --color-border: #e7e5e4;
+  --color-border-input: #d6d3d1;
+  --color-cta: #c2410c;
+  --color-cta-hover: #9a3412;
+  --color-cta-focus: #7c2d12;
+  --color-on-cta: #ffffff;
+  --color-hover: #f0ebe3;
+  --color-disabled-bg: #e7e5e4;
+  --color-disabled-text: #a8a29e;
+  --color-error: #b91c1c;
+  --color-accent: #d97706;
+  --color-accent-muted: #d6d3d1;
+  --color-badge: #44403c;
+  --color-on-badge: #fafaf9;
+  --color-backdrop: rgba(28, 25, 23, 0.5);
+}
+
+@layer theme {
+  :root,
+  :host {
+    @variant dark {
+      --color-surface: #1c1917;
+      --color-elevated: #292524;
+      --color-text: #fafaf9;
+      --color-text-secondary: #d6d3d1;
+      --color-text-muted: #a8a29e;
+      --color-border: #44403c;
+      --color-border-input: #57534e;
+      --color-cta: #fb923c;
+      --color-cta-hover: #f97316;
+      --color-cta-focus: #ea580c;
+      --color-on-cta: #1c1917;
+      --color-hover: #3f3f46;
+      --color-disabled-bg: #44403c;
+      --color-disabled-text: #78716c;
+      --color-error: #f87171;
+      --color-accent: #fbbf24;
+      --color-accent-muted: #57534e;
+      --color-badge: #e7e5e4;
+      --color-on-badge: #1c1917;
+      --color-backdrop: rgba(0, 0, 0, 0.6);
+    }
+  }
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -8,6 +61,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  @apply bg-surface text-text;
 }
 
 code {

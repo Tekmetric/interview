@@ -15,7 +15,7 @@ export function ProductPrice({ price, discountPercentage }: ProductPriceProps) {
     <p className="m-0 text-[0.95rem]">
       {display}
       {discountLabel && (
-        <span className="text-neutral-500"> ({discountLabel})</span>
+        <span className="text-text-muted"> ({discountLabel})</span>
       )}
     </p>
   );

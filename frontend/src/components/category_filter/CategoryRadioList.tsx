@@ -18,7 +18,7 @@ export function CategoryRadioList({
   return (
     <ul className="m-0 list-none space-y-1 p-0">
       <li>
-        <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 has-disabled:cursor-not-allowed has-disabled:opacity-60">
+        <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-text-secondary hover:bg-hover has-disabled:cursor-not-allowed has-disabled:opacity-60">
           <input
             type="radio"
             name={name}
@@ -26,14 +26,14 @@ export function CategoryRadioList({
             checked={value === null}
             disabled={disabled}
             onChange={() => onChange(null)}
-            className="h-4 w-4 border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            className="h-4 w-4 border-border-input focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-focus"
           />
           All Categories
         </label>
       </li>
       {categories.map((category) => (
         <li key={category.slug}>
-          <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 has-disabled:cursor-not-allowed has-disabled:opacity-60">
+          <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-text-secondary hover:bg-hover has-disabled:cursor-not-allowed has-disabled:opacity-60">
             <input
               type="radio"
               name={name}
@@ -41,7 +41,7 @@ export function CategoryRadioList({
               checked={value === category.slug}
               disabled={disabled}
               onChange={() => onChange(category.slug)}
-              className="h-4 w-4 border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              className="h-4 w-4 border-border-input focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-focus"
             />
             {category.name}
           </label>

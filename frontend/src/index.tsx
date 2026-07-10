@@ -5,6 +5,7 @@ import './index.css';
 import App from './App';
 import { ToastProvider } from './components/toast/ToastProvider';
 import { store } from './store';
+import { ThemeProvider } from './theme/ThemeProvider';
 
 const container = document.getElementById('root');
 if (!container) {
@@ -16,10 +17,12 @@ document.getElementById('app-shell')?.removeAttribute('aria-busy');
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <ToastProvider>
-        <App />
-      </ToastProvider>
-    </Provider>
+    <ThemeProvider>
+      <Provider store={store}>
+        <ToastProvider>
+          <App />
+        </ToastProvider>
+      </Provider>
+    </ThemeProvider>
   </React.StrictMode>
 );

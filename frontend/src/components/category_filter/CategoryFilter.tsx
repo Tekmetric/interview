@@ -58,14 +58,14 @@ export function CategoryFilter({
           aria-describedby={isSearchActive ? CATEGORY_FILTER_DISABLED_HINT_ID : undefined}
           className="m-0 min-w-0 border-0 p-0"
         >
-          <legend className="mb-2 text-sm font-semibold text-neutral-900">
+          <legend className="mb-2 text-sm font-semibold text-text">
             Categories
           </legend>
 
           {isSearchActive && (
             <p
               id={CATEGORY_FILTER_DISABLED_HINT_ID}
-              className="mb-2 text-sm text-neutral-500"
+              className="mb-2 text-sm text-text-muted"
               title={DISABLED_HINT_TEXT}
             >
               {DISABLED_HINT_TEXT}
@@ -73,7 +73,7 @@ export function CategoryFilter({
           )}
 
           {error && (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-error">
               {error}
             </p>
           )}
@@ -94,7 +94,7 @@ export function CategoryFilter({
         {isSearchActive && (
           <p
             id={CATEGORY_FILTER_DISABLED_HINT_ID}
-            className="mb-2 text-sm text-neutral-500"
+            className="mb-2 text-sm text-text-muted"
             title={DISABLED_HINT_TEXT}
           >
             {DISABLED_HINT_TEXT}

@@ -1,19 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../button/Button';
+import { useTheme } from '../../theme/ThemeProvider';
 
 const DEV_OPTIONS = [
   { id: 'infiniteScroll', label: 'Toggle infinite scroll' },
-  { id: 'darkMode', label: 'Toggle dark mode' },
+  { id: 'oppositeColorScheme', label: 'Use opposite color scheme' },
   { id: 'spanish', label: 'Translate to Spanish' },
 ] as const;
 
 type DevOptionId = (typeof DEV_OPTIONS)[number]['id'];
 
 export function CriteriaMenu() {
+  const { useOppositeScheme, setUseOppositeScheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [checkedOptions, setCheckedOptions] = useState<Record<DevOptionId, boolean>>({
+  const [checkedOptions, setCheckedOptions] = useState<
+    Record<Exclude<DevOptionId, 'oppositeColorScheme'>, boolean>
+  >({
     infiniteScroll: false,
-    darkMode: false,
     spanish: false,
   });
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,10 +51,23 @@ export function CriteriaMenu() {
   }, [isOpen]);
 
   function handleCheckboxChange(id: DevOptionId, checked: boolean) {
+    if (id === 'oppositeColorScheme') {
+      setUseOppositeScheme(checked);
+      return;
+    }
+
     setCheckedOptions((previous) => ({
       ...previous,
       [id]: checked,
     }));
+  }
+
+  function isOptionChecked(id: DevOptionId) {
+    if (id === 'oppositeColorScheme') {
+      return useOppositeScheme;
+    }
+
+    return checkedOptions[id];
   }
 
   return (
@@ -66,18 +82,18 @@ export function CriteriaMenu() {
       </Button>
 
       {isOpen && (
-        <div className="absolute right-0 bottom-full z-10 mb-1 min-w-52 rounded border border-neutral-200 bg-white p-2 shadow-md">
+        <div className="absolute right-0 bottom-full z-10 mb-1 min-w-52 rounded border border-border bg-elevated p-2">
           <ul className="space-y-1">
             {DEV_OPTIONS.map((option) => (
               <li key={option.id}>
-                <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50">
+                <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-text-secondary hover:bg-hover">
                   <input
                     type="checkbox"
-                    checked={checkedOptions[option.id]}
+                    checked={isOptionChecked(option.id)}
                     onChange={(event) =>
                       handleCheckboxChange(option.id, event.target.checked)
                     }
-                    className="h-4 w-4 rounded border-neutral-300"
+                    className="h-4 w-4 rounded border-border-input"
                   />
                   {option.label}
                 </label>

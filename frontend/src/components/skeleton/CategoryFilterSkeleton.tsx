@@ -39,7 +39,7 @@ export function CategoryFilterSkeleton({
         aria-label="Product filters"
         className="hidden shrink-0 lg:block lg:w-56"
       >
-        <p className="mb-2 text-sm font-semibold text-neutral-900">Categories</p>
+        <p className="mb-2 text-sm font-semibold text-text">Categories</p>
         <CategoryRadioRowsSkeleton />
       </aside>
 

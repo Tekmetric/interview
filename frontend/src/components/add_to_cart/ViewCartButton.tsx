@@ -26,7 +26,7 @@ export function ViewCartButton() {
         <span className="hidden md:inline">View Cart</span>
         {itemCount > 0 && (
           <span
-            className="inline-flex min-w-5 items-center justify-center rounded-full bg-neutral-900 px-1.5 py-0.5 text-xs font-semibold text-white"
+            className="inline-flex min-w-5 items-center justify-center rounded-full bg-badge px-1.5 py-0.5 text-xs font-semibold text-on-badge"
             aria-hidden="true"
           >
             {itemCount}

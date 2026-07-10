@@ -1,15 +1,15 @@
 import type { ButtonHTMLAttributes } from 'react';
 
 const baseClassName =
-  'cursor-pointer rounded px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed';
+  'cursor-pointer rounded px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-focus disabled:cursor-not-allowed';
 
 const variantClassNames = {
   primary:
-    'border border-transparent bg-blue-600 text-white disabled:bg-neutral-300 disabled:text-neutral-500',
+    'border border-transparent bg-cta text-on-cta hover:bg-cta-hover disabled:bg-disabled-bg disabled:text-disabled-text',
   secondary:
-    'border border-neutral-300 bg-white text-neutral-700 disabled:border-neutral-200 disabled:bg-neutral-100 disabled:text-neutral-400',
+    'border border-border-input bg-elevated text-text-secondary hover:bg-hover disabled:border-border disabled:bg-disabled-bg disabled:text-disabled-text',
   tertiary:
-    'border border-blue-600 bg-white text-blue-600 disabled:border-neutral-300 disabled:text-neutral-400',
+    'border border-cta bg-elevated text-cta hover:bg-hover disabled:border-border-input disabled:text-disabled-text',
 } as const;
 
 export type ButtonVariant = keyof typeof variantClassNames;

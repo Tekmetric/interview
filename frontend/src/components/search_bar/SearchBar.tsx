@@ -30,7 +30,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         value={inputValue}
         onChange={(event) => setInputValue(event.target.value)}
         placeholder="Search products..."
-        className="min-w-0 flex-1 rounded border border-neutral-300 px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        className="min-w-0 flex-1 rounded border border-border-input bg-elevated px-3 py-2 text-sm text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-focus"
       />
       <Button type="submit" variant="primary">
         Search

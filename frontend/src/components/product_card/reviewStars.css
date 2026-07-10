@@ -1,16 +1,16 @@
 /* Shared star rating styles used by ReviewStars and ProductReviewPager. */
 .review-star--full path,
 .review-star-fill {
-  fill: #f5a623;
+  fill: var(--color-accent);
 }
 
 .review-star-outline {
   fill: none;
-  stroke: #f5a623;
+  stroke: var(--color-accent);
   stroke-width: 1.5;
 }
 
 .review-star--empty .review-star-outline {
   fill: none;
-  stroke: #ccc;
+  stroke: var(--color-accent-muted);
 }

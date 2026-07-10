@@ -59,7 +59,7 @@ export function QuantityInput({
             onChange(quantity);
           }
         }}
-        className={`${className} min-h-11 rounded border border-neutral-300 px-2 py-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-100 disabled:text-neutral-400`}
+        className={`${className} min-h-11 rounded border border-border-input bg-elevated px-2 py-1 text-sm text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-focus disabled:cursor-not-allowed disabled:border-border disabled:bg-disabled-bg disabled:text-disabled-text`}
       />
     </>
   );

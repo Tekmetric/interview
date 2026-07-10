@@ -27,7 +27,7 @@ export function ProductCard({
   return (
     <article
       aria-label={accessibleName}
-      className="flex h-full flex-col overflow-hidden rounded border border-neutral-200"
+      className="flex h-full flex-col overflow-hidden rounded border border-border bg-elevated"
     >
       <div className="group relative">
         <ProductImage src={product.thumbnail} alt={product.title} />

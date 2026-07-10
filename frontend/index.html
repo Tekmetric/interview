@@ -7,7 +7,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1"
     />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#f7f5f0" />
     <link rel="manifest" href="/manifest.json" />
     <title>Interview App</title>
     <style>
@@ -24,6 +24,34 @@
           sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        background-color: #f7f5f0;
+        color: #292524;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #1c1917;
+          color: #fafaf9;
+        }
+
+        .shell-header {
+          border-bottom-color: #44403c;
+          background-color: #292524;
+        }
+
+        .shell-brand,
+        .shell-sidebar-title {
+          color: #fafaf9;
+        }
+
+        .shell-grid-area {
+          border-color: #44403c;
+          background-color: #3f3f46;
+        }
+
+        .shell-block {
+          background-color: #44403c;
+        }
       }
 
       .shell {
@@ -33,7 +61,8 @@
       }
 
       .shell-header {
-        border-bottom: 1px solid #e5e5e5;
+        border-bottom: 1px solid #e7e5e4;
+        background-color: #fdfcfa;
       }
 
       .shell-header-inner {
@@ -45,7 +74,7 @@
       .shell-brand {
         font-size: 1.125rem;
         font-weight: 700;
-        color: #171717;
+        color: #292524;
       }
 
       .shell-header-desktop {
@@ -100,7 +129,7 @@
         margin: 0 0 0.5rem;
         font-size: 0.875rem;
         font-weight: 600;
-        color: #171717;
+        color: #292524;
       }
 
       .shell-radio-row {
@@ -144,9 +173,9 @@
       .shell-grid-area {
         min-height: 60vh;
         width: 100%;
-        border: 1px solid #e5e5e5;
+        border: 1px solid #e7e5e4;
         border-radius: 0.25rem;
-        background-color: #f5f5f5;
+        background-color: #f0ebe3;
       }
 
       .shell-pagination {
@@ -160,7 +189,7 @@
 
       .shell-block {
         border-radius: 0.25rem;
-        background-color: #e5e5e5;
+        background-color: #e7e5e4;
       }
 
       .shell-pulse {
@@ -224,6 +253,12 @@
         border: 0;
       }
     </style>
+    <script>
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = 'dark';
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

@@ -69,7 +69,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             <span
               id={CART_CHECKOUT_TOOLTIP_ID}
               role="tooltip"
-              className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-max max-w-[min(16rem,calc(100vw-2rem))] -translate-x-1/2 rounded border border-neutral-200 bg-white px-3 py-2 text-center text-xs text-neutral-700 shadow-md group-hover:block group-focus-within:block"
+              className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-max max-w-[min(16rem,calc(100vw-2rem))] -translate-x-1/2 rounded border border-border bg-elevated px-3 py-2 text-center text-xs text-text-secondary group-hover:block group-focus-within:block"
             >
               {CHECKOUT_DISABLED_MESSAGE}
             </span>
@@ -78,7 +78,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       }
     >
       {isEmpty ? (
-        <p className="m-0 text-base text-neutral-600">Nothing to see here. Add some items to your cart!</p>
+        <p className="m-0 text-base text-text-secondary">Nothing to see here. Add some items to your cart!</p>
       ) : (
         <div className="flex flex-col gap-4">
           <ul className="m-0 flex list-none flex-col gap-4 p-0">
@@ -92,7 +92,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               return (
                 <li
                   key={item.sku}
-                  className="flex gap-3 border-b border-neutral-200 pb-4 last:border-b-0 last:pb-0"
+                  className="flex gap-3 border-b border-border pb-4 last:border-b-0 last:pb-0"
                 >
                   <img
                     src={item.thumbnail}
@@ -101,7 +101,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   />
                   <div className="min-w-0 flex-1">
                     <p className="m-0 text-sm font-medium">{item.title}</p>
-                    <p className="m-0 mt-1 text-sm text-neutral-600">{display}</p>
+                    <p className="m-0 mt-1 text-sm text-text-secondary">{display}</p>
                     <div className="mt-2 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
                       <QuantityInput
                         id={`cart-qty-${item.sku}`}
@@ -135,7 +135,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             })}
           </ul>
 
-          <div className="border-t border-neutral-200 pt-4">
+          <div className="border-t border-border pt-4">
             <p className="m-0 flex items-center justify-between text-sm font-medium">
               <span>
                 Subtotal ({itemCount} item{itemCount === 1 ? '' : 's'})

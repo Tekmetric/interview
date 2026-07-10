@@ -74,7 +74,7 @@ export function ProductReviewPager({ reviews }: ProductReviewPagerProps) {
   return (
     <div className="product-review-pager">
       <div className="product-review-pager__header">
-        <span className="text-sm text-neutral-600" aria-live="polite">
+        <span className="text-sm text-text-secondary" aria-live="polite">
           {statusLabel}
         </span>
         <div className="product-review-pager__controls">
@@ -100,7 +100,7 @@ export function ProductReviewPager({ reviews }: ProductReviewPagerProps) {
       <article className="product-review-pager__review">
         <IntegerReviewStars rating={review.rating} />
         <p className="product-review-pager__meta m-0">
-          <span className="font-medium text-neutral-800">{review.reviewerName}</span>
+          <span className="font-medium text-text">{review.reviewerName}</span>
           {' · '}
           <time dateTime={review.date}>{formatReviewDate(review.date)}</time>
         </p>

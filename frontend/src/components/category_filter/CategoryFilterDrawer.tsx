@@ -60,7 +60,7 @@ export function CategoryFilterDrawer({
         {isSearchActive && (
           <p
             id={CATEGORY_DRAWER_DISABLED_HINT_ID}
-            className="mb-2 text-sm text-neutral-500"
+            className="mb-2 text-sm text-text-muted"
             title={DISABLED_HINT_TEXT}
           >
             {DISABLED_HINT_TEXT}
@@ -68,7 +68,7 @@ export function CategoryFilterDrawer({
         )}
 
         {error && (
-          <p role="alert" className="text-sm text-red-600">
+          <p role="alert" className="text-sm text-error">
             {error}
           </p>
         )}

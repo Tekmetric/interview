@@ -69,13 +69,13 @@ export function ProductDetailsDrawer({
       panelClassName="drawer-panel--wide drawer-panel--full-height"
     >
       {isLoading && (
-        <p role="status" aria-live="polite" className="text-sm text-neutral-600">
+        <p role="status" aria-live="polite" className="text-sm text-text-secondary">
           Loading product details...
         </p>
       )}
 
       {error && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-error">
           {error}
         </p>
       )}

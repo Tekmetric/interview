@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -64,7 +65,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     applyTheme(resolvedTheme);
   }, [resolvedTheme]);
 

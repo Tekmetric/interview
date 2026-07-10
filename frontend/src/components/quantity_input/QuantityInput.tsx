@@ -5,6 +5,7 @@ interface QuantityInputProps {
   min?: number;
   max?: number;
   className?: string;
+  disabled?: boolean;
   onChange: (quantity: number) => void;
 }
 
@@ -36,6 +37,7 @@ export function QuantityInput({
   min = 1,
   max,
   className = 'w-16',
+  disabled = false,
   onChange,
 }: QuantityInputProps) {
   return (
@@ -49,6 +51,7 @@ export function QuantityInput({
         min={min}
         max={max}
         value={value}
+        disabled={disabled}
         onChange={(event) => {
           const quantity = sanitizeQuantity(event.target.value, min, max);
 
@@ -56,7 +59,7 @@ export function QuantityInput({
             onChange(quantity);
           }
         }}
-        className={`${className} min-h-11 rounded border border-neutral-300 px-2 py-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600`}
+        className={`${className} min-h-11 rounded border border-neutral-300 px-2 py-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-100 disabled:text-neutral-400`}
       />
     </>
   );

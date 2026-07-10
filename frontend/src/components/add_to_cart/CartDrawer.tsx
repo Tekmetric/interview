@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { Button } from '../button/Button';
 import { Drawer } from '../drawer/Drawer';
 import { QuantityInput } from '../quantity_input/QuantityInput';
+import { useToast } from '../toast/useToast';
 import { formatCurrency, formatProductPrice } from '../../utils/priceUtils';
+import { wait } from '../../utils/wait';
 import { removeItem, updateQuantity } from '../../store/cartSlice';
 import {
   selectCartItemCount,
@@ -9,6 +12,7 @@ import {
   selectCartSubtotal,
 } from '../../store/cartSelectors';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import type { CartItem } from '../../store/cartTypes';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -16,13 +20,26 @@ interface CartDrawerProps {
 }
 
 export const CART_DRAWER_PANEL_ID = 'cart-drawer-panel';
+const CART_CHECKOUT_TOOLTIP_ID = 'cart-checkout-tooltip';
+const CHECKOUT_DISABLED_MESSAGE = 'Checkout is not implemented';
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
   const items = useAppSelector(selectCartItems);
   const itemCount = useAppSelector(selectCartItemCount);
   const subtotal = useAppSelector(selectCartSubtotal);
+  const [removingSku, setRemovingSku] = useState<string | null>(null);
   const isEmpty = items.length === 0;
+
+  async function handleRemoveItem(item: CartItem) {
+    setRemovingSku(item.sku);
+    await wait(500);
+
+    dispatch(removeItem(item.sku));
+    showToast('Item removed from cart');
+    setRemovingSku(null);
+  }
 
   return (
     <Drawer
@@ -33,17 +50,44 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       panelId={CART_DRAWER_PANEL_ID}
       closeAriaLabel="Close cart"
       panelClassName="drawer-panel--full-height"
+      footer={
+        isEmpty ? undefined : (
+          <span
+            className="group relative block w-full"
+            tabIndex={0}
+            title={CHECKOUT_DISABLED_MESSAGE}
+            aria-describedby={CART_CHECKOUT_TOOLTIP_ID}
+          >
+            <Button
+              variant="primary"
+              disabled
+              tabIndex={-1}
+              className="w-full"
+            >
+              Proceed to Checkout
+            </Button>
+            <span
+              id={CART_CHECKOUT_TOOLTIP_ID}
+              role="tooltip"
+              className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-max max-w-[min(16rem,calc(100vw-2rem))] -translate-x-1/2 rounded border border-neutral-200 bg-white px-3 py-2 text-center text-xs text-neutral-700 shadow-md group-hover:block group-focus-within:block"
+            >
+              {CHECKOUT_DISABLED_MESSAGE}
+            </span>
+          </span>
+        )
+      }
     >
       {isEmpty ? (
         <p className="m-0 text-base text-neutral-600">Nothing to see here. Add some items to your cart!</p>
       ) : (
         <div className="flex flex-col gap-4">
           <ul className="m-0 flex list-none flex-col gap-4 p-0">
-            {items.map((item) => {
+            {items.map((item: CartItem) => {
               const { display } = formatProductPrice(
                 item.price,
                 item.discountPercentage
               );
+              const isRemoving = removingSku === item.sku;
 
               return (
                 <li
@@ -63,6 +107,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         id={`cart-qty-${item.sku}`}
                         label={`Quantity for ${item.title}`}
                         value={item.quantity}
+                        disabled={isRemoving}
                         onChange={(quantity) =>
                           dispatch(
                             updateQuantity({
@@ -75,9 +120,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       <Button
                         variant="secondary"
                         className="text-sm"
-                        onClick={() => dispatch(removeItem(item.sku))}
+                        disabled={isRemoving}
+                        aria-busy={isRemoving}
+                        onClick={() => {
+                          void handleRemoveItem(item);
+                        }}
                       >
-                        Remove
+                        {isRemoving ? 'Removing…' : 'Remove'}
                       </Button>
                     </div>
                   </div>

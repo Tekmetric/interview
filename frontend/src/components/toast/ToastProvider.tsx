@@ -48,7 +48,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex flex-col items-center gap-2 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+        className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex flex-col items-center gap-2 px-4 pb-[env(safe-area-inset-bottom,0px)]"
       >
         {toasts.map((toast) => (
           <ToastItemWithAutoDismiss
@@ -113,7 +113,7 @@ function ToastItemWithAutoDismiss({
   return (
     <div
       className={[
-        'w-full max-w-sm',
+        'w-fit max-w-[min(100%,24rem)]',
         isExiting ? 'pointer-events-none' : 'pointer-events-auto',
         prefersReducedMotion
           ? ''

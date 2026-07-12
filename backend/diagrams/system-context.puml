@@ -1,0 +1,18 @@
+@startuml
+set separator none
+title Event Management System - System Context
+
+top to bottom direction
+
+!include <C4/C4>
+!include <C4/C4_Context>
+
+Person(AdminUser, "Admin User", $descr="Administrator who manages events, venues, and performers", $tags="", $link="")
+Person(RegularUser, "Regular User", $descr="End user who views and searches events", $tags="", $link="")
+System(EventManagementSystem, "Event Management System", $descr="Manages events, venues, performers, and user accounts with search and caching capabilities", $tags="", $link="")
+
+Rel(AdminUser, EventManagementSystem, "Manages events, venues, and performers", $techn="", $tags="", $link="")
+Rel(RegularUser, EventManagementSystem, "Views and searches events", $techn="", $tags="", $link="")
+
+SHOW_LEGEND(true)
+@enduml

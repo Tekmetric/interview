@@ -1,0 +1,31 @@
+# Maven build artifacts
+target/
+!target/*.jar
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+README*
+
+# Logs
+*.log
+
+# Docker files (no need to copy these into image)
+Dockerfile
+docker-compose.yml
+.dockerignore

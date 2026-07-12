@@ -1,0 +1,560 @@
+{
+  "configuration" : { },
+  "description" : "Architecture for the Event Management REST API with Spring Boot",
+  "documentation" : { },
+  "id" : 0,
+  "model" : {
+    "people" : [ {
+      "description" : "Administrator who manages events, venues, and performers",
+      "id" : "1",
+      "location" : "Unspecified",
+      "name" : "Admin User",
+      "relationships" : [ {
+        "description" : "Manages events, venues, and performers",
+        "destinationId" : "3",
+        "id" : "4",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Creates, updates, deletes events via",
+        "destinationId" : "6",
+        "id" : "11",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS/JSON"
+      }, {
+        "description" : "Tests API endpoints via",
+        "destinationId" : "10",
+        "id" : "13",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Manages events via",
+        "destinationId" : "20",
+        "id" : "30",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS/JSON"
+      }, {
+        "description" : "Manages accounts via",
+        "destinationId" : "21",
+        "id" : "32",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS/JSON"
+      }, {
+        "description" : "Authenticates via",
+        "destinationId" : "19",
+        "id" : "33",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS/JSON"
+      } ],
+      "tags" : "Element,Person"
+    }, {
+      "description" : "End user who views and searches events",
+      "id" : "2",
+      "location" : "Unspecified",
+      "name" : "Regular User",
+      "relationships" : [ {
+        "description" : "Views and searches events",
+        "destinationId" : "3",
+        "id" : "5",
+        "sourceId" : "2",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Views and searches events via",
+        "destinationId" : "6",
+        "id" : "12",
+        "sourceId" : "2",
+        "tags" : "Relationship",
+        "technology" : "HTTPS/JSON"
+      }, {
+        "description" : "Explores API documentation via",
+        "destinationId" : "10",
+        "id" : "14",
+        "sourceId" : "2",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Views events via",
+        "destinationId" : "20",
+        "id" : "31",
+        "sourceId" : "2",
+        "tags" : "Relationship",
+        "technology" : "HTTPS/JSON"
+      }, {
+        "description" : "Authenticates via",
+        "destinationId" : "19",
+        "id" : "34",
+        "sourceId" : "2",
+        "tags" : "Relationship",
+        "technology" : "HTTPS/JSON"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "components" : [ {
+          "description" : "Handles user authentication and JWT token generation",
+          "documentation" : { },
+          "id" : "19",
+          "name" : "AuthController",
+          "relationships" : [ {
+            "description" : "Uses",
+            "destinationId" : "24",
+            "id" : "39",
+            "sourceId" : "19",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring MVC @RestController"
+        }, {
+          "description" : "Provides REST endpoints for event CRUD operations",
+          "documentation" : { },
+          "id" : "20",
+          "name" : "EventController",
+          "relationships" : [ {
+            "description" : "Protected by",
+            "destinationId" : "22",
+            "id" : "35",
+            "sourceId" : "20",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Uses",
+            "destinationId" : "23",
+            "id" : "37",
+            "sourceId" : "20",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring MVC @RestController"
+        }, {
+          "description" : "Manages user accounts and profiles",
+          "documentation" : { },
+          "id" : "21",
+          "name" : "AccountController",
+          "relationships" : [ {
+            "description" : "Protected by",
+            "destinationId" : "22",
+            "id" : "36",
+            "sourceId" : "21",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Uses",
+            "destinationId" : "24",
+            "id" : "38",
+            "sourceId" : "21",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring MVC @RestController"
+        }, {
+          "description" : "Validates JWT tokens and sets security context",
+          "documentation" : { },
+          "id" : "22",
+          "name" : "JwtAuthenticationFilter",
+          "tags" : "Element,Component",
+          "technology" : "Spring Security Filter"
+        }, {
+          "description" : "Business logic for event management and caching",
+          "documentation" : { },
+          "id" : "23",
+          "name" : "EventService",
+          "relationships" : [ {
+            "description" : "Reads and writes events using",
+            "destinationId" : "26",
+            "id" : "40",
+            "sourceId" : "23",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Reads venues using",
+            "destinationId" : "28",
+            "id" : "41",
+            "sourceId" : "23",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Reads performers using",
+            "destinationId" : "29",
+            "id" : "42",
+            "sourceId" : "23",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Searches events using",
+            "destinationId" : "25",
+            "id" : "43",
+            "sourceId" : "23",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Caches data in",
+            "destinationId" : "8",
+            "id" : "44",
+            "sourceId" : "23",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring @Service"
+        }, {
+          "description" : "Business logic for account management and authentication",
+          "documentation" : { },
+          "id" : "24",
+          "name" : "AccountService",
+          "relationships" : [ {
+            "description" : "Reads and writes accounts using",
+            "destinationId" : "27",
+            "id" : "45",
+            "sourceId" : "24",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring @Service"
+        }, {
+          "description" : "Handles OpenSearch integration for event search",
+          "documentation" : { },
+          "id" : "25",
+          "name" : "EventSearchService",
+          "relationships" : [ {
+            "description" : "Performs full-text search using",
+            "destinationId" : "9",
+            "id" : "50",
+            "sourceId" : "25",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring @Service"
+        }, {
+          "description" : "JPA repository for Event entity persistence",
+          "documentation" : { },
+          "id" : "26",
+          "name" : "EventRepository",
+          "relationships" : [ {
+            "description" : "Reads and writes to",
+            "destinationId" : "7",
+            "id" : "46",
+            "sourceId" : "26",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring Data JPA Repository"
+        }, {
+          "description" : "JPA repository for Account entity persistence",
+          "documentation" : { },
+          "id" : "27",
+          "name" : "AccountRepository",
+          "relationships" : [ {
+            "description" : "Reads and writes to",
+            "destinationId" : "7",
+            "id" : "47",
+            "sourceId" : "27",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring Data JPA Repository"
+        }, {
+          "description" : "JPA repository for Venue entity persistence",
+          "documentation" : { },
+          "id" : "28",
+          "name" : "VenueRepository",
+          "relationships" : [ {
+            "description" : "Reads and writes to",
+            "destinationId" : "7",
+            "id" : "48",
+            "sourceId" : "28",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring Data JPA Repository"
+        }, {
+          "description" : "JPA repository for Performer entity persistence",
+          "documentation" : { },
+          "id" : "29",
+          "name" : "PerformerRepository",
+          "relationships" : [ {
+            "description" : "Reads and writes to",
+            "destinationId" : "7",
+            "id" : "49",
+            "sourceId" : "29",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring Data JPA Repository"
+        } ],
+        "description" : "Provides REST API for event management with JWT authentication",
+        "documentation" : { },
+        "id" : "6",
+        "name" : "Spring Boot Application",
+        "relationships" : [ {
+          "description" : "Reads from and writes to",
+          "destinationId" : "7",
+          "id" : "16",
+          "sourceId" : "6",
+          "tags" : "Relationship",
+          "technology" : "JPA/JDBC"
+        }, {
+          "description" : "Caches data in",
+          "destinationId" : "8",
+          "id" : "17",
+          "sourceId" : "6",
+          "tags" : "Relationship",
+          "technology" : "Redis Protocol"
+        }, {
+          "description" : "Performs full-text search via",
+          "destinationId" : "9",
+          "id" : "18",
+          "sourceId" : "6",
+          "tags" : "Relationship",
+          "technology" : "REST API"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Java 21, Spring Boot 3.2.0"
+      }, {
+        "description" : "Stores events, venues, performers, accounts, and roles",
+        "documentation" : { },
+        "id" : "7",
+        "name" : "H2 Database",
+        "tags" : "Element,Container",
+        "technology" : "H2 In-Memory Database"
+      }, {
+        "description" : "Distributed cache for frequently accessed data",
+        "documentation" : { },
+        "id" : "8",
+        "name" : "Redis Cache",
+        "tags" : "Element,Container",
+        "technology" : "Redis"
+      }, {
+        "description" : "Full-text search engine for events",
+        "documentation" : { },
+        "id" : "9",
+        "name" : "OpenSearch",
+        "tags" : "Element,Container",
+        "technology" : "OpenSearch 2.x"
+      }, {
+        "description" : "Interactive API documentation and testing interface",
+        "documentation" : { },
+        "id" : "10",
+        "name" : "Swagger UI",
+        "relationships" : [ {
+          "description" : "Makes API calls to",
+          "destinationId" : "6",
+          "id" : "15",
+          "sourceId" : "10",
+          "tags" : "Relationship",
+          "technology" : "HTTPS/JSON"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "OpenAPI 3.0"
+      } ],
+      "description" : "Manages events, venues, performers, and user accounts with search and caching capabilities",
+      "documentation" : { },
+      "id" : "3",
+      "location" : "Unspecified",
+      "name" : "Event Management System",
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "Event Management System",
+  "views" : {
+    "componentViews" : [ {
+      "containerId" : "6",
+      "description" : "Component diagram for Spring Boot Application",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "19",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "20",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "22",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "23",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "24",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "25",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "26",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "27",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "28",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "29",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "Components",
+      "order" : 3,
+      "paperSize" : "A3_Landscape",
+      "relationships" : [ {
+        "id" : "30"
+      }, {
+        "id" : "31"
+      }, {
+        "id" : "32"
+      }, {
+        "id" : "33"
+      }, {
+        "id" : "34"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "36"
+      }, {
+        "id" : "37"
+      }, {
+        "id" : "38"
+      }, {
+        "id" : "39"
+      }, {
+        "id" : "40"
+      }, {
+        "id" : "41"
+      }, {
+        "id" : "42"
+      }, {
+        "id" : "43"
+      }, {
+        "id" : "45"
+      } ]
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "metadataSymbols" : "SquareBrackets",
+      "styles" : {
+        "elements" : [ {
+          "background" : "#1168bd",
+          "color" : "#ffffff",
+          "tag" : "Software System"
+        }, {
+          "background" : "#08427b",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#438dd5",
+          "color" : "#ffffff",
+          "tag" : "Container"
+        }, {
+          "background" : "#85bbf0",
+          "color" : "#000000",
+          "tag" : "Component"
+        } ],
+        "relationships" : [ {
+          "routing" : "Orthogonal",
+          "tag" : "Relationship"
+        } ]
+      },
+      "terminology" : { }
+    },
+    "containerViews" : [ {
+      "description" : "Container diagram for Event Management System",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "Containers",
+      "order" : 2,
+      "paperSize" : "A4_Landscape",
+      "relationships" : [ {
+        "id" : "11"
+      }, {
+        "id" : "12"
+      }, {
+        "id" : "13"
+      }, {
+        "id" : "14"
+      }, {
+        "id" : "15"
+      }, {
+        "id" : "16"
+      }, {
+        "id" : "17"
+      }, {
+        "id" : "18"
+      } ],
+      "softwareSystemId" : "3"
+    } ],
+    "systemContextViews" : [ {
+      "description" : "System Context diagram for Event Management System",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "SystemContext",
+      "order" : 1,
+      "paperSize" : "A5_Landscape",
+      "relationships" : [ {
+        "id" : "4"
+      }, {
+        "id" : "5"
+      } ],
+      "softwareSystemId" : "3"
+    } ]
+  }
+}

@@ -1,0 +1,35 @@
+graph TB
+  linkStyle default fill:#ffffff
+
+  subgraph diagram ["Event Management System - Containers"]
+    style diagram fill:#ffffff,stroke:#ffffff
+
+    1["<div style='font-weight: bold'>Admin User</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div><div style='font-size: 80%; margin-top:10px'>Administrator who manages<br />events, venues, and<br />performers</div>"]
+    style 1 fill:#08427b,stroke:#052e56,color:#ffffff
+    2["<div style='font-weight: bold'>Regular User</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div><div style='font-size: 80%; margin-top:10px'>End user who views and<br />searches events</div>"]
+    style 2 fill:#08427b,stroke:#052e56,color:#ffffff
+
+    subgraph 3 [Event Management System]
+      style 3 fill:#ffffff,stroke:#0b4884,color:#0b4884
+
+      10["<div style='font-weight: bold'>Swagger UI</div><div style='font-size: 70%; margin-top: 0px'>[Container: OpenAPI 3.0]</div><div style='font-size: 80%; margin-top:10px'>Interactive API documentation<br />and testing interface</div>"]
+      style 10 fill:#438dd5,stroke:#2e6295,color:#ffffff
+      6["<div style='font-weight: bold'>Spring Boot Application</div><div style='font-size: 70%; margin-top: 0px'>[Container: Java 21, Spring Boot 3.2.0]</div><div style='font-size: 80%; margin-top:10px'>Provides REST API for event<br />management with JWT<br />authentication</div>"]
+      style 6 fill:#438dd5,stroke:#2e6295,color:#ffffff
+      7["<div style='font-weight: bold'>H2 Database</div><div style='font-size: 70%; margin-top: 0px'>[Container: H2 In-Memory Database]</div><div style='font-size: 80%; margin-top:10px'>Stores events, venues,<br />performers, accounts, and<br />roles</div>"]
+      style 7 fill:#438dd5,stroke:#2e6295,color:#ffffff
+      8["<div style='font-weight: bold'>Redis Cache</div><div style='font-size: 70%; margin-top: 0px'>[Container: Redis]</div><div style='font-size: 80%; margin-top:10px'>Distributed cache for<br />frequently accessed data</div>"]
+      style 8 fill:#438dd5,stroke:#2e6295,color:#ffffff
+      9["<div style='font-weight: bold'>OpenSearch</div><div style='font-size: 70%; margin-top: 0px'>[Container: OpenSearch 2.x]</div><div style='font-size: 80%; margin-top:10px'>Full-text search engine for<br />events</div>"]
+      style 9 fill:#438dd5,stroke:#2e6295,color:#ffffff
+    end
+
+    1-. "<div>Creates, updates, deletes<br />events via</div><div style='font-size: 70%'>[HTTPS/JSON]</div>" .->6
+    2-. "<div>Views and searches events via</div><div style='font-size: 70%'>[HTTPS/JSON]</div>" .->6
+    1-. "<div>Tests API endpoints via</div><div style='font-size: 70%'>[HTTPS]</div>" .->10
+    2-. "<div>Explores API documentation<br />via</div><div style='font-size: 70%'>[HTTPS]</div>" .->10
+    10-. "<div>Makes API calls to</div><div style='font-size: 70%'>[HTTPS/JSON]</div>" .->6
+    6-. "<div>Reads from and writes to</div><div style='font-size: 70%'>[JPA/JDBC]</div>" .->7
+    6-. "<div>Caches data in</div><div style='font-size: 70%'>[Redis Protocol]</div>" .->8
+    6-. "<div>Performs full-text search via</div><div style='font-size: 70%'>[REST API]</div>" .->9
+  end

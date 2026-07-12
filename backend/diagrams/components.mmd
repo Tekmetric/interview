@@ -1,0 +1,54 @@
+graph TB
+  linkStyle default fill:#ffffff
+
+  subgraph diagram ["Event Management System - Spring Boot Application - Components"]
+    style diagram fill:#ffffff,stroke:#ffffff
+
+    1["<div style='font-weight: bold'>Admin User</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div><div style='font-size: 80%; margin-top:10px'>Administrator who manages<br />events, venues, and<br />performers</div>"]
+    style 1 fill:#08427b,stroke:#052e56,color:#ffffff
+    2["<div style='font-weight: bold'>Regular User</div><div style='font-size: 70%; margin-top: 0px'>[Person]</div><div style='font-size: 80%; margin-top:10px'>End user who views and<br />searches events</div>"]
+    style 2 fill:#08427b,stroke:#052e56,color:#ffffff
+
+    subgraph 6 [Spring Boot Application]
+      style 6 fill:#ffffff,stroke:#2e6295,color:#2e6295
+
+      19["<div style='font-weight: bold'>AuthController</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring MVC @RestController]</div><div style='font-size: 80%; margin-top:10px'>Handles user authentication<br />and JWT token generation</div>"]
+      style 19 fill:#85bbf0,stroke:#5d82a8,color:#000000
+      20["<div style='font-weight: bold'>EventController</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring MVC @RestController]</div><div style='font-size: 80%; margin-top:10px'>Provides REST endpoints for<br />event CRUD operations</div>"]
+      style 20 fill:#85bbf0,stroke:#5d82a8,color:#000000
+      21["<div style='font-weight: bold'>AccountController</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring MVC @RestController]</div><div style='font-size: 80%; margin-top:10px'>Manages user accounts and<br />profiles</div>"]
+      style 21 fill:#85bbf0,stroke:#5d82a8,color:#000000
+      22["<div style='font-weight: bold'>JwtAuthenticationFilter</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring Security Filter]</div><div style='font-size: 80%; margin-top:10px'>Validates JWT tokens and sets<br />security context</div>"]
+      style 22 fill:#85bbf0,stroke:#5d82a8,color:#000000
+      23["<div style='font-weight: bold'>EventService</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Service]</div><div style='font-size: 80%; margin-top:10px'>Business logic for event<br />management and caching</div>"]
+      style 23 fill:#85bbf0,stroke:#5d82a8,color:#000000
+      24["<div style='font-weight: bold'>AccountService</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Service]</div><div style='font-size: 80%; margin-top:10px'>Business logic for account<br />management and authentication</div>"]
+      style 24 fill:#85bbf0,stroke:#5d82a8,color:#000000
+      25["<div style='font-weight: bold'>EventSearchService</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring @Service]</div><div style='font-size: 80%; margin-top:10px'>Handles OpenSearch<br />integration for event search</div>"]
+      style 25 fill:#85bbf0,stroke:#5d82a8,color:#000000
+      26["<div style='font-weight: bold'>EventRepository</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring Data JPA Repository]</div><div style='font-size: 80%; margin-top:10px'>JPA repository for Event<br />entity persistence</div>"]
+      style 26 fill:#85bbf0,stroke:#5d82a8,color:#000000
+      27["<div style='font-weight: bold'>AccountRepository</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring Data JPA Repository]</div><div style='font-size: 80%; margin-top:10px'>JPA repository for Account<br />entity persistence</div>"]
+      style 27 fill:#85bbf0,stroke:#5d82a8,color:#000000
+      28["<div style='font-weight: bold'>VenueRepository</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring Data JPA Repository]</div><div style='font-size: 80%; margin-top:10px'>JPA repository for Venue<br />entity persistence</div>"]
+      style 28 fill:#85bbf0,stroke:#5d82a8,color:#000000
+      29["<div style='font-weight: bold'>PerformerRepository</div><div style='font-size: 70%; margin-top: 0px'>[Component: Spring Data JPA Repository]</div><div style='font-size: 80%; margin-top:10px'>JPA repository for Performer<br />entity persistence</div>"]
+      style 29 fill:#85bbf0,stroke:#5d82a8,color:#000000
+    end
+
+    1-. "<div>Manages events via</div><div style='font-size: 70%'>[HTTPS/JSON]</div>" .->20
+    2-. "<div>Views events via</div><div style='font-size: 70%'>[HTTPS/JSON]</div>" .->20
+    1-. "<div>Manages accounts via</div><div style='font-size: 70%'>[HTTPS/JSON]</div>" .->21
+    1-. "<div>Authenticates via</div><div style='font-size: 70%'>[HTTPS/JSON]</div>" .->19
+    2-. "<div>Authenticates via</div><div style='font-size: 70%'>[HTTPS/JSON]</div>" .->19
+    20-. "<div>Protected by</div><div style='font-size: 70%'></div>" .->22
+    21-. "<div>Protected by</div><div style='font-size: 70%'></div>" .->22
+    20-. "<div>Uses</div><div style='font-size: 70%'></div>" .->23
+    21-. "<div>Uses</div><div style='font-size: 70%'></div>" .->24
+    19-. "<div>Uses</div><div style='font-size: 70%'></div>" .->24
+    23-. "<div>Reads and writes events using</div><div style='font-size: 70%'></div>" .->26
+    23-. "<div>Reads venues using</div><div style='font-size: 70%'></div>" .->28
+    23-. "<div>Reads performers using</div><div style='font-size: 70%'></div>" .->29
+    23-. "<div>Searches events using</div><div style='font-size: 70%'></div>" .->25
+    24-. "<div>Reads and writes accounts<br />using</div><div style='font-size: 70%'></div>" .->27
+  end

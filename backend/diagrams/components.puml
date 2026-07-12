@@ -1,0 +1,45 @@
+@startuml
+set separator none
+title Event Management System - Spring Boot Application - Components
+
+top to bottom direction
+
+!include <C4/C4>
+!include <C4/C4_Context>
+!include <C4/C4_Component>
+
+Person(AdminUser, "Admin User", $descr="Administrator who manages events, venues, and performers", $tags="", $link="")
+Person(RegularUser, "Regular User", $descr="End user who views and searches events", $tags="", $link="")
+
+Container_Boundary("EventManagementSystem.SpringBootApplication_boundary", "Spring Boot Application", $tags="") {
+  Component(EventManagementSystem.SpringBootApplication.AuthController, "AuthController", $techn="Spring MVC @RestController", $descr="Handles user authentication and JWT token generation", $tags="", $link="")
+  Component(EventManagementSystem.SpringBootApplication.EventController, "EventController", $techn="Spring MVC @RestController", $descr="Provides REST endpoints for event CRUD operations", $tags="", $link="")
+  Component(EventManagementSystem.SpringBootApplication.AccountController, "AccountController", $techn="Spring MVC @RestController", $descr="Manages user accounts and profiles", $tags="", $link="")
+  Component(EventManagementSystem.SpringBootApplication.JwtAuthenticationFilter, "JwtAuthenticationFilter", $techn="Spring Security Filter", $descr="Validates JWT tokens and sets security context", $tags="", $link="")
+  Component(EventManagementSystem.SpringBootApplication.EventService, "EventService", $techn="Spring @Service", $descr="Business logic for event management and caching", $tags="", $link="")
+  Component(EventManagementSystem.SpringBootApplication.AccountService, "AccountService", $techn="Spring @Service", $descr="Business logic for account management and authentication", $tags="", $link="")
+  Component(EventManagementSystem.SpringBootApplication.EventSearchService, "EventSearchService", $techn="Spring @Service", $descr="Handles OpenSearch integration for event search", $tags="", $link="")
+  Component(EventManagementSystem.SpringBootApplication.EventRepository, "EventRepository", $techn="Spring Data JPA Repository", $descr="JPA repository for Event entity persistence", $tags="", $link="")
+  Component(EventManagementSystem.SpringBootApplication.AccountRepository, "AccountRepository", $techn="Spring Data JPA Repository", $descr="JPA repository for Account entity persistence", $tags="", $link="")
+  Component(EventManagementSystem.SpringBootApplication.VenueRepository, "VenueRepository", $techn="Spring Data JPA Repository", $descr="JPA repository for Venue entity persistence", $tags="", $link="")
+  Component(EventManagementSystem.SpringBootApplication.PerformerRepository, "PerformerRepository", $techn="Spring Data JPA Repository", $descr="JPA repository for Performer entity persistence", $tags="", $link="")
+}
+
+Rel(AdminUser, EventManagementSystem.SpringBootApplication.EventController, "Manages events via", $techn="HTTPS/JSON", $tags="", $link="")
+Rel(RegularUser, EventManagementSystem.SpringBootApplication.EventController, "Views events via", $techn="HTTPS/JSON", $tags="", $link="")
+Rel(AdminUser, EventManagementSystem.SpringBootApplication.AccountController, "Manages accounts via", $techn="HTTPS/JSON", $tags="", $link="")
+Rel(AdminUser, EventManagementSystem.SpringBootApplication.AuthController, "Authenticates via", $techn="HTTPS/JSON", $tags="", $link="")
+Rel(RegularUser, EventManagementSystem.SpringBootApplication.AuthController, "Authenticates via", $techn="HTTPS/JSON", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication.EventController, EventManagementSystem.SpringBootApplication.JwtAuthenticationFilter, "Protected by", $techn="", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication.AccountController, EventManagementSystem.SpringBootApplication.JwtAuthenticationFilter, "Protected by", $techn="", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication.EventController, EventManagementSystem.SpringBootApplication.EventService, "Uses", $techn="", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication.AccountController, EventManagementSystem.SpringBootApplication.AccountService, "Uses", $techn="", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication.AuthController, EventManagementSystem.SpringBootApplication.AccountService, "Uses", $techn="", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication.EventService, EventManagementSystem.SpringBootApplication.EventRepository, "Reads and writes events using", $techn="", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication.EventService, EventManagementSystem.SpringBootApplication.VenueRepository, "Reads venues using", $techn="", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication.EventService, EventManagementSystem.SpringBootApplication.PerformerRepository, "Reads performers using", $techn="", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication.EventService, EventManagementSystem.SpringBootApplication.EventSearchService, "Searches events using", $techn="", $tags="", $link="")
+Rel(EventManagementSystem.SpringBootApplication.AccountService, EventManagementSystem.SpringBootApplication.AccountRepository, "Reads and writes accounts using", $techn="", $tags="", $link="")
+
+SHOW_LEGEND(true)
+@enduml

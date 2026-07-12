@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router';
 import styled from 'styled-components';
 
 import { EmptyState, ErrorState } from '../../components/FeedbackState';
+import { ImageWithRetry } from '../../components/ImageWithRetry';
 import { PortalSpinner } from '../../components/PortalSpinner';
 import { StatusBadge } from '../../components/StatusBadge';
 import { isNotFoundError } from '../../utils/apiErrors';
@@ -22,7 +23,7 @@ const Hero = styled.div`
   }
 `;
 
-const Portrait = styled.img`
+const Portrait = styled(ImageWithRetry)`
   width: 100%;
   max-width: 300px;
   border-radius: ${({ theme }) => theme.radius.lg};

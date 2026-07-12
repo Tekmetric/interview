@@ -39,6 +39,44 @@ const SectionHeading = styled.h2`
   margin-block: ${({ theme }) => theme.space.lg} ${({ theme }) => theme.space.sm};
 `;
 
+const ErrorRow = styled.p`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.space.md};
+  color: ${({ theme }) => theme.colors.textMuted};
+`;
+
+const RetryButton = styled.button`
+  padding: ${({ theme }) => `${theme.space.xs} ${theme.space.md}`};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.pill};
+  background: transparent;
+  color: ${({ theme }) => theme.colors.text};
+  cursor: pointer;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.surfaceHover};
+  }
+`;
+
+// A failed section must say so — silently dropping it looks like the
+// favorites are gone (the API rate-limits bursts, so this does happen).
+function SectionError({ titleId, onRetry }: { titleId: string; onRetry: () => void }) {
+  return (
+    <>
+      <SectionHeading>
+        <FormattedMessage id={titleId} />
+      </SectionHeading>
+      <ErrorRow>
+        <FormattedMessage id="favorites.section.error" />
+        <RetryButton type="button" onClick={onRetry}>
+          <FormattedMessage id="common.retry" />
+        </RetryButton>
+      </ErrorRow>
+    </>
+  );
+}
+
 export function FavoritesPage() {
   const characterIds = useAppSelector((state) => selectFavoriteIds(state, 'characters'));
   const episodeIds = useAppSelector((state) => selectFavoriteIds(state, 'episodes'));
@@ -63,6 +101,9 @@ export function FavoritesPage() {
       )}
       {isLoading && <PortalSpinner />}
 
+      {characters.isError && characterIds.length > 0 && (
+        <SectionError titleId="nav.characters" onRetry={characters.refetch} />
+      )}
       {characters.data && characterIds.length > 0 && (
         <>
           <SectionHeading>
@@ -78,6 +119,9 @@ export function FavoritesPage() {
         </>
       )}
 
+      {episodes.isError && episodeIds.length > 0 && (
+        <SectionError titleId="nav.episodes" onRetry={episodes.refetch} />
+      )}
       {episodes.data && episodeIds.length > 0 && (
         <>
           <SectionHeading>
@@ -95,6 +139,9 @@ export function FavoritesPage() {
         </>
       )}
 
+      {locations.isError && locationIds.length > 0 && (
+        <SectionError titleId="nav.locations" onRetry={locations.refetch} />
+      )}
       {locations.data && locationIds.length > 0 && (
         <>
           <SectionHeading>

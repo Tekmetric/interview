@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import styled from 'styled-components';
 
 import type { Character } from '../../api/types';
+import { ImageWithRetry } from '../../components/ImageWithRetry';
 import { StatusBadge } from '../../components/StatusBadge';
 import { FavoriteButton } from '../favorites/FavoriteButton';
 
@@ -22,7 +23,7 @@ const Card = styled.article`
   }
 `;
 
-const Portrait = styled.img`
+const Portrait = styled(ImageWithRetry)`
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;

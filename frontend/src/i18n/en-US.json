@@ -41,6 +41,7 @@
   "favorites.toggle": "Favorite",
   "favorites.empty.title": "Nothing here yet",
   "favorites.empty.description": "Tap the heart on any character, episode or location to keep it here.",
+  "favorites.section.error": "This section could not be loaded.",
   "random.button": "Random character",
   "episodes.title": "Episodes",
   "episodes.searchLabel": "Search episodes by name",

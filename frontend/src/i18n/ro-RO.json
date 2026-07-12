@@ -41,6 +41,7 @@
   "favorites.toggle": "Favorit",
   "favorites.empty.title": "Încă nimic aici",
   "favorites.empty.description": "Apasă inima de pe orice personaj, episod sau locație pentru a-l păstra aici.",
+  "favorites.section.error": "Această secțiune nu a putut fi încărcată.",
   "random.button": "Personaj aleatoriu",
   "episodes.title": "Episoade",
   "episodes.searchLabel": "Caută episoade după nume",

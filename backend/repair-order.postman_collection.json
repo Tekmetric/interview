@@ -1,0 +1,259 @@
+{
+  "info": {
+    "name": "Tek Interview - RepairOrder API (/api/repair-orders)",
+    "_postman_id": "1d1baf5e-8b8a-4d7a-9d0a-bc9c2a4b0d31",
+    "description": "Deterministic scenario: Admin creates -> User reads + forbidden writes -> Admin deletes. Uses credentials from SecurityConfig (admin/admin, user/user).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "adminUsername", "value": "admin" },
+    { "key": "adminPassword", "value": "admin" },
+    { "key": "userUsername", "value": "user" },
+    { "key": "userPassword", "value": "user" },
+    { "key": "repairOrderId", "value": "" },
+    { "key": "repairOrderVersion", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Scenario Runner (Admin Create -> User Checks -> Admin Delete)",
+      "item": [
+        {
+          "name": "Admin: POST /api/repair-orders -> 201 (sets id/version)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{adminUsername}}", "type": "string" },
+                { "key": "password", "value": "{{adminPassword}}", "type": "string" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/repair-orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "repair-orders"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerName\": \"John Adam\",\n  \"description\": \"Initial assessment\",\n  \"status\": \"OPEN\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('repairOrderId', String(json.id));",
+                  "pm.environment.set('repairOrderVersion', String(json.version));",
+                  "pm.test('id and version exist', function () {",
+                  "  pm.expect(json.id).to.exist;",
+                  "  pm.expect(json.version).to.exist;",
+                  "});",
+                  "postman.setNextRequest('User: GET /api/repair-orders/{id} -> 200 (read)');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "User: GET /api/repair-orders/{id} -> 200 (read)",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{userUsername}}", "type": "string" },
+                { "key": "password", "value": "{{userPassword}}", "type": "string" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/repair-orders/{{repairOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "repair-orders", "{{repairOrderId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "postman.setNextRequest('User: GET /api/repair-orders -> 200 (list)');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "User: GET /api/repair-orders -> 200 (list)",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{userUsername}}", "type": "string" },
+                { "key": "password", "value": "{{userPassword}}", "type": "string" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/repair-orders?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "repair-orders"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "postman.setNextRequest('User: POST /api/repair-orders -> 403 (create forbidden)');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "User: POST /api/repair-orders -> 403 (create forbidden)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{userUsername}}", "type": "string" },
+                { "key": "password", "value": "{{userPassword}}", "type": "string" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/repair-orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "repair-orders"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerName\": \"User Customer\",\n  \"description\": \"Should be forbidden\",\n  \"status\": \"OPEN\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "postman.setNextRequest('User: PUT /api/repair-orders/{id} -> 403 (update forbidden)');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "User: PUT /api/repair-orders/{id} -> 403 (update forbidden)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{userUsername}}", "type": "string" },
+                { "key": "password", "value": "{{userPassword}}", "type": "string" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/repair-orders/{{repairOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "repair-orders", "{{repairOrderId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"version\": {{repairOrderVersion}},\n  \"customerName\": \"User Customer\",\n  \"description\": \"Should be forbidden\",\n  \"status\": \"IN_PROGRESS\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "postman.setNextRequest('User: DELETE /api/repair-orders/{id} -> 403 (delete forbidden)');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "User: DELETE /api/repair-orders/{id} -> 403 (delete forbidden)",
+          "request": {
+            "method": "DELETE",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{userUsername}}", "type": "string" },
+                { "key": "password", "value": "{{userPassword}}", "type": "string" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/repair-orders/{{repairOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "repair-orders", "{{repairOrderId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 403', function () { pm.response.to.have.status(403); });",
+                  "postman.setNextRequest('Admin: DELETE /api/repair-orders/{id} -> 204 (delete)');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin: DELETE /api/repair-orders/{id} -> 204 (delete)",
+          "request": {
+            "method": "DELETE",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{adminUsername}}", "type": "string" },
+                { "key": "password", "value": "{{adminPassword}}", "type": "string" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/repair-orders/{{repairOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "repair-orders", "{{repairOrderId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 204', function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

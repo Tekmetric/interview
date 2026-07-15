@@ -14,6 +14,7 @@
   --ink: #17140f; /* primary text */
   --muted: #6b6252; /* secondary text, labels, borders */
   --line: #e7dfce; /* hairlines */
+  --line-strong: #9c8f78; /* form control outlines — ~3:1 for WCAG 1.4.11 */
   --accent: #b8472f; /* coral (dimmed for text on light) */
   --danger: #b42318; /* destructive actions */
 }
@@ -25,6 +26,7 @@
   --ink: #fffbf0;
   --muted: #a89d8a;
   --line: #2a251d;
+  --line-strong: #6f6656; /* form control outlines — ~3:1 for WCAG 1.4.11 */
   --accent: #fe826a;
   --danger: #f2705f;
 }
@@ -41,6 +43,7 @@
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
   --color-danger: var(--danger);
 }

@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// Returns [debounced, flush, sync]. flush() settles to the latest value
-// immediately (e.g. on Enter). sync(next) settles to a specific value now,
-// bypassing the wait — used when the value is set programmatically (e.g. from a
-// back/forward navigation) and shouldn't lag behind.
+// Returns [debounced, flush]. flush() settles to the latest value immediately
+// (e.g. on Enter), cancelling the pending wait.
 export function useDebouncedValue(value, delay = 300) {
   const [debounced, setDebounced] = useState(value);
   const timeoutRef = useRef(null);
@@ -18,10 +16,5 @@ export function useDebouncedValue(value, delay = 300) {
     setDebounced(value);
   }, [value]);
 
-  const sync = useCallback((next) => {
-    clearTimeout(timeoutRef.current);
-    setDebounced(next);
-  }, []);
-
-  return [debounced, flush, sync];
+  return [debounced, flush];
 }

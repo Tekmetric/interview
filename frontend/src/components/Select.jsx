@@ -30,7 +30,7 @@ export default function Select({
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`w-full appearance-none rounded-md border border-line bg-surface ${sizeClass} pr-9 text-ink transition-colors hover:bg-surface-2`}
+          className={`w-full appearance-none rounded-md border border-line-strong bg-surface ${sizeClass} pr-9 text-ink transition-colors hover:bg-surface-2`}
         >
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>

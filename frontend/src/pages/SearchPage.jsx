@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import { useArtworkBrowse } from '../hooks/useArtworkBrowse';
 import { useArtworkModal } from '../context/ArtworkModalContext';
 import { getSearchViewState } from '../lib/searchViewState';
 import { STATUS } from '../lib/status';
-import { SEARCH_SUGGESTIONS } from '../lib/constants';
 import SearchBar from '../features/search/SearchBar';
-import SearchSuggestions from '../features/search/SearchSuggestions';
 import SearchLanding from '../features/search/SearchLanding';
 import DepartmentFilter from '../features/search/DepartmentFilter';
 import ResultsList from '../features/results/ResultsList';
@@ -26,7 +23,6 @@ function partialFailureLabel(count) {
 
 export default function SearchPage() {
   const { open } = useArtworkModal();
-  const [focused, setFocused] = useState(false);
   const {
     query,
     setQuery,
@@ -36,7 +32,6 @@ export default function SearchPage() {
     setDepartmentId,
     departments,
     searchPending,
-    initialLoading,
     status,
     total,
     retry,
@@ -47,38 +42,22 @@ export default function SearchPage() {
     loadMore,
   } = useArtworkBrowse();
 
-  const viewState = getSearchViewState({ initialLoading, status, total });
-
-  function handleSearchBlur(e) {
-    if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false);
-  }
-  function pickSuggestion(term) {
-    submitQuery(term);
-    setFocused(false);
-  }
+  const viewState = getSearchViewState({
+    status,
+    total,
+    pagedStatus,
+    itemCount: items.length,
+  });
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-        <div
-          className="relative flex-1"
-          onFocus={() => setFocused(true)}
-          onBlur={handleSearchBlur}
-        >
-          <SearchBar
-            value={query}
-            onChange={setQuery}
-            onSubmit={submit}
-            pending={searchPending}
-          />
-          {focused && query.trim().length === 0 && (
-            <SearchSuggestions
-              label="Try searching"
-              items={SEARCH_SUGGESTIONS}
-              onPick={pickSuggestion}
-            />
-          )}
-        </div>
+        <SearchBar
+          value={query}
+          onChange={setQuery}
+          onSubmit={submit}
+          pending={searchPending}
+        />
         <DepartmentFilter
           departments={departments}
           value={departmentId}
@@ -86,16 +65,16 @@ export default function SearchPage() {
         />
       </div>
 
-      {viewState === 'idle' && <SearchLanding onPick={pickSuggestion} />}
+      {viewState === 'idle' && <SearchLanding onPick={submitQuery} />}
 
       {viewState === 'loading' && <SearchLoader />}
 
       {viewState === 'error' && (
         <StatusMessage
           tone="error"
-          icon={<IconEmptyFrame className="size-6" />}
-          title="The art thief struck again"
-          body="We couldn't load the results — looks like someone made off with them. Try again while security's looking."
+          image="/gallery-closed.png"
+          title="This gallery is briefly closed"
+          body="We couldn't load the results just now. Give it a moment and try again."
           onRetry={retry}
           retryLabel="Try again"
         />
@@ -106,6 +85,17 @@ export default function SearchPage() {
           icon={<IconImage className="size-6" />}
           title="No works found"
           body="Try a different search term or department."
+        />
+      )}
+
+      {viewState === 'page-error' && (
+        <StatusMessage
+          tone="error"
+          icon={<IconEmptyFrame className="size-6" />}
+          title="Couldn't load these works"
+          body="The collection is rate-limiting us right now. Give it a moment and try again."
+          onRetry={retry}
+          retryLabel="Try again"
         />
       )}
 
@@ -135,11 +125,9 @@ export default function SearchPage() {
               </Button>
             </div>
           ) : (
-            items.length > 0 && (
-              <p className="py-2 text-center text-sm text-muted">
-                You've reached the end of the results
-              </p>
-            )
+            <p className="py-2 text-center text-sm text-muted">
+              You've reached the end of the results
+            </p>
           )}
         </>
       )}

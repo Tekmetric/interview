@@ -16,12 +16,18 @@ export function useFocusTrap(ref, { active = true, onEscape } = {}) {
     if (!node) return undefined;
 
     const previouslyFocused = document.activeElement;
+    // getClientRects() is empty for hidden/detached nodes but non-empty for
+    // visible ones — including position: fixed, which offsetParent misses.
     const getFocusable = () =>
       Array.from(node.querySelectorAll(FOCUSABLE)).filter(
-        (el) => el.offsetParent !== null || el === document.activeElement
+        (el) => el.getClientRects().length > 0 || el === document.activeElement
       );
 
-    (getFocusable()[0] ?? node).focus?.();
+    // Don't steal focus if it's already inside (e.g. re-activating after a
+    // stacked dialog on top closes and hands focus back).
+    if (!node.contains(document.activeElement)) {
+      (getFocusable()[0] ?? node).focus?.();
+    }
 
     function onKeyDown(e) {
       if (e.key === 'Escape') {

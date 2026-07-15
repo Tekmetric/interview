@@ -21,7 +21,7 @@ export default function ArtworkModal({ artwork, onClose }) {
 
   return (
     <>
-      <ModalShell label={title} onClose={onClose}>
+      <ModalShell label={title} onClose={onClose} active={!zoomed}>
         <div className="mb-4 flex items-start justify-between gap-4">
           <div className="space-y-2">
             <h2 className="text-xl font-bold text-ink">{title}</h2>
@@ -106,11 +106,14 @@ export default function ArtworkModal({ artwork, onClose }) {
             alt={title}
             className="max-h-full max-w-full cursor-zoom-out object-contain"
           />
-          {/* `absolute` (not `fixed`) so the focus trap can find it — fixed
-              elements report offsetParent === null and get filtered out. */}
+          {/* stopPropagation so the button's own handler runs without the click
+              also bubbling to the dismiss-on-click backdrop. */}
           <button
             type="button"
-            onClick={() => setZoomed(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setZoomed(false);
+            }}
             aria-label="Close"
             className="absolute right-2 top-2 inline-flex cursor-pointer items-center justify-center rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
           >

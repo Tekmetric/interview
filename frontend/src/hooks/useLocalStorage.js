@@ -1,10 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
 
-export function useLocalStorage(key, initialValue) {
+// Persists state to localStorage. `legacyKey` lets a renamed key adopt (and clean
+// up) a value stored under the old name once, so a rename doesn't orphan data.
+export function useLocalStorage(key, initialValue, { legacyKey } = {}) {
   const [value, setValue] = useState(() => {
     try {
       const stored = window.localStorage.getItem(key);
-      return stored !== null ? JSON.parse(stored) : initialValue;
+      if (stored !== null) return JSON.parse(stored);
+      if (legacyKey) {
+        const legacy = window.localStorage.getItem(legacyKey);
+        if (legacy !== null) {
+          window.localStorage.removeItem(legacyKey);
+          return JSON.parse(legacy);
+        }
+      }
+      return initialValue;
     } catch {
       return initialValue;
     }

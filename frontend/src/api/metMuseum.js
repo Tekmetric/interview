@@ -2,10 +2,35 @@
 // the browser. Every request takes an AbortSignal so callers can cancel stale work.
 const BASE = 'https://collectionapi.metmuseum.org/public/collection/v1';
 
-async function getJson(url, signal) {
-  const res = await fetch(url, { signal });
-  if (!res.ok) throw new Error(`Request failed (${res.status})`);
-  return res.json();
+// The API rate-limits under load; these statuses are worth a retry.
+const RETRY_STATUS = new Set([429, 500, 502, 503, 504]);
+
+function delay(ms, signal) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(timer);
+        reject(new DOMException('Aborted', 'AbortError'));
+      },
+      { once: true }
+    );
+  });
+}
+
+// Single retry/backoff policy for every call, so rate-limited requests get a
+// couple of chances (400ms, 800ms) before failing instead of dropping silently.
+async function getJson(url, signal, { retries = 2 } = {}) {
+  for (let attempt = 0; ; attempt += 1) {
+    const res = await fetch(url, { signal });
+    if (res.ok) return res.json();
+    if (attempt < retries && RETRY_STATUS.has(res.status)) {
+      await delay(400 * 2 ** attempt, signal);
+      continue;
+    }
+    throw new Error(`Request failed (${res.status})`);
+  }
 }
 
 export async function fetchDepartments(signal) {

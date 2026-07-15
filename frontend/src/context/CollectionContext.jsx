@@ -6,7 +6,9 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 const CollectionContext = createContext(null);
 
 export function CollectionProvider({ children }) {
-  const [items, setItems] = useLocalStorage('artfinder:collection', []);
+  const [items, setItems] = useLocalStorage('meetthemet:collection', [], {
+    legacyKey: 'artfinder:collection',
+  });
 
   const isSaved = useCallback((id) => items.some((a) => a.id === id), [items]);
 

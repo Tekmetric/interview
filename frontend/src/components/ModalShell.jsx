@@ -12,18 +12,21 @@ export default function ModalShell({
   className = 'm-auto w-full max-w-2xl rounded-xl border border-line bg-surface p-5 shadow-xl',
   backdropClassName = 'fixed inset-0 z-50 flex overflow-y-auto bg-black/60 p-4 sm:p-8',
   dismissOnClick = false,
+  // Set false when another dialog is stacked on top: it releases the focus trap
+  // and hides this dialog from assistive tech so only the topmost is `aria-modal`.
+  active = true,
   children,
 }) {
   const ref = useRef(null);
-  useFocusTrap(ref, { onEscape: onClose });
+  useFocusTrap(ref, { active, onEscape: onClose });
   useBodyScrollLock();
 
   return (
-    <div className={backdropClassName} onClick={onClose}>
+    <div className={backdropClassName} onClick={onClose} aria-hidden={!active}>
       <div
         ref={ref}
         role={role}
-        aria-modal="true"
+        aria-modal={active}
         aria-label={label}
         tabIndex={-1}
         // By default, clicks inside the dialog are kept from reaching the backdrop

@@ -40,17 +40,24 @@ export default function ArtworkRow({ artwork, index = 0, onSelect, showImageLink
           )}
         </span>
 
-        <span className="min-w-0 flex-1 py-3">
+        <span className="min-w-0 flex-1 py-3 pr-3 sm:pr-0">
           <span className="block truncate font-medium text-ink">{title}</span>
           <span className="block truncate text-sm text-muted">
             {artist}
             {artwork.date ? ` · ${artwork.date}` : ''}
           </span>
           {meta && <span className="block truncate text-xs text-muted">{meta}</span>}
+          {/* The visible public-domain mark is hidden on mobile (below), so keep
+              the status for screen readers there without taking visible space. */}
+          {artwork.isPublicDomain && (
+            <span className="sr-only sm:hidden">Public domain</span>
+          )}
         </span>
       </button>
 
-      <div className="flex shrink-0 items-center gap-2 py-3 pl-1 pr-3">
+      {/* Hidden on mobile so the title/artist/meta get the full row width; these
+          actions stay available in the detail view opened by tapping the row. */}
+      <div className="hidden shrink-0 items-center gap-2 py-3 pl-1 pr-3 sm:flex">
         {artwork.isPublicDomain && <PublicDomainMark />}
         {showImageLink && artwork.image && (
           <IconButton

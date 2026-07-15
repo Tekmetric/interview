@@ -4,7 +4,7 @@ export default function SearchBar({ value, onChange, onSubmit, pending = false }
   const showClear = value.length > 0 && !pending;
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0 flex-1">
       <input
         type="search"
         value={value}
@@ -17,7 +17,7 @@ export default function SearchBar({ value, onChange, onSubmit, pending = false }
         }}
         placeholder="Search the collection — e.g. sunflowers, samurai, Vermeer…"
         aria-label="Search the collection"
-        className="h-11 w-full rounded-lg border border-line bg-surface px-4 pr-11 text-ink placeholder:text-muted"
+        className="h-11 w-full rounded-lg border border-line-strong bg-surface px-4 pr-11 text-ink placeholder:text-muted"
       />
 
       {pending && (

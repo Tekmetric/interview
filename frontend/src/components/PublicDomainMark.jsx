@@ -23,8 +23,10 @@ export default function PublicDomainMark({ showLabel = false }) {
       >
         <IconPublicDomain className="size-4" />
       </span>
+      {/* Visual-only: the icon already exposes the label via aria-label, so this
+          is hidden from assistive tech to avoid a duplicate announcement. */}
       <span
-        role="tooltip"
+        aria-hidden="true"
         className="pointer-events-none absolute -top-9 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-md bg-ink px-2 py-1 text-xs font-medium text-canvas opacity-0 shadow transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
       >
         {label}

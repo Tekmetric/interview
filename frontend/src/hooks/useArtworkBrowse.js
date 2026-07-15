@@ -7,81 +7,100 @@ import { usePagedArtworks } from './usePagedArtworks';
 import { STATUS } from '../lib/status';
 import { MIN_QUERY_LENGTH, SEARCH_DEBOUNCE_MS } from '../lib/constants';
 
-// This is the one place that decides *what* to search: a typed term once it's
-// long enough, otherwise nothing (the page shows a landing state). The
-// search/paging hooks just run whatever query they're handed.
+// The URL (?q, ?dept) is the source of truth for the committed search, so
+// Back/Forward and shareable links work for free. The text field is the only
+// local state: it commits to the URL once typing settles, and follows the URL on
+// any *external* change (Back/Forward, a nav link, a hand-edited URL) while
+// ignoring our own writes — so navigation resets the field without clobbering
+// in-flight typing.
 export function useArtworkBrowse() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [query, setQuery] = useState(() => searchParams.get('q') ?? '');
-  const [departmentId, setDepartmentId] = useState(() => searchParams.get('dept') ?? '');
 
-  const [debouncedQuery, submit, syncDebounced] = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
-  const trimmedQuery = debouncedQuery.trim();
-  const hasQuery = trimmedQuery.length >= MIN_QUERY_LENGTH;
-  const activeQuery = hasQuery ? trimmedQuery : '';
+  const committedQuery = (searchParams.get('q') ?? '').trim();
+  const departmentId = searchParams.get('dept') ?? '';
 
-  // Latest URL + setter, read (not depended on) by the writer effect below. This
-  // matters because react-router recreates setSearchParams on every navigation;
-  // if the effect depended on it, a Back press would re-run the writer with
-  // still-stale (pre-debounce) state and re-push the query we're leaving —
-  // an infinite navigation loop. Keeping them in refs means the writer only fires
-  // when the search state itself changes.
-  const searchParamsRef = useRef(searchParams);
-  searchParamsRef.current = searchParams;
-  const setSearchParamsRef = useRef(setSearchParams);
-  setSearchParamsRef.current = setSearchParams;
+  const [input, setInput] = useState(committedQuery);
+  const [debouncedInput, flush] = useDebouncedValue(input, SEARCH_DEBOUNCE_MS);
 
-  // State → URL. Each distinct (debounced) query/department is pushed as its own
-  // history entry so Back/Forward walks the search history. We skip the write
-  // when the URL already matches — that's what breaks the echo loop where our own
-  // write, or a value we just adopted from a navigation, would push again.
-  useEffect(() => {
-    const currentQ = searchParamsRef.current.get('q') ?? '';
-    const currentDept = searchParamsRef.current.get('dept') ?? '';
-    const nextQ = hasQuery ? trimmedQuery : '';
-    if (nextQ === currentQ && departmentId === currentDept) return;
+  // The last query we pushed to the URL. If the URL's q ever differs from this,
+  // the change came from outside this hook (navigation) and the field follows it.
+  const lastWrittenQuery = useRef(committedQuery);
 
-    const next = new URLSearchParams();
-    if (nextQ) next.set('q', nextQ);
-    if (departmentId) next.set('dept', departmentId);
-    setSearchParamsRef.current(next);
-  }, [trimmedQuery, hasQuery, departmentId]);
-
-  // URL → state, for back/forward and edited links. syncDebounced settles the
-  // debounced value immediately so results reflect the navigation without a
-  // 750ms lag (and so the writer effect above sees the matching state and skips).
-  useEffect(() => {
-    const urlQ = searchParams.get('q') ?? '';
-    const urlDept = searchParams.get('dept') ?? '';
-    setQuery((cur) => (urlQ !== cur ? urlQ : cur));
-    setDepartmentId((cur) => (urlDept !== cur ? urlDept : cur));
-    syncDebounced(urlQ);
-  }, [searchParams, syncDebounced]);
-
-  // Set the query and search right away, skipping the debounce — for explicit
-  // picks (suggestion chips, landing examples) where there's no typing to settle.
-  const submitQuery = useCallback(
-    (term) => {
-      setQuery(term);
-      syncDebounced(term);
+  // Functional update reads the freshest params, avoiding a stale-closure fight
+  // with a concurrent navigation.
+  const writeParams = useCallback(
+    (mutate) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        mutate(next);
+        return next;
+      });
     },
-    [syncDebounced]
+    [setSearchParams]
   );
 
+  const writeQuery = useCallback(
+    (nextQ) => {
+      lastWrittenQuery.current = nextQ;
+      writeParams((p) => (nextQ ? p.set('q', nextQ) : p.delete('q')));
+    },
+    [writeParams]
+  );
+
+  const setDepartmentId = useCallback(
+    (id) => writeParams((p) => (id ? p.set('dept', id) : p.delete('dept'))),
+    [writeParams]
+  );
+
+  // Explicit picks (landing examples): fill the field and commit now, no debounce.
+  const submitQuery = useCallback(
+    (term) => {
+      const trimmed = term.trim();
+      setInput(term);
+      writeQuery(trimmed.length >= MIN_QUERY_LENGTH ? trimmed : '');
+    },
+    [writeQuery]
+  );
+
+  // Commit the settled input to the URL (one history entry per distinct search).
+  // Depends only on `debouncedInput`: reacting to `committedQuery` too would let a
+  // navigation re-commit the stale input and undo itself.
+  useEffect(() => {
+    const trimmed = debouncedInput.trim();
+    const nextQ = trimmed.length >= MIN_QUERY_LENGTH ? trimmed : '';
+    if (nextQ !== committedQuery) writeQuery(nextQ);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- commit only when the debounce settles
+  }, [debouncedInput]);
+
+  // Follow the URL into the field when the change wasn't ours (Back/Forward, a nav
+  // link back to the empty state, a hand-edited URL).
+  useEffect(() => {
+    if (committedQuery !== lastWrittenQuery.current) {
+      lastWrittenQuery.current = committedQuery;
+      setInput(committedQuery);
+    }
+  }, [committedQuery]);
+
   const departments = useDepartments();
-  const search = useArtworkSearch(activeQuery, departmentId || undefined);
+  const search = useArtworkSearch(committedQuery, departmentId || undefined);
   const paged = usePagedArtworks(search.status === STATUS.success ? search.ids : null);
 
   const initialLoading =
     search.status === STATUS.loading ||
     (paged.status === STATUS.loading && paged.items.length === 0);
+  // Pending when there's a committable query the URL hasn't caught up to yet, or
+  // while the committed search is loading. Deliberately not `input !==
+  // debouncedInput`: that lingers for the full debounce after a Back navigation,
+  // showing a spinner over results that are already correct.
+  const trimmedInput = input.trim();
   const searchPending =
-    query.trim().length > 0 && (query !== debouncedQuery || initialLoading);
+    (trimmedInput.length >= MIN_QUERY_LENGTH && trimmedInput !== committedQuery) ||
+    initialLoading;
 
   return {
-    query,
-    setQuery,
-    submit,
+    query: input,
+    setQuery: setInput,
+    submit: flush,
     submitQuery,
     departmentId,
     setDepartmentId,

@@ -1,0 +1,42 @@
+import { useRef } from 'react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+
+// Shared overlay chrome for dialogs: backdrop, click-outside-to-close, focus
+// trap, Escape handling, and body scroll lock — so each dialog only supplies its
+// own content and the accessibility is correct in one place.
+export default function ModalShell({
+  onClose,
+  label,
+  role = 'dialog',
+  className = 'm-auto w-full max-w-2xl rounded-xl border border-line bg-surface p-5 shadow-xl',
+  backdropClassName = 'fixed inset-0 z-50 flex overflow-y-auto bg-black/60 p-4 sm:p-8',
+  dismissOnClick = false,
+  // Set false when another dialog is stacked on top: it releases the focus trap
+  // and hides this dialog from assistive tech so only the topmost is `aria-modal`.
+  active = true,
+  children,
+}) {
+  const ref = useRef(null);
+  useFocusTrap(ref, { active, onEscape: onClose });
+  useBodyScrollLock();
+
+  return (
+    <div className={backdropClassName} onClick={onClose} aria-hidden={!active}>
+      <div
+        ref={ref}
+        role={role}
+        aria-modal={active}
+        aria-label={label}
+        tabIndex={-1}
+        // By default, clicks inside the dialog are kept from reaching the backdrop
+        // so it doesn't close. `dismissOnClick` opts out (e.g. the lightbox, where
+        // clicking the image or its surrounding area should dismiss).
+        onClick={dismissOnClick ? undefined : (e) => e.stopPropagation()}
+        className={`${className} focus:outline-none`}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}

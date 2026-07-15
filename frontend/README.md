@@ -12,9 +12,10 @@ preserved in [ASSIGNMENT.md](./ASSIGNMENT.md).
 
 ## Features
 
-- **Default landing state** — shows a curated "Featured works" set before you search.
-- **Full-text search** of the collection (debounced, abortable), with **quick-pick
-  suggestion chips** when the empty input is focused.
+- **Landing state** — before you search, a short intro plus example searches
+  grouped by category (artist, region, theme, style, medium) that run a real
+  search when clicked; nothing is fetched until you search.
+- **Full-text search** of the collection (debounced, abortable).
 - **Results list** — rows with thumbnail, title, artist, date, medium, department,
   and a public-domain indicator.
 - **Department filter** loaded from the API, with a one-click **clear** button.
@@ -85,8 +86,8 @@ for the result count; and `prefers-reduced-motion` respected.
   for broad subject terms (title/artist queries rank best).
 - Some records lack a usable image even with the `hasImages` filter; these are
   handled gracefully (placeholder / metadata-only detail).
-- The department filter narrows the current search (which defaults to a featured
-  query until you type).
+- Search requires a typed query (nothing is fetched on the landing screen); the
+  department filter narrows an active search rather than searching on its own.
 
 ## Credits
 

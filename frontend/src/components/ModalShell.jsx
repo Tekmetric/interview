@@ -11,6 +11,7 @@ export default function ModalShell({
   role = 'dialog',
   className = 'm-auto w-full max-w-2xl rounded-xl border border-line bg-surface p-5 shadow-xl',
   backdropClassName = 'fixed inset-0 z-50 flex overflow-y-auto bg-black/60 p-4 sm:p-8',
+  dismissOnClick = false,
   children,
 }) {
   const ref = useRef(null);
@@ -25,7 +26,10 @@ export default function ModalShell({
         aria-modal="true"
         aria-label={label}
         tabIndex={-1}
-        onClick={(e) => e.stopPropagation()}
+        // By default, clicks inside the dialog are kept from reaching the backdrop
+        // so it doesn't close. `dismissOnClick` opts out (e.g. the lightbox, where
+        // clicking the image or its surrounding area should dismiss).
+        onClick={dismissOnClick ? undefined : (e) => e.stopPropagation()}
         className={`${className} focus:outline-none`}
       >
         {children}

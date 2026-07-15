@@ -1,5 +1,9 @@
-// Wraps a native <select> (accessible by default, no custom listbox needed).
-// `label` is required and visually hidden unless `showLabel` is set.
+import { IconChevronDown } from './icons';
+
+// Wraps a native <select> (accessible by default, no custom listbox needed). The
+// native caret is hidden (appearance-none) in favor of our own, so the arrow
+// spacing is consistent across browsers. `label` is required and visually hidden
+// unless `showLabel` is set.
 export default function Select({
   id,
   label,
@@ -21,18 +25,21 @@ export default function Select({
       >
         {label}
       </label>
-      <select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`rounded-md border border-line bg-surface ${sizeClass} text-ink transition-colors hover:bg-surface-2 ${fluid ? 'w-full sm:w-auto' : ''}`}
-      >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+      <div className={`relative ${fluid ? 'w-full sm:w-auto' : ''}`}>
+        <select
+          id={id}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`w-full appearance-none rounded-md border border-line bg-surface ${sizeClass} pr-9 text-ink transition-colors hover:bg-surface-2`}
+        >
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <IconChevronDown className="pointer-events-none absolute inset-y-0 right-3 my-auto size-4 text-muted" />
+      </div>
     </div>
   );
 }

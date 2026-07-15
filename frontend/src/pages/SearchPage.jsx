@@ -6,6 +6,7 @@ import { STATUS } from '../lib/status';
 import { SEARCH_SUGGESTIONS } from '../lib/constants';
 import SearchBar from '../features/search/SearchBar';
 import SearchSuggestions from '../features/search/SearchSuggestions';
+import SearchLanding from '../features/search/SearchLanding';
 import DepartmentFilter from '../features/search/DepartmentFilter';
 import ResultsList from '../features/results/ResultsList';
 import SearchLoader from '../components/SearchLoader';
@@ -30,10 +31,10 @@ export default function SearchPage() {
     query,
     setQuery,
     submit,
+    submitQuery,
     departmentId,
     setDepartmentId,
     departments,
-    isFeatured,
     searchPending,
     initialLoading,
     status,
@@ -52,7 +53,7 @@ export default function SearchPage() {
     if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false);
   }
   function pickSuggestion(term) {
-    setQuery(term);
+    submitQuery(term);
     setFocused(false);
   }
 
@@ -85,6 +86,8 @@ export default function SearchPage() {
         />
       </div>
 
+      {viewState === 'idle' && <SearchLanding onPick={pickSuggestion} />}
+
       {viewState === 'loading' && <SearchLoader />}
 
       {viewState === 'error' && (
@@ -109,7 +112,7 @@ export default function SearchPage() {
       {viewState === 'results' && (
         <>
           <p className="text-sm text-muted" aria-live="polite">
-            {isFeatured ? 'Featured works' : resultsCountLabel(total)}
+            {resultsCountLabel(total)}
           </p>
 
           <ResultsList items={items} onSelect={open} />

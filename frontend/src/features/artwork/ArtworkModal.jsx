@@ -97,13 +97,14 @@ export default function ArtworkModal({ artwork, onClose }) {
         <ModalShell
           label={title}
           onClose={() => setZoomed(false)}
+          dismissOnClick
           backdropClassName="fixed inset-0 z-[60] flex bg-black/90 p-4"
           className="relative flex h-full w-full items-center justify-center border-0 bg-transparent p-0 shadow-none"
         >
           <img
             src={artwork.image}
             alt={title}
-            className="max-h-full max-w-full object-contain"
+            className="max-h-full max-w-full cursor-zoom-out object-contain"
           />
           {/* `absolute` (not `fixed`) so the focus trap can find it — fixed
               elements report offsetParent === null and get filtered out. */}
@@ -111,7 +112,7 @@ export default function ArtworkModal({ artwork, onClose }) {
             type="button"
             onClick={() => setZoomed(false)}
             aria-label="Close"
-            className="absolute right-2 top-2 inline-flex items-center justify-center rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
+            className="absolute right-2 top-2 inline-flex cursor-pointer items-center justify-center rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
           >
             <IconClose className="size-6" />
           </button>

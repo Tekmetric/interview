@@ -4,9 +4,9 @@ import { STATUS } from '../lib/status';
 
 const IDLE = { status: STATUS.idle, ids: [], total: 0, error: null };
 
-// Searches whatever non-empty query it's given; the caller decides what to
-// search (typed term vs. featured default). Stale requests are aborted on
-// cleanup so a slow earlier search can't overwrite a newer one.
+// Searches whatever non-empty query it's given; an empty query stays idle. The
+// caller decides what to search. Stale requests are aborted on cleanup so a slow
+// earlier search can't overwrite a newer one.
 export function useArtworkSearch(query, departmentId) {
   const [state, setState] = useState(IDLE);
   const [reloadKey, setReloadKey] = useState(0);

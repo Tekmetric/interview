@@ -1,46 +1,72 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from './useDebouncedValue';
 import { useDepartments } from './useDepartments';
 import { useArtworkSearch } from './useArtworkSearch';
 import { usePagedArtworks } from './usePagedArtworks';
 import { STATUS } from '../lib/status';
-import {
-  DEFAULT_QUERY,
-  MIN_QUERY_LENGTH,
-  SEARCH_DEBOUNCE_MS,
-} from '../lib/constants';
+import { MIN_QUERY_LENGTH, SEARCH_DEBOUNCE_MS } from '../lib/constants';
 
 // This is the one place that decides *what* to search: a typed term once it's
-// long enough, otherwise the featured landing set. The search/paging hooks just
-// run whatever query they're handed.
+// long enough, otherwise nothing (the page shows a landing state). The
+// search/paging hooks just run whatever query they're handed.
 export function useArtworkBrowse() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [query, setQuery] = useState(() => searchParams.get('q') ?? DEFAULT_QUERY);
+  const [query, setQuery] = useState(() => searchParams.get('q') ?? '');
   const [departmentId, setDepartmentId] = useState(() => searchParams.get('dept') ?? '');
 
-  const [debouncedQuery, submit] = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
+  const [debouncedQuery, submit, syncDebounced] = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
   const trimmedQuery = debouncedQuery.trim();
-  const isFeatured = trimmedQuery.length < MIN_QUERY_LENGTH;
-  const activeQuery = isFeatured ? DEFAULT_QUERY : trimmedQuery;
+  const hasQuery = trimmedQuery.length >= MIN_QUERY_LENGTH;
+  const activeQuery = hasQuery ? trimmedQuery : '';
 
-  // `replace` so typing doesn't push a history entry per keystroke.
+  // Latest URL + setter, read (not depended on) by the writer effect below. This
+  // matters because react-router recreates setSearchParams on every navigation;
+  // if the effect depended on it, a Back press would re-run the writer with
+  // still-stale (pre-debounce) state and re-push the query we're leaving —
+  // an infinite navigation loop. Keeping them in refs means the writer only fires
+  // when the search state itself changes.
+  const searchParamsRef = useRef(searchParams);
+  searchParamsRef.current = searchParams;
+  const setSearchParamsRef = useRef(setSearchParams);
+  setSearchParamsRef.current = setSearchParams;
+
+  // State → URL. Each distinct (debounced) query/department is pushed as its own
+  // history entry so Back/Forward walks the search history. We skip the write
+  // when the URL already matches — that's what breaks the echo loop where our own
+  // write, or a value we just adopted from a navigation, would push again.
   useEffect(() => {
+    const currentQ = searchParamsRef.current.get('q') ?? '';
+    const currentDept = searchParamsRef.current.get('dept') ?? '';
+    const nextQ = hasQuery ? trimmedQuery : '';
+    if (nextQ === currentQ && departmentId === currentDept) return;
+
     const next = new URLSearchParams();
-    if (!isFeatured) next.set('q', trimmedQuery);
+    if (nextQ) next.set('q', nextQ);
     if (departmentId) next.set('dept', departmentId);
-    setSearchParams(next, { replace: true });
-  }, [trimmedQuery, isFeatured, departmentId, setSearchParams]);
+    setSearchParamsRef.current(next);
+  }, [trimmedQuery, hasQuery, departmentId]);
 
-  // Adopt external URL changes (back/forward, edited link). Skipping values that
-  // already match avoids fighting our own writes above.
+  // URL → state, for back/forward and edited links. syncDebounced settles the
+  // debounced value immediately so results reflect the navigation without a
+  // 750ms lag (and so the writer effect above sees the matching state and skips).
   useEffect(() => {
-    const urlQ = searchParams.get('q') ?? DEFAULT_QUERY;
+    const urlQ = searchParams.get('q') ?? '';
     const urlDept = searchParams.get('dept') ?? '';
-    setQuery((cur) => (urlQ !== debouncedQuery && urlQ !== cur ? urlQ : cur));
+    setQuery((cur) => (urlQ !== cur ? urlQ : cur));
     setDepartmentId((cur) => (urlDept !== cur ? urlDept : cur));
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- react only to URL
-  }, [searchParams]);
+    syncDebounced(urlQ);
+  }, [searchParams, syncDebounced]);
+
+  // Set the query and search right away, skipping the debounce — for explicit
+  // picks (suggestion chips, landing examples) where there's no typing to settle.
+  const submitQuery = useCallback(
+    (term) => {
+      setQuery(term);
+      syncDebounced(term);
+    },
+    [syncDebounced]
+  );
 
   const departments = useDepartments();
   const search = useArtworkSearch(activeQuery, departmentId || undefined);
@@ -56,10 +82,10 @@ export function useArtworkBrowse() {
     query,
     setQuery,
     submit,
+    submitQuery,
     departmentId,
     setDepartmentId,
     departments,
-    isFeatured,
     searchPending,
     initialLoading,
     status: search.status,

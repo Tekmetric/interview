@@ -15,7 +15,7 @@ export default function ArtworkRow({ artwork, index = 0, onSelect, showImageLink
 
   return (
     <li
-      className="fade-in-item flex items-stretch overflow-hidden rounded-lg border border-line bg-surface transition-colors hover:bg-surface-2"
+      className="fade-in-item flex items-stretch rounded-lg border border-line bg-surface transition-colors hover:bg-surface-2"
       style={{ animationDelay: fadeDelay(index) }}
     >
       <button
@@ -25,7 +25,7 @@ export default function ArtworkRow({ artwork, index = 0, onSelect, showImageLink
       >
         {/* Absolute image so row height follows the text, not the image aspect
             ratio — keeps rows uniform while the thumbnail bleeds edge-to-edge. */}
-        <span className="relative w-28 shrink-0 self-stretch overflow-hidden bg-surface-2">
+        <span className="relative w-28 shrink-0 self-stretch overflow-hidden rounded-l-lg bg-surface-2">
           {artwork.thumbnail ? (
             <img
               src={artwork.thumbnail}

@@ -28,6 +28,14 @@ export function IconEmptyFrame({ className }) {
   );
 }
 
+export function IconChevronDown({ className }) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
+
 export function IconClose({ className }) {
   return (
     <svg {...base} className={className}>

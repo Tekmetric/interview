@@ -1,5 +1,4 @@
 import { useSettings } from '../context/SettingsContext';
-import { useTranslation } from '../i18n/LocaleProvider';
 import { IconButton } from './Button';
 
 function SunIcon() {
@@ -23,9 +22,8 @@ function MoonIcon() {
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useSettings();
-  const { t } = useTranslation();
   const isDark = theme === 'dark';
-  const label = isDark ? t('theme.toLight') : t('theme.toDark');
+  const label = isDark ? 'Switch to light theme' : 'Switch to dark theme';
   return (
     <IconButton
       tone="ink"

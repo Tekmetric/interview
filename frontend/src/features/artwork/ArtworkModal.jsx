@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from '../../i18n/LocaleProvider';
-import { translateMedium } from '../../lib/mediums';
 import ModalShell from '../../components/ModalShell';
 import { IconButton } from '../../components/Button';
 import PublicDomainMark from '../../components/PublicDomainMark';
@@ -18,9 +16,8 @@ function Field({ label, value }) {
 }
 
 export default function ArtworkModal({ artwork, onClose }) {
-  const { t, locale } = useTranslation();
   const [zoomed, setZoomed] = useState(false);
-  const title = artwork.title || t('artwork.untitled');
+  const title = artwork.title || 'Untitled';
 
   return (
     <>
@@ -32,7 +29,7 @@ export default function ArtworkModal({ artwork, onClose }) {
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <SaveButton artwork={artwork} />
-            <IconButton tone="ink" onClick={onClose} aria-label={t('artwork.close')}>
+            <IconButton tone="ink" onClick={onClose} aria-label="Close">
               <IconClose className="size-5" />
             </IconButton>
           </div>
@@ -50,8 +47,8 @@ export default function ArtworkModal({ artwork, onClose }) {
               <button
                 type="button"
                 onClick={() => setZoomed(true)}
-                aria-label={t('artwork.fullscreen')}
-                title={t('artwork.fullscreen')}
+                aria-label="View fullscreen"
+                title="View fullscreen"
                 className="inline-flex items-center justify-center rounded-md bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
               >
                 <IconExpand className="size-4" />
@@ -60,8 +57,8 @@ export default function ArtworkModal({ artwork, onClose }) {
                 href={artwork.image}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={t('artwork.openImage')}
-                title={t('artwork.openImage')}
+                aria-label="Open image in new tab"
+                title="Open image in new tab"
                 className="inline-flex items-center justify-center rounded-md bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
               >
                 <IconExternal className="size-4" />
@@ -75,11 +72,11 @@ export default function ArtworkModal({ artwork, onClose }) {
         )}
 
         <dl className="grid grid-cols-2 gap-3">
-          <Field label={t('artwork.artist')} value={artwork.artist || t('artwork.artistUnknown')} />
-          <Field label={t('artwork.date')} value={artwork.date} />
-          <Field label={t('artwork.medium')} value={translateMedium(artwork.medium, locale)} />
-          <Field label={t('artwork.department')} value={artwork.department} />
-          <Field label={t('artwork.culture')} value={artwork.culture} />
+          <Field label="Artist" value={artwork.artist || 'Unknown artist'} />
+          <Field label="Date" value={artwork.date} />
+          <Field label="Medium" value={artwork.medium} />
+          <Field label="Department" value={artwork.department} />
+          <Field label="Culture" value={artwork.culture} />
         </dl>
 
         {artwork.url && (
@@ -89,7 +86,7 @@ export default function ArtworkModal({ artwork, onClose }) {
             rel="noreferrer"
             className="mt-4 inline-flex items-center gap-1.5 text-accent hover:underline"
           >
-            {t('artwork.viewOnMet')}
+            View on metmuseum.org
             <IconExternal className="size-4" />
           </a>
         )}
@@ -113,7 +110,7 @@ export default function ArtworkModal({ artwork, onClose }) {
           <button
             type="button"
             onClick={() => setZoomed(false)}
-            aria-label={t('artwork.close')}
+            aria-label="Close"
             className="absolute right-2 top-2 inline-flex items-center justify-center rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
           >
             <IconClose className="size-6" />

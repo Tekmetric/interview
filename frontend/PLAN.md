@@ -3,10 +3,9 @@
 A small, focused single-page React app for the Tekmetric frontend take-home.
 Searches **The Metropolitan Museum of Art's open collection** via the free,
 keyless [Met Collection API](https://metmuseum.github.io/) and displays the
-results as a filterable **list**. Built to be fully explainable line-by-line —
-see the in-app **"How I built this"** page.
+results as a filterable **list**. Built to be fully explainable line-by-line.
 
-> This app reuses the base (Vite + React Router + Tailwind + i18n + theming +
+> This app reuses the base (Vite + React Router + Tailwind + theming +
 > primitives) from an earlier surf-conditions iteration, refocused onto a
 > list/search feature to sit closer to the brief's "Table, List, etc."
 
@@ -35,16 +34,16 @@ through the IDs and fetch each object's detail lazily, in parallel per page.
 - **Vite + React 18** — lightweight SPA, replacing the old CRA scaffold.
 - **React Router 7 (library mode)** — real pages, not a meta-framework.
 - **Tailwind v4** — utilities behind small named components.
-- **Custom `Intl`-based i18n** — 5 UI languages; artwork data stays in the
-  museum's language. `Intl.NumberFormat` for result counts.
-- **Cooper Hewitt** font (self-hosted) with a Noto Sans JP fallback.
+- **English-only UI**; `Intl.NumberFormat` for result counts. Artwork data stays
+  in the museum's language.
+- **Cooper Hewitt** font (self-hosted).
 
 ## Routing
 
 | Route | Page |
 | --- | --- |
 | `/` | SearchPage — search + results list |
-| `/how-i-built-this` | HowIBuiltThisPage (lazy-loaded) |
+| `/collection` | CollectionPage — saved works |
 | `*` | NotFoundPage |
 
 ## Architecture — smart page, dumb components
@@ -52,15 +51,14 @@ through the IDs and fetch each object's detail lazily, in parallel per page.
 ```
 src/
   api/metMuseum.js     fetchDepartments, searchObjects, fetchObject, normalizeObject
-  hooks/               useArtworkSearch, usePagedArtworks, useDepartments,
-                       useDebouncedValue, useLocalStorage
-  lib/                 constants (page size), format (count)
-  context/             SettingsContext (theme, persisted)
-  i18n/                LocaleProvider + t() + catalogs/{en,es,fr,pt,ja}.json
-  components/          Badge, Select, Spinner, StatusMessage, Header, …
+  hooks/               useArtworkBrowse, useArtworkSearch, usePagedArtworks,
+                       useDepartments, useDebouncedValue, useLocalStorage
+  lib/                 constants (page size), format (count), CSV export, status
+  context/             SettingsContext (theme), CollectionContext, ArtworkModal
+  components/          Button, Select, ModalShell, StatusMessage, Header, …
   features/            search/ (SearchBar, DepartmentFilter),
                        results/ (ResultsList, ArtworkRow), artwork/ (ArtworkModal)
-  pages/               SearchPage, HowIBuiltThisPage, NotFoundPage
+  pages/               SearchPage, CollectionPage, NotFoundPage
   layouts/             RootLayout, ErrorBoundary
 ```
 
@@ -69,7 +67,7 @@ src/
 - **Custom hooks** own the async lifecycle and abort stale requests.
 - **`normalizeObject`** and formatting are pure and unit-tested (Vitest).
 
-## Accessibility — target WCAG 2.x Level AA
+## Accessibility
 
 Contrast checked in both themes · public-domain conveyed by text, not color ·
 keyboard nav + visible focus · accessible dialog (Escape, focus, click-outside) ·

@@ -1,13 +1,11 @@
-import { useTranslation } from '../../i18n/LocaleProvider';
 import Select from '../../components/Select';
 import { IconButton } from '../../components/Button';
 import { IconClose } from '../../components/icons';
 
 // An empty value means "all departments".
 export default function DepartmentFilter({ departments, value, onChange }) {
-  const { t } = useTranslation();
   const options = [
-    { value: '', label: t('filter.allDepartments') },
+    { value: '', label: 'All departments' },
     ...departments.map((d) => ({ value: String(d.id), label: d.name })),
   ];
 
@@ -15,7 +13,7 @@ export default function DepartmentFilter({ departments, value, onChange }) {
     <div className="flex w-full items-center gap-2 sm:w-auto">
       <Select
         id="department-filter"
-        label={t('filter.department')}
+        label="Department"
         value={value}
         onChange={onChange}
         options={options}
@@ -25,8 +23,8 @@ export default function DepartmentFilter({ departments, value, onChange }) {
       {value && (
         <IconButton
           onClick={() => onChange('')}
-          aria-label={t('filter.clear')}
-          title={t('filter.clear')}
+          aria-label="Clear department filter"
+          title="Clear department filter"
         >
           <IconClose className="size-4" />
         </IconButton>

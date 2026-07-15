@@ -7,9 +7,8 @@ detail. It uses the free, keyless, CORS-enabled
 [Met Collection API](https://metmuseum.github.io/) — so the whole thing runs
 client-side with no backend.
 
-There's a **"How I built this"** page in the app with a fuller write-up of the
-decisions and trade-offs. A build plan lives in [PLAN.md](./PLAN.md), and the
-original assignment brief is preserved in [ASSIGNMENT.md](./ASSIGNMENT.md).
+A build plan lives in [PLAN.md](./PLAN.md), and the original assignment brief is
+preserved in [ASSIGNMENT.md](./ASSIGNMENT.md).
 
 ## Features
 
@@ -24,10 +23,9 @@ original assignment brief is preserved in [ASSIGNMENT.md](./ASSIGNMENT.md).
 - **Load-more pagination** over the matched works.
 - **Detail modal** — larger image + metadata + a link to metmuseum.org
   (accessible dialog: Escape, focus management, click-outside).
-- **Light / dark theme** and **5 UI languages** (English, Español, Français,
-  Português, 日本語).
+- **Light / dark theme**, persisted to `localStorage`.
 - Minimal inline **SVG iconography** (no icon fonts, no emoji).
-- Built toward **WCAG 2.x Level AA**.
+- **Accessibility-minded** throughout (see below).
 
 ## Quick start
 
@@ -46,9 +44,8 @@ Requires a recent Node (18+). No API keys or environment variables needed.
 - **Vite** + **React 18** (SPA, replacing the repo's old Create React App scaffold)
 - **React Router 7** in library mode (client-only SPA — not framework mode)
 - **Tailwind CSS v4** via `@tailwindcss/vite`
-- **Custom `Intl`-based i18n** (no i18n library)
 - **Vitest** for unit tests
-- **Cooper Hewitt** self-hosted typeface, with a Noto Sans JP fallback
+- **Cooper Hewitt** self-hosted typeface
 
 ## Architecture
 
@@ -58,13 +55,12 @@ passes plain props down; everything else is presentational.
 ```
 src/
   api/metMuseum.js     departments + search + object fetchers (abortable)
-  hooks/               useArtworkSearch, usePagedArtworks, useDepartments, …
-  lib/                 pure helpers (object normalizer, count formatting)
-  context/             SettingsContext (theme, persisted)
-  i18n/                LocaleProvider + t() + catalogs/{en,es,fr,pt,ja}.json
-  components/          reusable UI primitives (Badge, Select, Spinner, …)
+  hooks/               useArtworkBrowse, useArtworkSearch, usePagedArtworks, …
+  lib/                 pure helpers (object normalizer, CSV export, status enum)
+  context/             SettingsContext (theme), CollectionContext, ArtworkModal
+  components/          reusable UI primitives (Button, Select, ModalShell, …)
   features/            search/, results/, artwork/
-  pages/               SearchPage, HowIBuiltThisPage, NotFoundPage
+  pages/               SearchPage, CollectionPage, NotFoundPage
   layouts/             RootLayout, ErrorBoundary
 ```
 

@@ -1,5 +1,3 @@
-import { useTranslation } from '../../i18n/LocaleProvider';
-import { translateMedium } from '../../lib/mediums';
 import { IconButton } from '../../components/Button';
 import PublicDomainMark from '../../components/PublicDomainMark';
 import SaveButton from '../../components/SaveButton';
@@ -11,12 +9,9 @@ function fadeDelay(index) {
 }
 
 export default function ArtworkRow({ artwork, index = 0, onSelect, showImageLink = false }) {
-  const { t, locale } = useTranslation();
-  const title = artwork.title || t('artwork.untitled');
-  const artist = artwork.artist || t('artwork.artistUnknown');
-  const meta = [translateMedium(artwork.medium, locale), artwork.department]
-    .filter(Boolean)
-    .join(' · ');
+  const title = artwork.title || 'Untitled';
+  const artist = artwork.artist || 'Unknown artist';
+  const meta = [artwork.medium, artwork.department].filter(Boolean).join(' · ');
 
   return (
     <li
@@ -63,8 +58,8 @@ export default function ArtworkRow({ artwork, index = 0, onSelect, showImageLink
             href={artwork.image}
             target="_blank"
             rel="noreferrer"
-            aria-label={t('artwork.openImage')}
-            title={t('artwork.openImage')}
+            aria-label="Open image in new tab"
+            title="Open image in new tab"
           >
             <IconExternal className="size-5" />
           </IconButton>

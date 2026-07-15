@@ -1,11 +1,9 @@
-import { useTranslation } from '../i18n/LocaleProvider';
 import { IconPublicDomain } from './icons';
 
 // Compact icon (with tooltip + aria-label) in lists; icon plus visible label in
 // the detail view via `showLabel`.
 export default function PublicDomainMark({ showLabel = false }) {
-  const { t } = useTranslation();
-  const label = t('artwork.publicDomain');
+  const label = 'Public domain';
 
   if (showLabel) {
     return (

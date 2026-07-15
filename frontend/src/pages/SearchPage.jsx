@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from '../i18n/LocaleProvider';
 import { useArtworkBrowse } from '../hooks/useArtworkBrowse';
 import { useArtworkModal } from '../context/ArtworkModalContext';
 import { getSearchViewState } from '../lib/searchViewState';
@@ -14,8 +13,17 @@ import StatusMessage from '../components/StatusMessage';
 import Button from '../components/Button';
 import { IconImage, IconEmptyFrame } from '../components/icons';
 
+function resultsCountLabel(count) {
+  return `${count.toLocaleString('en-US')} ${count === 1 ? 'work' : 'works'} found`;
+}
+
+function partialFailureLabel(count) {
+  return count === 1
+    ? "1 work couldn't be loaded and was skipped."
+    : `${count} works couldn't be loaded and were skipped.`;
+}
+
 export default function SearchPage() {
-  const { t } = useTranslation();
   const { open } = useArtworkModal();
   const [focused, setFocused] = useState(false);
   const {
@@ -64,7 +72,7 @@ export default function SearchPage() {
           />
           {focused && query.trim().length === 0 && (
             <SearchSuggestions
-              label={t('search.suggestionsLabel')}
+              label="Try searching"
               items={SEARCH_SUGGESTIONS}
               onPick={pickSuggestion}
             />
@@ -83,34 +91,32 @@ export default function SearchPage() {
         <StatusMessage
           tone="error"
           icon={<IconEmptyFrame className="size-6" />}
-          title={t('search.errorTitle')}
-          body={t('search.errorBody')}
+          title="The art thief struck again"
+          body="We couldn't load the results — looks like someone made off with them. Try again while security's looking."
           onRetry={retry}
-          retryLabel={t('search.retry')}
+          retryLabel="Try again"
         />
       )}
 
       {viewState === 'empty' && (
         <StatusMessage
           icon={<IconImage className="size-6" />}
-          title={t('search.noResultsTitle')}
-          body={t('search.noResultsBody')}
+          title="No works found"
+          body="Try a different search term or department."
         />
       )}
 
       {viewState === 'results' && (
         <>
           <p className="text-sm text-muted" aria-live="polite">
-            {isFeatured
-              ? t('search.featuredTitle')
-              : t('search.resultsCount', { count: total })}
+            {isFeatured ? 'Featured works' : resultsCountLabel(total)}
           </p>
 
           <ResultsList items={items} onSelect={open} />
 
           {failedCount > 0 && (
             <p className="text-center text-xs text-muted" role="status">
-              {t('search.partialFailure', { count: failedCount })}
+              {partialFailureLabel(failedCount)}
             </p>
           )}
 
@@ -122,15 +128,13 @@ export default function SearchPage() {
                 onClick={loadMore}
                 disabled={pagedStatus === STATUS.loading}
               >
-                {pagedStatus === STATUS.loading
-                  ? t('search.loadingMore')
-                  : t('search.loadMore')}
+                {pagedStatus === STATUS.loading ? 'Loading…' : 'Load more'}
               </Button>
             </div>
           ) : (
             items.length > 0 && (
               <p className="py-2 text-center text-sm text-muted">
-                {t('search.endOfResults')}
+                You've reached the end of the results
               </p>
             )
           )}

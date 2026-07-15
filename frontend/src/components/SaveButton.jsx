@@ -1,13 +1,11 @@
 import { useCollection } from '../context/CollectionContext';
-import { useTranslation } from '../i18n/LocaleProvider';
 import { IconButton } from './Button';
 import { IconBookmark } from './icons';
 
 export default function SaveButton({ artwork, className = '' }) {
   const { isSaved, toggle } = useCollection();
-  const { t } = useTranslation();
   const saved = isSaved(artwork.id);
-  const label = saved ? t('artwork.remove') : t('artwork.save');
+  const label = saved ? 'Remove from collection' : 'Save to collection';
 
   return (
     <IconButton

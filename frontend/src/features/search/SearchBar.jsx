@@ -1,8 +1,6 @@
-import { useTranslation } from '../../i18n/LocaleProvider';
 import { IconClose } from '../../components/icons';
 
 export default function SearchBar({ value, onChange, onSubmit, pending = false }) {
-  const { t } = useTranslation();
   const showClear = value.length > 0 && !pending;
 
   return (
@@ -17,8 +15,8 @@ export default function SearchBar({ value, onChange, onSubmit, pending = false }
             onSubmit?.();
           }
         }}
-        placeholder={t('search.placeholder')}
-        aria-label={t('search.label')}
+        placeholder="Search the collection — e.g. sunflowers, samurai, Vermeer…"
+        aria-label="Search the collection"
         className="h-11 w-full rounded-lg border border-line bg-surface px-4 pr-11 text-ink placeholder:text-muted"
       />
 
@@ -32,7 +30,7 @@ export default function SearchBar({ value, onChange, onSubmit, pending = false }
         <button
           type="button"
           onClick={() => onChange('')}
-          aria-label={t('search.clear')}
+          aria-label="Clear search"
           className="absolute inset-y-0 right-2 flex items-center px-1 text-muted transition-colors hover:text-ink"
         >
           <IconClose className="size-4" />

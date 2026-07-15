@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from '../i18n/LocaleProvider';
 import { useCollection } from '../context/CollectionContext';
 import { useArtworkModal } from '../context/ArtworkModalContext';
 import { downloadCollection } from '../lib/exportCollection';
@@ -10,7 +9,6 @@ import Button from '../components/Button';
 import { IconBookmark, IconDownload, IconTrash } from '../components/icons';
 
 export default function CollectionPage() {
-  const { t } = useTranslation();
   const { items, clear } = useCollection();
   const { open } = useArtworkModal();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -19,20 +17,18 @@ export default function CollectionPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold tracking-tight text-ink">
-          {t('collection.title')}
+          Your collection
         </h1>
         {items.length > 0 && (
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-sm text-muted">
-              {t('collection.count', { count: items.length })}
-            </span>
+            <span className="text-sm text-muted">{items.length} saved</span>
             <Button variant="secondary" size="sm" onClick={() => downloadCollection(items)}>
               <IconDownload className="size-4" />
-              {t('collection.download')}
+              Export CSV
             </Button>
             <Button variant="danger" size="sm" onClick={() => setConfirmOpen(true)}>
               <IconTrash className="size-4" />
-              {t('collection.clear')}
+              Clear collection
             </Button>
           </div>
         )}
@@ -41,8 +37,8 @@ export default function CollectionPage() {
       {items.length === 0 ? (
         <StatusMessage
           icon={<IconBookmark className="size-6" />}
-          title={t('collection.emptyTitle')}
-          body={t('collection.emptyBody')}
+          title="Your collection is empty"
+          body="Save works from search to build your own collection."
         />
       ) : (
         <ResultsList items={items} onSelect={open} showImageLink />
@@ -50,10 +46,10 @@ export default function CollectionPage() {
 
       {confirmOpen && (
         <ConfirmDialog
-          title={t('collection.confirmTitle')}
-          body={t('collection.confirmBody', { count: items.length })}
-          confirmLabel={t('collection.clear')}
-          cancelLabel={t('common.cancel')}
+          title="Clear your collection?"
+          body={`This removes all ${items.length} saved works and can't be undone.`}
+          confirmLabel="Clear collection"
+          cancelLabel="Cancel"
           onConfirm={() => {
             clear();
             setConfirmOpen(false);

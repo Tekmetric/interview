@@ -5,7 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Semantic design tokens. Values flip between light and dark and are chosen for
-   WCAG AA contrast in both themes; `accent` uses a dimmer shade in light mode so
+   legible contrast in both themes; `accent` uses a dimmer shade in light mode so
    it stays legible as text on the cream canvas. `danger` backs destructive UI. */
 :root {
   --canvas: #fffbf0; /* cream page background */
@@ -87,12 +87,6 @@ html {
   color: var(--ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-}
-
-/* Cooper Hewitt is Latin-only; fall back to a CJK stack for Japanese so kana
-   and kanji render (mirrors my portfolio's approach). */
-:lang(ja) {
-  font-family: "Noto Sans JP", var(--font-sans), sans-serif;
 }
 
 /* Accessible, high-contrast focus ring for keyboard users only. */

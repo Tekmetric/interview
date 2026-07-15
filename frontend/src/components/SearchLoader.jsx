@@ -1,10 +1,7 @@
-import { useTranslation } from '../i18n/LocaleProvider';
-
 const BAR_COUNT = 8;
 const DURATION = 1.6; // seconds; must match the `art-sift` keyframe in index.css
 
 export default function SearchLoader() {
-  const { t } = useTranslation();
   return (
     <div
       role="status"
@@ -20,7 +17,7 @@ export default function SearchLoader() {
           />
         ))}
       </div>
-      <p className="text-sm text-muted">{t('search.discovering')}…</p>
+      <p className="text-sm text-muted">Discovering art…</p>
     </div>
   );
 }

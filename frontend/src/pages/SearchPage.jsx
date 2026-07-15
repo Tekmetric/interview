@@ -72,7 +72,7 @@ export default function SearchPage() {
       {viewState === 'error' && (
         <StatusMessage
           tone="error"
-          image="/gallery-closed.png"
+          image={`${import.meta.env.BASE_URL}gallery-closed.png`}
           title="This gallery is briefly closed"
           body="We couldn't load the results just now. Give it a moment and try again."
           onRetry={retry}

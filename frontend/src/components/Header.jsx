@@ -19,7 +19,11 @@ export default function Header() {
     <header className="border-b border-line bg-surface/80 backdrop-blur">
       <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
         <NavLink to="/" className="flex items-center gap-2 font-bold text-ink">
-          <img src="/logo.png" alt="" className="size-7" />
+          <img
+            src={`${import.meta.env.BASE_URL}logo.png`}
+            alt=""
+            className="size-7"
+          />
           <span>Meet the Met</span>
         </NavLink>
 

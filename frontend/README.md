@@ -1,35 +1,98 @@
-# Tech Interview Project
+# Met Collection Search
 
-## Steps to get started:
+A single-page React app for searching **The Metropolitan Museum of Art's open
+collection**, built for the Tekmetric frontend take-home. Search a term, browse
+the matching works as a list, filter by department, and open any piece for
+detail. It uses the free, keyless, CORS-enabled
+[Met Collection API](https://metmuseum.github.io/) — so the whole thing runs
+client-side with no backend.
 
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
+There's a **"How I built this"** page in the app with a fuller write-up of the
+decisions and trade-offs. A build plan lives in [PLAN.md](./PLAN.md), and the
+original assignment brief is preserved in [ASSIGNMENT.md](./ASSIGNMENT.md).
 
-#### Let's install the project locally
-`npm install`
+## Features
 
-#### Let's start the project locally
-`npm start`
+- **Default landing state** — shows a curated "Featured works" set before you search.
+- **Full-text search** of the collection (debounced, abortable), with **quick-pick
+  suggestion chips** when the empty input is focused.
+- **Results list** — rows with thumbnail, title, artist, date, medium, department,
+  and a public-domain indicator.
+- **Department filter** loaded from the API, with a one-click **clear** button.
+- **Your Collection** — save/unsave any work; persists to `localStorage` and has
+  its own page (with a live count in the nav).
+- **Load-more pagination** over the matched works.
+- **Detail modal** — larger image + metadata + a link to metmuseum.org
+  (accessible dialog: Escape, focus management, click-outside).
+- **Light / dark theme** and **5 UI languages** (English, Español, Français,
+  Português, 日本語).
+- Minimal inline **SVG iconography** (no icon fonts, no emoji).
+- Built toward **WCAG 2.x Level AA**.
 
-### Goals
-1. Fetch Data from the backend Crud API you created or from a public API
-2. Display data from API onto your page (Table, List, etc.)
-3. Apply a styling solution of your choice to make your page look different (CSS, SASS, CSS-in-JS)
-4. Have fun
+## Quick start
 
-### Technical Guidelines
+```bash
+npm install
+npm run dev      # start the dev server (http://localhost:5173)
+npm run build    # production build
+npm run preview  # preview the production build
+npm test         # run unit tests (Vitest)
+```
 
-**Please use React as your framework.** We'd like you to use a lightweight setup — this project is already configured with a simple React scaffold, and we'd encourage you to build from there using tools like Vite or Create React App.
+Requires a recent Node (18+). No API keys or environment variables needed.
 
-We ask that you **avoid full-stack or opinionated meta-frameworks** like Next.js, Remix, or Gatsby for this exercise. Meta-frameworks make great choices in production, but they abstract away many of the decisions we'd like to see you make.
+## Tech stack
 
-### A Note on AI
+- **Vite** + **React 18** (SPA, replacing the repo's old Create React App scaffold)
+- **React Router 7** in library mode (client-only SPA — not framework mode)
+- **Tailwind CSS v4** via `@tailwindcss/vite`
+- **Custom `Intl`-based i18n** (no i18n library)
+- **Vitest** for unit tests
+- **Cooper Hewitt** self-hosted typeface, with a Noto Sans JP fallback
 
-You're welcome to use AI tools during this exercise — we use them too. That said, please keep in mind:
+## Architecture
 
-- **You should be able to explain every line of code you submit.** During the follow-up interview, we'll walk through your project together and ask about specific implementation choices, trade-offs, and alternatives you considered.
-- **We value focused, well-understood code.** A project that you can speak to confidently will always impress us more than a huge, complex one where the details are fuzzy.
-- The goal of this exercise is to understand how *you* think about frontend problems.
+Smart page, dumb components. The Search page owns data fetching and state and
+passes plain props down; everything else is presentational.
 
-### Submitting your coding exercise
-Once you have finished the coding exercise please create a PR into Tekmetric/interview
+```
+src/
+  api/metMuseum.js     departments + search + object fetchers (abortable)
+  hooks/               useArtworkSearch, usePagedArtworks, useDepartments, …
+  lib/                 pure helpers (object normalizer, count formatting)
+  context/             SettingsContext (theme, persisted)
+  i18n/                LocaleProvider + t() + catalogs/{en,es,fr,pt,ja}.json
+  components/          reusable UI primitives (Badge, Select, Spinner, …)
+  features/            search/, results/, artwork/
+  pages/               SearchPage, HowIBuiltThisPage, NotFoundPage
+  layouts/             RootLayout, ErrorBoundary
+```
+
+- **Two-step data flow**: `/search` returns matching object **IDs** (often
+  hundreds); we page through them and fetch each `/objects/{id}` lazily, a page
+  at a time, in parallel.
+- **Resilient fetching**: individual object failures are dropped rather than
+  failing the whole page; rows without an image fall back to a placeholder.
+- **Reused detail data**: the object response already includes the full image and
+  metadata, so the detail modal needs no extra request.
+
+## Accessibility
+
+Color contrast checked in both themes; information never conveyed by color alone;
+full keyboard navigation with visible focus rings; an accessible dialog for the
+detail modal; semantic landmarks and a skip link; labeled controls; a live region
+for the result count; and `prefers-reduced-motion` respected.
+
+## Notes & limitations
+
+- Result ordering comes from the Met API's own relevance ranking, which is loose
+  for broad subject terms (title/artist queries rank best).
+- Some records lack a usable image even with the `hasImages` filter; these are
+  handled gracefully (placeholder / metadata-only detail).
+- The department filter narrows the current search (which defaults to a featured
+  query until you type).
+
+## Credits
+
+- Collection data: [The Met Collection API](https://metmuseum.github.io/)
+- Typeface: Cooper Hewitt (free for public use)

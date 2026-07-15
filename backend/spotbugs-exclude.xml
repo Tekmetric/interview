@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude Hibernate-generated JPA static metamodel classes -->
+    <Match>
+        <Class name="~.*_$"/>
+    </Match>
+</FindBugsFilter>

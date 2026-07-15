@@ -1,0 +1,125 @@
+### Base URL
+@baseUrl = http://localhost:8080
+
+### Welcome
+GET {{baseUrl}}/api/v1/welcome
+
+###
+
+### --- Repair Orders ---
+
+### List all repair orders (defaults)
+GET {{baseUrl}}/api/v1/repair-orders
+
+### List all repair orders (custom pagination)
+GET {{baseUrl}}/api/v1/repair-orders?page=0&size=100&sort=status&direction=asc
+
+### Get repair order by ID
+GET {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000001
+
+### Create repair order with line items
+POST {{baseUrl}}/api/v1/repair-orders
+Content-Type: application/json
+
+{
+  "description": "Brake inspection and replacement",
+  "vehicleMake": "Toyota",
+  "vehicleModel": "Corolla",
+  "vehicleYear": 2022,
+  "licensePlate": "TEST-001",
+  "customerId": "01966c3a-0000-7000-8000-000000000001",
+  "lineItems": [
+    {
+      "description": "Front brake pads",
+      "unitPrice": 89.99
+    },
+    {
+      "description": "Labor - brake service (1 hr)",
+      "unitPrice": 75.00
+    }
+  ]
+}
+
+### Create repair order without line items
+POST {{baseUrl}}/api/v1/repair-orders
+Content-Type: application/json
+
+{
+  "description": "Quick vehicle inspection",
+  "vehicleMake": "Honda",
+  "vehicleModel": "Civic",
+  "vehicleYear": 2024,
+  "customerId": "01966c3a-0000-7000-8000-000000000002"
+}
+
+### Update repair order (replace <id> and version)
+PUT {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000003
+Content-Type: application/json
+If-Match: 0
+
+{
+  "description": "Engine diagnostic — updated notes",
+  "vehicleMake": "Ford",
+  "vehicleModel": "F-150",
+  "vehicleYear": 2023,
+  "licensePlate": "DEF-9012"
+}
+
+### Start a pending repair order (PENDING -> IN_PROGRESS)
+POST {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000003/start
+If-Match: 0
+
+### Close an in-progress repair order (IN_PROGRESS -> COMPLETED)
+POST {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000002/close
+If-Match: 0
+
+### Delete repair order
+DELETE {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000004
+
+###
+
+### --- Error scenarios ---
+
+### Get non-existing repair order (404)
+GET {{baseUrl}}/api/v1/repair-orders/00000000-0000-0000-0000-000000000000
+
+### Create with non-existing customer (404)
+POST {{baseUrl}}/api/v1/repair-orders
+Content-Type: application/json
+
+{
+  "description": "Should fail",
+  "vehicleMake": "Toyota",
+  "vehicleModel": "Camry",
+  "vehicleYear": 2021,
+  "licensePlate": "SWU-849",
+  "customerId": "00000000-0000-0000-0000-000000000000"
+}
+
+### Create with invalid body (400)
+POST {{baseUrl}}/api/v1/repair-orders
+Content-Type: application/json
+
+{
+  "description": ""
+}
+
+### Start an already completed order (409)
+POST {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000001/start
+If-Match: 0
+
+### Close a pending order (409)
+POST {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000003/close
+If-Match: 0
+
+### Update with wrong version (412)
+PUT {{baseUrl}}/api/v1/repair-orders/01966c3a-1000-7000-8000-000000000001
+Content-Type: application/json
+If-Match: 999
+
+{
+  "description": "Should fail",
+  "vehicleMake": "Toyota",
+  "vehicleModel": "Camry",
+  "vehicleYear": 2021
+}

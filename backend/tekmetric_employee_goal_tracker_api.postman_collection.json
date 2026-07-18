@@ -1,0 +1,397 @@
+{
+	"info": {
+		"_postman_id": "b0d0cb22-0a20-466b-ae78-12f20948530a",
+		"name": "Employee Goal Tracker - Vince Alcivar - Tekmetric Backend Interview",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Employee",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Vince\",\n    \"role\": \"ENGINEER\",\n    \"email\": \"vince@test.com\",\n    \"department\": \"Product\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/employees",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"employees"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Employee by Id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/employees/:employeeId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						":employeeId"
+					],
+					"variable": [
+						{
+							"key": "employeeId",
+							"value": "0d84bee8-c1c6-46eb-8c21-ba2e05e57dfa"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Employees (paginated)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/employees?page=0&size=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"employees"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Employee by Id",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test Employee\",\n  \"role\": \"ENGINEER\",\n  \"department\": \"Product\",\n  \"email\": \"email@company.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/employees/:employeeId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						":employeeId"
+					],
+					"variable": [
+						{
+							"key": "employeeId",
+							"value": "0d84bee8-c1c6-46eb-8c21-ba2e05e57dfa"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Employee by Id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/employees/:employeeId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						":employeeId"
+					],
+					"variable": [
+						{
+							"key": "employeeId",
+							"value": "0d84bee8-c1c6-46eb-8c21-ba2e05e57dfa"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Goal for Employee",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Reduce on-call incidents by 20%\",\n  \"description\": \"Reduce number of on-call incidents by fixing DB throttling during import job\",\n  \"status\": \"NOT_STARTED\",\n  \"dueDate\": \"2026-01-15T00:00:00.0000Z\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/employees/:employeeId/goals",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						":employeeId",
+						"goals"
+					],
+					"variable": [
+						{
+							"key": "employeeId",
+							"value": "0d84bee8-c1c6-46eb-8c21-ba2e05e57dfa"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Goal for Employee",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/employees/:employeeId/goals/:goalId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						":employeeId",
+						"goals",
+						":goalId"
+					],
+					"variable": [
+						{
+							"key": "employeeId",
+							"value": "0d84bee8-c1c6-46eb-8c21-ba2e05e57dfa"
+						},
+						{
+							"key": "goalId",
+							"value": "5e662fa6-073d-4894-844c-430fdfeff49f"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Goals for Employee",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/employees/:employeeId/goals",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						":employeeId",
+						"goals"
+					],
+					"variable": [
+						{
+							"key": "employeeId",
+							"value": "0d84bee8-c1c6-46eb-8c21-ba2e05e57dfa"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Goal for Employee",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"New goal name\",\n  \"description\": \"Updated description\",\n  \"status\": \"NOT_STARTED\",\n  \"dueDate\": \"2025-12-15T17:12:45.261Z\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/employees/:employeeId/goals/:goalId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						":employeeId",
+						"goals",
+						":goalId"
+					],
+					"variable": [
+						{
+							"key": "employeeId",
+							"value": "0d84bee8-c1c6-46eb-8c21-ba2e05e57dfa"
+						},
+						{
+							"key": "goalId",
+							"value": "5e662fa6-073d-4894-844c-430fdfeff49f"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Goal for Employee",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/employees/:employeeId/goals/:goalId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						":employeeId",
+						"goals",
+						":goalId"
+					],
+					"variable": [
+						{
+							"key": "employeeId",
+							"value": "0d84bee8-c1c6-46eb-8c21-ba2e05e57dfa"
+						},
+						{
+							"key": "goalId",
+							"value": "5e662fa6-073d-4894-844c-430fdfeff49f"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

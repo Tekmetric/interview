@@ -4,7 +4,7 @@
     - Gradle for Java - https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-gradle
     - Live Share - https://marketplace.visualstudio.com/items?itemName=MS-vsliveshare.vsliveshare
     - Extension Pack for Java - https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack
-    - Spirng Boot Extension Pack - https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-boot-dev-pack
+    - Spring Boot Extension Pack - https://marketplace.visualstudio.com/items?itemName=Pivotal.vscode-boot-dev-pack
     - (Optional) Intellij KeyBindings - https://marketplace.visualstudio.com/items?itemName=k--kato.intellij-idea-keybindings
 - Install Java 25 JDK on your system, either via brew or similar
     - (Optional) Use `jenv` to manage that if you have more than one JDK - https://www.jenv.be/

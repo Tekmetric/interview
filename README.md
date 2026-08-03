@@ -3,5 +3,5 @@
 - [Backend Interview Guidelines](backend/README.md)
 - [Frontend Interview Guidelines](frontend/README.md)
 - [Data Interview Guidelines](data/README.md)
-- [Site Reliability Engineer Interview Guidelines](sre/README.md)
+- [Site Reliability Engineer Interview Tooling](required-tooling/sre-interview-tooling.md)
 - [QA Interview Guidelines](qa/README.md)

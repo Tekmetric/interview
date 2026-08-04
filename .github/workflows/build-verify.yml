@@ -1,0 +1,46 @@
+name: Build & Verify
+
+# Compiles the app, runs all tests + SpotBugs, and confirms the Docker image builds.
+# Validation-only — no registry push.
+
+on: [ push, pull_request ]
+
+jobs:
+  build:
+    name: Maven verify + Docker build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Run tests & static analysis
+        run: mvn -B -ntp verify
+
+      - name: Build container image
+        run: docker build -t tekmetric-interview:${{ github.sha }} .
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: backend/target/surefire-reports/
+          retention-days: 7
+
+      - name: Upload SpotBugs findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spotbugs-report
+          path: backend/target/spotbugsXml.xml
+          retention-days: 7

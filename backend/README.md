@@ -1,24 +1,22 @@
 # Java Spring Boot API Coding Exercise
 
+## Solution
+
+This is a simple CRUD API for the management of cars.
+
+## API Documentation
+
+The API is documented via Swagger docs. Once the application is running, visit the following URL for the API contract.
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
 ## Steps to get started:
 
 #### Prerequisites
 - Maven
-- Java 1.8 (or higher, update version in pom.xml if needed)
-
-#### Fork the repository and clone it locally
-- https://github.com/Tekmetric/interview.git
-
-#### Import project into IDE
-- Project root is located in `backend` folder
-
-#### Build and run your app
-- `mvn package && java -jar target/interview-1.0-SNAPSHOT.jar`
-
-#### Test that your app is running
-- `curl -X GET   http://localhost:8080/api/welcome`
-
-#### After finishing the goals listed below create a PR
+- Java 21
 
 ### Goals
 1. Design a CRUD API with data store using Spring Boot and in memory H2 database (pre-configured, see below)
@@ -27,7 +25,7 @@
 4. Demo API functionality using API client tool
 
 ### Considerations
-This is an open ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
+This is an open-ended exercise for you to showcase what you know! We encourage you to think about best practices for structuring your code and handling different scenarios. Feel free to include additional improvements that you believe are important.
 
 #### H2 Configuration
 - Console: http://localhost:8080/h2-console 

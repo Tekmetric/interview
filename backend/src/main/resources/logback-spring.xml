@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <!--
+    Default profile  → human-readable console output
+    "prod" profile   → structured JSON (easy ingestion by Loki / Datadog / ELK)
+  -->
+
+  <!-- ── Default (local dev) ─────────────────────────────────────────── -->
+  <springProfile name="!prod">
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+        <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5level [%thread] %logger{36} - %msg%n</pattern>
+      </encoder>
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </springProfile>
+
+  <!-- ── Production (JSON) ───────────────────────────────────────────── -->
+  <springProfile name="prod">
+    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+        <!--
+          Inline JSON pattern — no extra dependency required.
+          Each log line is a valid JSON object parseable by Loki / Fluentd / Datadog.
+        -->
+        <pattern>{"timestamp":"%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}","level":"%level","thread":"%thread","logger":"%logger{50}","message":"%msg","application":"${SPRING_APPLICATION_NAME:-interview-app}"}%n</pattern>
+      </encoder>
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="JSON_CONSOLE"/>
+    </root>
+    <!-- Reduce noise from framework internals in prod -->
+    <logger name="org.hibernate.SQL" level="WARN"/>
+    <logger name="com.zaxxer.hikari" level="WARN"/>
+  </springProfile>
+
+</configuration>

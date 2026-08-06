@@ -1,0 +1,26 @@
+1. Get the application URL:
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}/api/vehicles
+{{- end }}
+{{- else if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "interview-app.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo "http://$NODE_IP:$NODE_PORT"
+{{- else }}
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "interview-app.fullname" . }} 8080:8080
+  echo "http://127.0.0.1:8080"
+{{- end }}
+
+2. Check application health:
+  curl http://<APP_URL>/actuator/health
+
+3. Prometheus metrics:
+  curl http://<APP_URL>/actuator/prometheus
+
+4. CRUD API endpoints:
+  GET    /api/vehicles          – list all vehicles
+  GET    /api/vehicles/{id}     – get vehicle by id
+  POST   /api/vehicles          – create vehicle
+  PUT    /api/vehicles/{id}     – update vehicle
+  DELETE /api/vehicles/{id}     – delete vehicle

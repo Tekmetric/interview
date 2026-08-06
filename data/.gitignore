@@ -1,1 +1,6 @@
 .venv/
+.env
+neo/
+__pycache__/
+*.pyc
+uv.lock

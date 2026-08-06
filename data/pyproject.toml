@@ -1,0 +1,11 @@
+[project]
+name = "neo-etl"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "pyspark",
+    "requests",
+    "aiohttp",
+    "python-dotenv",
+    "polars",
+]

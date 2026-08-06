@@ -1,0 +1,71 @@
+replicaCount: 1
+
+image:
+  repository: interview-backend
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+livenessProbe:
+  path: /actuator/health
+  port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+readinessProbe:
+  path: /actuator/health
+  port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: interview-backend.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+ingress-nginx:
+  enabled: true
+  controller:
+    service:
+      type: LoadBalancer
+    ingressClassResource:
+      name: nginx
+      enabled: true
+      default: true
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
